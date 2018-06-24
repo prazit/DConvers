@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--<pattern>[%-5level] %logger: %msg%n</pattern>-->
+            <pattern>%-5level %date %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--Daily rolling file appender -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/dconvers.log</File>
+        <append>false</append>
+        <encoder>
+            <pattern>%date %-5level [%thread] %logger [%file:%line] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.clevel" level="DEBUG"/>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
