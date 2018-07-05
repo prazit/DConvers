@@ -26,14 +26,15 @@ public class Source extends AppBase {
     }
 
     private boolean prepare() {
+        log.trace("Source({}).prepare.", name);
         String dataSourceName = sourceConfig.getDataSource();
         dataSource = application.dataSourceMap.get(dataSourceName);
-
         return true;
     }
 
     @Override
     public boolean validate() {
+        log.trace("Source({}).validate.", name);
 
         if (dataSource == null) {
             log.warn("datasource({}) is not found, used in Converter({})", sourceConfig.getDataSource(), converter.getName());
@@ -44,8 +45,9 @@ public class Source extends AppBase {
     }
 
     public boolean loadDataTable() {
-        // TODO: load dataTable for Source
-        return true;
+        log.trace("Source({}).loadDataTable.", name);
+        dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getQuery());
+        return dataTable != null;
     }
 
     @Override
@@ -54,6 +56,9 @@ public class Source extends AppBase {
     }
 
     public DataTable getDataTable() {
+        if (valid && dataTable == null) {
+            valid = loadDataTable();
+        }
         return dataTable;
     }
 }

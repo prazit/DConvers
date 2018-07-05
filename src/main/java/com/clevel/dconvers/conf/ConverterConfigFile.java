@@ -67,4 +67,11 @@ public class ConverterConfigFile extends ConfigFile {
         return true;
     }
 
+    public Map<String, SourceConfig> getSourceConfigMap() {
+        return sourceConfigMap;
+    }
+
+    public Map<String, TargetConfig> getTargetConfigMap() {
+        return targetConfigMap;
+    }
 }

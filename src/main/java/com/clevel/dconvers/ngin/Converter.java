@@ -2,10 +2,12 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.ConverterConfigFile;
+import com.clevel.dconvers.conf.SourceConfig;
+import com.clevel.dconvers.conf.TargetConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Converter extends AppBase {
@@ -29,8 +31,19 @@ public class Converter extends AppBase {
     }
 
     public boolean launch() {
+        log.trace("Converter.launch.");
 
-        // TODO: load sources
+        Map<String,SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
+        Map<String,TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
+
+        String name;
+        Source source;
+        sourceMap = new HashMap<>();
+        for (SourceConfig sourceConfig:sourceConfigMap.values()) {
+            name = sourceConfig.getName();
+            source = new Source(application, name, this, sourceConfig);
+            sourceMap.put(name, source);
+        }
 
         // TODO: create targets and mappings
 
@@ -46,7 +59,7 @@ public class Converter extends AppBase {
     }
 
     private boolean createOutput() {
-        // TODO: create output
+        // TODO: create output file
         return true;
     }
 

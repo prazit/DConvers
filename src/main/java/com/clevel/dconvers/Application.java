@@ -116,6 +116,10 @@ public class Application {
     private void closeAllDataSource() {
         log.trace("Application.closeAllDataSource.");
 
+        if (dataSourceMap == null) {
+            return;
+        }
+
         for (DataSource dataSource : dataSourceMap.values()) {
             dataSource.close();
         }
