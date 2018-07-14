@@ -84,14 +84,19 @@ public class Application {
             converterMap.put(converterName, converter);
         }
 
-        for (Converter convert:converterMap.values()) {
-            log.trace("Application. Launch Converter({}).", convert.getName());
+        log.trace("Application. Launch Converters.");
 
-            if (!convert.launch()) {
+        for (Converter convert:converterMap.values()) {
+            if (!convert.convert()) {
+                stopWithError();
+            }
+
+            if (!convert.render()) {
                 stopWithError();
             }
         }
 
+        // Successful
         stop();
     }
 

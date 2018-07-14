@@ -27,26 +27,41 @@ public class Target extends AppBase {
     }
 
     private boolean prepare() {
-
+        log.trace("Target({}).prepare.", name);
         sourceMap = converter.getSourceMap();
-
         return true;
     }
 
     @Override
     public boolean validate() {
 
-        if (sourceMap == null) {
-            log.warn("sources are required, for target({})", name);
+        if (sourceMap == null || sourceMap.size() == 0) {
+            log.error("Sources are required for target({})", name);
+            return false;
+        }
+
+        String sourceName = targetConfig.getSource();
+        if (!sourceMap.containsKey(sourceName)) {
+            log.error("Source({}) is not found, required by target({})", sourceName, name);
             return false;
         }
 
         return true;
+
     }
 
-    public boolean loadDataTable() {
-        // TODO: load dataTable for Target
-        return true;
+    public boolean buildDataTable() {
+
+        Source source = sourceMap.get(targetConfig.getSource());
+        DataTable sourceDataTable = source.getDataTable();
+
+        dataTable = new DataTable(name);
+        for (DataRow row : sourceDataTable.getAllRow()) {
+            // TODO: create data-table for targets
+            // TODO: create data-table for mappings (mapping table contains id of source and id of target)
+        }
+
+        return dataTable != null;
     }
 
     @Override

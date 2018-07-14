@@ -37,16 +37,18 @@ public class Source extends AppBase {
         log.trace("Source({}).validate.", name);
 
         if (dataSource == null) {
-            log.warn("datasource({}) is not found, used in Converter({})", sourceConfig.getDataSource(), converter.getName());
+            log.warn("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
             return false;
         }
 
         return true;
     }
 
-    public boolean loadDataTable() {
-        log.trace("Source({}).loadDataTable.", name);
+    public boolean buildDataTable() {
+        log.trace("Source({}).buildDataTable.", name);
+
         dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getQuery());
+
         return dataTable != null;
     }
 
@@ -57,7 +59,7 @@ public class Source extends AppBase {
 
     public DataTable getDataTable() {
         if (valid && dataTable == null) {
-            valid = loadDataTable();
+            valid = buildDataTable();
         }
         return dataTable;
     }

@@ -3,6 +3,9 @@ package com.clevel.dconvers.ngin;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.SourceConfig;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -60,6 +63,19 @@ public class DataSource extends AppBase {
         return false;
     }
 
+    private int getRowCount(ResultSet resultSet) {
+        try {
+            resultSet.last();
+            int size = resultSet.getRow();
+            resultSet.beforeFirst();
+            log.debug("getRowCount.size = {}", size);
+            return size;
+        } catch (Exception ex) {
+            log.error("getRowCount.error: ", ex);
+        }
+        return 0;
+    }
+
     public DataTable getDataTable(String tableName, String query) {
         log.trace("DataSource.getDataTable.");
         DataTable dataTable = new DataTable(tableName);
@@ -67,15 +83,17 @@ public class DataSource extends AppBase {
 
         try {
             log.trace("Open statement...");
-            statement = connection.createStatement();
+            //statement = connection.createStatement();
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            log.trace("Querying...");
-            log.debug("{}", query);
+            log.debug("Querying: {}", query);
+            log.info("Loading data({})...", tableName);
             ResultSet resultSet = statement.executeQuery(query);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName);
+            log.info("DataTable has {} row(s)", dataTable.getRowCount());
 
             log.trace("Close statement...");
             resultSet.close();
@@ -106,10 +124,16 @@ public class DataSource extends AppBase {
         DataColumn dataColumn;
         String columnName;
         int columnType;
+
+        int rowCount = getRowCount(resultSet);
+        ProgressBar progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        progressBar.maxHint(rowCount);
+
         while (resultSet.next()) {
+            progressBar.step();
             dataRow = new DataRow(dataTable);
 
-            for (int columnIndex = 0; columnIndex < columnCount; columnIndex++) {
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 columnName = metaData.getColumnName(columnIndex);
                 columnType = metaData.getColumnType(columnIndex);
 
@@ -167,6 +191,7 @@ public class DataSource extends AppBase {
         try {
             connection.close();
             connection = null;
+            log.info("Disconnected from database({})", name);
         } catch (SQLException se) {
             log.error("disconnect is failed");
             log.debug("SQLException = {}", se);
