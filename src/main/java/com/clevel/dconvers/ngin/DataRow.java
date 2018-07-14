@@ -1,5 +1,8 @@
 package com.clevel.dconvers.ngin;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +14,7 @@ public class DataRow extends ValidatorBase {
     DataRow(DataTable dataTable) {
         this.dataTable = dataTable;
         dataColumnMap = new HashMap<>();
+        valid = dataTable != null;
     }
 
     public DataTable getDataTable() {
@@ -45,4 +49,12 @@ public class DataRow extends ValidatorBase {
         }
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("valid", valid)
+                .append("Columns", dataColumnMap)
+                .toString()
+                .replace('=', ':');
+    }
 }

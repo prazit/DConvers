@@ -127,8 +127,7 @@ public class Switches extends ValidatorBase {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append(super.toString())
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("source", source)
                 .append("verbose", verbose)
                 .append("verboseLevel", verboseLevel)

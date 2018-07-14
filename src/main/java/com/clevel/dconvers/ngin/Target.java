@@ -57,8 +57,12 @@ public class Target extends AppBase {
 
         dataTable = new DataTable(name);
         for (DataRow row : sourceDataTable.getAllRow()) {
-            // TODO: create data-table for targets
+
+            // TODO: create data-table for each target,
+
+
             // TODO: create data-table for mappings (mapping table contains id of source and id of target)
+
         }
 
         return dataTable != null;

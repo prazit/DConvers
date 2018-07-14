@@ -51,18 +51,9 @@ public class DataTable extends ValidatorBase {
 
     @Override
     public String toString() {
-
-        /*System.out.println("-- Meta Data --");
-        int cols = metaData.getColumnCount();
-        for (int i = 1; i <= cols; i++) {
-            System.out.println("column( " + String.valueOf(i) + ", " + metaData.getColumnName(i) + " = " + metaData.getColumnTypeName(i) + " )");
-        }*/
-
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append(super.toString())
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("valid", valid)
                 .append("tableName", tableName)
-                .append("metaData", metaData)
                 .append("dataRowList", dataRowList)
                 .toString();
     }

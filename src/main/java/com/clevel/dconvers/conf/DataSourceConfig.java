@@ -84,11 +84,12 @@ public class DataSourceConfig extends Config {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("url", url)
                 .append("driver", driver)
                 .append("schema", schema)
                 .append("user", user)
+                .append("password", password)
                 .toString();
     }
 }

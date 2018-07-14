@@ -2,6 +2,8 @@ package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
 import org.apache.commons.configuration2.ex.ConversionException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ public class ConverterConfigFile extends ConfigFile {
 
     public ConverterConfigFile(Application application, String name) {
         super(application, name);
+        log.debug("ConverterConfigFile({}) = {}", name, this);
         log.trace("ConverterConfigFile({}) is created", name);
     }
 
@@ -73,5 +76,16 @@ public class ConverterConfigFile extends ConfigFile {
 
     public Map<String, TargetConfig> getTargetConfigMap() {
         return targetConfigMap;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("valid", valid)
+                .append("name", name)
+                .append("sourceConfigMap", sourceConfigMap)
+                .append("targetConfigMap", targetConfigMap)
+                .toString()
+                .replace('=', ':');
     }
 }

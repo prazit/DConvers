@@ -24,7 +24,7 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public DataConversionConfigFile(Application application, String name) {
         super(application, name);
-
+        log.debug("DataConversionConfigFile({}) = {}", name, this);
         log.trace("DataConversionConfigFile({}) is created.", name);
     }
 
@@ -47,7 +47,6 @@ public class DataConversionConfigFile extends ConfigFile {
             dataSourceNameList = new ArrayList<>();
             dataSourceNameList.add(properties.getString(Property.DATA_SOURCE.key()));
         }
-        log.debug("dataSourceNameList = {}", dataSourceNameList);
 
         dataSourceConfigMap = new HashMap<>();
         String name;
@@ -55,7 +54,6 @@ public class DataConversionConfigFile extends ConfigFile {
             name = object.toString();
             dataSourceConfigMap.put(name, new DataSourceConfig(application, name));
         }
-        log.debug("dataSourceConfigMap = {}", dataSourceConfigMap);
 
 
         List<Object> converterNameList;
@@ -65,7 +63,6 @@ public class DataConversionConfigFile extends ConfigFile {
             converterNameList = new ArrayList<>();
             converterNameList.add(properties.getString(Property.CONVERTER_FILE.key()));
         }
-        log.debug("converterNameList = {}", converterNameList);
 
         converterConfigMap = new HashMap<>();
         for (Object object : converterNameList) {
@@ -75,7 +72,6 @@ public class DataConversionConfigFile extends ConfigFile {
             }
             converterConfigMap.put(name, new ConverterConfigFile(application, name));
         }
-        log.debug("converterConfigMap = {}", converterConfigMap);
 
         return true;
     }
@@ -117,10 +113,11 @@ public class DataConversionConfigFile extends ConfigFile {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("converterRootPath", converterRootPath)
-                .append("converterConfigMap", converterConfigMap)
                 .append("dataSourceConfigMap", dataSourceConfigMap)
-                .toString();
+                .append("converterConfigMap", converterConfigMap)
+                .toString()
+                .replace('=', ':');
     }
 }

@@ -5,9 +5,9 @@ import java.sql.Types;
 
 public abstract class DataColumn extends ValidatorBase {
 
-    private String name;
-    private int index;
-    private int type;
+    protected String name;
+    protected int index;
+    protected int type;
 
     DataColumn() {
         this.index = -1;

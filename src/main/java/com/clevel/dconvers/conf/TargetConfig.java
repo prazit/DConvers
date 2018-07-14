@@ -1,6 +1,8 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,5 +80,20 @@ public class TargetConfig extends Config {
 
     public List<Object> getColumnList() {
         return columnList;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("valid", valid)
+                .append("name", name)
+                .append("table", table)
+                .append("create", create)
+                .append("insert", insert)
+                .append("source", source)
+                .append("output", output)
+                .append("columnList", columnList)
+                .toString()
+                .replace('=', ':');
     }
 }

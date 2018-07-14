@@ -93,7 +93,7 @@ public class DataSource extends AppBase {
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName);
-            log.info("DataTable has {} row(s)", dataTable.getRowCount());
+            log.info("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");
             resultSet.close();
@@ -126,7 +126,12 @@ public class DataSource extends AppBase {
         int columnType;
 
         int rowCount = getRowCount(resultSet);
-        ProgressBar progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        ProgressBar progressBar;
+        if (rowCount > 3000) {
+            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        } else {
+            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "", 1);
+        }
         progressBar.maxHint(rowCount);
 
         while (resultSet.next()) {
@@ -173,10 +178,16 @@ public class DataSource extends AppBase {
                 }
 
                 dataRow.putColumn(columnName, dataColumn);
-            }
+            } // end for
 
             dataTable.addRow(dataRow);
         } // end while
+
+        progressBar.close();
+
+        if (log.isDebugEnabled() && rowCount > 0) {
+            log.debug("createDataTable({}). has {} rows, firstRow is {}", tableName, rowCount, dataTable.getRow(0));
+        }
 
         return dataTable;
     }

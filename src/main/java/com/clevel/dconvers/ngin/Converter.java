@@ -109,7 +109,7 @@ public class Converter extends AppBase {
     public boolean render() {
         log.trace("Converter({}).render", name);
 
-        // TODO: create output file for targets
+        // TODO: create output file from target data tables
 
         return true;
 
