@@ -23,6 +23,8 @@ public enum Property {
         TABLE("table"),
         COLUMN("column"),
 
+    ROW_NUMBER("rownumber"),
+
     MAPPING_PREFIX("mapping.table.prefix"),
     REPORT_TABLE("report.table"),
     SOURCE_ID("source_id"),

@@ -76,7 +76,7 @@ public class Target extends AppBase {
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
         DataDate varNow = (DataDate) systemVars.get(SystemVariable.NOW);
 
-        varRowNumber.setValue(0);
+        varRowNumber.setValue(targetConfig.getRowNumberStartAt() -1);
         varNow.setValue(new Date());
 
         SourceColumnType sourceColumnType;

@@ -22,6 +22,10 @@ public class DataBigDecimal extends DataColumn {
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return "null";
+        }
+
         return value.toString();
     }
 

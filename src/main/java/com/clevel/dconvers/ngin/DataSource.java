@@ -116,6 +116,8 @@ public class DataSource extends AppBase {
         DataColumn dataColumn;
         String columnName;
         int columnType;
+        Date dateValue;
+        Timestamp timestamp;
 
         int rowCount = getRowCount(resultSet);
         ProgressBar progressBar;
@@ -161,8 +163,17 @@ public class DataSource extends AppBase {
                         break;
 
                     case Types.DATE:
-                    case Types.TIMESTAMP:
                         dataColumn = new DataDate(columnIndex, columnType, columnName, resultSet.getDate(columnIndex));
+                        break;
+
+                    case Types.TIMESTAMP:
+                        timestamp = resultSet.getTimestamp(columnIndex);
+                        if (timestamp == null) {
+                            dateValue = null;
+                        } else {
+                            dateValue = new Date(timestamp.getTime());
+                        }
+                        dataColumn = new DataDate(columnIndex, columnType, columnName, dateValue);
                         break;
 
                     default:

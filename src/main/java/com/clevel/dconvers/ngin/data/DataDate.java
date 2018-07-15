@@ -2,16 +2,19 @@ package com.clevel.dconvers.ngin.data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DataDate extends DataColumn {
     private Date value;
+    private Logger log;
 
     public DataDate(int index, int type, String name, Date value) {
         super(index, type, name);
-
+        log = LoggerFactory.getLogger(DataDate.class);
         this.value = value;
     }
 
@@ -22,6 +25,10 @@ public class DataDate extends DataColumn {
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return "null";
+        }
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("YYYY/MM/dd hh:mm:ss");
         return "'" + simpleDateFormat.format(value) + "'";

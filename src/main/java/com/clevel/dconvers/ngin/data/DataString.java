@@ -20,6 +20,10 @@ public class DataString extends DataColumn {
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return "null";
+        }
+
         return "'" + value + "'";
     }
 

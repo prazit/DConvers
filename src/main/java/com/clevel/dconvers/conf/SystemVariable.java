@@ -6,7 +6,8 @@ public enum SystemVariable {
 
     FILENUMBER(Types.INTEGER),
     ROWNUMBER(Types.INTEGER),
-    NOW(Types.TIMESTAMP)
+    NOW(Types.TIMESTAMP),
+    NULL(Types.VARCHAR)
     ;
 
     private int dataType;

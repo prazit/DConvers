@@ -21,6 +21,7 @@ public class TargetConfig extends Config {
     private String output;
     private String table;
     private String id;
+    private long rowNumberStartAt;
 
     private boolean create;
     private boolean insert;
@@ -55,6 +56,7 @@ public class TargetConfig extends Config {
         id = targetProperties.getString(Property.ID.key(), "id");
         create = targetProperties.getBoolean(Property.CREATE.key());
         insert = targetProperties.getBoolean(Property.INSERT.key());
+        rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key());
 
         String outputExt = ".sql";
         if (output.length() == 0) {
@@ -101,6 +103,10 @@ public class TargetConfig extends Config {
 
     public String getId() {
         return id;
+    }
+
+    public long getRowNumberStartAt() {
+        return rowNumberStartAt;
     }
 
     public boolean isCreate() {
