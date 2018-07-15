@@ -1,31 +1,33 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.util.Date;
+public class DataLong extends DataColumn {
+    private long value;
 
-public class DataDate extends DataColumn {
-    private Date value;
-
-    public DataDate(int index, int type, String name, Date value) {
+    public DataLong(int index, int type, String name, long value) {
         super(index, type, name);
 
         this.value = value;
     }
 
     @Override
-    public DataColumn clone() {
-        return new DataDate(index, type, name, value);
+    public DataColumn clone(int index, String name) {
+        return new DataLong(index, type, name, value);
     }
 
     @Override
     public String getValue() {
-        return value.toString();
+        return String.valueOf(value);
     }
 
-    public void setValue(Date value) {
+    public void setValue(long value) {
         this.value = value;
+    }
+
+    public void increaseValueBy(long increase) {
+        this.value += increase;
     }
 
     @Override

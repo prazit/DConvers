@@ -1,19 +1,26 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.ngin.ValidatorBase;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DataRow extends ValidatorBase {
 
     private DataTable dataTable;
     private Map<String, DataColumn> dataColumnMap;
+    private List<DataColumn> columnList;
 
-    DataRow(DataTable dataTable) {
+    public DataRow(DataTable dataTable) {
         this.dataTable = dataTable;
         dataColumnMap = new HashMap<>();
+        columnList = new ArrayList<>();
         valid = dataTable != null;
     }
 
@@ -31,8 +38,17 @@ public class DataRow extends ValidatorBase {
         return dataColumn;
     }
 
-    void putColumn(String columnName, DataColumn dataColumn) {
+    public Map<String, DataColumn> getColumnMap() {
+        return dataColumnMap;
+    }
+
+    public List<DataColumn> getColumnList() {
+        return columnList;
+    }
+
+    public void putColumn(String columnName, DataColumn dataColumn) {
         try {
+            columnList.add(dataColumn);
             dataColumnMap.put(columnName, dataColumn);
         } catch (Exception e) {
             dataColumnMap.put(columnName, new DataString(0, 0, null, null));
@@ -47,4 +63,5 @@ public class DataRow extends ValidatorBase {
                 .toString()
                 .replace('=', ':');
     }
+
 }

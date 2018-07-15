@@ -5,6 +5,7 @@ import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.ngin.*;
+import com.clevel.dconvers.ngin.data.*;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,11 @@ public class Application {
     public Application(String[] args) {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         this.args = args;
+
         systemVariableMap = createSystemVariableMap();
+        DataLong fileNumber = (DataLong) systemVariableMap.get(SystemVariable.FILENUMBER);
+        fileNumber.setValue(0);
+
         log.trace("Application is created.");
     }
 
@@ -98,7 +103,7 @@ public class Application {
                 stopWithError();
             }
 
-            if (!convert.render()) {
+            if (!convert.print()) {
                 stopWithError();
             }
         }

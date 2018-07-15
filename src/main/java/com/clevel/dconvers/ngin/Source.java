@@ -2,6 +2,7 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.SourceConfig;
+import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,6 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.ngin.ValidatorBase;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -13,7 +14,7 @@ public class DataTable extends ValidatorBase {
     private ResultSetMetaData metaData;
     private String tableName;
 
-    DataTable(String tableName) {
+    public DataTable(String tableName) {
         this.tableName = tableName;
         dataRowList = new ArrayList<>();
         valid = true;

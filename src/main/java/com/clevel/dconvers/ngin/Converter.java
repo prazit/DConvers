@@ -3,10 +3,20 @@ package com.clevel.dconvers.ngin;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.ConverterConfigFile;
 import com.clevel.dconvers.conf.SourceConfig;
+import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
+import com.clevel.dconvers.ngin.data.DataLong;
+import com.clevel.dconvers.ngin.format.DataFormatter;
+import com.clevel.dconvers.ngin.format.SQLCreateFormatter;
+import com.clevel.dconvers.ngin.format.SQLInsertFormatter;
+import com.clevel.dconvers.ngin.format.SQLUpdateFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,10 +116,67 @@ public class Converter extends AppBase {
         return true;
     }
 
-    public boolean render() {
-        log.trace("Converter({}).render", name);
+    public boolean print() {
+        log.trace("Converter({}).print", name);
 
-        // TODO: create output file from target data tables (call dataTable.render(outputStream))
+        SQLCreateFormatter sqlCreate = new SQLCreateFormatter();
+        SQLInsertFormatter sqlInsert = new SQLInsertFormatter();
+        SQLUpdateFormatter sqlUpdate = new SQLUpdateFormatter();
+        DataFormatter formatter;
+
+        TargetConfig targetConfig;
+        String outputFile;
+
+        DataLong fileNumber = (DataLong) application.systemVariableMap.get(SystemVariable.FILENUMBER);
+
+        for (Target target : targetMap.values()) {
+
+            targetConfig = target.getTargetConfig();
+            if (targetConfig.isInsert()) {
+                formatter = sqlInsert;
+            } else {
+                formatter = sqlUpdate;
+            }
+
+            fileNumber.increaseValueBy(1);
+            outputFile = application.dataConversionConfigFile.getConverterRootPath() +"V"+ fileNumber.getValue() +"__"+ targetConfig.getOutput();
+            String charset = "UTF-8";
+            Writer writer;
+
+            try {
+                writer = new OutputStreamWriter(new FileOutputStream(outputFile), charset);
+            } catch (Exception e) {
+                writer = null;
+                log.warn("Create output file is failed, {}", e.getMessage());
+            }
+
+            if (writer == null) {
+                try {
+                    writer = new OutputStreamWriter(System.out, charset);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            if (targetConfig.isCreate()) {
+                sqlCreate.print(target.getDataTable(), writer);
+            }
+
+            formatter.print(target.getDataTable(), writer);
+
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            // TODO: create output file for mapping data tables\
+
+        }
 
         return true;
 

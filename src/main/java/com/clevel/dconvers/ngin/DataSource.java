@@ -2,21 +2,13 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.conf.SourceConfig;
+import com.clevel.dconvers.ngin.data.*;
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
 import java.sql.*;
-import java.util.Arrays;
-import java.util.Collections;
-
-import static jdk.nashorn.internal.runtime.JSType.isString;
 
 public class DataSource extends AppBase {
 

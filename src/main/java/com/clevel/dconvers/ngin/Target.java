@@ -2,7 +2,10 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.data.*;
 import javafx.util.Pair;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,13 +85,26 @@ public class Target extends AppBase {
         String targetColumnName;
         DataRow targetRow;
         DataRow mappingRow;
+        int targetColumnIndex;
 
-        for (DataRow sourceRow : sourceDataTable.getAllRow()) {
+        List<DataRow> sourceRowList = sourceDataTable.getAllRow();
+        int rowCount = sourceRowList.size();
+        ProgressBar progressBar;
+        if (rowCount > 3000) {
+            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        } else {
+            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, " rows", 1);
+        }
+        progressBar.maxHint(rowCount);
 
+        for (DataRow sourceRow : sourceRowList) {
+            progressBar.step();
             varRowNumber.increaseValueBy(1);
             targetRow = new DataRow(dataTable);
 
+            targetColumnIndex = 0;
             for (Pair<String, String> columnPair : columnList) {
+                targetColumnIndex++;
                 targetColumnName = columnPair.getKey();
                 sourceColumnName = columnPair.getValue();
 
@@ -100,15 +116,17 @@ public class Target extends AppBase {
                             log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
+                        targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
                     case VAR:
                         sourceColumnName = sourceColumnName.substring(4).toUpperCase();
-                        targetColumn = systemVars.get(SystemVariable.valueOf(sourceColumnName)).clone();
+                        targetColumn = systemVars.get(SystemVariable.valueOf(sourceColumnName));
                         if (targetColumn == null) {
                             log.error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
                             return false;
                         }
+                        targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
                     case SRC:
@@ -118,6 +136,7 @@ public class Target extends AppBase {
                             log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
+                        targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
                     case INV:
@@ -133,7 +152,6 @@ public class Target extends AppBase {
                         }
                 }// end of switch(sourceColumnType)
                 targetRow.putColumn(targetColumnName, targetColumn);
-
 
             } // end of for(ColumnPair)
             dataTable.addRow(targetRow);
@@ -157,6 +175,7 @@ public class Target extends AppBase {
             mappingTable.addRow(mappingRow);
 
         } // end of for(DataRow)
+        progressBar.close();
 
         // TODO: create reportRow and add into the application.reportTable
 
@@ -164,12 +183,12 @@ public class Target extends AppBase {
             if (dataTable.getRowCount() > 100) {
                 log.debug("buildDataTable({}). targetTable has {} rows, firstRow is {}", name, dataTable.getRowCount(), dataTable.getRow(0));
             } else {
-                log.debug("buildDataTable({}). targetTable has {} rows, {}", name, dataTable.getRowCount(), dataTable);
+                log.debug("buildDataTable({}). targetTable has {} rows following {}", name, dataTable.getRowCount(), dataTable);
             }
             if (mappingTable.getRowCount() > 100) {
                 log.debug("buildDataTable({}). mappingTable has {} rows, firstRow is {}", name, mappingTable.getRowCount(), mappingTable.getRow(0));
             } else {
-                log.debug("buildDataTable({}). mappingTable has {} rows, {}", name, mappingTable.getRowCount(), mappingTable);
+                log.debug("buildDataTable({}). mappingTable has {} rows following {}", name, mappingTable.getRowCount(), mappingTable);
             }
         }
 
@@ -203,6 +222,10 @@ public class Target extends AppBase {
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(Target.class);
+    }
+
+    public TargetConfig getTargetConfig() {
+        return targetConfig;
     }
 
     public DataTable getDataTable() {

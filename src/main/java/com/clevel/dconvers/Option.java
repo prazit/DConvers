@@ -1,8 +1,5 @@
 package com.clevel.dconvers;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 public enum Option {
 
     SOURCE(true, "s", "source", true, "source file is required for data conversion, please see 'sample-source.conf' for detailed"),

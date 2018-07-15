@@ -1,4 +1,6 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
+
+import com.clevel.dconvers.ngin.ValidatorBase;
 
 import java.sql.Types;
 
@@ -36,5 +38,5 @@ public abstract class DataColumn extends ValidatorBase {
 
     public abstract String getValue();
 
-    public abstract DataColumn clone();
+    public abstract DataColumn clone(int index, String name);
 }

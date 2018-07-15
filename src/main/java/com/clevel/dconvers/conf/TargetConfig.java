@@ -50,11 +50,18 @@ public class TargetConfig extends Config {
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         source = targetProperties.getString(Property.SOURCE.key());
-        output = targetProperties.getString(Property.OUTPUT_FILE.key());
+        output = targetProperties.getString(Property.OUTPUT_FILE.key(),"");
         table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
         create = targetProperties.getBoolean(Property.CREATE.key());
         insert = targetProperties.getBoolean(Property.INSERT.key());
+
+        String outputExt = ".sql";
+        if (output.length() == 0) {
+            output = table + outputExt;
+        } else if (!output.endsWith(outputExt)) {
+            output = output + outputExt;
+        }
 
         Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
         Iterator<String> columnKeyList = columnProperties.getKeys();

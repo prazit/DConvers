@@ -18,8 +18,8 @@ import java.util.Map;
 public class DataConversionConfigFile extends ConfigFile {
 
     private Map<String, DataSourceConfig> dataSourceConfigMap;
-
     private Map<String, ConverterConfigFile> converterConfigMap;
+
     private String converterRootPath;
     private String mappingTablePrefix;
     private String reportTableName;

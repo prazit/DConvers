@@ -1,4 +1,4 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -16,7 +16,7 @@ public class DataBigDecimal extends DataColumn {
     }
 
     @Override
-    public DataColumn clone() {
+    public DataColumn clone(int index, String name) {
         return new DataBigDecimal(index, type, name, value);
     }
 

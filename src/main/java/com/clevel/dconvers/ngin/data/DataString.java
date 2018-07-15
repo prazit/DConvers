@@ -1,33 +1,30 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.data;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class DataLong extends DataColumn {
-    private long value;
+public class DataString extends DataColumn {
 
-    public DataLong(int index, int type, String name, long value) {
+    private String value;
+
+    public DataString(int index, int type, String name, String value) {
         super(index, type, name);
 
         this.value = value;
     }
 
     @Override
-    public DataColumn clone() {
-        return new DataLong(index, type, name, value);
+    public DataColumn clone(int index, String name) {
+        return new DataString(index, type, name, value);
     }
 
     @Override
     public String getValue() {
-        return String.valueOf(value);
+        return "'" + value + "'";
     }
 
-    public void setValue(long value) {
+    public void setValue(String value) {
         this.value = value;
-    }
-
-    public void increaseValueBy(long increase) {
-        this.value += increase;
     }
 
     @Override
