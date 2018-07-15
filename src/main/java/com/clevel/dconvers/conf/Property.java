@@ -14,15 +14,19 @@ public enum Property {
 
     SOURCE("source"),
         QUERY("query"),
+        ID("id"),
 
     TARGET("target"),
         CREATE("create"),
         INSERT("insert"),
         OUTPUT_FILE("output"),
         TABLE("table"),
-        COLUMN("column")
+        COLUMN("column"),
 
-    ;
+    MAPPING_PREFIX("mapping.table.prefix"),
+    REPORT_TABLE("report.table"),
+    SOURCE_ID("source_id"),
+    TARGET_ID("target_id");
 
     private String key;
 
@@ -34,7 +38,15 @@ public enum Property {
         return key;
     }
 
+    public String connectKey(String name) {
+        return this.key() +"."+ name;
+    }
+
     public String connectKey(String name, Property property) {
         return this.key() +"."+ name +"."+ property.key();
+    }
+
+    public String connectKey(Property property) {
+        return this.key() +"."+ property.key();
     }
 }

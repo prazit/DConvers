@@ -26,12 +26,7 @@ public class DataRow extends ValidatorBase {
         try {
             dataColumn = dataColumnMap.get(columnName);
         } catch (Exception e) {
-            dataColumn = new DataColumn() {
-                @Override
-                public String getValue() {
-                    return "";
-                }
-            };
+            dataColumn = null;
         }
         return dataColumn;
     }
@@ -40,12 +35,7 @@ public class DataRow extends ValidatorBase {
         try {
             dataColumnMap.put(columnName, dataColumn);
         } catch (Exception e) {
-            dataColumnMap.put(columnName, new DataColumn() {
-                @Override
-                public String getValue() {
-                    return "";
-                }
-            });
+            dataColumnMap.put(columnName, new DataString(0, 0, null, null));
         }
     }
 

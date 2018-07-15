@@ -3,20 +3,29 @@ package com.clevel.dconvers.ngin;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class DataDate extends DataColumn {
     private Date value;
 
-    DataDate(int index, int type, String name, Date value) {
+    public DataDate(int index, int type, String name, Date value) {
         super(index, type, name);
 
         this.value = value;
     }
 
     @Override
+    public DataColumn clone() {
+        return new DataDate(index, type, name, value);
+    }
+
+    @Override
     public String getValue() {
         return value.toString();
+    }
+
+    public void setValue(Date value) {
+        this.value = value;
     }
 
     @Override

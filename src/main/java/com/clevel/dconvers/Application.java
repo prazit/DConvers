@@ -1,16 +1,18 @@
 package com.clevel.dconvers;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
 import com.clevel.dconvers.conf.ConverterConfigFile;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.ngin.Converter;
-import com.clevel.dconvers.ngin.DataSource;
+import com.clevel.dconvers.conf.SystemVariable;
+import com.clevel.dconvers.ngin.*;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Types;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +31,12 @@ public class Application {
     public DataConversionConfigFile dataConversionConfigFile;
     public Map<String, DataSource> dataSourceMap;
     public Map<String, Converter> converterMap;
+    public Map<SystemVariable, DataColumn> systemVariableMap;
 
     public Application(String[] args) {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         this.args = args;
-
+        systemVariableMap = createSystemVariableMap();
         log.trace("Application is created.");
     }
 
@@ -51,7 +54,11 @@ public class Application {
         log.trace("Application. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
         if (!dataConversionConfigFile.isValid()) {
-            performInvalidSource();
+            if (dataConversionConfigFile.isChildValid()) {
+                performInvalidSource();
+            } else {
+                stopWithError();
+            }
         }
 
         log.trace("Application. Load DataSources.");
@@ -86,7 +93,7 @@ public class Application {
 
         log.trace("Application. Launch Converters.");
 
-        for (Converter convert:converterMap.values()) {
+        for (Converter convert : converterMap.values()) {
             if (!convert.convert()) {
                 stopWithError();
             }
@@ -162,11 +169,73 @@ public class Application {
     private void performHelp() {
         log.trace("Application.performHelp.");
 
-        String syntax = "dconvers --source=<file> [switches]\n" +
+        String syntax = "dconvers [switches]\n" +
                 "\nSwitches:\n";
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp(syntax, switches.getOptions());
     }
 
+    //==== Utilities ====
+
+    private Map<SystemVariable, DataColumn> createSystemVariableMap() {
+        List<SystemVariable> systemVariableList = Arrays.asList(SystemVariable.values());
+        Map<SystemVariable, DataColumn> variables = new HashMap<>();
+        DataColumn dataColumn;
+
+        for (SystemVariable systemVariable : systemVariableList) {
+            dataColumn = createDataColumn(systemVariable.name(), systemVariable.getDataType(), null);
+            variables.put(systemVariable, dataColumn);
+        }
+
+        return variables;
+    }
+
+    /**
+     * Create DataColumn by Type
+     *
+     * @param columnName initial name
+     * @param columnType see java.sql.Types for detailed
+     * @return new instance of DataColumn depend on columnType
+     */
+    public DataColumn createDataColumn(String columnName, int columnType, String value) {
+        DataColumn dataColumn;
+
+        switch (columnType) {
+            case Types.INTEGER:
+            case Types.SMALLINT:
+            case Types.BOOLEAN:
+            case Types.BIGINT:
+            case Types.BIT:
+            case Types.NUMERIC:
+                dataColumn = new DataLong(0, columnType, columnName, value==null?0:Long.valueOf(value));
+                break;
+
+            case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.LONGVARCHAR:
+                dataColumn = new DataString(0, columnType, columnName, value);
+                break;
+
+            case Types.DECIMAL:
+            case Types.DOUBLE:
+            case Types.FLOAT:
+            case Types.REAL:
+                dataColumn = new DataBigDecimal(0, columnType, columnName, value==null?null:BigDecimal.valueOf(Double.valueOf(value)));
+                break;
+
+            case Types.DATE:
+            case Types.TIMESTAMP:
+                dataColumn = new DataDate(0, columnType, columnName, value==null?null:Date.valueOf(value));
+                break;
+
+            default:
+                dataColumn = new DataString(0, columnType, columnName, value);
+        }
+
+        return dataColumn;
+    }
 }

@@ -93,7 +93,7 @@ public class DataSource extends AppBase {
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName);
-            log.info("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
+            log.info("DataTable({}) has {} rows", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");
             resultSet.close();
@@ -130,7 +130,7 @@ public class DataSource extends AppBase {
         if (rowCount > 3000) {
             progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
         } else {
-            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "", 1);
+            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, " rows", 1);
         }
         progressBar.maxHint(rowCount);
 
@@ -143,13 +143,22 @@ public class DataSource extends AppBase {
                 columnType = metaData.getColumnType(columnIndex);
 
                 switch (columnType) {
+                    case Types.INTEGER:
+                    case Types.SMALLINT:
+                    case Types.BOOLEAN:
                     case Types.BIGINT:
                     case Types.BIT:
-                    case Types.BOOLEAN:
-                    case Types.INTEGER:
                     case Types.NUMERIC:
-                    case Types.SMALLINT:
                         dataColumn = new DataLong(columnIndex, columnType, columnName, resultSet.getLong(columnIndex));
+                        break;
+
+                    case Types.CHAR:
+                    case Types.VARCHAR:
+                    case Types.NVARCHAR:
+                    case Types.NCHAR:
+                    case Types.LONGNVARCHAR:
+                    case Types.LONGVARCHAR:
+                        dataColumn = new DataString(columnIndex, columnType, columnName, resultSet.getString(columnIndex));
                         break;
 
                     case Types.DECIMAL:
@@ -157,15 +166,6 @@ public class DataSource extends AppBase {
                     case Types.FLOAT:
                     case Types.REAL:
                         dataColumn = new DataBigDecimal(columnIndex, columnType, columnName, resultSet.getBigDecimal(columnIndex));
-                        break;
-
-                    case Types.CHAR:
-                    case Types.LONGNVARCHAR:
-                    case Types.LONGVARCHAR:
-                    case Types.NCHAR:
-                    case Types.NVARCHAR:
-                    case Types.VARCHAR:
-                        dataColumn = new DataString(columnIndex, columnType, columnName, resultSet.getString(columnIndex));
                         break;
 
                     case Types.DATE:

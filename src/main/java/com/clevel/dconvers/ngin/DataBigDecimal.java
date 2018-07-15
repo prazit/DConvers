@@ -9,15 +9,24 @@ public class DataBigDecimal extends DataColumn {
 
     private BigDecimal value;
 
-    DataBigDecimal(int index, int type, String name, BigDecimal value) {
+    public DataBigDecimal(int index, int type, String name, BigDecimal value) {
         super(index, type, name);
 
         this.value = value;
     }
 
     @Override
+    public DataColumn clone() {
+        return new DataBigDecimal(index, type, name, value);
+    }
+
+    @Override
     public String getValue() {
         return value.toString();
+    }
+
+    public void setValue(BigDecimal value) {
+        this.value = value;
     }
 
     @Override

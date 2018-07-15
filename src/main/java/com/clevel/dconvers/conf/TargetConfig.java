@@ -1,27 +1,36 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import javafx.util.Pair;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class TargetConfig extends Config {
+
+    private ConverterConfigFile converterConfigFile;
 
     private String source;
     private String output;
     private String table;
+    private String id;
 
     private boolean create;
     private boolean insert;
 
-    private List<Object> columnList;
+    private List<Pair<String,String>> columnList;
 
     TargetConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
 
+        this.converterConfigFile = converterConfigFile;
         properties = converterConfigFile.getProperties();
 
         valid = loadProperties();
@@ -39,14 +48,22 @@ public class TargetConfig extends Config {
     protected boolean loadProperties() {
         log.trace("TargetConfig({}).loadProperties.", name);
 
-        Property target = Property.TARGET;
+        Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
+        source = targetProperties.getString(Property.SOURCE.key());
+        output = targetProperties.getString(Property.OUTPUT_FILE.key());
+        table = targetProperties.getString(Property.TABLE.key());
+        id = targetProperties.getString(Property.ID.key(), "id");
+        create = targetProperties.getBoolean(Property.CREATE.key());
+        insert = targetProperties.getBoolean(Property.INSERT.key());
 
-        source = properties.getString(target.connectKey(name, Property.SOURCE));
-        output = properties.getString(target.connectKey(name, Property.OUTPUT_FILE));
-        table = properties.getString(target.connectKey(name, Property.TABLE));
-        create = properties.getBoolean(target.connectKey(name, Property.CREATE));
-        insert = properties.getBoolean(target.connectKey(name, Property.INSERT));
-        columnList = properties.getList(target.connectKey(name, Property.COLUMN));
+        Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
+        Iterator<String> columnKeyList = columnProperties.getKeys();
+        log.debug("columnList = {}", columnList);
+        columnList = new ArrayList<>();
+        for (Iterator<String> it = columnKeyList; it.hasNext(); ) {
+            String key = it.next();
+            columnList.add(new Pair<>(key,columnProperties.getString(key)));
+        }
 
         return true;
     }
@@ -54,6 +71,11 @@ public class TargetConfig extends Config {
     @Override
     public boolean validate() {
 
+        Map<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
+        if (!sourceConfigMap.containsKey(source)) {
+            log.error("Invalid source specified, " + Property.TARGET.connectKey(name, Property.SOURCE) + "=" + source);
+            return false;
+        }
 
         return true;
     }
@@ -70,6 +92,10 @@ public class TargetConfig extends Config {
         return table;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public boolean isCreate() {
         return create;
     }
@@ -78,7 +104,7 @@ public class TargetConfig extends Config {
         return insert;
     }
 
-    public List<Object> getColumnList() {
+    public List<Pair<String, String>> getColumnList() {
         return columnList;
     }
 

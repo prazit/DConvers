@@ -16,6 +16,7 @@ public class DataTable extends ValidatorBase {
     DataTable(String tableName) {
         this.tableName = tableName;
         dataRowList = new ArrayList<>();
+        valid = true;
     }
 
     public String getTableName() {

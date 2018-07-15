@@ -1,6 +1,5 @@
 package com.clevel.dconvers.ngin;
 
-import java.lang.reflect.Type;
 import java.sql.Types;
 
 public abstract class DataColumn extends ValidatorBase {
@@ -36,4 +35,6 @@ public abstract class DataColumn extends ValidatorBase {
     }
 
     public abstract String getValue();
+
+    public abstract DataColumn clone();
 }

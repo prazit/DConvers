@@ -7,15 +7,24 @@ public class DataString extends DataColumn {
 
     private String value;
 
-    DataString(int index, int type, String name, String value) {
+    public DataString(int index, int type, String name, String value) {
         super(index, type, name);
 
         this.value = value;
     }
 
     @Override
+    public DataColumn clone() {
+        return new DataString(index, type, name, value);
+    }
+
+    @Override
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override

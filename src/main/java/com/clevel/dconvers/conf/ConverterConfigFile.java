@@ -41,24 +41,34 @@ public class ConverterConfigFile extends ConfigFile {
         }
 
         sourceConfigMap = new HashMap<>();
+        SourceConfig sourceConfig;
         String name;
         for (Object object : sourceNameList) {
             name = object.toString();
-            sourceConfigMap.put(name, new SourceConfig(application, name, this));
+            sourceConfig = new SourceConfig(application, name, this);
+            if (!sourceConfig.isValid()) {
+                return false;
+            }
+            sourceConfigMap.put(name, sourceConfig);
         }
 
         List<Object> targetNameList;
         try {
-            targetNameList = properties.getList(Property.DATA_SOURCE.key());
+            targetNameList = properties.getList(Property.TARGET.key());
         } catch (ConversionException ex) {
             targetNameList = new ArrayList<>();
-            targetNameList.add(properties.getString(Property.DATA_SOURCE.key()));
+            targetNameList.add(properties.getString(Property.TARGET.key()));
         }
 
         targetConfigMap = new HashMap<>();
+        TargetConfig targetConfig;
         for (Object object : targetNameList) {
             name = object.toString();
-            targetConfigMap.put(name, new TargetConfig(application, name, this));
+            targetConfig = new TargetConfig(application, name, this);
+            if (!targetConfig.isValid()) {
+                return false;
+            }
+            targetConfigMap.put(name, targetConfig);
         }
 
         return true;
@@ -67,6 +77,12 @@ public class ConverterConfigFile extends ConfigFile {
     @Override
     public boolean validate() {
         log.trace("ConverterConfigFile.validateProperties.");
+
+        if (targetConfigMap.size() == 0) {
+            log.error("No target is specified, converter need one target at least");
+            return false;
+        }
+
         return true;
     }
 

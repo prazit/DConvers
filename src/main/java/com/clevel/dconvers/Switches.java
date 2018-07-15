@@ -83,6 +83,8 @@ public class Switches extends ValidatorBase {
         log.trace("Switches.loadSwitches.");
         log.debug("verbose level is {}", verboseLevel.toString());
 
+        // TODO: (low priority) when verboseLevel is DEBUG must change to use logback-debug.xml instead of logback.xml
+
         source = cmd.getOptionValue(Option.SOURCE.getShortOpt());
         if (source != null && source.lastIndexOf(".") < 0) {
             source = source + Defaults.CONFIG_FILE_EXT.getDefaultValue();

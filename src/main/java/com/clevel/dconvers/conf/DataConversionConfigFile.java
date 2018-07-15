@@ -21,6 +21,10 @@ public class DataConversionConfigFile extends ConfigFile {
 
     private Map<String, ConverterConfigFile> converterConfigMap;
     private String converterRootPath;
+    private String mappingTablePrefix;
+    private String reportTableName;
+
+    private boolean childValid;
 
     public DataConversionConfigFile(Application application, String name) {
         super(application, name);
@@ -38,7 +42,10 @@ public class DataConversionConfigFile extends ConfigFile {
         log.trace("DataConversionConfigFile.loadProperties.");
         application.dataConversionConfigFile = this;
 
-        converterRootPath = properties.getString(Property.OUTPUT_PATH.key());
+        Property converterProperty = Property.CONVERTER_FILE;
+        converterRootPath = properties.getString(converterProperty.connectKey(Property.OUTPUT_PATH),"");
+        mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
+        reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
 
         List<Object> dataSourceNameList;
         try {
@@ -58,10 +65,10 @@ public class DataConversionConfigFile extends ConfigFile {
 
         List<Object> converterNameList;
         try {
-            converterNameList = properties.getList(Property.CONVERTER_FILE.key());
+            converterNameList = properties.getList(converterProperty.key());
         } catch (ConversionException ex) {
             converterNameList = new ArrayList<>();
-            converterNameList.add(properties.getString(Property.CONVERTER_FILE.key()));
+            converterNameList.add(properties.getString(converterProperty.key()));
         }
 
         converterConfigMap = new HashMap<>();
@@ -73,6 +80,7 @@ public class DataConversionConfigFile extends ConfigFile {
             converterConfigMap.put(name, new ConverterConfigFile(application, name));
         }
 
+        childValid = true;
         return true;
     }
 
@@ -82,14 +90,16 @@ public class DataConversionConfigFile extends ConfigFile {
 
         for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
             if (!dataSourceConfig.isValid()) {
-                log.trace("invalid datasource ({})", dataSourceConfig.getName());
+                log.error("Invalid datasource specified ({})", dataSourceConfig.getName());
+                childValid = false;
                 return false;
             }
         }
 
         for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
             if (!converterConfigFile.isValid()) {
-                log.trace("invalid converter ({})", converterConfigFile.getName());
+                log.error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
+                childValid = false;
                 return false;
             }
         }
@@ -111,10 +121,27 @@ public class DataConversionConfigFile extends ConfigFile {
         return dataSourceConfigMap;
     }
 
+    public boolean isChildValid() {
+        return childValid;
+    }
+
+    public String getMappingTablePrefix() {
+        return mappingTablePrefix;
+    }
+
+    public String getReportTableName() {
+        return reportTableName;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("valid", valid)
+                .append("childValid", childValid)
+                .append("name", name)
                 .append("converterRootPath", converterRootPath)
+                .append("reportTableName", reportTableName)
+                .append("mappingTablePrefix", mappingTablePrefix)
                 .append("dataSourceConfigMap", dataSourceConfigMap)
                 .append("converterConfigMap", converterConfigMap)
                 .toString()

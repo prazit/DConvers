@@ -10,6 +10,7 @@ public class SourceConfig extends Config {
 
     private String dataSource;
     private String query;
+    private String id;
 
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -35,6 +36,7 @@ public class SourceConfig extends Config {
 
         dataSource = properties.getString(source.connectKey(name, Property.DATA_SOURCE));
         query = properties.getString(source.connectKey(name, Property.QUERY));
+        id = properties.getString(source.connectKey(name, Property.ID),"id");
 
         return true;
     }
@@ -44,12 +46,12 @@ public class SourceConfig extends Config {
         log.trace("SourceConfig({}).validateProperties.", name);
 
         if (dataSource == null) {
-            log.warn(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required");
+            log.error(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required by source({})", name);
             return false;
         }
 
         if (query == null) {
-            log.warn(Property.SOURCE.connectKey(name, Property.QUERY) + " is required");
+            log.error(Property.SOURCE.connectKey(name, Property.QUERY) + " is required by source({})", name);
             return false;
         }
 
@@ -64,11 +66,16 @@ public class SourceConfig extends Config {
         return query;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("dataSource", dataSource)
                 .append("query", query)
+                .append("id", id)
                 .toString();
     }
 }

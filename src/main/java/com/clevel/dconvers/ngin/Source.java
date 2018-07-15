@@ -10,7 +10,6 @@ public class Source extends AppBase {
     private Converter converter;
     private SourceConfig sourceConfig;
     private DataSource dataSource;
-
     private DataTable dataTable;
 
     public Source(Application application, String name, Converter converter, SourceConfig sourceConfig) {
@@ -55,6 +54,10 @@ public class Source extends AppBase {
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(Source.class);
+    }
+
+    public SourceConfig getSourceConfig() {
+        return sourceConfig;
     }
 
     public DataTable getDataTable() {
