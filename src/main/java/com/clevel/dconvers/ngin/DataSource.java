@@ -2,6 +2,7 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.data.*;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -122,10 +123,10 @@ public class DataSource extends AppBase {
 
         int rowCount = getRowCount(resultSet);
         ProgressBar progressBar;
-        if (rowCount > 3000) {
-            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
         } else {
-            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, " rows", 1);
+            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
         }
         progressBar.maxHint(rowCount);
 

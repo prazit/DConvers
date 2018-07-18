@@ -64,10 +64,10 @@ public class Switches extends ValidatorBase {
         if(verbose) {
             level = cmd.getOptionValue(Option.LEVEL.getShortOpt());
             if (level == null) {
-                level = Defaults.VERBOSE_LOG_LEVEL.getDefaultValue();
+                level = Defaults.VERBOSE_LOG_LEVEL.getStringValue();
             }
         } else {
-            level = Defaults.NORMAL_LOG_LEVEL.getDefaultValue();
+            level = Defaults.NORMAL_LOG_LEVEL.getStringValue();
         }
 
         try {
@@ -87,7 +87,7 @@ public class Switches extends ValidatorBase {
 
         source = cmd.getOptionValue(Option.SOURCE.getShortOpt());
         if (source != null && source.lastIndexOf(".") < 0) {
-            source = source + Defaults.CONFIG_FILE_EXT.getDefaultValue();
+            source = source + Defaults.CONFIG_FILE_EXT.getStringValue();
         }
 
         help = cmd.hasOption(Option.HELP.getShortOpt());

@@ -99,10 +99,10 @@ public class Target extends AppBase {
         List<DataRow> sourceRowList = sourceDataTable.getAllRow();
         int rowCount = sourceRowList.size();
         ProgressBar progressBar;
-        if (rowCount > 3000) {
-            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
         } else {
-            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, " rows", 1);
+            progressBar = new ProgressBar("Build target(" + name + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
         }
         progressBar.maxHint(rowCount);
 

@@ -10,6 +10,7 @@ public class SQLUpdateFormatter extends DataFormatter {
 
     @Override
     protected String format(DataRow row) {
+        // TODO: create SQL Update when needed
         return "-- update table " + row.getDataTable().getTableName() +" is in development";
     }
 }

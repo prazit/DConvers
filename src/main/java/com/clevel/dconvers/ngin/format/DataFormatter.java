@@ -1,5 +1,6 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import me.tongfei.progressbar.ProgressBar;
@@ -36,12 +37,12 @@ public abstract class DataFormatter {
         }
 
         String tableName = dataTable.getTableName();
-        int rowCount = rows.size() + 1;
+        int rowCount = rows.size();
         ProgressBar progressBar;
-        if (rowCount > 3000) {
-            progressBar = new ProgressBar("Print DataTable(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, "K", 1000);
+        if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+            progressBar = new ProgressBar("Print table(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
         } else {
-            progressBar = new ProgressBar("Print DataTable(" + tableName + ")", rowCount, 500, System.out, ProgressBarStyle.ASCII, " rows", 1);
+            progressBar = new ProgressBar("Print table(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
         }
         progressBar.maxHint(rowCount);
 

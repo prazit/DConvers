@@ -34,9 +34,13 @@ public class Application {
     public Map<String, Converter> converterMap;
     public Map<SystemVariable, DataColumn> systemVariableMap;
 
+    public boolean hasWarning;
+
     public Application(String[] args) {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         this.args = args;
+
+        hasWarning = false;
 
         systemVariableMap = createSystemVariableMap();
         DataLong fileNumber = (DataLong) systemVariableMap.get(SystemVariable.FILENUMBER);
@@ -97,7 +101,6 @@ public class Application {
         }
 
         log.trace("Application. Launch Converters.");
-
         for (Converter convert : converterMap.values()) {
             if (!convert.convert()) {
                 stopWithError();
@@ -108,7 +111,12 @@ public class Application {
             }
         }
 
-        // Successful
+        // Successful with warning
+        if (hasWarning) {
+            stopWithWarning();
+        }
+
+        // Successful without warning
         stop();
     }
 

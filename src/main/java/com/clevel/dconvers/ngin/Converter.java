@@ -82,11 +82,13 @@ public class Converter extends AppBase {
 
         if (sourceMap.size() == 0) {
             log.warn("Source not found, need one source at least.");
+            application.hasWarning = true;
             return false;
         }
 
         if (sourceMap.size() == 0) {
             log.warn("Source not found, need one source at least.");
+            application.hasWarning = true;
             return false;
         }
 
@@ -175,6 +177,7 @@ public class Converter extends AppBase {
             log.trace("print DataTable({}) to File({}) ...", tableName, outputFile);
         } catch (Exception e) {
             log.warn("Create output file for '{}' table is failed, {}, print to System.out instead", tableName, e.getMessage());
+            application.hasWarning = true;
             return false;
         }
 

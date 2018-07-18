@@ -83,7 +83,7 @@ public class DataConversionConfigFile extends ConfigFile {
         for (Object object : converterNameList) {
             name = object.toString();
             if (name.lastIndexOf(".") < 0) {
-                name = name + Defaults.CONFIG_FILE_EXT.getDefaultValue();
+                name = name + Defaults.CONFIG_FILE_EXT.getStringValue();
             }
             converterConfigMap.put(name, new ConverterConfigFile(application, name));
         }

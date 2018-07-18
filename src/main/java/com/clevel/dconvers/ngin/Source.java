@@ -38,6 +38,7 @@ public class Source extends AppBase {
 
         if (dataSource == null) {
             log.warn("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
+            application.hasWarning = true;
             return false;
         }
 
