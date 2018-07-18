@@ -20,7 +20,11 @@ public class DataConversionConfigFile extends ConfigFile {
     private Map<String, DataSourceConfig> dataSourceConfigMap;
     private Map<String, ConverterConfigFile> converterConfigMap;
 
-    private String converterRootPath;
+    private String outputReportPath;
+    private String outputSourcePath;
+    private String outputTargetPath;
+    private String outputMappingPath;
+
     private String mappingTablePrefix;
     private String reportTableName;
 
@@ -43,7 +47,11 @@ public class DataConversionConfigFile extends ConfigFile {
         application.dataConversionConfigFile = this;
 
         Property converterProperty = Property.CONVERTER_FILE;
-        converterRootPath = properties.getString(converterProperty.connectKey(Property.OUTPUT_PATH),"");
+        outputReportPath = properties.getString(converterProperty.connectKey(Property.REPORT_PATH),"/");
+        outputSourcePath = properties.getString(converterProperty.connectKey(Property.SOURCE_PATH),"/");
+        outputTargetPath = properties.getString(converterProperty.connectKey(Property.TARGET_PATH),"/");
+        outputMappingPath = properties.getString(converterProperty.connectKey(Property.MAPPING_PATH),"/");
+
         mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
         reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
 
@@ -109,8 +117,20 @@ public class DataConversionConfigFile extends ConfigFile {
 
     // access read only properties
 
-    public String getConverterRootPath() {
-        return converterRootPath;
+    public String getOutputReportPath() {
+        return outputReportPath;
+    }
+
+    public String getOutputSourcePath() {
+        return outputSourcePath;
+    }
+
+    public String getOutputTargetPath() {
+        return outputTargetPath;
+    }
+
+    public String getOutputMappingPath() {
+        return outputMappingPath;
     }
 
     public Map<String, ConverterConfigFile> getConverterConfigMap() {
@@ -136,14 +156,17 @@ public class DataConversionConfigFile extends ConfigFile {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("valid", valid)
-                .append("childValid", childValid)
-                .append("name", name)
-                .append("converterRootPath", converterRootPath)
-                .append("reportTableName", reportTableName)
-                .append("mappingTablePrefix", mappingTablePrefix)
                 .append("dataSourceConfigMap", dataSourceConfigMap)
                 .append("converterConfigMap", converterConfigMap)
+                .append("outputReportPath", outputReportPath)
+                .append("outputSourcePath", outputSourcePath)
+                .append("outputTargetPath", outputTargetPath)
+                .append("outputMappingPath", outputMappingPath)
+                .append("mappingTablePrefix", mappingTablePrefix)
+                .append("reportTableName", reportTableName)
+                .append("childValid", childValid)
+                .append("name", name)
+                .append("valid", valid)
                 .toString()
                 .replace('=', ':');
     }

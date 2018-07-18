@@ -13,6 +13,7 @@ public class DataTable extends ValidatorBase {
     private List<DataRow> dataRowList;
     private ResultSetMetaData metaData;
     private String tableName;
+    private String idColumnName;
 
     public DataTable(String tableName) {
         this.tableName = tableName;
@@ -22,6 +23,14 @@ public class DataTable extends ValidatorBase {
 
     public String getTableName() {
         return tableName;
+    }
+
+    public String getIdColumnName() {
+        return idColumnName;
+    }
+
+    public void setIdColumnName(String idColumnName) {
+        this.idColumnName = idColumnName;
     }
 
     public ResultSetMetaData getMetaData() {
@@ -56,6 +65,7 @@ public class DataTable extends ValidatorBase {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("valid", valid)
                 .append("tableName", tableName)
+                .append("idColumnName", idColumnName)
                 .append("dataRowList", dataRowList)
                 .toString();
     }

@@ -116,7 +116,8 @@ public class DataSource extends AppBase {
         DataColumn dataColumn;
         String columnName;
         int columnType;
-        Date dateValue;
+        java.util.Date dateValue;
+        Date date;
         Timestamp timestamp;
 
         int rowCount = getRowCount(resultSet);
@@ -137,13 +138,16 @@ public class DataSource extends AppBase {
                 columnType = metaData.getColumnType(columnIndex);
 
                 switch (columnType) {
+                    case Types.BIGINT:
+                    case Types.NUMERIC:
+                        dataColumn = new DataLong(columnIndex, Types.BIGINT, columnName, resultSet.getLong(columnIndex));
+                        break;
+
                     case Types.INTEGER:
                     case Types.SMALLINT:
                     case Types.BOOLEAN:
-                    case Types.BIGINT:
                     case Types.BIT:
-                    case Types.NUMERIC:
-                        dataColumn = new DataLong(columnIndex, columnType, columnName, resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(columnIndex, Types.INTEGER, columnName, resultSet.getLong(columnIndex));
                         break;
 
                     case Types.CHAR:
@@ -152,18 +156,24 @@ public class DataSource extends AppBase {
                     case Types.NCHAR:
                     case Types.LONGNVARCHAR:
                     case Types.LONGVARCHAR:
-                        dataColumn = new DataString(columnIndex, columnType, columnName, resultSet.getString(columnIndex));
+                        dataColumn = new DataString(columnIndex, Types.VARCHAR, columnName, resultSet.getString(columnIndex));
                         break;
 
                     case Types.DECIMAL:
                     case Types.DOUBLE:
                     case Types.FLOAT:
                     case Types.REAL:
-                        dataColumn = new DataBigDecimal(columnIndex, columnType, columnName, resultSet.getBigDecimal(columnIndex));
+                        dataColumn = new DataBigDecimal(columnIndex, Types.DECIMAL, columnName, resultSet.getBigDecimal(columnIndex));
                         break;
 
                     case Types.DATE:
-                        dataColumn = new DataDate(columnIndex, columnType, columnName, resultSet.getDate(columnIndex));
+                        date = resultSet.getDate(columnIndex);
+                        if (date == null) {
+                            dateValue = null;
+                        } else {
+                            dateValue = new Date(date.getTime());
+                        }
+                        dataColumn = new DataDate(columnIndex, Types.DATE, columnName, dateValue);
                         break;
 
                     case Types.TIMESTAMP:
@@ -173,18 +183,18 @@ public class DataSource extends AppBase {
                         } else {
                             dateValue = new Date(timestamp.getTime());
                         }
-                        dataColumn = new DataDate(columnIndex, columnType, columnName, dateValue);
+                        dataColumn = new DataDate(columnIndex, Types.DATE, columnName, dateValue);
                         break;
 
                     default:
-                        dataColumn = new DataString(columnIndex, columnType, columnName, resultSet.getObject(columnIndex).toString());
+                        dataColumn = new DataString(columnIndex, Types.VARCHAR, columnName, resultSet.getObject(columnIndex).toString());
                 }
 
                 dataRow.putColumn(columnName, dataColumn);
-            } // end for
+            } // end of for
 
             dataTable.addRow(dataRow);
-        } // end while
+        } // end of while
 
         progressBar.close();
 
@@ -210,10 +220,6 @@ public class DataSource extends AppBase {
             log.error("disconnect is failed");
             log.debug("SQLException = {}", se);
         }
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 
     public DataSourceConfig getDataSourceConfig() {

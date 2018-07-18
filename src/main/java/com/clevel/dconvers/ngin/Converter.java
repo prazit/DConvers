@@ -1,11 +1,9 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.ConverterConfigFile;
-import com.clevel.dconvers.conf.SourceConfig;
-import com.clevel.dconvers.conf.SystemVariable;
-import com.clevel.dconvers.conf.TargetConfig;
+import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.data.DataLong;
+import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
 import com.clevel.dconvers.ngin.format.SQLCreateFormatter;
 import com.clevel.dconvers.ngin.format.SQLInsertFormatter;
@@ -46,14 +44,14 @@ public class Converter extends AppBase {
     private boolean prepare() {
         log.trace("Converter({}).prepare", name);
 
-        Map<String,SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
-        Map<String,TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
+        Map<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
+        Map<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
 
         boolean valid = true;
         String name;
         Source source;
         sourceMap = new HashMap<>();
-        for (SourceConfig sourceConfig:sourceConfigMap.values()) {
+        for (SourceConfig sourceConfig : sourceConfigMap.values()) {
             name = sourceConfig.getName();
             source = new Source(application, name, this, sourceConfig);
             valid = source.isValid();
@@ -122,64 +120,95 @@ public class Converter extends AppBase {
         SQLCreateFormatter sqlCreate = new SQLCreateFormatter();
         SQLInsertFormatter sqlInsert = new SQLInsertFormatter();
         SQLUpdateFormatter sqlUpdate = new SQLUpdateFormatter();
-        DataFormatter formatter;
+
+        DataFormatter sqlCreateFormatter;
+        DataFormatter sqlInsertFormatter;
+        DataFormatter sqlUpdateFormatter;
 
         TargetConfig targetConfig;
+        String charset = "UTF-8";
         String outputFile;
-
+        Writer writer;
         DataLong fileNumber = (DataLong) application.systemVariableMap.get(SystemVariable.FILENUMBER);
+        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
 
         for (Target target : targetMap.values()) {
+            log.trace("print Target({}) ...", target.getName());
 
             targetConfig = target.getTargetConfig();
             if (targetConfig.isInsert()) {
-                formatter = sqlInsert;
+                sqlInsertFormatter = sqlInsert;
+                sqlUpdateFormatter = null;
             } else {
-                formatter = sqlUpdate;
+                sqlInsertFormatter = null;
+                sqlUpdateFormatter = sqlUpdate;
             }
+            if (targetConfig.isCreate()) {
+                sqlCreateFormatter = sqlCreate;
+            } else {
+                sqlCreateFormatter = null;
+            }
+
+            // -- Start Target File
 
             fileNumber.increaseValueBy(1);
-            outputFile = application.dataConversionConfigFile.getConverterRootPath() +"V"+ fileNumber.getValue() +"__"+ targetConfig.getOutput();
-            String charset = "UTF-8";
-            Writer writer;
+            outputFile = dataConversionConfigFile.getOutputTargetPath() + "V" + fileNumber.getValue() + "__" + targetConfig.getOutput();
+            printDataTable(target.getDataTable(), outputFile, charset, sqlCreateFormatter, sqlInsertFormatter, sqlUpdateFormatter);
 
-            try {
-                writer = new OutputStreamWriter(new FileOutputStream(outputFile), charset);
-            } catch (Exception e) {
-                writer = null;
-                log.warn("Create output file is failed, {}", e.getMessage());
-            }
+            // -- Start Mapping File
 
-            if (writer == null) {
-                try {
-                    writer = new OutputStreamWriter(System.out, charset);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-
-            if (targetConfig.isCreate()) {
-                sqlCreate.print(target.getDataTable(), writer);
-            }
-
-            formatter.print(target.getDataTable(), writer);
-
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-            }
-
-            // TODO: create output file for mapping data tables\
+            outputFile = dataConversionConfigFile.getOutputMappingPath() + "V" + fileNumber.getValue() + "__" + target.getMappingTable().getTableName() + ".sql";
+            printDataTable(target.getMappingTable(), outputFile, charset, sqlCreate, sqlInsertFormatter, sqlUpdateFormatter);
 
         }
 
         return true;
 
+    }
+
+    private boolean printDataTable(DataTable dataTable, String outputFile, String charset, DataFormatter sqlCreate, DataFormatter sqlInsert, DataFormatter sqlUpdate) {
+        String tableName = dataTable.getTableName();
+
+        Writer writer;
+        try {
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), charset);
+            log.trace("print DataTable({}) to File({}) ...", tableName, outputFile);
+        } catch (Exception e) {
+            log.warn("Create output file for '{}' table is failed, {}, print to System.out instead", tableName, e.getMessage());
+            return false;
+        }
+
+        if (writer == null) {
+            try {
+                writer = new OutputStreamWriter(System.out, charset);
+                log.trace("print DataTable({}) to console ...", tableName);
+            } catch (Exception e) {
+                log.error("System.out is not ready, {}, try again later", e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        if (sqlCreate != null) {
+            sqlCreate.print(dataTable, writer);
+        }
+
+        if (sqlInsert != null) {
+            sqlInsert.print(dataTable, writer);
+        }
+
+        if (sqlUpdate != null) {
+            sqlUpdate.print(dataTable, writer);
+        }
+
+        try {
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     public ConverterConfigFile getConverterConfigFile() {

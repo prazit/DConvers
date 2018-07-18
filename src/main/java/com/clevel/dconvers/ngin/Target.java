@@ -9,6 +9,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,27 +63,35 @@ public class Target extends AppBase {
         List<Pair<String, String>> columnList = targetConfig.getColumnList();
         Source source = sourceMap.get(targetConfig.getSource());
         DataTable sourceDataTable = source.getDataTable();
-        String sourceId = source.getSourceConfig().getId();
+        String sourceId = sourceDataTable.getIdColumnName();
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
         String targetTableName = targetConfig.getTable();
         String targetId = targetConfig.getId();
-        String mappingTableName = dataConversionConfigFile.getMappingTablePrefix() + sourceDataTable.getTableName() + "_to_" + targetTableName;
 
+        String mappingTableName = dataConversionConfigFile.getMappingTablePrefix() + sourceDataTable.getTableName() + "_to_" + targetTableName;
+        String mappingId = Property.ID.key();
+
+        int mappingRowNumber = 0;
         mappingTable = new DataTable(mappingTableName);
+        mappingTable.setIdColumnName(mappingId);
+
         dataTable = new DataTable(targetTableName);
+        dataTable.setIdColumnName(targetId);
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
         DataDate varNow = (DataDate) systemVars.get(SystemVariable.NOW);
 
-        varRowNumber.setValue(targetConfig.getRowNumberStartAt() -1);
+        varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
         varNow.setValue(new Date());
 
         SourceColumnType sourceColumnType;
         DataColumn targetColumn;
         String sourceColumnName;
+        String sourceIdColumnName;
         String targetColumnName;
+        String targetIdColumnName;
         DataRow targetRow;
         DataRow mappingRow;
         int targetColumnIndex;
@@ -99,9 +108,11 @@ public class Target extends AppBase {
 
         for (DataRow sourceRow : sourceRowList) {
             progressBar.step();
+
+            // -- start target table
+
             varRowNumber.increaseValueBy(1);
             targetRow = new DataRow(dataTable);
-
             targetColumnIndex = 0;
             for (Pair<String, String> columnPair : columnList) {
                 targetColumnIndex++;
@@ -156,21 +167,33 @@ public class Target extends AppBase {
             } // end of for(ColumnPair)
             dataTable.addRow(targetRow);
 
+            // -- start mapping table
+
+            mappingRowNumber++;
             mappingRow = new DataRow(mappingTable);
+
+            targetColumn = application.createDataColumn(mappingId, Types.BIGINT, String.valueOf(mappingRowNumber));
+            if (targetColumn == null) {
+                log.error("Invalid mapping id({}) that required by mapping table({})", mappingId, mappingTableName, mappingTableName);
+                return false;
+            }
+            mappingRow.putColumn(mappingId, targetColumn);
 
             targetColumn = sourceRow.getColumn(sourceId);
             if (targetColumn == null) {
-                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceId, source.getName(), mappingTable.getTableName());
+                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceId, source.getName(), mappingTableName);
                 return false;
             }
-            mappingRow.putColumn(Property.SOURCE_ID.key(), targetColumn);
+            sourceIdColumnName = Property.SOURCE_ID.key();
+            mappingRow.putColumn(sourceIdColumnName, targetColumn.clone(1, sourceIdColumnName));
 
             targetColumn = targetRow.getColumn(targetId);
             if (targetColumn == null) {
-                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetId, name, mappingTable.getTableName());
+                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetId, name, mappingTableName);
                 return false;
             }
-            mappingRow.putColumn(Property.TARGET_ID.key(), targetColumn);
+            targetIdColumnName = Property.TARGET_ID.key();
+            mappingRow.putColumn(targetIdColumnName, targetColumn.clone(1, targetIdColumnName));
 
             mappingTable.addRow(mappingRow);
 

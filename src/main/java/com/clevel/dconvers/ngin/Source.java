@@ -48,6 +48,7 @@ public class Source extends AppBase {
         log.trace("Source({}).buildDataTable.", name);
 
         dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getQuery());
+        dataTable.setIdColumnName(sourceConfig.getId());
 
         return dataTable != null;
     }

@@ -10,7 +10,10 @@ public enum Property {
         PASSWORD("password"),
 
     CONVERTER_FILE("converter"),
-        OUTPUT_PATH("output"),
+        REPORT_PATH("output.report"),
+        SOURCE_PATH("output.source"),
+        TARGET_PATH("output.target"),
+        MAPPING_PATH("output.mapping"),
 
     SOURCE("source"),
         QUERY("query"),
@@ -24,9 +27,11 @@ public enum Property {
         COLUMN("column"),
 
     ROW_NUMBER("rownumber"),
+    FILE_NUMBER("filenumber"),
 
     MAPPING_PREFIX("mapping.table.prefix"),
     REPORT_TABLE("report.table"),
+
     SOURCE_ID("source_id"),
     TARGET_ID("target_id");
 

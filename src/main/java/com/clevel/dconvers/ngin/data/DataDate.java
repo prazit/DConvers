@@ -30,7 +30,7 @@ public class DataDate extends DataColumn {
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern("YYYY/MM/dd hh:mm:ss");
+        simpleDateFormat.applyPattern("YYYY/MM/dd HH:mm:ss");
         return "'" + simpleDateFormat.format(value) + "'";
     }
 
