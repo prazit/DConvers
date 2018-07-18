@@ -45,8 +45,9 @@ public abstract class DataFormatter {
         }
         progressBar.maxHint(rowCount);
 
-        String string = format(dataTable);
+        String string;
         try {
+            string = preFormat(dataTable);
             if (string != null) {
                 writer.write(string);
             }
@@ -68,14 +69,29 @@ public abstract class DataFormatter {
         }
         progressBar.close();
 
+        try {
+            string = postFormat(dataTable);
+            if (string != null) {
+                writer.write(string);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         return true;
     }
 
-    protected String format(DataTable dataTable) {
+    protected String preFormat(DataTable dataTable) {
         // Override this method to write something by DataTable before write each DataRow
         return null;
     }
 
     protected abstract String format(DataRow row);
+
+    protected String postFormat(DataTable dataTable) {
+        // Override this method to write something by DataTable after write each DataRow
+        return null;
+    }
 
 }

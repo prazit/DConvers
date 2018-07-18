@@ -16,7 +16,7 @@ public class SQLCreateFormatter extends DataFormatter {
     }
 
     @Override
-    protected String format(DataTable dataTable) {
+    protected String preFormat(DataTable dataTable) {
         tableName = dataTable.getTableName();
         idColumnName = dataTable.getIdColumnName();
         return null;

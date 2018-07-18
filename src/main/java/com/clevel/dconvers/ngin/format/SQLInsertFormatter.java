@@ -2,11 +2,17 @@ package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataTable;
 
 public class SQLInsertFormatter extends DataFormatter {
 
     public SQLInsertFormatter() {
         super(true);
+    }
+
+    @Override
+    protected String preFormat(DataTable dataTable) {
+        return "BEGIN;\n";
     }
 
     @Override
@@ -25,4 +31,8 @@ public class SQLInsertFormatter extends DataFormatter {
         return sqlInsert;
     }
 
+    @Override
+    protected String postFormat(DataTable dataTable) {
+        return "COMMIT;\n";
+    }
 }
