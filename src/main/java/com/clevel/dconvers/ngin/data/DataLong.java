@@ -18,6 +18,11 @@ public class DataLong extends DataColumn {
     }
 
     @Override
+    public String getQuotedValue() {
+        return String.valueOf(value);
+    }
+
+    @Override
     public String getValue() {
         return String.valueOf(value);
     }

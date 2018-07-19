@@ -18,6 +18,7 @@ public enum Property {
     SOURCE("source"),
         QUERY("query"),
         ID("id"),
+        GENERATE_TARGET("gen"),
 
     TARGET("target"),
         CREATE("create"),

@@ -154,12 +154,12 @@ public class Converter extends AppBase {
             // -- Start Target File
 
             fileNumber.increaseValueBy(1);
-            outputFile = dataConversionConfigFile.getOutputTargetPath() + "V" + fileNumber.getValue() + "__" + targetConfig.getOutput();
+            outputFile = dataConversionConfigFile.getOutputTargetPath() + "V" + fileNumber.getQuotedValue() + "__" + targetConfig.getOutput();
             printDataTable(target.getDataTable(), outputFile, charset, sqlCreateFormatter, sqlInsertFormatter, sqlUpdateFormatter);
 
             // -- Start Mapping File
 
-            outputFile = dataConversionConfigFile.getOutputMappingPath() + "V" + fileNumber.getValue() + "__" + target.getMappingTable().getTableName() + ".sql";
+            outputFile = dataConversionConfigFile.getOutputMappingPath() + "V" + fileNumber.getQuotedValue() + "__" + target.getMappingTable().getTableName() + ".sql";
             printDataTable(target.getMappingTable(), outputFile, charset, sqlCreate, sqlInsertFormatter, sqlUpdateFormatter);
 
         }

@@ -19,12 +19,17 @@ public class DataString extends DataColumn {
     }
 
     @Override
-    public String getValue() {
+    public String getQuotedValue() {
         if (value == null) {
             return "null";
         }
 
         return "'" + value + "'";
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 
     public void setValue(String value) {

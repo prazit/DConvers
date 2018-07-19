@@ -15,6 +15,8 @@ public class DataSourceConfig extends Config {
     private String user;
     private String password;
 
+    private boolean generateConverterFile;
+
     public DataSourceConfig(Application application, String name) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
@@ -41,6 +43,8 @@ public class DataSourceConfig extends Config {
         schema = properties.getString(dataSource.connectKey(name, Property.SCHEMA));
         user = properties.getString(dataSource.connectKey(name, Property.USER));
         password = properties.getString(dataSource.connectKey(name, Property.PASSWORD));
+
+        generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
 
         return true;
     }
@@ -80,6 +84,10 @@ public class DataSourceConfig extends Config {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isGenerateConverterFile() {
+        return generateConverterFile;
     }
 
     @Override

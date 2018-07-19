@@ -21,11 +21,16 @@ public class DataBigDecimal extends DataColumn {
     }
 
     @Override
-    public String getValue() {
+    public String getQuotedValue() {
         if (value == null) {
             return "null";
         }
 
+        return value.toString();
+    }
+
+    @Override
+    public String getValue() {
         return value.toString();
     }
 

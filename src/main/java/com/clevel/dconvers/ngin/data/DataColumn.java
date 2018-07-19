@@ -29,6 +29,8 @@ public abstract class DataColumn extends ValidatorBase {
         return name;
     }
 
+    public abstract String getQuotedValue();
+
     public abstract String getValue();
 
     public abstract DataColumn clone(int index, String name);

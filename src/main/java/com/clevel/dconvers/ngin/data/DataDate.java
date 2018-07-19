@@ -24,7 +24,7 @@ public class DataDate extends DataColumn {
     }
 
     @Override
-    public String getValue() {
+    public String getQuotedValue() {
         if (value == null) {
             return "null";
         }
@@ -32,6 +32,11 @@ public class DataDate extends DataColumn {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("YYYY/MM/dd HH:mm:ss");
         return "'" + simpleDateFormat.format(value) + "'";
+    }
+
+    @Override
+    public String getValue() {
+        return value.toString();
     }
 
     public void setValue(Date value) {

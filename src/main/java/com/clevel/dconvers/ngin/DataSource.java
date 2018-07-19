@@ -1,14 +1,17 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.conf.Defaults;
+import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.data.*;
+import com.clevel.dconvers.ngin.format.*;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.*;
 
 public class DataSource extends AppBase {
@@ -16,10 +19,13 @@ public class DataSource extends AppBase {
     private DataSourceConfig dataSourceConfig;
     private Connection connection;
 
+    private boolean useInformationSchema;
+
     public DataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
         super(application, name);
 
         this.dataSourceConfig = dataSourceConfig;
+        useInformationSchema = false;
         valid = open();
 
         log.trace("DataSource({}) is created", name);
@@ -33,6 +39,7 @@ public class DataSource extends AppBase {
     public boolean open() {
         log.trace("DataSource({}).open.", name);
 
+        String schema = (useInformationSchema ? "information_schema" : dataSourceConfig.getSchema());
         try {
 
             log.trace("Loading database driver ...");
@@ -40,7 +47,7 @@ public class DataSource extends AppBase {
             log.trace("Load driver is successful");
 
             log.trace("Connecting to database({}) ...", name);
-            connection = DriverManager.getConnection(dataSourceConfig.getUrl() + "/" + dataSourceConfig.getSchema(), dataSourceConfig.getUser(), dataSourceConfig.getPassword());
+            connection = DriverManager.getConnection(dataSourceConfig.getUrl() + "/" + schema, dataSourceConfig.getUser(), dataSourceConfig.getPassword());
             log.info("Connected to database({})", name);
 
             return true;
@@ -221,6 +228,181 @@ public class DataSource extends AppBase {
             log.error("disconnect is failed");
             log.debug("SQLException = {}", se);
         }
+    }
+
+    public boolean generateConverterFile() {
+
+        log.trace("DataSource({}).generateConverterFile", name);
+        if (!dataSourceConfig.isGenerateConverterFile()) {
+            return true;
+        }
+
+        close();
+        useInformationSchema = true;
+        if (!open()) {
+            return false;
+        }
+
+        String targetTableName = "targets";
+        DataTable tables;
+        DataTable columns;
+        DataTable targets = new DataTable(targetTableName);
+        DataRow targetRow;
+        DataString column;
+        DataString nameColumn;
+        DataString typeColumn;
+
+        int columnType;
+        String tableName;
+        String targetKey;
+        String columnKey;
+        String columnName;
+        String columnValue;
+        String schema = dataSourceConfig.getSchema();
+        String query = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = '" + schema + "' ORDER BY TABLE_NAME";
+
+        tables = getDataTable("tables", query);
+        for (DataRow tableRow : tables.getAllRow()) {
+            column = (DataString) tableRow.getColumn("TABLE_NAME");
+            tableName = column.getQuotedValue().replaceAll("\'", "");
+            targetRow = new DataRow(targets);
+
+            targetKey = Property.TARGET.key();
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName));
+
+            targetKey = Property.TARGET.connectKey(tableName, Property.SOURCE);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName));
+
+            targetKey = Property.TARGET.connectKey(tableName, Property.TABLE);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName));
+
+            targetKey = Property.TARGET.connectKey(tableName, Property.CREATE);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "false"));
+
+            targetKey = Property.TARGET.connectKey(tableName, Property.INSERT);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "true"));
+
+            targetKey = "#" + Property.TARGET.connectKey(tableName, Property.ROW_NUMBER);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "1"));
+
+            targetKey = "#" + Property.TARGET.connectKey(tableName, Property.OUTPUT_FILE);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName + ".sql"));
+
+            query = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_KEY FROM COLUMNS WHERE TABLE_SCHEMA = '" + schema + "' AND TABLE_NAME = '" + tableName + "' ORDER BY COLUMN_KEY DESC, ORDINAL_POSITION ASC";
+            columns = getDataTable(tableName + "_columns", query);
+            for (DataRow columnRow : columns.getAllRow()) {
+                columnKey = tableName + ".column";
+
+                nameColumn = (DataString) columnRow.getColumn("COLUMN_NAME");
+                typeColumn = (DataString) columnRow.getColumn("DATA_TYPE");
+                column = (DataString) columnRow.getColumn("COLUMN_KEY");
+
+                columnName = nameColumn.getValue();
+                columnType = parseType(typeColumn.getValue());
+
+                if ("PRI".compareTo(column.getValue()) == 0) {
+                    targetKey = Property.TARGET.connectKey(tableName, Property.ID);
+                    targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, columnName));
+                } else {
+                    columnValue = defaultValue(columnType);
+                    targetRow.putColumn(targetKey, application.createDataColumn(Property.TARGET.connectKey(columnKey + "." + columnName), Types.VARCHAR, columnValue));
+                }
+
+                columnValue = defaultValue(columnType);
+                targetRow.putColumn(targetKey, application.createDataColumn(Property.TARGET.connectKey(columnKey + "." + columnName), Types.VARCHAR, columnValue));
+
+            }
+
+            targets.addRow(targetRow);
+        }
+
+        close();
+        useInformationSchema = false;
+        if (!open()) {
+            return false;
+        }
+
+
+        log.trace("DataSource({}).generateConverterFile.print", name);
+
+        ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter();
+
+        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        String charset = "UTF-8";
+        String outputFile = dataConversionConfigFile.getOutputTargetPath() + "generated-converter.conf";
+        Writer writer;
+
+        try {
+            writer = new OutputStreamWriter(new FileOutputStream(outputFile), charset);
+            log.trace("generate DataTable({}) to File({}) ...", targetTableName, outputFile);
+        } catch (Exception e) {
+            log.warn("Create output file for '{}' table is failed, {}, generate to System.out instead", targetTableName, e.getMessage());
+            application.hasWarning = true;
+            return false;
+        }
+
+        if (writer == null) {
+            try {
+                writer = new OutputStreamWriter(System.out, charset);
+                log.trace("generate DataTable({}) to console ...", targetTableName);
+            } catch (Exception e) {
+                log.error("System.out is not ready, {}, try again later", e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        boolean valid = formatter.print(targets, writer);
+        try {
+            writer.close();
+        } catch (Exception e) {
+            log.warn("Close file({}) is failed, ", e.getMessage());
+            application.hasWarning = true;
+            valid = false;
+        }
+        return valid;
+    }
+
+    private String defaultValue(int columnType) {
+        switch (columnType) {
+            case Types.BIGINT:
+                return "INT:0";
+            case Types.DECIMAL:
+                return "DEC:0.0";
+            case Types.DATE:
+                return "DTT:NULL";
+            default: // Types.VARCHAR:
+                return "STR:NULL";
+        }
+    }
+
+    public int parseType(String columnType) {
+
+        if ("bigint".compareTo(columnType) == 0) {
+            return Types.BIGINT;
+        } else if ("int".compareTo(columnType) == 0) {
+            return Types.INTEGER;
+        } else if ("tinyint".compareTo(columnType) == 0) {
+            return Types.INTEGER;
+        } else if ("bit".compareTo(columnType) == 0) {
+            return Types.INTEGER;
+        } else if ("decimal".compareTo(columnType) == 0) {
+            return Types.DECIMAL;
+        } else if ("double".compareTo(columnType) == 0) {
+            return Types.DECIMAL;
+        } else if ("varchar".compareTo(columnType) == 0) {
+            return Types.VARCHAR;
+        } else if ("longtext".compareTo(columnType) == 0) {
+            return Types.VARCHAR;
+        } else if ("text".compareTo(columnType) == 0) {
+            return Types.VARCHAR;
+        } else if ("timestamp".compareTo(columnType) == 0) {
+            return Types.DATE;
+        } else if ("datetime".compareTo(columnType) == 0) {
+            return Types.DATE;
+        }
+
+        return Types.VARCHAR;
     }
 
     public DataSourceConfig getDataSourceConfig() {

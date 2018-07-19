@@ -81,8 +81,9 @@ public class Application {
             if (!dataSource.isValid()) {
                 performInvalidDataSource(dataSource);
             }
-
             dataSourceMap.put(dataSourceName, dataSource);
+
+            dataSource.generateConverterFile();
         }
 
         log.trace("Application. Load Converters.");
