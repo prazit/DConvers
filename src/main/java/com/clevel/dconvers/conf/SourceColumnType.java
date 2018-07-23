@@ -23,4 +23,8 @@ public enum SourceColumnType {
     public int getDataType() {
         return dataType;
     }
+
+    public String getValuePrefix() {
+        return name() + ":";
+    }
 }

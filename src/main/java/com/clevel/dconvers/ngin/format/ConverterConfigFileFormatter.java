@@ -2,6 +2,9 @@ package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataTable;
+
+import java.util.List;
 
 public class ConverterConfigFileFormatter extends DataFormatter {
 
@@ -11,14 +14,23 @@ public class ConverterConfigFileFormatter extends DataFormatter {
 
     @Override
     protected String format(DataRow row) {
-        String generated = "\n\n";
+        List<DataColumn> columnList = row.getColumnList();
+        String tableName = "";
+        String generated = "";
+        String name;
+        String value;
 
-        for (DataColumn column : row.getColumnList()) {
-            generated += column.getName() +"=";
-            generated += column.getValue() +"\n";
+        for (DataColumn column : columnList) {
+            name = column.getName();
+            value = column.getValue();
+            if (name.endsWith("table")) {
+                tableName = value;
+            }
+            generated += name + "=" + value + "\n";
         }
 
-        return generated;
+        String result = "\n\n# " + (columnList.size() - 8) + " columns from table '" + tableName + "'\n" + generated;
+        return result;
     }
 
 }
