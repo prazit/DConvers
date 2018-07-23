@@ -156,6 +156,9 @@ public class Target extends AppBase {
 
                     default: // constants
                         sourceColumnName = sourceColumnName.substring(4);
+                        if (sourceColumnName.compareToIgnoreCase("NULL") == 0) {
+                            sourceColumnName = null;
+                        }
                         targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnName);
                         if (targetColumn == null) {
                             log.error("Invalid constant({}) for {} that required by target column({})", sourceColumnName, sourceColumnType.name(), targetColumnName);
