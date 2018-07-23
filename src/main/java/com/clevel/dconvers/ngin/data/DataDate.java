@@ -29,6 +29,8 @@ public class DataDate extends DataColumn {
             return "null";
         }
 
+        // TODO Invalid Year made sql error like this > Data truncation: Incorrect datetime value: '10000/12/31 00:00:00' for column 'end_date' at row 1
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("YYYY/MM/dd HH:mm:ss");
         return "'" + simpleDateFormat.format(value) + "'";
