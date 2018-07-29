@@ -54,9 +54,9 @@ public class TargetConfig extends Config {
         output = targetProperties.getString(Property.OUTPUT_FILE.key(),"");
         table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
-        create = targetProperties.getBoolean(Property.CREATE.key());
-        insert = targetProperties.getBoolean(Property.INSERT.key());
-        rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key());
+        create = targetProperties.getBoolean(Property.CREATE.key(), false);
+        insert = targetProperties.getBoolean(Property.INSERT.key(), true);
+        rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
 
         String outputExt = ".sql";
         if (output.length() == 0) {
