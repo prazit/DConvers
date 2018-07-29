@@ -124,7 +124,7 @@ public class Target extends AppBase {
                     case NON:
                         targetColumn = sourceRow.getColumn(sourceColumnName);
                         if (targetColumn == null) {
-                            log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
+                            log.error("\nNo column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
@@ -134,7 +134,7 @@ public class Target extends AppBase {
                         sourceColumnName = sourceColumnName.substring(4).toUpperCase();
                         targetColumn = systemVars.get(SystemVariable.valueOf(sourceColumnName));
                         if (targetColumn == null) {
-                            log.error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
+                            log.error("\nInvalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
                             return false;
                         }
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
@@ -144,14 +144,14 @@ public class Target extends AppBase {
                         sourceColumnName = sourceColumnName.substring(4);
                         targetColumn = sourceRow.getColumn(sourceColumnName);
                         if (targetColumn == null) {
-                            log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
+                            log.error("\nNo column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
                     case INV:
-                        log.error("Invalid source column({}) for target column({})", sourceColumnName, targetColumnName);
+                        log.error("\nInvalid source column({}) for target column({})", sourceColumnName, targetColumnName);
                         return false;
 
                     default: // constants
@@ -161,7 +161,7 @@ public class Target extends AppBase {
                         }
                         targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnName);
                         if (targetColumn == null) {
-                            log.error("Invalid constant({}) for {} that required by target column({})", sourceColumnName, sourceColumnType.name(), targetColumnName);
+                            log.error("\nInvalid constant({}) for {} that required by target column({})", sourceColumnName, sourceColumnType.name(), targetColumnName);
                             return false;
                         }
                 }// end of switch(sourceColumnType)
@@ -177,14 +177,14 @@ public class Target extends AppBase {
 
             targetColumn = application.createDataColumn(mappingId, Types.BIGINT, String.valueOf(mappingRowNumber));
             if (targetColumn == null) {
-                log.error("Invalid mapping id({}) that required by mapping table({})", mappingId, mappingTableName, mappingTableName);
+                log.error("\nInvalid mapping id({}) that required by mapping table({})", mappingId, mappingTableName, mappingTableName);
                 return false;
             }
             mappingRow.putColumn(mappingId, targetColumn);
 
             targetColumn = sourceRow.getColumn(sourceId);
             if (targetColumn == null) {
-                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceId, source.getName(), mappingTableName);
+                log.error("\nInvalid source id({}) for source{} that required by mapping table({})", sourceId, source.getName(), mappingTableName);
                 return false;
             }
             sourceIdColumnName = Property.SOURCE_ID.key();
@@ -192,7 +192,7 @@ public class Target extends AppBase {
 
             targetColumn = targetRow.getColumn(targetId);
             if (targetColumn == null) {
-                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetId, name, mappingTableName);
+                log.error("\nInvalid target id({}) for target{} that required by mapping table({})", targetId, name, mappingTableName);
                 return false;
             }
             targetIdColumnName = Property.TARGET_ID.key();
