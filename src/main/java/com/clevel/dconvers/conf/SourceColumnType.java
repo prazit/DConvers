@@ -9,9 +9,11 @@ public enum SourceColumnType {
     DEC(Types.DECIMAL),     // DEC:12345.54321
     DTE(Types.DATE),        // DTE:DD/MM/YYYY => DTE:31/12/2020
     DTT(Types.TIMESTAMP),   // DTE:DD/MM/YYYY hh:mm:ss => DTT:31/12/2020 23:59:59
-    SRC(0),                 // SRC:Source_Column_Name
-    TAR(0),                 // TAR:Target_Table_Name.Target_Column_Name (need mapping between SRC and Target_Table_Name)
-    NON(0),                 // None (no specified type)
+    SRC(0),                 // SRC:source-name.column-name
+    TAR(0),                 // TAR:target-name.column-name
+    MAP(0),                 // MAP:mapping-name.column-name
+    COL(0),                 // source-column-name>>MAPPING>>column-name
+    NON(0),                 // None (no specified type) will use as source-column-name
     INV(0)                  // Invalid Specified Type
     ;
 

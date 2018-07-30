@@ -121,6 +121,8 @@ public class DataSource extends AppBase {
         dataTable.setMetaData(metaData);
 
         int columnCount = metaData.getColumnCount();
+        log.debug("source({}) has {} columns", tableName, columnCount);
+
         DataRow dataRow;
         DataColumn dataColumn;
         String columnName;

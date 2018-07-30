@@ -22,12 +22,17 @@ public class Converter extends AppBase {
     private ConverterConfigFile converterConfigFile;
     private Map<String, Source> sourceMap;
     private Map<String, Target> targetMap;
+    private Map<String, DataTable> mappingTableMap;
     private List<Target> sortedTarget;
+
+    private String mappingTablePrefix;
 
     public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
 
         this.converterConfigFile = converterConfigFile;
+        mappingTablePrefix = application.dataConversionConfigFile.getMappingTablePrefix();
+
         valid = prepare();
         if (valid) {
             valid = validate();
@@ -47,7 +52,7 @@ public class Converter extends AppBase {
         Map<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
         Map<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
 
-        boolean valid = true;
+        boolean valid;
         String name;
         Source source;
         sourceMap = new HashMap<>();
@@ -74,7 +79,9 @@ public class Converter extends AppBase {
             targetMap.put(name, target);
             sortedTarget.add(target);
         }
-        Collections.sort(sortedTarget, (o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
+        sortedTarget.sort((o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
+
+        mappingTableMap = new HashMap<>();
 
         return true;
     }
@@ -83,7 +90,7 @@ public class Converter extends AppBase {
     public boolean validate() {
         log.trace("Converter({}).validate", name);
 
-        if (sourceMap == null || sourceMap.size() == 0) {
+        if (sourceMap == null) {
             log.error("Sources are required for target({})", name);
             return false;
         }
@@ -94,8 +101,8 @@ public class Converter extends AppBase {
             return false;
         }
 
-        if (sourceMap.size() == 0) {
-            log.warn("Source not found, need one source at least.");
+        if (targetMap.size() == 0) {
+            log.warn("Target not found, need one target at least.");
             application.hasWarning = true;
             return false;
         }
@@ -115,11 +122,15 @@ public class Converter extends AppBase {
         }
 
         log.info("Build {} target tables", sortedTarget.size());
+        DataTable mapping;
         for (Target target : sortedTarget) {
             valid = target.buildDataTable();
             if (!valid) {
                 return false;
             }
+
+            mapping = target.getMappingTable();
+            mappingTableMap.put(mapping.getTableName(), mapping);
         }
 
         return true;
@@ -187,7 +198,7 @@ public class Converter extends AppBase {
         } catch (Exception e) {
             log.warn("Create output file for '{}' table is failed, {}, print to System.out instead", tableName, e.getMessage());
             application.hasWarning = true;
-            return false;
+            writer = null;
         }
 
         if (writer == null) {
@@ -243,4 +254,34 @@ public class Converter extends AppBase {
         return targetMap.get(name);
     }
 
+    public DataTable getDataTable(String mapping) {
+        DataTable dataTable;
+        String[] mappings = mapping.split("[:]");
+        SourceColumnType tableType = SourceColumnType.valueOf(mappings[0]);
+
+        switch (tableType) {
+            case SRC:
+                Source source = getSource(mappings[1]);
+                if (source == null) {
+                    return null;
+                }
+                return source.getDataTable();
+
+            case TAR:
+                Target target = getTarget(mappings[1]);
+                if (target == null) {
+                    return null;
+                }
+                return target.getDataTable();
+
+            case MAP:
+                dataTable = mappingTableMap.get(mappingTablePrefix + mappings[1]);
+                break;
+
+            default:
+                dataTable = null;
+        }
+
+        return dataTable;
+    }
 }

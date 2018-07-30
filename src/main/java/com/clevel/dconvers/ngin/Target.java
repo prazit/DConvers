@@ -131,6 +131,7 @@ public class Target extends AppBase {
                             log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
+
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
@@ -142,19 +143,56 @@ public class Target extends AppBase {
                             log.error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
                             return false;
                         }
+
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
-                    case SRC:
-                        sourceColumnName = sourceColumnName.substring(4);
+                    case COL:
+                        String[] sourceColumnNames = sourceColumnName.split(">>");
+                        log.debug("sourceColumnNames is {}, {}, {}", sourceColumnNames[0], sourceColumnNames[1], sourceColumnNames[2]);
+                        sourceColumnName = sourceColumnNames[0];
                         targetColumn = sourceRow.getColumn(sourceColumnName);
                         if (targetColumn == null) {
                             progressBar.close();
                             log.error("No column({}) in source({}) that required by target({})", sourceColumnName, source.getName(), name);
+                            log.debug("source({}) has following columns {}", source.getName(), sourceRow);
                             return false;
                         }
+
+                        String[] mappings = sourceColumnNames[1].split("[.]");
+                        log.debug("mappings is {}, {}", mappings[0], mappings[1]);
+
+                        DataTable asSourceTable = converter.getDataTable(mappings[0]);
+                        if (asSourceTable == null) {
+                            progressBar.close();
+                            log.error("No data-table({}) in converter({}) that required by target({})", mappings[0], converter.getName(), name);
+                            return false;
+                        }
+
+                        sourceColumnName = mappings[1];
+                        DataRow asSourceRow = asSourceTable.getRow(sourceColumnName, targetColumn.getValue());
+                        if (asSourceRow == null) {
+                            progressBar.close();
+                            log.error("No row contains column({}) with value({}) in data-table({}) in converter({}) that required by target({})", sourceColumnName, targetColumn.getValue(), mappings[0], converter.getName(), name);
+                            return false;
+                        }
+
+                        sourceColumnName = sourceColumnNames[2];
+                        targetColumn = asSourceRow.getColumn(sourceColumnName);
+                        if (targetColumn == null) {
+                            progressBar.close();
+                            log.error("No column({}) in data-table({}) in converter({}) that required by target({})", sourceColumnName, mappings[0], converter.getName(), name);
+                            return false;
+                        }
+
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
+
+                    case SRC:
+                        progressBar.close();
+                        log.error("Target.buildDataTable need to support SRC column type before use of them.");
+                        // TODO Target.buildDataTable need to support SRC column type
+                        return false;
 
                     case TAR:
                         sourceColumnName = sourceColumnName.substring(4);
@@ -173,8 +211,15 @@ public class Target extends AppBase {
                             log.error("No column({}) in target({}) that required by target({})", sourceColumnName, source.getName(), name);
                             return false;
                         }
+
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
+
+                    case MAP:
+                        progressBar.close();
+                        log.error("Target.buildDataTable need to support MAP column type before use of them.");
+                        // TODO Target.buildDataTable need to support MAP column type
+                        return false;
 
                     case INV:
                         progressBar.close();
@@ -186,12 +231,14 @@ public class Target extends AppBase {
                         if (sourceColumnName.compareToIgnoreCase("NULL") == 0) {
                             sourceColumnName = null;
                         }
+
                         targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnName);
                         if (targetColumn == null) {
                             progressBar.close();
                             log.error("Invalid constant({}) for {} that required by target column({})", sourceColumnName, sourceColumnType.name(), targetColumnName);
                             return false;
                         }
+
                 }// end of switch(sourceColumnType)
                 targetRow.putColumn(targetColumnName, targetColumn);
 
@@ -205,7 +252,7 @@ public class Target extends AppBase {
             targetColumn = sourceRow.getColumn(sourceIdColumnName);
             if (targetColumn == null) {
                 progressBar.close();
-                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceIdColumnName, source.getName(), mappingTableName);
+                log.error("Invalid source id({}) for source({}) that required by mapping table({})", sourceIdColumnName, source.getName(), mappingTableName);
                 return false;
             }
             mappingRow.putColumn(mappingSourceIdColumnName, targetColumn.clone(1, mappingSourceIdColumnName));
@@ -213,7 +260,7 @@ public class Target extends AppBase {
             targetColumn = targetRow.getColumn(targetIdColumnName);
             if (targetColumn == null) {
                 progressBar.close();
-                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetIdColumnName, name, mappingTableName);
+                log.error("Invalid target id({}) for target({}) that required by mapping table({})", targetIdColumnName, name, mappingTableName);
                 return false;
             }
             mappingRow.putColumn(mappingTargetIdColumnName, targetColumn.clone(1, mappingTargetIdColumnName));
@@ -222,8 +269,6 @@ public class Target extends AppBase {
 
         } // end of for(DataRow)
         progressBar.close();
-
-        // TODO: create reportRow and add into the application.reportTable
 
         if (log.isDebugEnabled()) {
             if (dataTable.getRowCount() > 100) {
@@ -238,6 +283,10 @@ public class Target extends AppBase {
             }
         }
 
+        // -- start mapping table
+
+        // TODO: create reportRow and add into the application.reportTable
+
         return true;
     }
 
@@ -248,6 +297,9 @@ public class Target extends AppBase {
 
         char ch = sourceColumnName.charAt(3);
         if (ch != ':') {
+            if (sourceColumnName.indexOf(">>") >= 0) {
+                return SourceColumnType.COL;
+            }
             return SourceColumnType.NON;
         }
 

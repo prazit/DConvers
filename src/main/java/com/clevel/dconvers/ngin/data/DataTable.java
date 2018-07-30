@@ -64,6 +64,23 @@ public class DataTable extends ValidatorBase {
         return dataRowMap.get(idValue);
     }
 
+    public DataRow getRow(String sourceColumnName, String value) {
+        DataColumn dataColumn;
+
+        for (DataRow dataRow : dataRowList) {
+            dataColumn = dataRow.getColumn(sourceColumnName);
+            if (dataColumn == null) {
+                return null;
+            }
+
+            if (value.compareTo(dataColumn.getValue()) == 0) {
+                return dataRow;
+            }
+        }
+
+        return null;
+    }
+
     public void addRow(DataRow dataRow) {
         dataRowList.add(dataRow);
 
