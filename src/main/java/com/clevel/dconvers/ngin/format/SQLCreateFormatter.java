@@ -47,12 +47,12 @@ public class SQLCreateFormatter extends DataFormatter {
             }
 
             columnString += getColumnTypeString(column);
-            columns += columnString + ", ";
+            columns += "`" + columnString + "`, ";
         }
         columns = columns.substring(0, columns.length() - 2);
-        columnString = idColumnName +" bigint auto_increment primary key, ";
+        columnString = idColumnName + " bigint auto_increment primary key, ";
 
-        String sqlCreate = "CREATE TABLE " + tableName + "( " + columnString + columns + ") COLLATE=utf8_bin;\n";
+        String sqlCreate = "DROP TABLE IF EXISTS `" + tableName + "`;\nCREATE TABLE `" + tableName + "` ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
         return sqlCreate;
     }
 

@@ -13,7 +13,7 @@ import java.util.Map;
 public class DataTable extends ValidatorBase {
 
     private List<DataRow> dataRowList;
-    private Map<String,DataRow> dataRowMap;
+    private Map<String, DataRow> dataRowMap;
     private ResultSetMetaData metaData;
     private String tableName;
     private String idColumnName;
@@ -67,7 +67,13 @@ public class DataTable extends ValidatorBase {
     public void addRow(DataRow dataRow) {
         dataRowList.add(dataRow);
 
-        String key = dataRow.getColumn(idColumnName).getValue();
+        String key;
+        DataColumn idColumn = dataRow.getColumn(idColumnName);
+        if (idColumn == null) {
+            key = String.valueOf(dataRowList.size());
+        } else {
+            key = idColumn.getValue();
+        }
         dataRowMap.put(key, dataRow);
     }
 

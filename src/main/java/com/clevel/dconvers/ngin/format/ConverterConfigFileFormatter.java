@@ -29,8 +29,12 @@ public class ConverterConfigFileFormatter extends DataFormatter {
             generated += name + "=" + value + "\n";
         }
 
-        String result = "\n\n# " + (columnList.size() - 8) + " columns from table '" + tableName + "'\n" + generated;
+        String result = "\n\n# " + (columnList.size() - 9) + " columns from table '" + tableName + "'\n" + generated;
         return result;
     }
 
+    @Override
+    protected String postFormat(DataTable dataTable) {
+        return "\n#EOF";
+    }
 }
