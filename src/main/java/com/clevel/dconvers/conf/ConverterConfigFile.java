@@ -79,8 +79,8 @@ public class ConverterConfigFile extends ConfigFile {
         log.trace("ConverterConfigFile.validateProperties.");
 
         if (targetConfigMap.size() == 0) {
-            log.error("No target is specified, converter need one target at least");
-            return false;
+            log.warn("No target is specified in converter({})", name);
+            application.hasWarning = true;
         }
 
         return true;

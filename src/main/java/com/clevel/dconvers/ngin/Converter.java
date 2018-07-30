@@ -90,21 +90,14 @@ public class Converter extends AppBase {
     public boolean validate() {
         log.trace("Converter({}).validate", name);
 
-        if (sourceMap == null) {
-            log.error("Sources are required for target({})", name);
-            return false;
-        }
-
         if (sourceMap.size() == 0) {
-            log.warn("Source is always required to build the target table.");
+            log.warn("No source in converter({}).", name);
             application.hasWarning = true;
-            return false;
         }
 
         if (targetMap.size() == 0) {
-            log.warn("Target not found, need one target at least.");
+            log.warn("No target in converter({})", name);
             application.hasWarning = true;
-            return false;
         }
 
         return true;

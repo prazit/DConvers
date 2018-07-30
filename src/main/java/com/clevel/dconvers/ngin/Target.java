@@ -190,35 +190,17 @@ public class Target extends AppBase {
 
                     case SRC:
                         progressBar.close();
-                        log.error("Target.buildDataTable need to support SRC column type before use of them.");
-                        // TODO Target.buildDataTable need to support SRC column type
+                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>SRC:source-name.mapping-column-name>>mapping-column-name", sourceColumnName);
                         return false;
 
                     case TAR:
-                        sourceColumnName = sourceColumnName.substring(4);
-                        dotIndex = sourceColumnName.indexOf('.');
-                        if (dotIndex <= 0) {
-                            progressBar.close();
-                            log.error("Invalid target table({}) that required by target({})", sourceColumnName, name);
-                            return false;
-                        }
-
-                        fkTargetName = sourceColumnName.substring(0, dotIndex);
-                        fkColumnName = sourceColumnName.substring(dotIndex + 1);
-                        targetColumn = getTargetColumn(mappingTablePrefix, sourceName, sourceRow.getColumn(sourceIdColumnName), fkTargetName, fkColumnName);
-                        if (targetColumn == null) {
-                            progressBar.close();
-                            log.error("No column({}) in target({}) that required by target({})", sourceColumnName, source.getName(), name);
-                            return false;
-                        }
-
-                        targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
-                        break;
+                        progressBar.close();
+                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>TAR:target-name.mapping-column-name>>mapping-column-name", sourceColumnName);
+                        return false;
 
                     case MAP:
                         progressBar.close();
-                        log.error("Target.buildDataTable need to support MAP column type before use of them.");
-                        // TODO Target.buildDataTable need to support MAP column type
+                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>MAP:source_to_target.mapping-column-name>>mapping-column-name", sourceColumnName);
                         return false;
 
                     case INV:

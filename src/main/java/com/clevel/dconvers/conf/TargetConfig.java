@@ -70,12 +70,12 @@ public class TargetConfig extends Config {
 
         Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
         Iterator<String> columnKeyList = columnProperties.getKeys();
-        log.debug("columnList = {}", columnList);
         columnList = new ArrayList<>();
         for (Iterator<String> it = columnKeyList; it.hasNext(); ) {
             String key = it.next();
             columnList.add(new Pair<>(key,columnProperties.getString(key)));
         }
+        log.debug("columnList = {}", columnList);
 
         return true;
     }
