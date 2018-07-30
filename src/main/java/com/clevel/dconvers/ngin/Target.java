@@ -77,7 +77,7 @@ public class Target extends AppBase {
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
-        mappingTable = new DataTable(mappingTableName, mappingSourceIdColumnName);
+        mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
         dataTable = new DataTable(targetTableName, targetIdColumnName);
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
@@ -249,14 +249,6 @@ public class Target extends AppBase {
 
             mappingRow = new DataRow(mappingTable);
 
-            targetColumn = sourceRow.getColumn(sourceIdColumnName);
-            if (targetColumn == null) {
-                progressBar.close();
-                log.error("Invalid source id({}) for source({}) that required by mapping table({})", sourceIdColumnName, source.getName(), mappingTableName);
-                return false;
-            }
-            mappingRow.putColumn(mappingSourceIdColumnName, targetColumn.clone(1, mappingSourceIdColumnName));
-
             targetColumn = targetRow.getColumn(targetIdColumnName);
             if (targetColumn == null) {
                 progressBar.close();
@@ -264,6 +256,14 @@ public class Target extends AppBase {
                 return false;
             }
             mappingRow.putColumn(mappingTargetIdColumnName, targetColumn.clone(1, mappingTargetIdColumnName));
+
+            targetColumn = sourceRow.getColumn(sourceIdColumnName);
+            if (targetColumn == null) {
+                progressBar.close();
+                log.error("Invalid source id({}) for source({}) that required by mapping table({})", sourceIdColumnName, source.getName(), mappingTableName);
+                return false;
+            }
+            mappingRow.putColumn(mappingSourceIdColumnName, targetColumn.clone(1, mappingSourceIdColumnName));
 
             mappingTable.addRow(mappingRow);
 

@@ -11,11 +11,6 @@ public class SQLInsertFormatter extends DataFormatter {
     }
 
     @Override
-    protected String preFormat(DataTable dataTable) {
-        return "BEGIN;\n";
-    }
-
-    @Override
     protected String format(DataRow row) {
         String columns = "";
         String values = "";

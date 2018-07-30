@@ -46,11 +46,12 @@ public class SQLCreateFormatter extends DataFormatter {
                 continue;
             }
 
-            columnString += getColumnTypeString(column);
-            columns += "`" + columnString + "`, ";
+            columnString = "`" + columnString + "`" +getColumnTypeString(column);
+            columns += columnString + ", ";
         }
+
         columns = columns.substring(0, columns.length() - 2);
-        columnString = idColumnName + " bigint auto_increment primary key, ";
+        columnString = "`" + idColumnName + "` bigint auto_increment primary key, ";
 
         String sqlCreate = "DROP TABLE IF EXISTS `" + tableName + "`;\nCREATE TABLE `" + tableName + "` ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
         return sqlCreate;
@@ -92,4 +93,8 @@ public class SQLCreateFormatter extends DataFormatter {
         }
     }
 
+    @Override
+    protected String postFormat(DataTable dataTable) {
+        return "\nBEGIN;\n";
+    }
 }
