@@ -9,7 +9,6 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Types;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,9 @@ public class Target extends AppBase {
 
     private Converter converter;
     private TargetConfig targetConfig;
-    private Map<String, Source> sourceMap;
+
+    private String sourceName;
+    private Source source;
 
     private DataTable dataTable;
     private DataTable mappingTable;
@@ -36,20 +37,17 @@ public class Target extends AppBase {
 
     private boolean prepare() {
         log.trace("Target({}).prepare.", name);
-        sourceMap = converter.getSourceMap();
+
+        sourceName = targetConfig.getSource();
+        source = converter.getSource(sourceName);
+
         return true;
     }
 
     @Override
     public boolean validate() {
 
-        if (sourceMap == null || sourceMap.size() == 0) {
-            log.error("Sources are required for target({})", name);
-            return false;
-        }
-
-        String sourceName = targetConfig.getSource();
-        if (!sourceMap.containsKey(sourceName)) {
+        if (source == null) {
             log.error("Source({}) is not found, required by Target({})", sourceName, name);
             return false;
         }
@@ -58,26 +56,29 @@ public class Target extends AppBase {
 
     }
 
+    private String getMappingTableName(String prefix, String sourceTableName, String targetTableName) {
+        return prefix + sourceTableName + "_to_" + targetTableName;
+    }
+
     public boolean buildDataTable() {
+        log.trace("Target({}).buildDataTable.", name);
 
         List<Pair<String, String>> columnList = targetConfig.getColumnList();
-        Source source = sourceMap.get(targetConfig.getSource());
+        String sourceName = targetConfig.getSource();
         DataTable sourceDataTable = source.getDataTable();
-        String sourceId = sourceDataTable.getIdColumnName();
+        String sourceIdColumnName = sourceDataTable.getIdColumnName();
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
         String targetTableName = targetConfig.getTable();
-        String targetId = targetConfig.getId();
+        String targetIdColumnName = targetConfig.getId();
 
-        String mappingTableName = dataConversionConfigFile.getMappingTablePrefix() + sourceDataTable.getTableName() + "_to_" + targetTableName;
-        String mappingId = Property.ID.key();
+        String mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
+        String mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, targetTableName);
+        String mappingSourceIdColumnName = Property.SOURCE_ID.key();
+        String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
-        int mappingRowNumber = 0;
-        mappingTable = new DataTable(mappingTableName);
-        mappingTable.setIdColumnName(mappingId);
-
-        dataTable = new DataTable(targetTableName);
-        dataTable.setIdColumnName(targetId);
+        mappingTable = new DataTable(mappingTableName, mappingSourceIdColumnName);
+        dataTable = new DataTable(targetTableName, targetIdColumnName);
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
@@ -89,12 +90,14 @@ public class Target extends AppBase {
         SourceColumnType sourceColumnType;
         DataColumn targetColumn;
         String sourceColumnName;
-        String sourceIdColumnName;
         String targetColumnName;
-        String targetIdColumnName;
         DataRow targetRow;
         DataRow mappingRow;
         int targetColumnIndex;
+
+        int dotIndex;
+        String fkTargetName;
+        String fkColumnName;
 
         List<DataRow> sourceRowList = sourceDataTable.getAllRow();
         int rowCount = sourceRowList.size();
@@ -153,6 +156,26 @@ public class Target extends AppBase {
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
+                    case TAR:
+                        sourceColumnName = sourceColumnName.substring(4);
+                        dotIndex = sourceColumnName.indexOf('.');
+                        if (dotIndex <= 0) {
+                            progressBar.close();
+                            log.error("Invalid target table({}) that required by target({})", sourceColumnName, name);
+                            return false;
+                        }
+
+                        fkTargetName = sourceColumnName.substring(0, dotIndex);
+                        fkColumnName = sourceColumnName.substring(dotIndex + 1);
+                        targetColumn = getTargetColumn(mappingTablePrefix, sourceName, sourceRow.getColumn(sourceIdColumnName), fkTargetName, fkColumnName);
+                        if (targetColumn == null) {
+                            progressBar.close();
+                            log.error("No column({}) in target({}) that required by target({})", sourceColumnName, source.getName(), name);
+                            return false;
+                        }
+                        targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
+                        break;
+
                     case INV:
                         progressBar.close();
                         log.error("Invalid source column({}) for target column({})", sourceColumnName, targetColumnName);
@@ -177,34 +200,23 @@ public class Target extends AppBase {
 
             // -- start mapping table
 
-            mappingRowNumber++;
             mappingRow = new DataRow(mappingTable);
 
-            targetColumn = application.createDataColumn(mappingId, Types.BIGINT, String.valueOf(mappingRowNumber));
+            targetColumn = sourceRow.getColumn(sourceIdColumnName);
             if (targetColumn == null) {
                 progressBar.close();
-                log.error("Invalid mapping id({}) that required by mapping table({})", mappingId, mappingTableName, mappingTableName);
+                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceIdColumnName, source.getName(), mappingTableName);
                 return false;
             }
-            mappingRow.putColumn(mappingId, targetColumn);
+            mappingRow.putColumn(mappingSourceIdColumnName, targetColumn.clone(1, mappingSourceIdColumnName));
 
-            targetColumn = sourceRow.getColumn(sourceId);
+            targetColumn = targetRow.getColumn(targetIdColumnName);
             if (targetColumn == null) {
                 progressBar.close();
-                log.error("Invalid source id({}) for source{} that required by mapping table({})", sourceId, source.getName(), mappingTableName);
+                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetIdColumnName, name, mappingTableName);
                 return false;
             }
-            sourceIdColumnName = Property.SOURCE_ID.key();
-            mappingRow.putColumn(sourceIdColumnName, targetColumn.clone(1, sourceIdColumnName));
-
-            targetColumn = targetRow.getColumn(targetId);
-            if (targetColumn == null) {
-                progressBar.close();
-                log.error("Invalid target id({}) for target{} that required by mapping table({})", targetId, name, mappingTableName);
-                return false;
-            }
-            targetIdColumnName = Property.TARGET_ID.key();
-            mappingRow.putColumn(targetIdColumnName, targetColumn.clone(1, targetIdColumnName));
+            mappingRow.putColumn(mappingTargetIdColumnName, targetColumn.clone(1, mappingTargetIdColumnName));
 
             mappingTable.addRow(mappingRow);
 
@@ -246,11 +258,37 @@ public class Target extends AppBase {
         } catch (IllegalArgumentException e) {
             return SourceColumnType.INV;
         }
-        if (sourceColumn == null) {
-            return SourceColumnType.INV;
-        }
 
         return sourceColumn;
+    }
+
+    private DataColumn getTargetColumn(String mappingTablePrefix, String sourceName, DataColumn sourceIdColumn, String targetName, String targetColumnName) {
+        Target target = converter.getTarget(targetName);
+        if (target == null) {
+            return null;
+        }
+
+        DataTable targetTable = target.getDataTable();
+        String mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, targetTable.getTableName());
+
+        DataTable mappingTable = target.getMappingTable();
+        if (!mappingTable.getTableName().equals(mappingTableName)) {
+            log.error("No mapping table({}) between source({}) and target({})", mappingTableName, sourceName, target.getName());
+            return null;
+        }
+
+        String sourceId = sourceIdColumn.getValue();
+        DataRow mappingRow = mappingTable.getRow(sourceId);
+        DataColumn targetIdColumn = mappingRow.getColumn(Property.TARGET_ID.key());
+
+        DataRow targetRow = targetTable.getRow(targetIdColumn.getValue());
+        DataColumn targetColumn = targetRow.getColumn(targetColumnName);
+        if (targetColumn == null) {
+            log.error("No column({}) in target({})", targetColumnName, targetName);
+            return null;
+        }
+
+        return targetColumn;
     }
 
     @Override
@@ -269,4 +307,5 @@ public class Target extends AppBase {
     public DataTable getMappingTable() {
         return mappingTable;
     }
+
 }

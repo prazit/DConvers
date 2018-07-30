@@ -10,6 +10,7 @@ public enum SourceColumnType {
     DTE(Types.DATE),        // DTE:DD/MM/YYYY => DTE:31/12/2020
     DTT(Types.TIMESTAMP),   // DTE:DD/MM/YYYY hh:mm:ss => DTT:31/12/2020 23:59:59
     SRC(0),                 // SRC:Source_Column_Name
+    TAR(0),                 // TAR:Target_Table_Name.Target_Column_Name (need mapping between SRC and Target_Table_Name)
     NON(0),                 // None (no specified type)
     INV(0)                  // Invalid Specified Type
     ;

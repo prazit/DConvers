@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Application is Global Object that pass through the process from start to the end.
@@ -102,7 +99,9 @@ public class Application {
         }
 
         log.trace("Application. Launch Converters.");
-        for (Converter convert : converterMap.values()) {
+        Collection<Converter> converters = converterMap.values();
+        log.info("Has {} converters", converters.size());
+        for (Converter convert : converters) {
             if (!convert.convert()) {
                 stopWithError();
             }

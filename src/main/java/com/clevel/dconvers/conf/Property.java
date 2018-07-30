@@ -26,6 +26,7 @@ public enum Property {
         OUTPUT_FILE("output"),
         TABLE("table"),
         COLUMN("column"),
+        INDEX("index"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

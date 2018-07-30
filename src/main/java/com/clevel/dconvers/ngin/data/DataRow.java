@@ -29,12 +29,11 @@ public class DataRow extends ValidatorBase {
     }
 
     public DataColumn getColumn(String columnName) {
-        DataColumn dataColumn;
-        try {
-            dataColumn = dataColumnMap.get(columnName);
-        } catch (Exception e) {
-            dataColumn = null;
+        if (columnName == null) {
+            return null;
         }
+
+        DataColumn dataColumn = dataColumnMap.get(columnName);
         return dataColumn;
     }
 

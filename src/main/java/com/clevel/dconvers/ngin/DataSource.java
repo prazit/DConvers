@@ -77,9 +77,9 @@ public class DataSource extends AppBase {
         return 0;
     }
 
-    public DataTable getDataTable(String tableName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query) {
         log.trace("DataSource.getDataTable.");
-        DataTable dataTable = new DataTable(tableName);
+        DataTable dataTable = new DataTable(tableName, idColumnName);
         Statement statement = null;
 
         try {
@@ -93,7 +93,7 @@ public class DataSource extends AppBase {
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             log.trace("Creating DataTable...");
-            dataTable = createDataTable(resultSet, metaData, tableName);
+            dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
             log.info("DataTable({}) has {} rows", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");
@@ -116,8 +116,8 @@ public class DataSource extends AppBase {
         return dataTable;
     }
 
-    private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName) throws Exception {
-        DataTable dataTable = new DataTable(tableName);
+    private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String idColumnName) throws Exception {
+        DataTable dataTable = new DataTable(tableName, idColumnName);
         dataTable.setMetaData(metaData);
 
         int columnCount = metaData.getColumnCount();
@@ -247,7 +247,7 @@ public class DataSource extends AppBase {
         String targetTableName = "targets";
         DataTable tables;
         DataTable columns;
-        DataTable targets = new DataTable(targetTableName);
+        DataTable targets = new DataTable(targetTableName, "TABLE_NAME");
         DataRow targetRow;
         DataString column;
         DataString nameColumn;
@@ -262,7 +262,7 @@ public class DataSource extends AppBase {
         String schema = dataSourceConfig.getSchema();
         String query = "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = '" + schema + "' ORDER BY TABLE_NAME";
 
-        tables = getDataTable("tables", query);
+        tables = getDataTable("tables", "TABLE_NAME", query);
         for (DataRow tableRow : tables.getAllRow()) {
             column = (DataString) tableRow.getColumn("TABLE_NAME");
             tableName = column.getQuotedValue().replaceAll("\'", "");
@@ -270,6 +270,9 @@ public class DataSource extends AppBase {
 
             targetKey = Property.TARGET.key();
             targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName));
+
+            targetKey = "#" + Property.TARGET.connectKey(tableName, Property.INDEX);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "1"));
 
             targetKey = Property.TARGET.connectKey(tableName, Property.SOURCE);
             targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName));
@@ -290,7 +293,7 @@ public class DataSource extends AppBase {
             targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, tableName + ".sql"));
 
             query = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_KEY FROM COLUMNS WHERE TABLE_SCHEMA = '" + schema + "' AND TABLE_NAME = '" + tableName + "' ORDER BY COLUMN_KEY DESC, ORDINAL_POSITION ASC";
-            columns = getDataTable(tableName + "_columns", query);
+            columns = getDataTable(tableName + "_columns", "COLUMN_NAME", query);
             for (DataRow columnRow : columns.getAllRow()) {
                 columnKey = tableName + ".column";
 

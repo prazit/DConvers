@@ -6,18 +6,23 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataTable extends ValidatorBase {
 
     private List<DataRow> dataRowList;
+    private Map<String,DataRow> dataRowMap;
     private ResultSetMetaData metaData;
     private String tableName;
     private String idColumnName;
 
-    public DataTable(String tableName) {
+    public DataTable(String tableName, String idColumnName) {
         this.tableName = tableName;
+        this.idColumnName = idColumnName;
         dataRowList = new ArrayList<>();
+        dataRowMap = new HashMap<>();
         valid = true;
     }
 
@@ -52,8 +57,18 @@ public class DataTable extends ValidatorBase {
         return dataRowList.get(row);
     }
 
+    public DataRow getRow(String idValue) {
+        if (idValue == null) {
+            return null;
+        }
+        return dataRowMap.get(idValue);
+    }
+
     public void addRow(DataRow dataRow) {
         dataRowList.add(dataRow);
+
+        String key = dataRow.getColumn(idColumnName).getValue();
+        dataRowMap.put(key, dataRow);
     }
 
     public int getRowCount() {

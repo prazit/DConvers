@@ -15,14 +15,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Converter extends AppBase {
 
     private ConverterConfigFile converterConfigFile;
     private Map<String, Source> sourceMap;
     private Map<String, Target> targetMap;
+    private List<Target> sortedTarget;
 
     public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -63,6 +63,7 @@ public class Converter extends AppBase {
 
         Target target;
         targetMap = new HashMap<>();
+        sortedTarget = new ArrayList<>();
         for (TargetConfig targetConfig : targetConfigMap.values()) {
             name = targetConfig.getName();
             target = new Target(application, name, this, targetConfig);
@@ -71,7 +72,9 @@ public class Converter extends AppBase {
                 return false;
             }
             targetMap.put(name, target);
+            sortedTarget.add(target);
         }
+        Collections.sort(sortedTarget, (o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
 
         return true;
     }
@@ -80,8 +83,13 @@ public class Converter extends AppBase {
     public boolean validate() {
         log.trace("Converter({}).validate", name);
 
+        if (sourceMap == null || sourceMap.size() == 0) {
+            log.error("Sources are required for target({})", name);
+            return false;
+        }
+
         if (sourceMap.size() == 0) {
-            log.warn("Source not found, need one source at least.");
+            log.warn("Source is always required to build the target table.");
             application.hasWarning = true;
             return false;
         }
@@ -98,7 +106,7 @@ public class Converter extends AppBase {
     public boolean convert() {
         log.trace("Converter({}).convert", name);
 
-
+        log.info("Build {} source tables", sourceMap.size());
         for (Source source : sourceMap.values()) {
             valid = source.buildDataTable();
             if (!valid) {
@@ -106,7 +114,8 @@ public class Converter extends AppBase {
             }
         }
 
-        for (Target target : targetMap.values()) {
+        log.info("Build {} target tables", sortedTarget.size());
+        for (Target target : sortedTarget) {
             valid = target.buildDataTable();
             if (!valid) {
                 return false;
@@ -134,7 +143,7 @@ public class Converter extends AppBase {
         DataLong fileNumber = (DataLong) application.systemVariableMap.get(SystemVariable.FILENUMBER);
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
 
-        for (Target target : targetMap.values()) {
+        for (Target target : sortedTarget) {
             log.trace("print Target({}) ...", target.getName());
 
             targetConfig = target.getTargetConfig();
@@ -218,11 +227,20 @@ public class Converter extends AppBase {
         return converterConfigFile;
     }
 
-    public Map<String, Source> getSourceMap() {
-        return sourceMap;
+    public Source getSource(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        return sourceMap.get(name);
     }
 
-    public Map<String, Target> getTargetMap() {
-        return targetMap;
+    public Target getTarget(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        return targetMap.get(name);
     }
+
 }

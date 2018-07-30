@@ -17,6 +17,8 @@ public class TargetConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
 
+    private int index;
+
     private String source;
     private String output;
     private String table;
@@ -57,6 +59,7 @@ public class TargetConfig extends Config {
         create = targetProperties.getBoolean(Property.CREATE.key(), false);
         insert = targetProperties.getBoolean(Property.INSERT.key(), true);
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
+        index = targetProperties.getInt(Property.INDEX.key(), 1);
 
         String outputExt = ".sql";
         if (output.length() == 0) {
@@ -87,6 +90,10 @@ public class TargetConfig extends Config {
         }
 
         return true;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public String getSource() {
