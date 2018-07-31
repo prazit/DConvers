@@ -16,6 +16,19 @@ public class DataBigDecimal extends DataColumn {
     }
 
     @Override
+    public DataColumn clone(String value) {
+        BigDecimal bigDecimal;
+
+        try {
+            bigDecimal = BigDecimal.valueOf(Double.parseDouble(value));
+        } catch (Exception ex) {
+            bigDecimal = null;
+        }
+
+        return new DataBigDecimal(index, type, name, bigDecimal);
+    }
+
+    @Override
     public DataColumn clone(int index, String name) {
         return new DataBigDecimal(index, type, name, value);
     }

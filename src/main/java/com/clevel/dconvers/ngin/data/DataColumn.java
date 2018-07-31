@@ -33,5 +33,7 @@ public abstract class DataColumn extends ValidatorBase {
 
     public abstract String getValue();
 
+    public abstract DataColumn clone(String value);
+
     public abstract DataColumn clone(int index, String name);
 }

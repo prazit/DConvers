@@ -16,6 +16,7 @@ public enum Property {
         MAPPING_PATH("output.mapping"),
 
     SOURCE("source"),
+        SQL("sql"),
         QUERY("query"),
         ID("id"),
         GENERATE_TARGET("gen"),

@@ -13,6 +13,11 @@ public class DataLong extends DataColumn {
     }
 
     @Override
+    public DataColumn clone(String value) {
+        return new DataLong(index, type, name, Long.parseLong(value));
+    }
+
+    @Override
     public DataColumn clone(int index, String name) {
         return new DataLong(index, type, name, value);
     }

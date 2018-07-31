@@ -14,6 +14,11 @@ public class DataString extends DataColumn {
     }
 
     @Override
+    public DataColumn clone(String value) {
+        return new DataString(index, type, name, value);
+    }
+
+    @Override
     public DataColumn clone(int index, String name) {
         return new DataString(index, type, name, value);
     }

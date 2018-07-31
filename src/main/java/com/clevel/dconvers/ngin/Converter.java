@@ -2,6 +2,7 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
@@ -129,7 +130,7 @@ public class Converter extends AppBase {
         return true;
     }
 
-    public boolean print() {
+    public boolean print(boolean printSourceTable, boolean printTargetTable, boolean printMappingTable) {
         log.trace("Converter({}).print", name);
 
         SQLCreateFormatter sqlCreate = new SQLCreateFormatter();
@@ -143,9 +144,16 @@ public class Converter extends AppBase {
         TargetConfig targetConfig;
         String charset = "UTF-8";
         String outputFile;
-        Writer writer;
-        DataLong fileNumber = (DataLong) application.systemVariableMap.get(SystemVariable.FILENUMBER);
+
+        Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
+        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
+        DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+
+        String outputTargetPath = dataConversionConfigFile.getOutputTargetPath();
+        String outputMappingPath = dataConversionConfigFile.getOutputMappingPath();
+        String outputSourcePath = dataConversionConfigFile.getOutputSourcePath();
 
         for (Target target : sortedTarget) {
             log.trace("print Target({}) ...", target.getName());
@@ -166,14 +174,35 @@ public class Converter extends AppBase {
 
             // -- Start Target File
 
-            fileNumber.increaseValueBy(1);
-            outputFile = dataConversionConfigFile.getOutputTargetPath() + "V" + fileNumber.getQuotedValue() + "__" + targetConfig.getOutput();
+            targetFileNumber.increaseValueBy(1);
+            outputFile = outputTargetPath + "V" + targetFileNumber.getValue() + "__" + targetConfig.getOutput();
             printDataTable(target.getDataTable(), outputFile, charset, sqlCreateFormatter, sqlInsertFormatter, sqlUpdateFormatter);
 
             // -- Start Mapping File
 
-            outputFile = dataConversionConfigFile.getOutputMappingPath() + "V" + fileNumber.getQuotedValue() + "__" + target.getMappingTable().getTableName() + ".sql";
+            if (!printMappingTable) {
+                continue;
+            }
+
+            mappingFileNumber.increaseValueBy(1);
+            outputFile = outputMappingPath + "V" + mappingFileNumber.getValue() + "__" + target.getMappingTable().getTableName() + ".sql";
             printDataTable(target.getMappingTable(), outputFile, charset, sqlCreate, sqlInsertFormatter, sqlUpdateFormatter);
+
+        }
+
+        if (!printSourceTable) {
+            return true;
+        }
+
+        sqlInsertFormatter = sqlInsert;
+        for (Source source : sourceMap.values()) {
+            log.trace("print Source({}) ...", source.getName());
+
+            // -- Start Source File
+
+            sourceFileNumber.increaseValueBy(1);
+            outputFile = outputSourcePath + "V" + sourceFileNumber.getValue() + "__" + source.getSourceConfig().getOutput();
+            printDataTable(source.getDataTable(), outputFile, charset, null, sqlInsertFormatter, null);
 
         }
 

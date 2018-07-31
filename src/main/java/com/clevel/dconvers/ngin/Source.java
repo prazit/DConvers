@@ -37,7 +37,7 @@ public class Source extends AppBase {
         log.trace("Source({}).validate.", name);
 
         if (dataSource == null) {
-            log.warn("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
+            log.error("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
             application.hasWarning = true;
             return false;
         }

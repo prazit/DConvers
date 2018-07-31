@@ -1,10 +1,12 @@
 package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.conf.Defaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +18,11 @@ public class DataDate extends DataColumn {
         super(index, type, name);
         log = LoggerFactory.getLogger(DataDate.class);
         this.value = value;
+    }
+
+    @Override
+    public DataColumn clone(String value) {
+        return new DataDate(index, type, name, getValue(value));
     }
 
     @Override
@@ -36,8 +43,24 @@ public class DataDate extends DataColumn {
             return "null";
         }
 
-        simpleDateFormat.applyPattern("YYYY/MM/dd HH:mm:ss");
+        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
         return "'" + simpleDateFormat.format(value) + "'";
+    }
+
+    private Date getValue(String quotedValue) {
+        if (quotedValue == null) {
+            return null;
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
+
+        try {
+            return simpleDateFormat.parse(quotedValue);
+        } catch (ParseException e) {
+            log.warn("DataDate.getValue. has exception: {}", e);
+            return null;
+        }
     }
 
     @Override

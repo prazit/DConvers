@@ -11,6 +11,7 @@ public class SourceConfig extends Config {
     private String dataSource;
     private String query;
     private String id;
+    private String output;
 
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -37,6 +38,14 @@ public class SourceConfig extends Config {
         dataSource = properties.getString(source.connectKey(name, Property.DATA_SOURCE));
         query = properties.getString(source.connectKey(name, Property.QUERY));
         id = properties.getString(source.connectKey(name, Property.ID),"id");
+        output = properties.getString(Property.OUTPUT_FILE.key(),"");
+
+        String outputExt = ".sql";
+        if (output.length() == 0) {
+            output = name + outputExt;
+        } else if (!output.endsWith(outputExt)) {
+            output = output + outputExt;
+        }
 
         return true;
     }
@@ -70,12 +79,17 @@ public class SourceConfig extends Config {
         return id;
     }
 
+    public String getOutput() {
+        return output;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("dataSource", dataSource)
                 .append("query", query)
                 .append("id", id)
+                .append("output", output)
                 .toString();
     }
 }

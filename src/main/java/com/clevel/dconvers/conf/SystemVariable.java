@@ -4,7 +4,9 @@ import java.sql.Types;
 
 public enum SystemVariable {
 
-    FILENUMBER(Types.INTEGER),
+    SOURCE_FILE_NUMBER(Types.INTEGER),
+    TARGET_FILE_NUMBER(Types.INTEGER),
+    MAPPING_FILE_NUMBER(Types.INTEGER),
     ROWNUMBER(Types.INTEGER),
     NOW(Types.TIMESTAMP),
     NULL(Types.VARCHAR)

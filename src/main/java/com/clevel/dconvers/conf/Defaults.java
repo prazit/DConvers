@@ -9,7 +9,9 @@ public enum Defaults {
     NORMAL_LOG_LEVEL("INFO"),
 
     PROGRESS_SHOW_KILO_AFTER(4000),
-    PROGRESS_UPDATE_INTERVAL_MILLISEC(100)
+    PROGRESS_UPDATE_INTERVAL_MILLISEC(100),
+
+    DATE_FORMAT("YYYY/MM/dd HH:mm:ss")
     ;
 
     private int type;

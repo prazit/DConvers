@@ -1,9 +1,6 @@
 package com.clevel.dconvers;
 
-import com.clevel.dconvers.conf.ConverterConfigFile;
-import com.clevel.dconvers.conf.DataConversionConfigFile;
-import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.conf.SystemVariable;
+import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.ngin.data.*;
 import org.apache.commons.cli.HelpFormatter;
@@ -27,9 +24,12 @@ public class Application {
     public Switches switches;
 
     public DataConversionConfigFile dataConversionConfigFile;
+
     public Map<String, DataSource> dataSourceMap;
     public Map<String, Converter> converterMap;
     public Map<SystemVariable, DataColumn> systemVariableMap;
+
+    public DataTable reportTable;
 
     public boolean hasWarning;
 
@@ -37,11 +37,16 @@ public class Application {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         this.args = args;
 
+        reportTable = new DataTable("Report", "id");
         hasWarning = false;
 
         systemVariableMap = createSystemVariableMap();
-        DataLong fileNumber = (DataLong) systemVariableMap.get(SystemVariable.FILENUMBER);
-        fileNumber.setValue(0);
+        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
+        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
+        DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
+        targetFileNumber.setValue(0);
+        mappingFileNumber.setValue(0);
+        sourceFileNumber.setValue(0);
 
         log.trace("Application is created.");
     }
@@ -83,6 +88,9 @@ public class Application {
             dataSource.generateConverterFile();
         }
 
+        dataSourceName = Property.SQL.key();
+        dataSourceMap.put(dataSourceName, new SQLSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
         log.trace("Application. Load Converters.");
         converterMap = new HashMap<>();
         Converter converter;
@@ -101,15 +109,20 @@ public class Application {
         log.trace("Application. Launch Converters.");
         Collection<Converter> converters = converterMap.values();
         log.info("Has {} converters", converters.size());
+        boolean printSource = !dataConversionConfigFile.getOutputSourcePath().isEmpty();
+        boolean printTarget = !dataConversionConfigFile.getOutputTargetPath().isEmpty();
+        boolean printMapping = !dataConversionConfigFile.getOutputMappingPath().isEmpty();
         for (Converter convert : converters) {
             if (!convert.convert()) {
                 stopWithError();
             }
 
-            if (!convert.print()) {
+            if (!convert.print(printSource, printTarget, printMapping)) {
                 stopWithError();
             }
         }
+
+        // TODO Print Report Table
 
         // Successful with warning
         if (hasWarning) {
@@ -221,7 +234,7 @@ public class Application {
             case Types.BIGINT:
             case Types.BIT:
             case Types.NUMERIC:
-                dataColumn = new DataLong(0, columnType, columnName, value==null?0:Long.valueOf(value));
+                dataColumn = new DataLong(0, columnType, columnName, value == null ? 0 : Long.valueOf(value));
                 break;
 
             case Types.CHAR:
@@ -237,12 +250,12 @@ public class Application {
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                dataColumn = new DataBigDecimal(0, columnType, columnName, value==null?null:BigDecimal.valueOf(Double.valueOf(value)));
+                dataColumn = new DataBigDecimal(0, columnType, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
                 break;
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                dataColumn = new DataDate(0, columnType, columnName, value==null?null:Date.valueOf(value));
+                dataColumn = new DataDate(0, columnType, columnName, value == null ? null : Date.valueOf(value));
                 break;
 
             default:
