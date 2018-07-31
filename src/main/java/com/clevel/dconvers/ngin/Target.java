@@ -165,7 +165,7 @@ public class Target extends AppBase {
                         DataTable asSourceTable = converter.getDataTable(mappings[0]);
                         if (asSourceTable == null) {
                             progressBar.close();
-                            log.error("No data-table({}) in converter({}) that required by target({})", mappings[0], converter.getName(), name);
+                            log.error("No table({}) in converter({}) that required by target({})", mappings[0], converter.getName(), name);
                             return false;
                         }
 
@@ -173,7 +173,8 @@ public class Target extends AppBase {
                         DataRow asSourceRow = asSourceTable.getRow(sourceColumnName, targetColumn.getValue());
                         if (asSourceRow == null) {
                             progressBar.close();
-                            log.error("No row contains column({}) with value({}) in data-table({}) in converter({}) that required by target({})", sourceColumnName, targetColumn.getValue(), mappings[0], converter.getName(), name);
+                            log.error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({})", sourceColumnName, targetColumn.getValue(), asSourceTable.getTableName(), converter.getName(), name);
+                            log.debug("asSourceTable = {}", asSourceTable);
                             return false;
                         }
 

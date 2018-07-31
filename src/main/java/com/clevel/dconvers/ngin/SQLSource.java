@@ -75,10 +75,10 @@ public class SQLSource extends DataSource {
     }
 
     private DataRow getDataRow(String line, DataTable dataTable) {
-        int columnStart = line.indexOf('(') +1;
-        int columnEnd = line.indexOf(')');
-        int valueStart = line.lastIndexOf('(') +1;
-        int valueEnd = line.lastIndexOf(')');
+        int columnStart = line.indexOf('(') + 1;
+        int columnEnd = line.indexOf(')', columnStart);
+        int valueStart = line.indexOf('(', columnEnd) + 1;
+        int valueEnd = line.indexOf(')', valueStart);
 
         String columnString = line.substring(columnStart, columnEnd).replaceAll("`", "");
         String valueString = line.substring(valueStart, valueEnd).replaceAll("`", "");
@@ -94,7 +94,7 @@ public class SQLSource extends DataSource {
         for (int i = 0; i < length; i++) {
             value = values[i].trim();
             columnType = getColumnType(value);
-            columnName = columns[i];
+            columnName = columns[i].trim();
             dataRow.putColumn(columnName, application.createDataColumn(columnName, columnType, value));
         }
 

@@ -3,6 +3,8 @@ package com.clevel.dconvers.ngin.data;
 import com.clevel.dconvers.ngin.ValidatorBase;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
@@ -67,17 +69,22 @@ public class DataTable extends ValidatorBase {
     public DataRow getRow(String sourceColumnName, String value) {
         DataColumn dataColumn;
 
+        Logger log = LoggerFactory.getLogger(DataTable.class);
+
         for (DataRow dataRow : dataRowList) {
             dataColumn = dataRow.getColumn(sourceColumnName);
             if (dataColumn == null) {
+                log.debug("DataTable({}).getRow({},{}). dataColumn({}) is null then return null", tableName, sourceColumnName, value, sourceColumnName);
                 return null;
             }
 
             if (value.compareTo(dataColumn.getValue()) == 0) {
+                log.debug("DataTable({}).getRow({},{}). return at this column({},{}) : dataRow = {}", tableName, sourceColumnName, value, dataColumn.getName(), dataColumn.getValue(), dataRow);
                 return dataRow;
             }
         }
 
+        log.debug("DataTable({}).getRow({},{}). return null", tableName, sourceColumnName, value);
         return null;
     }
 

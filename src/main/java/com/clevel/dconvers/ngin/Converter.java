@@ -286,6 +286,7 @@ public class Converter extends AppBase {
 
     public Source getSource(String name) {
         if (name == null) {
+            log.debug("getSource({}) return null", name);
             return null;
         }
 
