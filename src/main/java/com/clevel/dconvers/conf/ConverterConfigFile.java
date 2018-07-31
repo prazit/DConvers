@@ -16,6 +16,7 @@ public class ConverterConfigFile extends ConfigFile {
 
     private Map<String, SourceConfig> sourceConfigMap;
     private Map<String, TargetConfig> targetConfigMap;
+    private int index;
 
     public ConverterConfigFile(Application application, String name) {
         super(application, name);
@@ -31,6 +32,8 @@ public class ConverterConfigFile extends ConfigFile {
     @Override
     protected boolean loadProperties() {
         log.trace("ConverterConfigFile.loadProperties.");
+
+        index = properties.getInt(Property.CONVERTER_FILE.connectKey(Property.INDEX), 1);
 
         List<Object> sourceNameList;
         try {
@@ -86,6 +89,10 @@ public class ConverterConfigFile extends ConfigFile {
         return true;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
     public Map<String, SourceConfig> getSourceConfigMap() {
         return sourceConfigMap;
     }
@@ -98,6 +105,7 @@ public class ConverterConfigFile extends ConfigFile {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("valid", valid)
+                .append("index", index)
                 .append("name", name)
                 .append("sourceConfigMap", sourceConfigMap)
                 .append("targetConfigMap", targetConfigMap)

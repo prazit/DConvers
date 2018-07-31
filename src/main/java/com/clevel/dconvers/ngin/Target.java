@@ -266,7 +266,7 @@ public class Target extends AppBase {
             }
         }
 
-        // -- start mapping table
+        // -- start report table
 
         // TODO: create reportRow and add into the application.reportTable
 

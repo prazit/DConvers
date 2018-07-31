@@ -26,7 +26,7 @@ public class Application {
     public DataConversionConfigFile dataConversionConfigFile;
 
     public Map<String, DataSource> dataSourceMap;
-    public Map<String, Converter> converterMap;
+    public List<Converter> converterList;
     public Map<SystemVariable, DataColumn> systemVariableMap;
 
     public DataTable reportTable;
@@ -92,7 +92,7 @@ public class Application {
         dataSourceMap.put(dataSourceName, new SQLSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         log.trace("Application. Load Converters.");
-        converterMap = new HashMap<>();
+        converterList = new ArrayList<>();
         Converter converter;
         String converterName;
         for (ConverterConfigFile converterConfigFile : dataConversionConfigFile.getConverterConfigMap().values()) {
@@ -103,16 +103,17 @@ public class Application {
                 performInvalidConverter(converter);
             }
 
-            converterMap.put(converterName, converter);
+            converterList.add(converter);
         }
+        log.info("Has {} converters", converterList.size());
 
         log.trace("Application. Launch Converters.");
-        Collection<Converter> converters = converterMap.values();
-        log.info("Has {} converters", converters.size());
+        converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
+
         boolean printSource = !dataConversionConfigFile.getOutputSourcePath().isEmpty();
         boolean printTarget = !dataConversionConfigFile.getOutputTargetPath().isEmpty();
         boolean printMapping = !dataConversionConfigFile.getOutputMappingPath().isEmpty();
-        for (Converter convert : converters) {
+        for (Converter convert : converterList) {
             if (!convert.convert()) {
                 stopWithError();
             }

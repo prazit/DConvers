@@ -4,7 +4,8 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <!--<pattern>[%-5level] %logger: %msg%n</pattern>-->
-            <pattern>%-5level %date %logger [%file:%line] %msg%n</pattern>
+            <!--<pattern>%-5level %date %logger [%file:%line] %msg%n</pattern>-->
+            <pattern>%date |-%-5level in %file:%line - %msg%n</pattern>
         </encoder>
     </appender>
 
