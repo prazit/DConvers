@@ -85,6 +85,7 @@ public class Application {
             }
             dataSourceMap.put(dataSourceName, dataSource);
 
+            dataSource.runPre();
             dataSource.generateConverterFile();
         }
 
@@ -125,6 +126,11 @@ public class Application {
 
         // TODO Print Report Table
 
+        log.trace("Application. Run post process of each datasource.");
+        for (DataSource dataSourceItem : dataSourceMap.values()) {
+            dataSourceItem.runPost();
+        }
+
         // Successful with warning
         if (hasWarning) {
             stopWithWarning();
@@ -136,19 +142,19 @@ public class Application {
 
     public void stop() {
         closeAllDataSource();
-        log.trace("program exit normally");
+        log.info("SUCCESS");
         System.exit(0);
     }
 
     public void stopWithError() {
         closeAllDataSource();
-        log.trace("program exit with error");
+        log.info("HAS SOME ERROR");
         System.exit(1);
     }
 
     public void stopWithWarning() {
         closeAllDataSource();
-        log.trace("program exit with warning");
+        log.info("SUCCESS WITH WARNING");
         System.exit(2);
     }
 

@@ -15,6 +15,9 @@ public class DataSourceConfig extends Config {
     private String user;
     private String password;
 
+    private String pre;
+    private String post;
+
     private boolean generateConverterFile;
 
     public DataSourceConfig(Application application, String name) {
@@ -43,6 +46,9 @@ public class DataSourceConfig extends Config {
         schema = properties.getString(dataSource.connectKey(name, Property.SCHEMA));
         user = properties.getString(dataSource.connectKey(name, Property.USER));
         password = properties.getString(dataSource.connectKey(name, Property.PASSWORD));
+
+        pre = properties.getString(dataSource.connectKey(name, Property.PRE), "");
+        post = properties.getString(dataSource.connectKey(name, Property.POST), "");
 
         generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
 
@@ -88,6 +94,14 @@ public class DataSourceConfig extends Config {
 
     public boolean isGenerateConverterFile() {
         return generateConverterFile;
+    }
+
+    public String getPre() {
+        return pre;
+    }
+
+    public String getPost() {
+        return post;
     }
 
     @Override

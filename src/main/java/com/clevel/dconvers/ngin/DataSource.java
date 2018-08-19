@@ -246,6 +246,7 @@ public class DataSource extends AppBase {
             return false;
         }
 
+        log.info("DataSource({}).generateConverterFile", name);
         String targetTableName = "targets";
         DataTable tables;
         DataTable columns;
@@ -436,5 +437,13 @@ public class DataSource extends AppBase {
     @Override
     public String toString() {
         return dataSourceConfig.toString();
+    }
+
+    public void runPre() {
+        // TODO Run SQL from file specified in dataSourceConfig.getPre()
+    }
+
+    public void runPost() {
+        // TODO Run SQL from file specified in dataSourceConfig.getPost()
     }
 }

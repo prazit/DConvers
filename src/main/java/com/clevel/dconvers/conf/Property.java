@@ -8,6 +8,8 @@ public enum Property {
         SCHEMA("schema"),
         USER("user"),
         PASSWORD("password"),
+        PRE("pre"),
+        POST("post"),
 
     CONVERTER_FILE("converter"),
         REPORT_PATH("output.report"),
