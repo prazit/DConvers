@@ -41,12 +41,6 @@ public class Application {
         hasWarning = false;
 
         systemVariableMap = createSystemVariableMap();
-        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
-        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
-        DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        targetFileNumber.setValue(0);
-        mappingFileNumber.setValue(0);
-        sourceFileNumber.setValue(0);
 
         log.trace("Application is created.");
     }
@@ -71,6 +65,15 @@ public class Application {
                 stopWithError();
             }
         }
+
+        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
+        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
+        DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
+        DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
+        targetFileNumber.setValue(dataConversionConfigFile.getTargetFileNumber() - 1);
+        mappingFileNumber.setValue(dataConversionConfigFile.getMappingFileNumber() - 1);
+        sourceFileNumber.setValue(dataConversionConfigFile.getSourceFileNumber() - 1);
+        reportFileNumber.setValue(dataConversionConfigFile.getReportFileNumber() - 1);
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();

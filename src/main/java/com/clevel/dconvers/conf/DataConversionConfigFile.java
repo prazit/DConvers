@@ -28,6 +28,11 @@ public class DataConversionConfigFile extends ConfigFile {
     private String mappingTablePrefix;
     private String reportTableName;
 
+    private int reportFileNumber;
+    private int sourceFileNumber;
+    private int targetFileNumber;
+    private int mappingFileNumber;
+
     private boolean childValid;
 
     public DataConversionConfigFile(Application application, String name) {
@@ -52,6 +57,11 @@ public class DataConversionConfigFile extends ConfigFile {
         outputTargetPath = properties.getString(converterProperty.connectKey(Property.TARGET_PATH),"/");
         outputMappingPath = properties.getString(converterProperty.connectKey(Property.MAPPING_PATH),"/");
 
+        reportFileNumber = properties.getInt(converterProperty.connectKey(Property.REPORT_PATH.connectKey(Property.FILE_NUMBER)), 1);
+        sourceFileNumber = properties.getInt(converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1);
+        targetFileNumber = properties.getInt(converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1);
+        mappingFileNumber = properties.getInt(converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1);
+
         mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
         reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
 
@@ -69,7 +79,6 @@ public class DataConversionConfigFile extends ConfigFile {
             name = object.toString();
             dataSourceConfigMap.put(name, new DataSourceConfig(application, name));
         }
-
 
         List<Object> converterNameList;
         try {
@@ -133,6 +142,22 @@ public class DataConversionConfigFile extends ConfigFile {
         return outputMappingPath;
     }
 
+    public int getReportFileNumber() {
+        return reportFileNumber;
+    }
+
+    public int getSourceFileNumber() {
+        return sourceFileNumber;
+    }
+
+    public int getTargetFileNumber() {
+        return targetFileNumber;
+    }
+
+    public int getMappingFileNumber() {
+        return mappingFileNumber;
+    }
+
     public Map<String, ConverterConfigFile> getConverterConfigMap() {
         return converterConfigMap;
     }
@@ -164,6 +189,10 @@ public class DataConversionConfigFile extends ConfigFile {
                 .append("outputMappingPath", outputMappingPath)
                 .append("mappingTablePrefix", mappingTablePrefix)
                 .append("reportTableName", reportTableName)
+                .append("reportFileNumber", reportFileNumber)
+                .append("sourceFileNumber", sourceFileNumber)
+                .append("targetFileNumber", targetFileNumber)
+                .append("mappingFileNumber", mappingFileNumber)
                 .append("childValid", childValid)
                 .append("name", name)
                 .append("valid", valid)
