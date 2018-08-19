@@ -29,7 +29,7 @@ public class DataString extends DataColumn {
             return "null";
         }
 
-        return "'" + value + "'";
+        return "\"" + value + "\"";
     }
 
     @Override

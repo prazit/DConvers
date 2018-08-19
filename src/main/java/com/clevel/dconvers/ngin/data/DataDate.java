@@ -44,7 +44,7 @@ public class DataDate extends DataColumn {
         }
 
         simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
-        return "'" + simpleDateFormat.format(value) + "'";
+        return "\"" + simpleDateFormat.format(value) + "\"";
     }
 
     private Date getValue(String quotedValue) {
