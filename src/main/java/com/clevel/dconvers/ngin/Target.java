@@ -78,7 +78,7 @@ public class Target extends AppBase {
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
         mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
-        dataTable = new DataTable(targetTableName, targetIdColumnName);
+        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getPostUpdate());
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
@@ -94,10 +94,6 @@ public class Target extends AppBase {
         DataRow targetRow;
         DataRow mappingRow;
         int targetColumnIndex;
-
-        int dotIndex;
-        String fkTargetName;
-        String fkColumnName;
 
         List<DataRow> sourceRowList = sourceDataTable.getAllRow();
         int rowCount = sourceRowList.size();
@@ -149,7 +145,6 @@ public class Target extends AppBase {
 
                     case COL:
                         String[] sourceColumnNames = sourceColumnName.split(">>");
-                        log.debug("sourceColumnNames is {}, {}, {}", sourceColumnNames[0], sourceColumnNames[1], sourceColumnNames[2]);
                         sourceColumnName = sourceColumnNames[0];
                         targetColumn = sourceRow.getColumn(sourceColumnName);
                         if (targetColumn == null) {
@@ -160,7 +155,6 @@ public class Target extends AppBase {
                         }
 
                         String[] mappings = sourceColumnNames[1].split("[.]");
-                        log.debug("mappings is {}, {}", mappings[0], mappings[1]);
 
                         DataTable asSourceTable = converter.getDataTable(mappings[0]);
                         if (asSourceTable == null) {
@@ -206,7 +200,7 @@ public class Target extends AppBase {
 
                     case INV:
                         progressBar.close();
-                        log.error("Invalid source column({}) for target column({})", sourceColumnName, targetColumnName);
+                        log.error("Invalid source-column({}) for target-column({})", sourceColumnName, targetColumnName);
                         return false;
 
                     default: // constants

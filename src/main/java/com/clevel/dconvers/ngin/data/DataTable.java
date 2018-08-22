@@ -19,6 +19,8 @@ public class DataTable extends ValidatorBase {
     private ResultSetMetaData metaData;
     private String tableName;
     private String idColumnName;
+    private String query;
+    private List<String> postUpdate;
 
     public DataTable(String tableName, String idColumnName) {
         this.tableName = tableName;
@@ -26,6 +28,18 @@ public class DataTable extends ValidatorBase {
         dataRowList = new ArrayList<>();
         dataRowMap = new HashMap<>();
         valid = true;
+        query = "";
+        postUpdate = new ArrayList<>();
+    }
+
+    public DataTable(String tableName, String idColumnName, List<String> postUpdate) {
+        this.tableName = tableName;
+        this.postUpdate = postUpdate;
+        this.idColumnName = idColumnName;
+        dataRowList = new ArrayList<>();
+        dataRowMap = new HashMap<>();
+        valid = true;
+        query = "";
     }
 
     public String getTableName() {
@@ -105,13 +119,34 @@ public class DataTable extends ValidatorBase {
         return dataRowList.size();
     }
 
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public List<String> getPostUpdate() {
+        return postUpdate;
+    }
+
+    public void setPostUpdate(List<String> postUpdate) {
+        this.postUpdate = postUpdate;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("valid", valid)
+                .append("dataRowList", dataRowList)
+                .append("dataRowMap", dataRowMap)
+                .append("metaData", metaData)
                 .append("tableName", tableName)
                 .append("idColumnName", idColumnName)
-                .append("dataRowList", dataRowList)
-                .toString();
+                .append("query", query)
+                .append("postUpdate", postUpdate)
+                .toString()
+                .replace('=', ':');
     }
+
 }

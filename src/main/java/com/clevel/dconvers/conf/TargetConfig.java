@@ -3,6 +3,7 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.Application;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ public class TargetConfig extends Config {
     private ConverterConfigFile converterConfigFile;
 
     private int index;
+
+    private List<String> postUpdate;
 
     private String source;
     private String output;
@@ -64,7 +67,7 @@ public class TargetConfig extends Config {
         String outputExt = ".sql";
         if (output.length() == 0) {
             output = table + outputExt;
-        } else if (!output.endsWith(outputExt)) {
+        } else if (!output.toLowerCase().endsWith(outputExt)) {
             output = output + outputExt;
         }
 
@@ -76,6 +79,18 @@ public class TargetConfig extends Config {
             columnList.add(new Pair<>(key,columnProperties.getString(key)));
         }
         log.debug("columnList = {}", columnList);
+
+        List<Object> postUpdateObjectList;
+        try {
+            postUpdateObjectList = targetProperties.getList(Property.POST_UPDATE.key());
+        } catch (ConversionException ex) {
+            postUpdateObjectList = new ArrayList<>();
+        }
+        postUpdate = new ArrayList<>();
+        for (Object obj : postUpdateObjectList) {
+            postUpdate.add(obj.toString());
+        }
+        log.debug("postUpdate = {}", postUpdate);
 
         return true;
     }
@@ -90,6 +105,10 @@ public class TargetConfig extends Config {
         }
 
         return true;
+    }
+
+    public List<String> getPostUpdate() {
+        return postUpdate;
     }
 
     public int getIndex() {
@@ -142,4 +161,5 @@ public class TargetConfig extends Config {
                 .toString()
                 .replace('=', ':');
     }
+
 }

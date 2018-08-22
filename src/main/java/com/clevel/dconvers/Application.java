@@ -91,7 +91,6 @@ public class Application {
             dataSource.runPre();
             dataSource.generateConverterFile();
         }
-
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 

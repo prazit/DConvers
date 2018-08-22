@@ -30,6 +30,7 @@ public enum Property {
         TABLE("table"),
         COLUMN("column"),
         INDEX("index"),
+        POST_UPDATE("post.update"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

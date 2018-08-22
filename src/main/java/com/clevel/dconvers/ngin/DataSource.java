@@ -94,6 +94,7 @@ public class DataSource extends AppBase {
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
+            dataTable.setQuery(query);
             log.info("DataTable({}) has {} rows", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");

@@ -28,6 +28,13 @@ public class SQLInsertFormatter extends DataFormatter {
 
     @Override
     protected String postFormat(DataTable dataTable) {
-        return "COMMIT;\n";
+        String lines = "";
+
+        for (String sql : dataTable.getPostUpdate()) {
+            lines += sql + "\n";
+        }
+        lines += "COMMIT;\n";
+
+        return lines;
     }
 }
