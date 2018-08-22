@@ -117,14 +117,13 @@ public class Application {
         boolean printSource = !dataConversionConfigFile.getOutputSourcePath().isEmpty();
         boolean printTarget = !dataConversionConfigFile.getOutputTargetPath().isEmpty();
         boolean printMapping = !dataConversionConfigFile.getOutputMappingPath().isEmpty();
+        boolean success = false;
         for (Converter convert : converterList) {
-            if (!convert.convert()) {
-                stopWithError();
-            }
-
-            if (!convert.print(printSource, printTarget, printMapping)) {
-                stopWithError();
-            }
+            success = convert.convert();
+            success = success && convert.print(printSource, printTarget, printMapping);
+        }
+        if (!success) {
+            stopWithError();
         }
 
         // TODO Print Report Table
