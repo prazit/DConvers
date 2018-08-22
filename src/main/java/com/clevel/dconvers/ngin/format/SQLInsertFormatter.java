@@ -29,9 +29,14 @@ public class SQLInsertFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         String lines = "";
+        String terminated = ";";
 
         for (String sql : dataTable.getPostUpdate()) {
-            lines += sql + "\n";
+            if (!sql.endsWith(terminated)) {
+                lines += sql + terminated + "\n";
+            } else {
+                lines += sql + "\n";
+            }
         }
         lines += "COMMIT;\n";
 
