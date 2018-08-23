@@ -263,7 +263,7 @@ public class Application {
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                dataColumn = new DataDate(0, columnType, columnName, value == null ? null : Date.valueOf(value));
+                dataColumn = new DataDate(0, columnType, columnName, value);
                 break;
 
             default:

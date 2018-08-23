@@ -20,6 +20,24 @@ public class DataDate extends DataColumn {
         this.value = value;
     }
 
+    public DataDate(int index, int type, String name, String value) {
+        super(index, type, name);
+        log = LoggerFactory.getLogger(DataDate.class);
+
+        if (value == null) {
+            this.value = null;
+        } else {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+            simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
+            try {
+                this.value = simpleDateFormat.parse(value);
+            } catch (Exception e) {
+                log.error("DataDate. parse date ({}) is failed.", value, e.getMessage());
+                this.value = null;
+            }
+        }
+    }
+
     @Override
     public DataColumn clone(String value) {
         return new DataDate(index, type, name, getValue(value));

@@ -93,7 +93,6 @@ public class DataTable extends ValidatorBase {
             }
 
             if (value.compareTo(dataColumn.getValue()) == 0) {
-                log.debug("DataTable({}).getRow({},{}). return at this column({},{}) : dataRow = {}", tableName, sourceColumnName, value, dataColumn.getName(), dataColumn.getValue(), dataRow);
                 return dataRow;
             }
         }
