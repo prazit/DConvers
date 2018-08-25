@@ -10,6 +10,8 @@ import java.util.List;
 
 public class ConverterConfigFileFormatter extends DataFormatter {
 
+    private String dataSourceName;
+
     private String targets;
     private String sources;
     private String sqlCount;
@@ -19,9 +21,9 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     public ConverterConfigFileFormatter() {
         super(true);
 
-        sources = "\n#-------sources-------\n\n\n";
+        sqlCount = "\n\n#-------rowcount-------\n\n# ";
+        sources = "#-------sources-------\n\n\n";
         targets = "#-------targets-------\n";
-        sqlCount = "#-------rowcount-------\n\n\n";
     }
 
     @Override
@@ -52,7 +54,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         String query = "SELECT * FROM " + tableName + " ORDER BY " + id;
         String sourceKey = Property.SOURCE.connectKey(tableName);
         sources += Property.SOURCE.key() + "=" + tableName + "\n"
-                + sourceKey + "." + Property.DATA_SOURCE + "=<datasource>\n"
+                + sourceKey + "." + Property.DATA_SOURCE + "=" + dataSourceName + "\n"
                 + sourceKey + "." + Property.ID + "=" + id + "\n"
                 + sourceKey + "." + Property.QUERY + "=" + query + "\n\n\n";
 
@@ -64,6 +66,10 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n\n\n";
-        return sqlCount + sources + targets + "#EOF";
+        return sqlCount + sources + targets + "\n\n#EOF";
+    }
+
+    public void setDataSourceName(String name) {
+        dataSourceName = name;
     }
 }

@@ -340,6 +340,7 @@ public class DataSource extends AppBase {
 
         log.trace("DataSource({}).generateConverterFile.print", name);
         ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter();
+        formatter.setDataSourceName(name);
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
         String charset = "UTF-8";
