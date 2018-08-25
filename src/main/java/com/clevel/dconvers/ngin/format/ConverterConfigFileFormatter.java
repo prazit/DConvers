@@ -53,7 +53,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         String sourceKey = Property.SOURCE.connectKey(tableName);
         sources += Property.SOURCE.key() + "=" + tableName + "\n"
                 + sourceKey + "." + Property.DATA_SOURCE + "=<datasource>\n"
-                + sourceKey + "." + Property.ID + "=id" + id + "\n"
+                + sourceKey + "." + Property.ID + "=" + id + "\n"
                 + sourceKey + "." + Property.QUERY + "=" + query + "\n\n\n";
 
         sqlCount += "SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
