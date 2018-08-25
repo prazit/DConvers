@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Types;
 import java.util.*;
 
@@ -70,10 +69,12 @@ public class Application {
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
+        DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
         targetFileNumber.setValue(dataConversionConfigFile.getTargetFileNumber() - 1);
         mappingFileNumber.setValue(dataConversionConfigFile.getMappingFileNumber() - 1);
         sourceFileNumber.setValue(dataConversionConfigFile.getSourceFileNumber() - 1);
         reportFileNumber.setValue(dataConversionConfigFile.getReportFileNumber() - 1);
+        now.setValue(new Date());
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();

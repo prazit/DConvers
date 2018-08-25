@@ -82,10 +82,7 @@ public class Target extends AppBase {
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
-        DataDate varNow = (DataDate) systemVars.get(SystemVariable.NOW);
-
         varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
-        varNow.setValue(new Date());
 
         SourceColumnType sourceColumnType;
         DataColumn targetColumn;
