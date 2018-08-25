@@ -60,6 +60,9 @@ public abstract class DataFormatter {
         for (DataRow row : rows) {
             progressBar.step();
             string = format(row);
+            if (string == null) {
+                continue;
+            }
 
             try {
                 writer.write(string);
