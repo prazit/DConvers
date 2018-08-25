@@ -67,7 +67,7 @@ public class DataTable extends ValidatorBase {
     }
 
     public DataRow getRow(int row) {
-        if (row > dataRowList.size()) {
+        if (row >= dataRowList.size()) {
             return new DataRow(this);
         }
         return dataRowList.get(row);

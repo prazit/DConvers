@@ -17,11 +17,14 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     private String sqlCount;
     private String truncateTables;
 
+    private long sourceNumber;
+
     private Logger log;
 
     public ConverterConfigFileFormatter() {
         super(true);
 
+        sourceNumber = 0;
         sqlCount = "\n\n#-------SQL-------\n\n# ";
         truncateTables = "";
         sources = "#-------sources-------\n\n\n";
@@ -53,22 +56,34 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         }
         targets += "\n\n# " + (columnList.size() - 9) + " columns from table '" + tableName + "'\n" + generated;
 
+        sourceNumber ++;
         String query = "SELECT * FROM " + tableName + " ORDER BY " + id;
         String sourceKey = Property.SOURCE.connectKey(tableName);
-        sources += Property.SOURCE.key() + "=" + tableName + "\n"
-                + sourceKey + "." + Property.DATA_SOURCE + "=" + dataSourceName + "\n"
-                + sourceKey + "." + Property.ID + "=" + id + "\n"
-                + sourceKey + "." + Property.QUERY + "=" + query + "\n\n\n";
+        sources += "# generated from table '" + tableName + "'\n"
+                + Property.SOURCE.key() + "=" + tableName + "\n"
+                + sourceKey + "." + Property.DATA_SOURCE.key() + "=" + dataSourceName + "\n"
+                + sourceKey + "." + Property.ID.key() + "=" + id + "\n"
+                + sourceKey + "." + Property.QUERY.key() + "=" + query + "\n"
+                + sourceKey + "." + Property.CREATE.key() + "=false\n"
+                + sourceKey + "." + Property.INSERT.key() + "=true\n"
+                + sourceKey + "." + Property.INDEX.key() + "=" + String.valueOf(sourceNumber) + "\n\n\n";
 
         sqlCount += "SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
-        truncateTables += "TRUNCATE TABLE "+ tableName + ";";
+        truncateTables += "TRUNCATE TABLE " + tableName + ";";
+
+        /*
+        source.branch.index=1
+        source.branch.create=false
+        source.branch.insert=true
+        */
+
         return null;
     }
 
     @Override
     protected String postFormat(DataTable dataTable) {
         sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n";
-        truncateTables = "# SET FOREIGN_KEY_CHECKS=0;" + truncateTables +"SET FOREIGN_KEY_CHECKS=1;\n\n\n";
+        truncateTables = "# SET FOREIGN_KEY_CHECKS=0;" + truncateTables + "SET FOREIGN_KEY_CHECKS=1;\n\n\n";
         return sqlCount + truncateTables + sources + targets + "\n\n#EOF";
     }
 

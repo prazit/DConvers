@@ -117,9 +117,11 @@ public class Application {
         boolean printTarget = !dataConversionConfigFile.getOutputTargetPath().isEmpty();
         boolean printMapping = !dataConversionConfigFile.getOutputMappingPath().isEmpty();
         boolean success = false;
-        for (Converter convert : converterList) {
-            success = convert.convert();
-            success = success && convert.print(printSource, printTarget, printMapping);
+        if (converterList.size() > 0) {
+            for (Converter convert : converterList) {
+                success = convert.convert();
+                success = success && convert.print(printSource, printTarget, printMapping);
+            }
         }
         if (!success) {
             stopWithError();

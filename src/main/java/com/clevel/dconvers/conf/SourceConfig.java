@@ -13,6 +13,12 @@ public class SourceConfig extends Config {
     private String id;
     private String output;
 
+    private int index;
+
+    private boolean create;
+    private boolean insert;
+
+
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
 
@@ -38,7 +44,10 @@ public class SourceConfig extends Config {
         dataSource = properties.getString(source.connectKey(name, Property.DATA_SOURCE));
         query = properties.getString(source.connectKey(name, Property.QUERY));
         id = properties.getString(source.connectKey(name, Property.ID),"id");
-        output = properties.getString(Property.OUTPUT_FILE.key(),"");
+        output = properties.getString(source.connectKey(name, Property.OUTPUT_FILE),"");
+        create = properties.getBoolean(source.connectKey(name, Property.CREATE), false);
+        insert = properties.getBoolean(source.connectKey(name, Property.INSERT), true);
+        index = properties.getInt(source.connectKey(name, Property.INDEX), 1);
 
         String outputExt = ".sql";
         if (output.length() == 0) {
@@ -81,6 +90,18 @@ public class SourceConfig extends Config {
 
     public String getOutput() {
         return output;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public boolean isCreate() {
+        return create;
+    }
+
+    public boolean isInsert() {
+        return insert;
     }
 
     @Override

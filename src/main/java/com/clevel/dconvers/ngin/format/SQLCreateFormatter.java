@@ -5,6 +5,7 @@ import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 
 import java.sql.Types;
+import java.util.List;
 
 public class SQLCreateFormatter extends DataFormatter {
 
@@ -37,10 +38,15 @@ public class SQLCreateFormatter extends DataFormatter {
             ;
         */
 
+        List<DataColumn> columnList = row.getColumnList();
+        if (columnList.size() == 0) {
+            return "";
+        }
+
         String columns = "";
         String columnString;
 
-        for (DataColumn column : row.getColumnList()) {
+        for (DataColumn column : columnList) {
             columnString = column.getName();
             if (columnString.compareTo(idColumnName) == 0) {
                 continue;

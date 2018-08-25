@@ -26,6 +26,7 @@ public class Converter extends AppBase {
     private Map<String, Target> targetMap;
     private Map<String, DataTable> mappingTableMap;
     private List<Target> sortedTarget;
+    private List<Source> sortedSource;
 
     private String mappingTablePrefix;
 
@@ -58,6 +59,7 @@ public class Converter extends AppBase {
         String name;
         Source source;
         sourceMap = new HashMap<>();
+        sortedSource = new ArrayList<>();
         for (SourceConfig sourceConfig : sourceConfigMap.values()) {
             name = sourceConfig.getName();
             source = new Source(application, name, this, sourceConfig);
@@ -66,7 +68,9 @@ public class Converter extends AppBase {
                 return false;
             }
             sourceMap.put(name, source);
+            sortedSource.add(source);
         }
+        sortedSource.sort((o1, o2) -> o1.getSourceConfig().getIndex() > o2.getSourceConfig().getIndex() ? 1 : -1);
 
         Target target;
         targetMap = new HashMap<>();
@@ -108,8 +112,8 @@ public class Converter extends AppBase {
     public boolean convert() {
         log.trace("Converter({}).convert", name);
 
-        log.info("Build {} source tables", sourceMap.size());
-        for (Source source : sourceMap.values()) {
+        log.info("Build {} source tables", sortedSource.size());
+        for (Source source : sortedSource) {
             valid = source.buildDataTable();
             if (!valid) {
                 return false;
@@ -211,8 +215,21 @@ public class Converter extends AppBase {
             return true;
         }
 
-        for (Source source : sourceMap.values()) {
+        SourceConfig sourceConfig;
+        for (Source source : sortedSource) {
             log.trace("print Source({}) ...", source.getName());
+
+            sourceConfig = source.getSourceConfig();
+            if (sourceConfig.isInsert()) {
+                sqlInsertFormatter = sqlInsert;
+            } else {
+                sqlInsertFormatter = null;
+            }
+            if (sourceConfig.isCreate()) {
+                sqlCreateFormatter = sqlCreate;
+            } else {
+                sqlCreateFormatter = null;
+            }
 
             dataTable = source.getDataTable();
             String query = dataTable.getQuery();
@@ -228,7 +245,7 @@ public class Converter extends AppBase {
                     + "-- This sql file contains " + dataTable.getRowCount() + " rows from source(" + source.getName() + ") in converter(" + name + ")\n"
                     + "-- Data from : " + query + "\n"
                     + "--\n";
-            printDataTable(headPrint, dataTable, outputFile, charset, sqlCreate, sqlInsert, null);
+            printDataTable(headPrint, dataTable, outputFile, charset, sqlCreateFormatter, sqlInsertFormatter, null);
         }
 
         return true;

@@ -83,6 +83,9 @@ public class DataDate extends DataColumn {
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return "";
+        }
         return value.toString();
     }
 
