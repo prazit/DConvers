@@ -15,13 +15,15 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     private String targets;
     private String sources;
     private String sqlCount;
+    private String truncateTables;
 
     private Logger log;
 
     public ConverterConfigFileFormatter() {
         super(true);
 
-        sqlCount = "\n\n#-------rowcount-------\n\n# ";
+        sqlCount = "\n\n#-------SQL-------\n\n# ";
+        truncateTables = "";
         sources = "#-------sources-------\n\n\n";
         targets = "#-------targets-------\n";
     }
@@ -59,14 +61,15 @@ public class ConverterConfigFileFormatter extends DataFormatter {
                 + sourceKey + "." + Property.QUERY + "=" + query + "\n\n\n";
 
         sqlCount += "SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
-
+        truncateTables += "TRUNCATE TABLE "+ tableName + ";";
         return null;
     }
 
     @Override
     protected String postFormat(DataTable dataTable) {
-        sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n\n\n";
-        return sqlCount + sources + targets + "\n\n#EOF";
+        sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n";
+        truncateTables = "# SET FOREIGN_KEY_CHECKS=0;" + truncateTables +"SET FOREIGN_KEY_CHECKS=1;\n\n\n";
+        return sqlCount + truncateTables + sources + targets + "\n\n#EOF";
     }
 
     public void setDataSourceName(String name) {
