@@ -141,6 +141,7 @@ public class DataSource extends AppBase {
         }
         progressBar.maxHint(rowCount);
 
+        Object object;
         while (resultSet.next()) {
             progressBar.step();
             dataRow = new DataRow(dataTable);
@@ -152,14 +153,16 @@ public class DataSource extends AppBase {
                 switch (columnType) {
                     case Types.BIGINT:
                     case Types.NUMERIC:
-                        dataColumn = new DataLong(columnIndex, Types.BIGINT, columnName, resultSet.getLong(columnIndex));
+                        object = resultSet.getObject(columnIndex);
+                        dataColumn = new DataLong(columnIndex, Types.BIGINT, columnName, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.INTEGER:
                     case Types.SMALLINT:
                     case Types.BOOLEAN:
                     case Types.BIT:
-                        dataColumn = new DataLong(columnIndex, Types.INTEGER, columnName, resultSet.getLong(columnIndex));
+                        object = resultSet.getObject(columnIndex);
+                        dataColumn = new DataLong(columnIndex, Types.INTEGER, columnName, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.CHAR:

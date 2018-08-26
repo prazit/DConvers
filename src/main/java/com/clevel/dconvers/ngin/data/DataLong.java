@@ -4,9 +4,9 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class DataLong extends DataColumn {
-    private long value;
+    private Long value;
 
-    public DataLong(int index, int type, String name, long value) {
+    public DataLong(int index, int type, String name, Long value) {
         super(index, type, name);
 
         this.value = value;
@@ -24,15 +24,21 @@ public class DataLong extends DataColumn {
 
     @Override
     public String getQuotedValue() {
+        if (value == null) {
+            return "null";
+        }
         return String.valueOf(value);
     }
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return "null";
+        }
         return String.valueOf(value);
     }
 
-    public void setValue(long value) {
+    public void setValue(Long value) {
         this.value = value;
     }
 

@@ -70,10 +70,10 @@ public class Application {
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
-        targetFileNumber.setValue(dataConversionConfigFile.getTargetFileNumber() - 1);
-        mappingFileNumber.setValue(dataConversionConfigFile.getMappingFileNumber() - 1);
-        sourceFileNumber.setValue(dataConversionConfigFile.getSourceFileNumber() - 1);
-        reportFileNumber.setValue(dataConversionConfigFile.getReportFileNumber() - 1);
+        targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber() - 1));
+        mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber() - 1));
+        sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber() - 1));
+        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber() - 1));
         now.setValue(new Date());
 
         log.trace("Application. Load DataSources.");
@@ -245,7 +245,7 @@ public class Application {
             case Types.BIGINT:
             case Types.BIT:
             case Types.NUMERIC:
-                dataColumn = new DataLong(0, columnType, columnName, value == null ? 0 : Long.valueOf(value));
+                dataColumn = new DataLong(0, columnType, columnName, value == null ? null : Long.valueOf(value));
                 break;
 
             case Types.CHAR:
