@@ -12,10 +12,10 @@ public enum Property {
     POST("post"),
 
     CONVERTER_FILE("converter"),
-    REPORT_PATH("output.report"),
-    SOURCE_PATH("output.source"),
-    TARGET_PATH("output.target"),
-    MAPPING_PATH("output.mapping"),
+    REPORT_PATH("report.output"),
+    SOURCE_PATH("source.output"),
+    TARGET_PATH("target.output"),
+    MAPPING_PATH("mapping.output"),
 
     SOURCE("source"),
     SQL("sql"),

@@ -61,8 +61,8 @@ public class TargetConfig extends Config {
         table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
         create = targetProperties.getBoolean(Property.CREATE.key(), false);
-        insert = targetProperties.getBoolean(Property.INSERT.key(), false);
-        markdown = targetProperties.getBoolean(Property.MARKDOWN.key(), false);
+        insert = targetProperties.getBoolean(Property.INSERT.key(), true);
+        markdown = targetProperties.getBoolean(Property.MARKDOWN.key(), true);
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 

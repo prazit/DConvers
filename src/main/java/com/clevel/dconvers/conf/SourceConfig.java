@@ -48,7 +48,7 @@ public class SourceConfig extends Config {
         output = properties.getString(source.connectKey(name, Property.OUTPUT_FILE),"");
         create = properties.getBoolean(source.connectKey(name, Property.CREATE), false);
         insert = properties.getBoolean(source.connectKey(name, Property.INSERT), true);
-        markdown = properties.getBoolean(source.connectKey(name, Property.MARKDOWN), false);
+        markdown = properties.getBoolean(source.connectKey(name, Property.MARKDOWN), true);
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
         
         String outputExt = ".sql";
