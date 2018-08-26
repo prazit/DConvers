@@ -47,10 +47,12 @@ public class SQLCreateFormatter extends DataFormatter {
 
         String columns = "";
         String columnString;
+        int idColumnType = Types.BIGINT;
 
         for (DataColumn column : columnList) {
             columnString = column.getName();
             if (columnString.compareTo(idColumnName) == 0) {
+                idColumnType = column.getType();
                 continue;
             }
 
@@ -59,7 +61,18 @@ public class SQLCreateFormatter extends DataFormatter {
         }
 
         columns = columns.substring(0, columns.length() - 2);
-        columnString = "`" + idColumnName + "` bigint auto_increment primary key, ";
+        switch (idColumnType) {
+            case Types.INTEGER:
+                columnString = "`" + idColumnName + "` int auto_increment primary key, ";
+                break;
+
+            case Types.BIGINT:
+                columnString = "`" + idColumnName + "` bigint auto_increment primary key, ";
+                break;
+
+            default:
+                columnString = "`" + idColumnName + "` varchar(255) primary key, ";
+        }
 
         String sqlCreate = "DROP TABLE IF EXISTS `" + tableName + "`;\nCREATE TABLE `" + tableName + "` ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
         return sqlCreate;
