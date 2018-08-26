@@ -1,5 +1,6 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
@@ -46,7 +47,11 @@ public class MarkdownFormatter extends DataFormatter {
         DataRow firstRow = rowList.get(0);
         columnIndex = 0;
         for (DataColumn column : firstRow.getColumnList()) {
-            value = column.getName();
+            if (Types.DATE == column.getType()) {
+                value = column.getName() + " (" + Defaults.DATE_FORMAT.getStringValue() + ")";
+            } else {
+                value = column.getName();
+            }
             registerColumnWidth(columnIndex, value);
             columnIndex++;
         }
@@ -60,7 +65,7 @@ public class MarkdownFormatter extends DataFormatter {
             }
         }
 
-        return "\n\n";
+        return "\n\n# TABLE: " + dataTable.getTableName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getTableName() + ")</sup></sup>\n\n";
     }
 
     private void registerColumnWidth(int columnIndex, String value) {
@@ -109,15 +114,19 @@ public class MarkdownFormatter extends DataFormatter {
 
             columnIndex = 0;
             for (DataColumn column : columnList) {
-                name = column.getName();
+                columnType = column.getType();
+                if (Types.DATE == columnType) {
+                    name = column.getName() + " (" + Defaults.DATE_FORMAT.getStringValue() + ")";
+                } else {
+                    name = column.getName();
+                }
                 value = column.getValue();
                 nameLength = name.length();
-                valueLength = value.length();
+                valueLength = value == null ? 4 : value.length();
                 width = columnWidth.get(columnIndex);
 
                 header += "| " + name + StringUtils.repeat(' ', width - nameLength - 2) + " ";
 
-                columnType = column.getType();
                 if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
                     headerSeparator += "|" + StringUtils.repeat('-', width - 1) + ":";
                     record += "| " + StringUtils.repeat(' ', width - valueLength - 2) + value + " ";
@@ -145,7 +154,7 @@ public class MarkdownFormatter extends DataFormatter {
         columnIndex = 0;
         for (DataColumn column : columnList) {
             value = column.getValue();
-            valueLength = value.length();
+            valueLength = value == null ? 4 : value.length();
             width = columnWidth.get(columnIndex);
 
             columnType = column.getType();

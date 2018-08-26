@@ -25,8 +25,8 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         super(true);
 
         sourceNumber = 0;
-        sqlCount = "\n\n#-------SQL-------\n\n# ";
-        truncateTables = "";
+        sqlCount = "\n\n#-------SQL-------\n\n#-- Count row for all tables\n# ";
+        truncateTables = "#-- Truncate for all tables\n# SET FOREIGN_KEY_CHECKS=0;";
         sources = "#-------sources-------\n\n\n";
         targets = "#-------targets-------\n";
     }
@@ -72,19 +72,13 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         sqlCount += "SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
         truncateTables += "TRUNCATE TABLE " + tableName + ";";
 
-        /*
-        source.branch.index=1
-        source.branch.create=false
-        source.branch.insert=true
-        */
-
         return null;
     }
 
     @Override
     protected String postFormat(DataTable dataTable) {
         sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n";
-        truncateTables = "# SET FOREIGN_KEY_CHECKS=0;" + truncateTables + "SET FOREIGN_KEY_CHECKS=1;\n\n\n";
+        truncateTables =  truncateTables + "SET FOREIGN_KEY_CHECKS=1;\n\n\n";
         return sqlCount + truncateTables + sources + targets + "\n\n#EOF";
     }
 

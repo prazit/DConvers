@@ -84,9 +84,18 @@ public class DataDate extends DataColumn {
     @Override
     public String getValue() {
         if (value == null) {
-            return "";
+            return "null";
         }
-        return value.toString();
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        simpleDateFormat.applyPattern("YYYY");
+        long year = Long.parseLong(simpleDateFormat.format(value));
+        if (year > 9999) {
+            return "null";
+        }
+
+        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
+        return simpleDateFormat.format(value);
     }
 
     public void setValue(Date value) {
