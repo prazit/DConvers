@@ -291,6 +291,9 @@ public class DataSource extends AppBase {
             targetKey = Property.TARGET.connectKey(tableName, Property.INSERT);
             targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "true"));
 
+            targetKey = Property.TARGET.connectKey(tableName, Property.MARKDOWN);
+            targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "true"));
+
             targetKey = "#" + Property.TARGET.connectKey(tableName, Property.ROW_NUMBER);
             targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, "1"));
 

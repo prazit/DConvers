@@ -66,6 +66,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
                 + sourceKey + "." + Property.QUERY.key() + "=" + query + "\n"
                 + sourceKey + "." + Property.CREATE.key() + "=false\n"
                 + sourceKey + "." + Property.INSERT.key() + "=true\n"
+                + sourceKey + "." + Property.MARKDOWN.key() + "=true\n"
                 + sourceKey + "." + Property.INDEX.key() + "=" + String.valueOf(sourceNumber) + "\n\n\n";
 
         sqlCount += "SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
