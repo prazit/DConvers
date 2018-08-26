@@ -30,6 +30,7 @@ public class TargetConfig extends Config {
 
     private boolean create;
     private boolean insert;
+    private boolean markdown;
 
     private List<Pair<String,String>> columnList;
 
@@ -60,7 +61,8 @@ public class TargetConfig extends Config {
         table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
         create = targetProperties.getBoolean(Property.CREATE.key(), false);
-        insert = targetProperties.getBoolean(Property.INSERT.key(), true);
+        insert = targetProperties.getBoolean(Property.INSERT.key(), false);
+        markdown = targetProperties.getBoolean(Property.MARKDOWN.key(), false);
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 
@@ -143,6 +145,10 @@ public class TargetConfig extends Config {
         return insert;
     }
 
+    public boolean isMarkdown() {
+        return markdown;
+    }
+
     public List<Pair<String, String>> getColumnList() {
         return columnList;
     }
@@ -155,6 +161,7 @@ public class TargetConfig extends Config {
                 .append("table", table)
                 .append("create", create)
                 .append("insert", insert)
+                .append("markdown", markdown)
                 .append("source", source)
                 .append("output", output)
                 .append("columnList", columnList)

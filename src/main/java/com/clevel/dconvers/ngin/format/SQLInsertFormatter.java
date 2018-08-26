@@ -8,6 +8,8 @@ public class SQLInsertFormatter extends DataFormatter {
 
     public SQLInsertFormatter() {
         super(true);
+
+        outputType = "sql file";
     }
 
     @Override

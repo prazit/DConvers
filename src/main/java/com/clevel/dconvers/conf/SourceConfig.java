@@ -17,6 +17,7 @@ public class SourceConfig extends Config {
 
     private boolean create;
     private boolean insert;
+    private boolean markdown;
 
 
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
@@ -47,8 +48,9 @@ public class SourceConfig extends Config {
         output = properties.getString(source.connectKey(name, Property.OUTPUT_FILE),"");
         create = properties.getBoolean(source.connectKey(name, Property.CREATE), false);
         insert = properties.getBoolean(source.connectKey(name, Property.INSERT), true);
-        index = properties.getInt(source.connectKey(name, Property.INDEX), 1);
-
+        markdown = properties.getBoolean(source.connectKey(name, Property.MARKDOWN), false);
+        index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
+        
         String outputExt = ".sql";
         if (output.length() == 0) {
             output = name + outputExt;
@@ -104,6 +106,10 @@ public class SourceConfig extends Config {
         return insert;
     }
 
+    public boolean isMarkdown() {
+        return markdown;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -111,6 +117,13 @@ public class SourceConfig extends Config {
                 .append("query", query)
                 .append("id", id)
                 .append("output", output)
-                .toString();
+                .append("index", index)
+                .append("create", create)
+                .append("insert", insert)
+                .append("markdown", markdown)
+                .append("name", name)
+                .append("valid", valid)
+                .toString()
+                .replace('=', ':');
     }
 }

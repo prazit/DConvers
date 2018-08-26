@@ -2,7 +2,6 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
@@ -13,17 +12,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Types;
-import java.util.List;
 
-public class SQLSource extends DataSource {
+public class SQLDataSource extends DataSource {
 
-    public SQLSource(Application application, String name, DataSourceConfig dataSourceConfig) {
+    public SQLDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
         super(application, name, dataSourceConfig);
     }
 
     @Override
     protected Logger loadLogger() {
-        return LoggerFactory.getLogger(SQLSource.class);
+        return LoggerFactory.getLogger(SQLDataSource.class);
     }
 
     @Override

@@ -14,6 +14,8 @@ public class SQLCreateFormatter extends DataFormatter {
 
     public SQLCreateFormatter() {
         super(false);
+
+        outputType = "sql file";
     }
 
     @Override

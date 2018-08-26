@@ -93,7 +93,7 @@ public class Application {
             dataSource.generateConverterFile();
         }
         dataSourceName = Property.SQL.key();
-        dataSourceMap.put(dataSourceName, new SQLSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+        dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         log.trace("Application. Load Converters.");
         converterList = new ArrayList<>();

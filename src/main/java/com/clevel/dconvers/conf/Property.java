@@ -3,34 +3,35 @@ package com.clevel.dconvers.conf;
 public enum Property {
 
     DATA_SOURCE("datasource"),
-        URL("url"),
-        DRIVER("driver"),
-        SCHEMA("schema"),
-        USER("user"),
-        PASSWORD("password"),
-        PRE("pre"),
-        POST("post"),
+    URL("url"),
+    DRIVER("driver"),
+    SCHEMA("schema"),
+    USER("user"),
+    PASSWORD("password"),
+    PRE("pre"),
+    POST("post"),
 
     CONVERTER_FILE("converter"),
-        REPORT_PATH("output.report"),
-        SOURCE_PATH("output.source"),
-        TARGET_PATH("output.target"),
-        MAPPING_PATH("output.mapping"),
+    REPORT_PATH("output.report"),
+    SOURCE_PATH("output.source"),
+    TARGET_PATH("output.target"),
+    MAPPING_PATH("output.mapping"),
 
     SOURCE("source"),
-        SQL("sql"),
-        QUERY("query"),
-        ID("id"),
-        GENERATE_TARGET("gen"),
+    SQL("sql"),
+    QUERY("query"),
+    ID("id"),
+    GENERATE_TARGET("gen"),
 
     TARGET("target"),
-        CREATE("create"),
-        INSERT("insert"),
-        OUTPUT_FILE("output"),
-        TABLE("table"),
-        COLUMN("column"),
-        INDEX("index"),
-        POST_UPDATE("post.update"),
+    CREATE("create"),
+    INSERT("insert"),
+    MARKDOWN("markdown"),
+    OUTPUT_FILE("output"),
+    TABLE("table"),
+    COLUMN("column"),
+    INDEX("index"),
+    POST_UPDATE("post.update"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),
@@ -52,14 +53,14 @@ public enum Property {
     }
 
     public String connectKey(String name) {
-        return this.key() +"."+ name;
+        return this.key() + "." + name;
     }
 
     public String connectKey(String name, Property property) {
-        return this.key() +"."+ name +"."+ property.key();
+        return this.key() + "." + name + "." + property.key();
     }
 
     public String connectKey(Property property) {
-        return this.key() +"."+ property.key();
+        return this.key() + "." + property.key();
     }
 }

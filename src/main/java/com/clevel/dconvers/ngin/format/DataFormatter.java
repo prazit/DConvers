@@ -13,10 +13,12 @@ import java.util.List;
 
 public abstract class DataFormatter {
 
-    boolean allRow;
+    protected boolean allRow;
+    protected String outputType;
 
     public DataFormatter(boolean allRow) {
         this.allRow = allRow;
+        outputType = "file";
     }
 
     /**
@@ -38,13 +40,15 @@ public abstract class DataFormatter {
 
         String tableName = dataTable.getTableName();
         int rowCount = rows.size();
-        ProgressBar progressBar;
-        if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
-            progressBar = new ProgressBar("Print table(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
-        } else {
-            progressBar = new ProgressBar("Print table(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
+        ProgressBar progressBar = null;
+        if (allRow) {
+            if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+                progressBar = new ProgressBar("Print table(" + tableName + ") to " + outputType, rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
+            } else {
+                progressBar = new ProgressBar("Print table(" + tableName + ") to " + outputType, rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
+            }
+            progressBar.maxHint(rowCount);
         }
-        progressBar.maxHint(rowCount);
 
         String string;
         try {
@@ -58,7 +62,9 @@ public abstract class DataFormatter {
         }
 
         for (DataRow row : rows) {
-            progressBar.step();
+            if (allRow) {
+                progressBar.step();
+            }
             string = format(row);
             if (string == null) {
                 continue;
@@ -71,7 +77,9 @@ public abstract class DataFormatter {
                 return false;
             }
         }
-        progressBar.close();
+        if (allRow) {
+            progressBar.close();
+        }
 
         try {
             string = postFormat(dataTable);

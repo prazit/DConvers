@@ -6,6 +6,8 @@ public class SQLUpdateFormatter extends DataFormatter {
 
     public SQLUpdateFormatter() {
         super(true);
+
+        outputType = "sql file";
     }
 
     @Override
