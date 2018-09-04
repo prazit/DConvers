@@ -24,7 +24,7 @@ public class SQLInsertFormatter extends DataFormatter {
 
         for (DataColumn column : row.getColumnList()) {
             columns += "`" + column.getName() + "`, ";
-            values += column.getQuotedValue() + ", ";
+            values += column.getQuotedValue().replaceAll("\r\n|\n\r|\n", "\\\\n") + ", ";
         }
         columns = columns.substring(0, columns.length() - 2);
         values = values.substring(0, values.length() - 2);

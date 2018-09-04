@@ -75,8 +75,10 @@ public class MarkdownFormatter extends DataFormatter {
         if (value == null) {
             valueLength = 2;
         } else {
+            value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
             valueLength = value.length() + 2;
         }
+
 
         if (columnIndex >= columnWidth.size()) {
             width = 2;
@@ -122,7 +124,12 @@ public class MarkdownFormatter extends DataFormatter {
                 }
                 value = column.getValue();
                 nameLength = name.length();
-                valueLength = value == null ? 4 : value.length();
+                if (value == null) {
+                    valueLength = 4;
+                } else {
+                    value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
+                    valueLength = value.length();
+                }
                 width = columnWidth.get(columnIndex);
 
                 header += "| " + name + StringUtils.repeat(' ', width - nameLength - 2) + " ";
@@ -154,7 +161,12 @@ public class MarkdownFormatter extends DataFormatter {
         columnIndex = 0;
         for (DataColumn column : columnList) {
             value = column.getValue();
-            valueLength = value == null ? 4 : value.length();
+            if (value == null) {
+                valueLength = 4;
+            } else {
+                value = value.replaceAll("\r\n|\n\r|\n", "  ");
+                valueLength = value.length();
+            }
             width = columnWidth.get(columnIndex);
 
             columnType = column.getType();
