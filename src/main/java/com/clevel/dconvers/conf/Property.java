@@ -19,6 +19,7 @@ public enum Property {
 
     SOURCE("source"),
     SQL("sql"),
+    EMAIL("email"),
     QUERY("query"),
     ID("id"),
     GENERATE_TARGET("gen"),

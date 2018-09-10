@@ -3,10 +3,16 @@ package com.clevel.dconvers;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.ngin.data.*;
+import com.sun.mail.imap.IMAPFolder;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
 
+import javax.mail.*;
+import javax.mail.event.MessageCountAdapter;
+import javax.mail.event.MessageCountEvent;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.*;
@@ -94,6 +100,10 @@ public class Application {
         }
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
+        dataSourceName = Property.EMAIL.key();
+        dataSourceMap.put(dataSourceName, new EmailDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
 
         log.trace("Application. Load Converters.");
         converterList = new ArrayList<>();
@@ -275,4 +285,5 @@ public class Application {
 
         return dataColumn;
     }
+
 }
