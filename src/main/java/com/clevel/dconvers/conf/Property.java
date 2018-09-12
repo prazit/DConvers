@@ -28,6 +28,7 @@ public enum Property {
     CREATE("create"),
     INSERT("insert"),
     MARKDOWN("markdown"),
+    PDF_TABLE("pdf.table"),
     OUTPUT_FILE("output"),
     TABLE("table"),
     COLUMN("column"),

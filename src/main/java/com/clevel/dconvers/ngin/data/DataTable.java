@@ -1,6 +1,9 @@
 package com.clevel.dconvers.ngin.data;
 
 import com.clevel.dconvers.ngin.ValidatorBase;
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -12,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataTable extends ValidatorBase {
+public class DataTable extends ValidatorBase implements JRDataSource {
 
     private List<DataRow> dataRowList;
     private Map<String, DataRow> dataRowMap;
@@ -22,6 +25,8 @@ public class DataTable extends ValidatorBase {
     private String query;
     private List<String> postUpdate;
 
+    private Logger log;
+
     public DataTable(String tableName, String idColumnName) {
         this.tableName = tableName;
         this.idColumnName = idColumnName;
@@ -30,6 +35,9 @@ public class DataTable extends ValidatorBase {
         valid = true;
         query = "";
         postUpdate = new ArrayList<>();
+        currentRow = -1;
+        needHeader = true;
+        log = LoggerFactory.getLogger(DataTable.class);
     }
 
     public DataTable(String tableName, String idColumnName, List<String> postUpdate) {
@@ -40,6 +48,9 @@ public class DataTable extends ValidatorBase {
         dataRowMap = new HashMap<>();
         valid = true;
         query = "";
+        currentRow = -1;
+        needHeader = true;
+        log = LoggerFactory.getLogger(DataTable.class);
     }
 
     public String getTableName() {
@@ -146,6 +157,61 @@ public class DataTable extends ValidatorBase {
                 .append("postUpdate", postUpdate)
                 .toString()
                 .replace('=', ':');
+    }
+
+    private boolean needHeader;
+    private int currentRow;
+    private List<DataColumn> columnList;
+
+    @Override
+    public boolean next() throws JRException {
+        int rowCount = getRowCount();
+        log.debug("next of currentRow({}), rowcount({})", currentRow, rowCount);
+        if (rowCount == 0) {
+            return false;
+        }
+
+        if (needHeader) {
+            columnList = getRow(0).getColumnList();
+            if (currentRow < 0) {
+                currentRow++;
+            } else {
+                needHeader = false;
+            }
+            return true;
+        }
+
+        if (currentRow >= rowCount) {
+            columnList = getRow(0).getColumnList();
+            return false;
+        }
+
+        currentRow++;
+        columnList = getRow(currentRow).getColumnList();
+        return true;
+    }
+
+    /**
+     * @param jrField name of field in jrxml file (row=0 is column headers) (row>0 is column values)
+     * @return
+     * @throws JRException
+     */
+    @Override
+    public Object getFieldValue(JRField jrField) throws JRException {
+        // field1,field2,...
+        String fieldName = jrField.getName();
+        int columnIndex = Integer.parseInt(fieldName.substring(5)) - 1;
+        log.debug("getFieldValue(name:{}, desc:{}, class:{}) columnIndex is {}", fieldName, jrField.getDescription(), jrField.getValueClassName(), columnIndex);
+
+        if (columnIndex >= columnList.size()) {
+            return "-";
+        }
+
+        DataColumn dataColumn = columnList.get(columnIndex);
+        if (needHeader) {
+            return dataColumn.getName();
+        }
+        return dataColumn.getValue();
     }
 
 }

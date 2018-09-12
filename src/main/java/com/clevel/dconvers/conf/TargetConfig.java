@@ -31,6 +31,7 @@ public class TargetConfig extends Config {
     private boolean create;
     private boolean insert;
     private boolean markdown;
+    private boolean pdfTable;
 
     private List<Pair<String,String>> columnList;
 
@@ -63,6 +64,7 @@ public class TargetConfig extends Config {
         create = targetProperties.getBoolean(Property.CREATE.key(), false);
         insert = targetProperties.getBoolean(Property.INSERT.key(), true);
         markdown = targetProperties.getBoolean(Property.MARKDOWN.key(), true);
+        pdfTable = targetProperties.getBoolean(Property.PDF_TABLE.key(), true);
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 
@@ -147,6 +149,10 @@ public class TargetConfig extends Config {
 
     public boolean isMarkdown() {
         return markdown;
+    }
+
+    public boolean isPdfTable() {
+        return pdfTable;
     }
 
     public List<Pair<String, String>> getColumnList() {

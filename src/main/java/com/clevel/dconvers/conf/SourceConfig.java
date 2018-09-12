@@ -18,6 +18,7 @@ public class SourceConfig extends Config {
     private boolean create;
     private boolean insert;
     private boolean markdown;
+    private boolean pdfTable;
 
 
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
@@ -49,6 +50,7 @@ public class SourceConfig extends Config {
         create = properties.getBoolean(source.connectKey(name, Property.CREATE), false);
         insert = properties.getBoolean(source.connectKey(name, Property.INSERT), true);
         markdown = properties.getBoolean(source.connectKey(name, Property.MARKDOWN), true);
+        pdfTable = properties.getBoolean(source.connectKey(name, Property.PDF_TABLE), true);
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
         
         String outputExt = ".sql";
@@ -110,6 +112,10 @@ public class SourceConfig extends Config {
         return markdown;
     }
 
+    public boolean isPdfTable() {
+        return pdfTable;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -121,6 +127,7 @@ public class SourceConfig extends Config {
                 .append("create", create)
                 .append("insert", insert)
                 .append("markdown", markdown)
+                .append("pdfTable", pdfTable)
                 .append("name", name)
                 .append("valid", valid)
                 .toString()

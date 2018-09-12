@@ -198,6 +198,12 @@ public class Converter extends AppBase {
                     outputFile = outputFile.substring(0, outputFile.length() - 4) + ".md";
                     success = success && printDataTableToMarkdown(headPrint, dataTable, outputFile, charset);
                 }
+
+                if (targetConfig.isPdfTable()) {
+                    headPrint = headPrint.replaceAll("--", ">").replaceAll("\n", "  \n");
+                    outputFile = outputFile.substring(0, outputFile.length() - 3) + ".pdf";
+                    success = success && printDataTableToPDF(headPrint, dataTable, outputFile);
+                }
             }
 
             // -- Start Mapping File
@@ -256,6 +262,12 @@ public class Converter extends AppBase {
                 outputFile = outputFile.substring(0, outputFile.length() - 4) + ".md";
                 success = success && printDataTableToMarkdown(headPrint, dataTable, outputFile, charset);
             }
+
+            if (sourceConfig.isPdfTable()) {
+                headPrint = headPrint.replaceAll("--", ">").replaceAll("\n", "  \n");
+                outputFile = outputFile.substring(0, outputFile.length() - 3) + ".pdf";
+                success = success && printDataTableToPDF(headPrint, dataTable, outputFile);
+            }
         }
 
         return success;
@@ -308,6 +320,15 @@ public class Converter extends AppBase {
             log.error("Close file(" + outputFile + ") is failed", e);
             return false;
         }
+
+        return true;
+    }
+
+    private boolean printDataTableToPDF(String headPrint, DataTable dataTable, String outputFile) {
+        String tableName = dataTable.getTableName();
+
+        PDFTableFormatter pdfTableFormatter = new PDFTableFormatter(outputFile);
+        pdfTableFormatter.print(dataTable, null);
 
         return true;
     }

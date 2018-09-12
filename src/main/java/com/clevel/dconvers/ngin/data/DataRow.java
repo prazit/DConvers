@@ -45,6 +45,10 @@ public class DataRow extends ValidatorBase {
         return columnList;
     }
 
+    public int getColumnCount() {
+        return columnList.size();
+    }
+
     public void putColumn(String columnName, DataColumn dataColumn) {
         try {
             columnList.add(dataColumn);

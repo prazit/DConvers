@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMultipart;
+import java.io.*;
 import java.sql.Types;
 import java.util.Date;
 import java.util.Enumeration;
@@ -68,16 +69,19 @@ public class EmailDataSource extends DataSource {
         DataTable dataTable = new DataTable(mbox, "id");
 
         // filters
-        String tokenInSubject = "0123456789ABCDEF".toUpperCase();   // null is no filter
-        String tokenInBody = null;                                  // null is no filter
+        String tokenInSubject = "0123456789ABCDEF".toUpperCase();   // meaning of null is not filter
+        String tokenInBody = null;                                  // meaning of null is not filter
         boolean skipMarkAsRead = true;
-        boolean attachmentOnly = true;
-        int scanLimit = 10;
+        boolean attachmentOnly = false;
+        int scanLimit = 5;
         int resultLimit = 1;
 
         // user password are required
         String user = "prazit@the-c-level.com";
         String password = "ritr6mT=boik=";
+
+        // output path
+        String sourcePath = application.dataConversionConfigFile.getOutputSourcePath();
 
         // scan emails
         try {
@@ -156,6 +160,7 @@ public class EmailDataSource extends DataSource {
                 Address replyTo[] = message.getReplyTo();
                 Flags flags = message.getFlags();
 
+                // has some attached files
                 if (contentType.startsWith("multipart")) {
                     mimeMultipart = (MimeMultipart) message.getContent();
                     partCount = mimeMultipart.getCount();
@@ -167,19 +172,17 @@ public class EmailDataSource extends DataSource {
                             continue;
                         }
 
-                        //Date receivedDate = bodyPart.getReceivedDate();
-                        //String subject = bodyPart.getSubject();
-                        //Address recipient[] = bodyPart.getAllRecipients();
-                        //Address from[] = bodyPart.getFrom();
-                        //Address replyTo[] = bodyPart.getReplyTo();
-                        //Flags flags = bodyPart.getFlags();
-
                         int lineCount = bodyPart.getLineCount();
                         int size = bodyPart.getSize();
                         String description = bodyPart.getDescription();
-                        String content = bodyPart.getContent().toString();
+                        Object contentObject = bodyPart.getContent();
                         String filename = bodyPart.getFileName();
                         Enumeration headers = bodyPart.getAllHeaders();
+
+                        if (filename != null) {
+                            saveAttachedFile(sourcePath + "Attached_" + filename, contentObject);
+                        }
+                        String content = contentObject.toString();
 
                         DataRow dataRow = new DataRow(dataTable);
                         dataRow.putColumn("id", new DataLong(columnIndex++, Types.INTEGER, "id", (long) msgNumber * 10 + i + 1));
@@ -259,6 +262,42 @@ public class EmailDataSource extends DataSource {
         return dataTable;
     }
 
+    /**
+     * @param filename full path
+     * @param content  boday part content object
+     */
+    private void saveAttachedFile(String filename, Object content) {
+        log.debug("saveAttachedFile: filename = {}", filename);
+
+        File file;
+        FileOutputStream fileOutputStream;
+        try {
+            file = new File(filename);
+            fileOutputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            log.error("saveAttachedFile: {}", e.getMessage());
+            return;
+        }
+
+        int buffer;
+        FilterInputStream filterInputStream = (FilterInputStream) content;
+        try {
+            while ((buffer = filterInputStream.read()) != -1) {
+                fileOutputStream.write(buffer);
+            }
+        } catch (IOException e) {
+            log.error("saveAttachedFile: ", e.getMessage());
+            return;
+        }
+
+        try {
+            fileOutputStream.close();
+            filterInputStream.close();
+        } catch (IOException e) {
+            log.warn("saveAttachedFile: ", e.getMessage());
+        }
+    }
+
     private String headerToString(Enumeration headers) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -277,14 +316,6 @@ public class EmailDataSource extends DataSource {
 
     private String flagsToString(Flags flags) {
         StringBuilder stringBuilder = new StringBuilder("");
-
-        /*Flags.Flag.DELETED;
-        Flags.Flag.SEEN;
-        Flags.Flag.RECENT;
-        Flags.Flag.ANSWERED;
-        Flags.Flag.FLAGGED;
-        Flags.Flag.DRAFT;
-        Flags.Flag.USER;*/
 
         if (flags.contains(Flags.Flag.DELETED)) stringBuilder.append("DELETED,\n");
         if (flags.contains(Flags.Flag.SEEN)) stringBuilder.append("SEEN,\n");
@@ -311,7 +342,7 @@ public class EmailDataSource extends DataSource {
 
         String string = stringBuilder.toString();
         if (string.length() > 2) {
-            return string.substring(0, string.length() - 3);
+            return string.substring(0, string.length() - 2);
         } else {
             return string;
         }

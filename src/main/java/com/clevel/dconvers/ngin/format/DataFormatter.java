@@ -15,6 +15,7 @@ public abstract class DataFormatter {
 
     protected boolean allRow;
     protected String outputType;
+    protected Writer writer;
 
     public DataFormatter(boolean allRow) {
         this.allRow = allRow;
@@ -29,6 +30,8 @@ public abstract class DataFormatter {
      * @return true is success, false is failed
      */
     public boolean print(DataTable dataTable, Writer writer) {
+
+        this.writer = writer;
 
         List<DataRow> rows;
         if (allRow) {
@@ -106,4 +109,7 @@ public abstract class DataFormatter {
         return null;
     }
 
+    public Writer getWriter() {
+        return writer;
+    }
 }

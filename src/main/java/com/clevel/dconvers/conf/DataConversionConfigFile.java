@@ -52,10 +52,10 @@ public class DataConversionConfigFile extends ConfigFile {
         application.dataConversionConfigFile = this;
 
         Property converterProperty = Property.CONVERTER_FILE;
-        outputReportPath = properties.getString(converterProperty.connectKey(Property.REPORT_PATH),"/");
-        outputSourcePath = properties.getString(converterProperty.connectKey(Property.SOURCE_PATH),"/");
-        outputTargetPath = properties.getString(converterProperty.connectKey(Property.TARGET_PATH),"/");
-        outputMappingPath = properties.getString(converterProperty.connectKey(Property.MAPPING_PATH),"/");
+        outputReportPath = properties.getString(converterProperty.connectKey(Property.REPORT_PATH),"");
+        outputSourcePath = properties.getString(converterProperty.connectKey(Property.SOURCE_PATH),"");
+        outputTargetPath = properties.getString(converterProperty.connectKey(Property.TARGET_PATH),"");
+        outputMappingPath = properties.getString(converterProperty.connectKey(Property.MAPPING_PATH),"");
 
         reportFileNumber = properties.getInt(converterProperty.connectKey(Property.REPORT_PATH.connectKey(Property.FILE_NUMBER)), 1);
         sourceFileNumber = properties.getInt(converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1);
