@@ -166,7 +166,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
     @Override
     public boolean next() throws JRException {
         int rowCount = getRowCount();
-        log.debug("next of currentRow({}), rowcount({})", currentRow, rowCount);
+        //log.debug("next of currentRow({}), rowcount({})", currentRow, rowCount);
         if (rowCount == 0) {
             return false;
         }
@@ -201,7 +201,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         // field1,field2,...
         String fieldName = jrField.getName();
         int columnIndex = Integer.parseInt(fieldName.substring(5)) - 1;
-        log.debug("getFieldValue(name:{}, desc:{}, class:{}) columnIndex is {}", fieldName, jrField.getDescription(), jrField.getValueClassName(), columnIndex);
+        //log.debug("getFieldValue(name:{}, desc:{}, class:{}) columnIndex is {}", fieldName, jrField.getDescription(), jrField.getValueClassName(), columnIndex);
 
         if (columnIndex >= columnList.size()) {
             return "-";

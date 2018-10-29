@@ -88,7 +88,11 @@ public class Application {
         String dataSourceName;
         for (DataSourceConfig dataSourceConfig : dataConversionConfigFile.getDataSourceConfigMap().values()) {
             dataSourceName = dataSourceConfig.getName();
-            dataSource = new DataSource(this, dataSourceName, dataSourceConfig);
+            if (dataSourceConfig.isEmailDataSource()) {
+                dataSource = new EmailDataSource(this, dataSourceName, dataSourceConfig);
+            } else {
+                dataSource = new DataSource(this, dataSourceName, dataSourceConfig);
+            }
 
             if (!dataSource.isValid()) {
                 performInvalidDataSource(dataSource);
@@ -100,10 +104,6 @@ public class Application {
         }
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
-
-        dataSourceName = Property.EMAIL.key();
-        dataSourceMap.put(dataSourceName, new EmailDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
-
 
         log.trace("Application. Load Converters.");
         converterList = new ArrayList<>();

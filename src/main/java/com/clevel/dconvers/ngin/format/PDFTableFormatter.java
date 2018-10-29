@@ -25,7 +25,6 @@ public class PDFTableFormatter extends DataFormatter {
 
     @Override
     protected String preFormat(DataTable dataTable) {
-        int columnCount = dataTable.getRow(0).getColumnCount();
 
         try {
 

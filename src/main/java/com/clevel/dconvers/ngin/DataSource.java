@@ -17,7 +17,7 @@ import java.sql.*;
 
 public class DataSource extends AppBase {
 
-    private DataSourceConfig dataSourceConfig;
+    protected DataSourceConfig dataSourceConfig;
     private Connection connection;
 
     private boolean useInformationSchema;

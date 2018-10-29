@@ -20,6 +20,9 @@ public class DataSourceConfig extends Config {
 
     private boolean generateConverterFile;
 
+    private String host;
+    private boolean ssl;
+
     public DataSourceConfig(Application application, String name) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
@@ -52,6 +55,9 @@ public class DataSourceConfig extends Config {
 
         generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
 
+        host = properties.getString(dataSource.connectKey(name, Property.HOST), "");
+        ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
+
         return true;
     }
 
@@ -59,9 +65,11 @@ public class DataSourceConfig extends Config {
     public boolean validate() {
         log.trace("DataSourceConfig.validateProperties.");
 
-        if (url == null || driver == null || schema == null || user == null || password == null) {
-            log.debug("some value is null, please check datasource.{} section", name);
-            return false;
+        if (!isEmailDataSource()) {
+            if (url == null || driver == null || schema == null || user == null || password == null) {
+                log.debug("some value is null, please check datasource.{} section", name);
+                return false;
+            }
         }
 
         return true;
@@ -104,9 +112,24 @@ public class DataSourceConfig extends Config {
         return post;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public boolean isSsl() {
+        return ssl;
+    }
+
+    public boolean isEmailDataSource() {
+        return !host.isEmpty();
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("isEmailDataSource", isEmailDataSource())
+                .append("host", host)
+                .append("ssl", ssl)
                 .append("url", url)
                 .append("driver", driver)
                 .append("schema", schema)

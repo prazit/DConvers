@@ -10,6 +10,8 @@ public enum Property {
     PASSWORD("password"),
     PRE("pre"),
     POST("post"),
+    HOST("host"),
+    SSL("ssl"),
 
     CONVERTER_FILE("converter"),
     REPORT_PATH("report.output"),
