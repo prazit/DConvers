@@ -385,10 +385,14 @@ public class Converter extends AppBase {
         return targetMap.get(name);
     }
 
-    public DataTable getDataTable(String mapping) {
+    /**
+     * @param dataTableMapping example: "SRC:MyTableName"
+     * @return Source DataTable which has the specified name, otherwise return null
+     */
+    public DataTable getDataTable(String dataTableMapping) {
         DataTable dataTable;
-        String[] mappings = mapping.split("[:]");
-        SourceColumnType tableType = SourceColumnType.valueOf(mappings[0]);
+        String[] mappings = dataTableMapping.split("[:]");
+        DynamicValueType tableType = DynamicValueType.valueOf(mappings[0]);
 
         switch (tableType) {
             case SRC:

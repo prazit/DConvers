@@ -138,7 +138,7 @@ public class Application {
             stopWithError();
         }
 
-        // TODO Print Report Table
+        // TODO Print Summary Report Table
 
         log.trace("Application. Run post process of each datasource.");
         for (DataSource dataSourceItem : dataSourceMap.values()) {
@@ -162,13 +162,13 @@ public class Application {
 
     public void stopWithError() {
         closeAllDataSource();
-        log.info("HAS SOME ERROR");
+        log.info("EXIT WITH SOME ERROR");
         System.exit(1);
     }
 
     public void stopWithWarning() {
         closeAllDataSource();
-        log.info("SUCCESS WITH WARNING");
+        log.info("SUCCESSFUL WITH WARNING");
         System.exit(2);
     }
 

@@ -9,7 +9,6 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +83,7 @@ public class Target extends AppBase {
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
         varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
 
-        SourceColumnType sourceColumnType;
+        DynamicValueType sourceColumnType;
         DataColumn targetColumn;
         String sourceColumnName;
         String targetColumnName;
@@ -264,25 +263,25 @@ public class Target extends AppBase {
         return true;
     }
 
-    private SourceColumnType parseSourceColumnType(String sourceColumnName) {
+    private DynamicValueType parseSourceColumnType(String sourceColumnName) {
         if (sourceColumnName.length() < 5) {
-            return SourceColumnType.NON;
+            return DynamicValueType.NON;
         }
 
         char ch = sourceColumnName.charAt(3);
         if (ch != ':') {
             if (sourceColumnName.indexOf(">>") >= 0) {
-                return SourceColumnType.COL;
+                return DynamicValueType.COL;
             }
-            return SourceColumnType.NON;
+            return DynamicValueType.NON;
         }
 
         String keyWord = sourceColumnName.substring(0, 3).toUpperCase();
-        SourceColumnType sourceColumn;
+        DynamicValueType sourceColumn;
         try {
-            sourceColumn = SourceColumnType.valueOf(keyWord);
+            sourceColumn = DynamicValueType.valueOf(keyWord);
         } catch (IllegalArgumentException e) {
-            return SourceColumnType.INV;
+            return DynamicValueType.INV;
         }
 
         return sourceColumn;

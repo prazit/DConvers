@@ -79,6 +79,7 @@ public class DataSource extends AppBase {
 
     public DataTable getDataTable(String tableName, String idColumnName, String query) {
         log.trace("DataSource.getDataTable.");
+
         DataTable dataTable = new DataTable(tableName, idColumnName);
         Statement statement = null;
 
@@ -324,7 +325,7 @@ public class DataSource extends AppBase {
 
                     targetKey = Property.TARGET.connectKey(columnKey + "." + columnName);
                     if (columnType == Types.BIGINT) {
-                        targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, SourceColumnType.VAR.getValuePrefix() + SystemVariable.ROWNUMBER.name()));
+                        targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, DynamicValueType.VAR.getValuePrefix() + SystemVariable.ROWNUMBER.name()));
                     } else {
                         targetRow.putColumn(targetKey, application.createDataColumn(targetKey, Types.VARCHAR, columnValue));
                     }

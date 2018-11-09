@@ -1,13 +1,17 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.QueryVariable;
+import com.clevel.dconvers.conf.DynamicValueType;
 import com.clevel.dconvers.conf.SourceConfig;
+import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Source extends AppBase {
 
@@ -50,21 +54,35 @@ public class Source extends AppBase {
 
     public boolean buildDataTable() {
         log.trace("Source({}).buildDataTable.", name);
-        dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getId(), getQuery());
+
+        String query = getQuery();
+        if (query == null) {
+            return false;
+        }
+
+        dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getId(), query);
         return dataTable != null;
     }
 
     public String getQuery() {
         log.debug("Source.getQuery");
 
-        String returnValue = sourceConfig.getQuery();
+        String query = sourceConfig.getQuery();
+        String returnValue = query;
         String compileResult;
-        for (; true; returnValue = compileResult) {
-            compileResult = compileQuery(returnValue);
-            if (compileResult == null) {
-                return returnValue;
+
+        try {
+            for (; true; returnValue = compileResult) {
+                compileResult = compileQuery(returnValue);
+                if (compileResult == null) {
+                    return returnValue;
+                }
             }
+        } catch (Exception ex) {
+            log.error("Source.getQuery. Query with dynamic value is invalid, {}, {}", ex.getMessage(), query);
+            return null;
         }
+
     }
 
     private String compileQuery(String query) {
@@ -78,35 +96,54 @@ public class Source extends AppBase {
             end = query.length() - 1;
         }
 
-        String compile = query.substring(start + 2, end);
-        log.debug("Source.compileQuery: compile({})", compile);
+        String valueMapping = query.substring(start + 2, end);
+        log.debug("Source.compileQuery: valueMapping({})", valueMapping);
 
-        int queryVarIndex = compile.indexOf(":");
-        String queryVar = compile.substring(0, queryVarIndex);
-        String queryVal = compile.substring(queryVarIndex + 1);
-        log.debug("Source.compileQuery: queryVar({}) queryVal({})", queryVar, queryVal);
+        int valueTypeIndex = valueMapping.indexOf(":");
+        String valueTypeString = valueMapping.substring(0, valueTypeIndex);
+        String valueIdentifier = valueMapping.substring(valueTypeIndex + 1);
+        log.debug("Source.compileQuery: valueType({}) valueIdentifier({})", valueTypeString, valueIdentifier);
 
-        QueryVariable queryVariable = QueryVariable.valueOf(queryVar);
+        DynamicValueType valueType = DynamicValueType.valueOf(valueTypeString);
         String replacement = "";
-        switch (queryVariable) {
-            case FILE:
-                replacement = queryFromFile(queryVal);
-                break;
-
-            case SOURCE:
-
-                break;
-
-            case TARGET:
-                break;
-
-            case MAPPING:
-                break;
-
+        if (DynamicValueType.TXT.equals(valueType)) {
+            replacement = queryFromFile(valueIdentifier);
+        } else {
+            String[] dataTableMapping = valueMapping.split("[.]");
+            replacement = valuesFromDataTable(dataTableMapping[0], dataTableMapping[1]);
         }
 
         String replaced = query.substring(0, start) + replacement + query.substring(end + 1);
         return replaced;
+    }
+
+    private String valuesFromDataTable(String dataTableMapping, String columnName) {
+        log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
+
+        DataTable dataTable = converter.getDataTable(dataTableMapping);
+        if (dataTable == null) {
+            log.warn("Source.valuesFromDataTable. The specified dataTable({}) is not found.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable == null || dataTable.getRowCount() == 0) {
+            log.warn("Source.valuesFromDataTable. dataTable({}) is empty.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable.getRow(0).getColumn(columnName) == null) {
+            log.warn("Source.valuesFromDataTable. The specified column({}) is not found in dataTable({}).", columnName, dataTableMapping);
+            return "";
+        }
+
+        String value = "";
+        for (DataRow row : dataTable.getAllRow()) {
+            value += row.getColumn(columnName).getQuotedValue() + ",";
+        }
+
+        value = value.substring(0, value.length() - 1);
+        log.debug("Source.valuesFromDataTable. return-value={}", value);
+        return value;
     }
 
     private String queryFromFile(String fileName) {

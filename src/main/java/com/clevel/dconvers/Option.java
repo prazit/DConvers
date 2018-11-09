@@ -2,7 +2,7 @@ package com.clevel.dconvers;
 
 public enum Option {
 
-    SOURCE(true, "s", "source", true, "source file is required for data conversion, please see 'sample-source.conf' for detailed"),
+    SOURCE(false, "s", "source", true, "source file is required for data conversion, please see 'sample-conversion.conf' for detailed"),
 
     VERBOSE(false, "v", "verbose", false, "run in verbose mode will show TRACE level of messages"),
     LEVEL(false, "l", "level", true, "specified level will use as level of messages\npossible values are TRACE, DEBUG, ERROR, WARNING, INFO"),
