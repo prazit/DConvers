@@ -9,6 +9,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class Target extends AppBase {
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
         mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
-        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getPostUpdate());
+        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostUpdate());
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
@@ -244,12 +245,12 @@ public class Target extends AppBase {
         progressBar.close();
 
         if (log.isDebugEnabled()) {
-            if (dataTable.getRowCount() > 100) {
+            if (dataTable.getRowCount() > 10) {
                 log.debug("buildDataTable({}). targetTable has {} rows, firstRow is {}", name, dataTable.getRowCount(), dataTable.getRow(0));
             } else {
                 log.debug("buildDataTable({}). targetTable has {} rows following {}", name, dataTable.getRowCount(), dataTable);
             }
-            if (mappingTable.getRowCount() > 100) {
+            if (mappingTable.getRowCount() > 10) {
                 log.debug("buildDataTable({}). mappingTable has {} rows, firstRow is {}", name, mappingTable.getRowCount(), mappingTable.getRow(0));
             } else {
                 log.debug("buildDataTable({}). mappingTable has {} rows following {}", name, mappingTable.getRowCount(), mappingTable);

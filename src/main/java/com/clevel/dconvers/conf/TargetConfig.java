@@ -3,7 +3,6 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.Application;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -17,21 +16,14 @@ import java.util.Map;
 public class TargetConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
+    private OutputConfig outputConfig;
 
     private int index;
 
-    private List<String> postUpdate;
-
     private String source;
-    private String output;
     private String table;
     private String id;
     private long rowNumberStartAt;
-
-    private boolean create;
-    private boolean insert;
-    private boolean markdown;
-    private boolean pdfTable;
 
     private List<Pair<String,String>> columnList;
 
@@ -43,6 +35,10 @@ public class TargetConfig extends Config {
 
         valid = loadProperties();
         if (valid) valid = validate();
+        if (valid) {
+            outputConfig = new OutputConfig(application, Property.TARGET.connectKey(name), properties);
+            valid = outputConfig.isValid();
+        }
 
         log.trace("SourceConfig({}) is created", name);
     }
@@ -58,22 +54,10 @@ public class TargetConfig extends Config {
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         source = targetProperties.getString(Property.SOURCE.key());
-        output = targetProperties.getString(Property.OUTPUT_FILE.key(),"");
         table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
-        create = targetProperties.getBoolean(Property.CREATE.key(), false);
-        insert = targetProperties.getBoolean(Property.INSERT.key(), true);
-        markdown = targetProperties.getBoolean(Property.MARKDOWN.key(), true);
-        pdfTable = targetProperties.getBoolean(Property.PDF_TABLE.key(), true);
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
-
-        String outputExt = ".sql";
-        if (output.length() == 0) {
-            output = table + outputExt;
-        } else if (!output.toLowerCase().endsWith(outputExt)) {
-            output = output + outputExt;
-        }
 
         Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
         Iterator<String> columnKeyList = columnProperties.getKeys();
@@ -83,18 +67,6 @@ public class TargetConfig extends Config {
             columnList.add(new Pair<>(key,columnProperties.getString(key)));
         }
         log.debug("columnList = {}", columnList);
-
-        List<Object> postUpdateObjectList;
-        try {
-            postUpdateObjectList = targetProperties.getList(Property.POST_UPDATE.key());
-        } catch (ConversionException ex) {
-            postUpdateObjectList = new ArrayList<>();
-        }
-        postUpdate = new ArrayList<>();
-        for (Object obj : postUpdateObjectList) {
-            postUpdate.add(obj.toString());
-        }
-        log.debug("postUpdate = {}", postUpdate);
 
         return true;
     }
@@ -111,20 +83,12 @@ public class TargetConfig extends Config {
         return true;
     }
 
-    public List<String> getPostUpdate() {
-        return postUpdate;
-    }
-
     public int getIndex() {
         return index;
     }
 
     public String getSource() {
         return source;
-    }
-
-    public String getOutput() {
-        return output;
     }
 
     public String getTable() {
@@ -139,37 +103,23 @@ public class TargetConfig extends Config {
         return rowNumberStartAt;
     }
 
-    public boolean isCreate() {
-        return create;
-    }
-
-    public boolean isInsert() {
-        return insert;
-    }
-
-    public boolean isMarkdown() {
-        return markdown;
-    }
-
-    public boolean isPdfTable() {
-        return pdfTable;
-    }
-
     public List<Pair<String, String>> getColumnList() {
         return columnList;
+    }
+
+    public OutputConfig getOutputConfig() {
+        return outputConfig;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("valid", valid)
-                .append("name", name)
-                .append("table", table)
-                .append("create", create)
-                .append("insert", insert)
-                .append("markdown", markdown)
+                .append("outputConfig", outputConfig)
+                .append("index", index)
                 .append("source", source)
-                .append("output", output)
+                .append("table", table)
+                .append("id", id)
+                .append("rowNumberStartAt", rowNumberStartAt)
                 .append("columnList", columnList)
                 .toString()
                 .replace('=', ':');

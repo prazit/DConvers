@@ -8,18 +8,14 @@ import org.slf4j.LoggerFactory;
 
 public class SourceConfig extends Config {
 
-    private String dataSource;
-    private String query;
-    private String id;
-    private String output;
 
     private int index;
 
-    private boolean create;
-    private boolean insert;
-    private boolean markdown;
-    private boolean pdfTable;
+    private String dataSource;
+    private String query;
+    private String id;
 
+    private OutputConfig outputConfig;
 
     public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -28,6 +24,10 @@ public class SourceConfig extends Config {
 
         valid = loadProperties();
         if (valid) valid = validate();
+        if (valid) {
+            outputConfig = new OutputConfig(application, Property.SOURCE.connectKey(name), properties);
+            valid = outputConfig.isValid();
+        }
 
         log.trace("SourceConfig({}) is created", name);
     }
@@ -46,20 +46,8 @@ public class SourceConfig extends Config {
         dataSource = properties.getString(source.connectKey(name, Property.DATA_SOURCE));
         query = properties.getString(source.connectKey(name, Property.QUERY));
         id = properties.getString(source.connectKey(name, Property.ID),"id");
-        output = properties.getString(source.connectKey(name, Property.OUTPUT_FILE),"");
-        create = properties.getBoolean(source.connectKey(name, Property.CREATE), false);
-        insert = properties.getBoolean(source.connectKey(name, Property.INSERT), true);
-        markdown = properties.getBoolean(source.connectKey(name, Property.MARKDOWN), true);
-        pdfTable = properties.getBoolean(source.connectKey(name, Property.PDF_TABLE), true);
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
         
-        String outputExt = ".sql";
-        if (output.length() == 0) {
-            output = name + outputExt;
-        } else if (!output.endsWith(outputExt)) {
-            output = output + outputExt;
-        }
-
         return true;
     }
 
@@ -92,28 +80,12 @@ public class SourceConfig extends Config {
         return id;
     }
 
-    public String getOutput() {
-        return output;
-    }
-
     public int getIndex() {
         return index;
     }
 
-    public boolean isCreate() {
-        return create;
-    }
-
-    public boolean isInsert() {
-        return insert;
-    }
-
-    public boolean isMarkdown() {
-        return markdown;
-    }
-
-    public boolean isPdfTable() {
-        return pdfTable;
+    public OutputConfig getOutputConfig() {
+        return outputConfig;
     }
 
     @Override
@@ -122,12 +94,7 @@ public class SourceConfig extends Config {
                 .append("dataSource", dataSource)
                 .append("query", query)
                 .append("id", id)
-                .append("output", output)
                 .append("index", index)
-                .append("create", create)
-                .append("insert", insert)
-                .append("markdown", markdown)
-                .append("pdfTable", pdfTable)
                 .append("name", name)
                 .append("valid", valid)
                 .toString()

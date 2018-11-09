@@ -6,19 +6,32 @@ import net.sf.jasperreports.engine.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PDFTableFormatter extends DataFormatter {
 
     private String pdfFileName;
+
+    private boolean useJrxmlFilename;
+    private String jrxmlFileName;
+    private InputStream jrxmlInputStream;
+
     private Logger log;
 
-    public PDFTableFormatter(String pdfFileName) {
+    public PDFTableFormatter(String pdfFileName, Object jrxml) {
         super(true);
 
         this.pdfFileName = pdfFileName;
         outputType = "PDF Table";
+
+        useJrxmlFilename = jrxml instanceof String;
+        if (useJrxmlFilename) {
+            jrxmlFileName = (String) jrxml;
+        } else {
+            jrxmlInputStream = (InputStream) jrxml;
+        }
 
         log = LoggerFactory.getLogger(PDFTableFormatter.class);
     }
@@ -28,7 +41,12 @@ public class PDFTableFormatter extends DataFormatter {
 
         try {
 
-            JasperReport jasperReport = JasperCompileManager.compileReport("C:\\Users\\prazi\\Documents\\GitHub\\Data Conversion\\src\\main\\java\\com\\clevel\\dconvers\\ngin\\format\\PDFTable18.jrxml");
+            JasperReport jasperReport;
+            if (useJrxmlFilename) {
+                jasperReport = JasperCompileManager.compileReport(jrxmlFileName);
+            } else {
+                jasperReport = JasperCompileManager.compileReport(jrxmlInputStream);
+            }
 
             Map<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("TITLE", "Table: " + dataTable.getTableName());
@@ -42,6 +60,7 @@ public class PDFTableFormatter extends DataFormatter {
         }
 
         return null;
+
     }
 
     @Override
