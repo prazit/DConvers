@@ -1,13 +1,12 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.ngin.DataSource;
 import com.clevel.dconvers.ngin.data.*;
-import net.sf.jasperreports.engine.util.DigestUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.MD5;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMultipart;

@@ -1,10 +1,12 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -21,9 +23,9 @@ public class ConverterConfigFileFormatter extends DataFormatter {
 
     private Logger log;
 
-    public ConverterConfigFileFormatter() {
-        super(true);
-
+    public ConverterConfigFileFormatter(Application application, String name) {
+        super(application, name, true);
+        
         sourceNumber = 0;
         sqlCount = "\n\n#-------SQL-------\n\n#-- Count row for all tables\n# ";
         truncateTables = "#-- Truncate for all tables\n# SET FOREIGN_KEY_CHECKS=0;";
@@ -84,5 +86,10 @@ public class ConverterConfigFileFormatter extends DataFormatter {
 
     public void setDataSourceName(String name) {
         dataSourceName = name;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(ConverterConfigFileFormatter.class);
     }
 }

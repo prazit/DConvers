@@ -1,5 +1,6 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import net.sf.jasperreports.engine.*;
@@ -18,10 +19,8 @@ public class PDFTableFormatter extends DataFormatter {
     private String jrxmlFileName;
     private InputStream jrxmlInputStream;
 
-    private Logger log;
-
-    public PDFTableFormatter(String pdfFileName, Object jrxml) {
-        super(true);
+    public PDFTableFormatter(Application application, String name, String pdfFileName, Object jrxml) {
+        super(application, name, false);
 
         this.pdfFileName = pdfFileName;
         outputType = "PDF Table";
@@ -32,8 +31,6 @@ public class PDFTableFormatter extends DataFormatter {
         } else {
             jrxmlInputStream = (InputStream) jrxml;
         }
-
-        log = LoggerFactory.getLogger(PDFTableFormatter.class);
     }
 
     @Override
@@ -72,5 +69,10 @@ public class PDFTableFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         return null;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(PDFTableFormatter.class);
     }
 }

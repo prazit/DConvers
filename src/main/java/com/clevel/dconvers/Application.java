@@ -3,16 +3,12 @@ package com.clevel.dconvers;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.ngin.data.*;
-import com.sun.mail.imap.IMAPFolder;
+import com.clevel.dconvers.ngin.input.EmailDataSource;
+import com.clevel.dconvers.ngin.input.SQLDataSource;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LoggerFactoryBinder;
 
-import javax.mail.*;
-import javax.mail.event.MessageCountAdapter;
-import javax.mail.event.MessageCountEvent;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.*;
@@ -131,7 +127,7 @@ public class Application {
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
                 success = convert.convert();
-                success = success && convert.print(printSource, printTarget, printMapping);
+                success = success && convert.print();
             }
         }
         if (!success) {
@@ -236,6 +232,15 @@ public class Application {
         }
 
         return variables;
+    }
+
+    public String getSystemVariableValue(SystemVariable systemVariable) {
+        DataColumn dataColumn = systemVariableMap.get(systemVariable);
+        if (dataColumn == null) {
+            return "";
+        }
+
+        return dataColumn.getValue();
     }
 
     /**

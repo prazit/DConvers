@@ -61,7 +61,12 @@ public class Source extends AppBase {
         }
 
         dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getId(), query);
-        return dataTable != null;
+        if (dataTable == null) {
+            return false;
+        }
+
+        dataTable.setOwner(this);
+        return true;
     }
 
     public String getQuery() {

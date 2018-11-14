@@ -1,8 +1,11 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.List;
@@ -12,9 +15,8 @@ public class SQLCreateFormatter extends DataFormatter {
     private String tableName;
     private String idColumnName;
 
-    public SQLCreateFormatter() {
-        super(false);
-
+    public SQLCreateFormatter(Application application, String name) {
+        super(application, name, true);
         outputType = "sql file";
     }
 
@@ -117,5 +119,10 @@ public class SQLCreateFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         return "\nBEGIN;\n";
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(SQLCreateFormatter.class);
     }
 }

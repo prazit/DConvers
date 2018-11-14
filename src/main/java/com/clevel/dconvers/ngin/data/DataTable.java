@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class DataTable extends ValidatorBase implements JRDataSource {
 
+    private Object owner;
+
     private List<DataRow> dataRowList;
     private Map<String, DataRow> dataRowMap;
     private ResultSetMetaData metaData;
@@ -30,6 +32,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
     public DataTable(String tableName, String idColumnName) {
         this.tableName = tableName;
         this.idColumnName = idColumnName;
+        this.owner = null;
         dataRowList = new ArrayList<>();
         dataRowMap = new HashMap<>();
         valid = true;
@@ -40,10 +43,11 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         log = LoggerFactory.getLogger(DataTable.class);
     }
 
-    public DataTable(String tableName, String idColumnName, List<String> postUpdate) {
+    public DataTable(String tableName, String idColumnName, List<String> postUpdate, Object owner) {
         this.tableName = tableName;
         this.postUpdate = postUpdate;
         this.idColumnName = idColumnName;
+        this.owner = owner;
         dataRowList = new ArrayList<>();
         dataRowMap = new HashMap<>();
         valid = true;
@@ -51,6 +55,14 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         currentRow = -1;
         needHeader = true;
         log = LoggerFactory.getLogger(DataTable.class);
+    }
+
+    public Object getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Object owner) {
+        this.owner = owner;
     }
 
     public String getTableName() {

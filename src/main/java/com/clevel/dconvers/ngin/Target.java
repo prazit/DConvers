@@ -2,14 +2,20 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
-import com.clevel.dconvers.ngin.data.*;
+import com.clevel.dconvers.ngin.data.DataColumn;
+import com.clevel.dconvers.ngin.data.DataLong;
+import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.ngin.output.OutputFactory;
+import com.clevel.dconvers.ngin.output.OutputTypes;
+import com.clevel.dconvers.ngin.transform.TransformFactory;
+import com.clevel.dconvers.ngin.transform.TransformTypes;
 import javafx.util.Pair;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,8 +83,9 @@ public class Target extends AppBase {
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
+        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostUpdate(), this);
         mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
-        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostUpdate());
+        mappingTable.setOwner(dataTable);
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
@@ -260,6 +267,24 @@ public class Target extends AppBase {
         // -- start report table
 
         // TODO: create reportRow and add into the application.reportTable
+
+        // -- start transformation
+        List<Pair<TransformTypes, Map<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
+        Map<String, String> argumentList;
+        TransformTypes transformType;
+        Transform transform;
+        for (Pair<TransformTypes, Map<String, String>> transformPair : transformList) {
+            transformType = transformPair.getKey();
+            argumentList = transformPair.getValue();
+            log.trace("transforming Target({}) by Transform({})", name, transformType.name());
+
+            transform = TransformFactory.getTransform(application, transformType);
+            transform.setArgumentList(argumentList);
+            if (!transform.transform(dataTable)) {
+                log.debug("Transform({}) is failed in Target({})", name, transformType.name());
+                return false;
+            }
+        }
 
         return true;
     }

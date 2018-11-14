@@ -1,13 +1,16 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SQLInsertFormatter extends DataFormatter {
 
-    public SQLInsertFormatter() {
-        super(true);
+    public SQLInsertFormatter(Application application, String name) {
+        super(application, name, true);
 
         outputType = "sql file";
     }
@@ -48,5 +51,10 @@ public class SQLInsertFormatter extends DataFormatter {
         lines += "COMMIT;\n";
 
         return lines;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(SQLInsertFormatter.class);
     }
 }

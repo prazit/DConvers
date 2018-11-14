@@ -40,25 +40,33 @@ public class DataDate extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        return new DataDate(index, type, name, getValue(value));
+        DataDate dataDate = new DataDate(index, type, name, getValue(value));
+        dataDate.setNullString(nullString);
+        return dataDate;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        return new DataDate(index, type, name, value);
+        DataDate dataDate = new DataDate(index, type, name, value);
+        dataDate.setNullString(nullString);
+        return dataDate;
+    }
+
+    public Date getDateValue() {
+        return value;
     }
 
     @Override
     public String getQuotedValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("YYYY");
         long year = Long.parseLong(simpleDateFormat.format(value));
         if (year > 9999) {
-            return "null";
+            return nullString;
         }
 
         simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
@@ -82,19 +90,38 @@ public class DataDate extends DataColumn {
     }
 
     @Override
+    public void setValue(String value) {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
+
+        try {
+            this.value = simpleDateFormat.parse(value);
+        } catch (ParseException e) {
+            log.warn("DataDate.getValue. has exception: {}", e);
+            this.value = null;
+        }
+
+    }
+
+    @Override
     public String getValue() {
+        return getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
+    }
+
+    public String getFormattedValue(String format) {
         if (value == null) {
-            return "null";
+            return nullString;
         }
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
         simpleDateFormat.applyPattern("YYYY");
         long year = Long.parseLong(simpleDateFormat.format(value));
         if (year > 9999) {
-            return "null";
+            return nullString;
         }
 
-        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
+        simpleDateFormat.applyPattern(format);
         return simpleDateFormat.format(value);
     }
 

@@ -17,6 +17,7 @@ public class TargetConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
     private OutputConfig outputConfig;
+    private TransformConfig transformConfig;
 
     private int index;
 
@@ -38,6 +39,10 @@ public class TargetConfig extends Config {
         if (valid) {
             outputConfig = new OutputConfig(application, Property.TARGET.connectKey(name), properties);
             valid = outputConfig.isValid();
+        }
+        if (valid) {
+            transformConfig = new TransformConfig(application, Property.TARGET.connectKey(name), properties);
+            valid = transformConfig.isValid();
         }
 
         log.trace("SourceConfig({}) is created", name);
@@ -109,6 +114,10 @@ public class TargetConfig extends Config {
 
     public OutputConfig getOutputConfig() {
         return outputConfig;
+    }
+
+    public TransformConfig getTransformConfig() {
+        return transformConfig;
     }
 
     @Override

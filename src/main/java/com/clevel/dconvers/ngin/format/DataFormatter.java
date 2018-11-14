@@ -1,23 +1,27 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Defaults;
+import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DataFormatter {
+public abstract class DataFormatter extends AppBase {
 
     protected boolean allRow;
     protected String outputType;
     protected Writer writer;
 
-    public DataFormatter(boolean allRow) {
+    public DataFormatter(Application application, String name, boolean allRow) {
+        super(application, name);
         this.allRow = allRow;
         outputType = "file";
     }
@@ -112,4 +116,5 @@ public abstract class DataFormatter {
     public Writer getWriter() {
         return writer;
     }
+
 }

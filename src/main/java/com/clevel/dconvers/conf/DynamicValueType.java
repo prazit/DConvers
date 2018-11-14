@@ -8,7 +8,7 @@ public enum DynamicValueType {
     INT(Types.INTEGER),     // INT:integer-value = INT:12345
     DEC(Types.DECIMAL),     // DEC:decimal-value = DEC:12345.54321
     DTE(Types.DATE),        // DTE:DD/MM/YYYY = DTE:31/12/2020
-    DTT(Types.TIMESTAMP),   // DTE:DD/MM/YYYY hh:mm:ss => DTT:31/12/2020 23:59:59
+    DTT(Types.TIMESTAMP),   // DTT:DD/MM/YYYY hh:mm:ss => DTT:31/12/2020 23:59:59
 
     SRC(0),                 // SRC:source-name.column-name  // the target mapping file need to define as a source with the standard mapping table name such as 'map_branch_to_branch_address'
     TAR(0),                 // TAR:target-name.column-name  // the target 'target-name' must be use the same source with this target, because of dconvers will use mapping table between TAR:target-name and target.target-name.source

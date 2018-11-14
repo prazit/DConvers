@@ -29,18 +29,28 @@ public enum Property {
     TARGET("target"),
     CREATE("create"),
     INSERT("insert"),
+    UPDATE("update"),
     MARKDOWN("markdown"),
-    PDF_TABLE("pdf.table"),
+    PDF_TABLE("pdf"),
     TXT("txt"),
     CSV("csv"),
     OUTPUT_FILE("output"),
     OUTPUT_APPEND("append"),
+    OUTPUT_CHARSET("charset"),
+    OUTPUT_EOL("eol"),
     TABLE("table"),
     COLUMN("column"),
     INDEX("index"),
     POST_UPDATE("post.update"),
     SEPARATOR("separator"),
     FORMAT("format"),
+    FORMAT_DATE("format.date"),
+    FORMAT_DATETIME("format.datetime"),
+    FILL_STRING("fill.string"),
+    FILL_NUMBER("fill.number"),
+    FILL_DATE("fill.date"),
+    TRANSFORM("transform"),
+    ARGUMENTS("arguments"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),
@@ -72,4 +82,5 @@ public enum Property {
     public String connectKey(Property property) {
         return this.key() + "." + property.key();
     }
+
 }

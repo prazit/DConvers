@@ -79,11 +79,10 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     public boolean validate() {
-        log.trace("ConverterConfigFile.validateProperties.");
+        log.debug("ConverterConfigFile.validateProperties. has {} sources and {} targets",sourceConfigMap.size(),targetConfigMap.size());
 
         if (targetConfigMap.size() == 0) {
-            log.warn("No target is specified in converter({})", name);
-            application.hasWarning = true;
+            log.debug("No target is specified in converter({})", name);
         }
 
         return true;

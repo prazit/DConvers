@@ -14,18 +14,26 @@ public class DataLong extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        return new DataLong(index, type, name, Long.parseLong(value));
+        DataLong dataLong = new DataLong(index, type, name, Long.parseLong(value));
+        dataLong.setNullString(nullString);
+        return dataLong;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        return new DataLong(index, type, name, value);
+        DataLong dataLong = new DataLong(index, type, name, value);
+        dataLong.setNullString(nullString);
+        return dataLong;
+    }
+
+    public Long getLongValue() {
+        return value;
     }
 
     @Override
     public String getQuotedValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
         return String.valueOf(value);
     }
@@ -33,9 +41,14 @@ public class DataLong extends DataColumn {
     @Override
     public String getValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
         return String.valueOf(value);
+    }
+
+    @Override
+    public void setValue(String value) {
+        this.value = Long.parseLong(value);
     }
 
     public void setValue(Long value) {

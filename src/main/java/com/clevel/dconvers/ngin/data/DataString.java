@@ -15,18 +15,22 @@ public class DataString extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        return new DataString(index, type, name, value);
+        DataString dataString = new DataString(index, type, name, value);
+        dataString.setNullString(nullString);
+        return dataString;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        return new DataString(index, type, name, value);
+        DataString dataString = new DataString(index, type, name, value);
+        dataString.setNullString(nullString);
+        return dataString;
     }
 
     @Override
     public String getQuotedValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
 
         return "\"" + value + "\"";
@@ -34,9 +38,14 @@ public class DataString extends DataColumn {
 
     @Override
     public String getValue() {
+        if (value == null) {
+            return nullString;
+        }
+
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
     }

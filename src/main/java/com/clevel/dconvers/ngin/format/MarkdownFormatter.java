@@ -1,10 +1,13 @@
 package com.clevel.dconvers.ngin.format;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -17,8 +20,8 @@ public class MarkdownFormatter extends DataFormatter {
     private int rowIndex;
     private int rowIndexWidth;
 
-    public MarkdownFormatter() {
-        super(true);
+    public MarkdownFormatter(Application application, String name) {
+        super(application, name, true);
 
         outputType = "markdown";
     }
@@ -197,5 +200,10 @@ public class MarkdownFormatter extends DataFormatter {
         }
 
         return null;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(MarkdownFormatter.class);
     }
 }

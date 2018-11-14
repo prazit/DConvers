@@ -25,18 +25,26 @@ public class DataBigDecimal extends DataColumn {
             bigDecimal = null;
         }
 
-        return new DataBigDecimal(index, type, name, bigDecimal);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(index, type, name, bigDecimal);
+        dataBigDecimal.setNullString(nullString);
+        return dataBigDecimal;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        return new DataBigDecimal(index, type, name, value);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(index, type, name, value);
+        dataBigDecimal.setNullString(nullString);
+        return dataBigDecimal;
+    }
+
+    public BigDecimal getBigDecimalValue() {
+        return value;
     }
 
     @Override
     public String getQuotedValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
 
         return value.toString();
@@ -45,10 +53,15 @@ public class DataBigDecimal extends DataColumn {
     @Override
     public String getValue() {
         if (value == null) {
-            return "null";
+            return nullString;
         }
 
         return value.toString();
+    }
+
+    @Override
+    public void setValue(String value) {
+        this.value = BigDecimal.valueOf(Double.parseDouble(value));
     }
 
     public void setValue(BigDecimal value) {

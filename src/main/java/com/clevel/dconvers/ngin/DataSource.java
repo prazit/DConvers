@@ -89,14 +89,14 @@ public class DataSource extends AppBase {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
             log.debug("Querying: {}", query);
-            log.info("Loading data({})...", tableName);
+            log.info("Loading table({})...", tableName);
             ResultSet resultSet = statement.executeQuery(query);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
             dataTable.setQuery(query);
-            log.info("DataTable({}) has {} rows", tableName, dataTable.getRowCount());
+            log.info("Table({}) has {} rows", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");
             resultSet.close();
@@ -346,7 +346,7 @@ public class DataSource extends AppBase {
 
 
         log.trace("DataSource({}).generateConverterFile.print", name);
-        ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter();
+        ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter(application,name);
         formatter.setDataSourceName(name);
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
