@@ -7,3 +7,4 @@ cd ../target
 del /Q *.*
 cd ../source
 del /Q *.*
+cd "C:\Users\prazi\Documents\GitHub\Data Conversion"
