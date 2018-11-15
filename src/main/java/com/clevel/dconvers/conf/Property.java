@@ -34,6 +34,11 @@ public enum Property {
     PDF_TABLE("pdf"),
     TXT("txt"),
     CSV("csv"),
+    DBINSERT("dbinsert"),
+    DBUPDATE("dbupdate"),
+    QUOTES("quotes"),
+    NAME("name"),
+    VALUE("value"),
     OUTPUT_FILE("output"),
     OUTPUT_APPEND("append"),
     OUTPUT_CHARSET("charset"),
@@ -41,7 +46,8 @@ public enum Property {
     TABLE("table"),
     COLUMN("column"),
     INDEX("index"),
-    POST_UPDATE("post.update"),
+    POST_SQL("post"),
+    PRE_SQL("pre"),
     SEPARATOR("separator"),
     FORMAT("format"),
     FORMAT_DATE("format.date"),
@@ -81,6 +87,10 @@ public enum Property {
 
     public String connectKey(Property property) {
         return this.key() + "." + property.key();
+    }
+
+    public String prefixKey(String baseProperty) {
+        return baseProperty + "." + this.key;
     }
 
 }

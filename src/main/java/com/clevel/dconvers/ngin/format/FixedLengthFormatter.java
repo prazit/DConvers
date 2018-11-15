@@ -69,16 +69,22 @@ public class FixedLengthFormatter extends DataFormatter {
         txtTypeList.clear();
 
         String[] columns = txtFormat.split("[,]");
+        BigDecimal bigDecimal;
         for (String column : columns) {
             String[] values = column.split("[:]");
             index++;
             txtTypeList.add(index, values[0]);
-            txtLengthList.add(index, new BigDecimal(values[1]));
+            if (values.length > 1) {
+                bigDecimal = new BigDecimal(values[1]);
+            } else {
+                bigDecimal = BigDecimal.ZERO;
+            }
+            txtLengthList.add(index, bigDecimal);
         }
     }
 
     @Override
-    protected String format(DataRow row) {
+    public String format(DataRow row) {
         String txtLine = "";
         int columnIndex = -1;
         int columns = txtTypeList.size();
@@ -87,7 +93,7 @@ public class FixedLengthFormatter extends DataFormatter {
         for (DataColumn dataColumn : row.getColumnList()) {
             columnIndex++;
             if (columnIndex >= columns) {
-                log.warn("Need specified format for column({}) in '{}'.", dataColumn.getName(), name);
+                log.warn("FixedLength: might need specified format for column(index:{},name:{}) in '{}'.", columnIndex, dataColumn.getName(), name);
                 application.hasWarning = true;
                 break;
             }
@@ -99,27 +105,33 @@ public class FixedLengthFormatter extends DataFormatter {
             txtLine += separator;
         }
 
-        txtLine = txtLine.substring(0, txtLine.length() - separator.length() - 1);
+        txtLine = txtLine.substring(0, txtLine.length() - separator.length() - separator.length());
         return txtLine + eol;
 
     }
 
-    public String format(DataColumn dataColumn) {
+    private String format(DataColumn dataColumn) {
         int columnIndex = dataColumn.getIndex();
-        DynamicValueType txtType = DynamicValueType.valueOf(txtTypeList.get(columnIndex));
+        String columnName = dataColumn.getName();
         BigDecimal txtLength = txtLengthList.get(columnIndex);
+        if (txtLength.equals(BigDecimal.ZERO)) {
+            log.debug("Column({}) is ignored by length = 0.", columnName);
+            return "";
+        }
+
+        DynamicValueType txtType = DynamicValueType.valueOf(txtTypeList.get(columnIndex));
         String formatted;
         String value;
 
         switch (dataColumn.getType()) {
             case Types.DATE:
-                dataColumn.setNullString(fillDate);
-                value = ((DataDate) dataColumn).getFormattedValue(dateFormat);
-                break;
-
             case Types.TIMESTAMP:
                 dataColumn.setNullString(fillDate);
-                value = ((DataDate) dataColumn).getFormattedValue(datetimeFormat);
+                if (txtType.equals(DynamicValueType.DTT)) {
+                    value = ((DataDate) dataColumn).getFormattedValue(datetimeFormat);
+                } else {
+                    value = ((DataDate) dataColumn).getFormattedValue(dateFormat);
+                }
                 break;
 
             case Types.DECIMAL:
@@ -133,17 +145,17 @@ public class FixedLengthFormatter extends DataFormatter {
                 value = dataColumn.getValue();
         }
 
-        formatted = format(txtType, txtLength, value);
+        formatted = format(txtType, txtLength, value, columnName);
         return formatted;
     }
 
-    private String format(DynamicValueType txtType, BigDecimal txtLength, String stringValue) {
+    private String format(DynamicValueType txtType, BigDecimal txtLength, String stringValue, String columnName) {
         switch (txtType) {
             case INT:
-                return fixedLengthInteger(stringValue, txtLength.intValue());
+                return fixedLengthInteger(stringValue, txtLength.intValue(), columnName);
 
             case DEC:
-                return fixedLengthDecimal(stringValue, txtLength);
+                return fixedLengthDecimal(stringValue, txtLength, columnName);
 
             default:
             /*
@@ -151,7 +163,7 @@ public class FixedLengthFormatter extends DataFormatter {
             case DTT:
             case STR:
             */
-                return fixedLengthString(stringValue, txtLength.intValue());
+                return fixedLengthString(stringValue, txtLength.intValue(), columnName);
 
         }
     }
@@ -159,7 +171,7 @@ public class FixedLengthFormatter extends DataFormatter {
     /**
      * Use for string and date.
      */
-    private String fixedLengthString(String stringValue, int targetLength) {
+    private String fixedLengthString(String stringValue, int targetLength, String columnName) {
         String formatted;
         int already = stringValue.length();
 
@@ -175,7 +187,7 @@ public class FixedLengthFormatter extends DataFormatter {
         return formatted;
     }
 
-    private String fixedLengthInteger(String integerAsStringValue, int targetLength) {
+    private String fixedLengthInteger(String integerAsStringValue, int targetLength, String columnName) {
         String formatted;
         int already = integerAsStringValue.length();
 
@@ -186,7 +198,7 @@ public class FixedLengthFormatter extends DataFormatter {
             formatted = integerAsStringValue.substring(already - targetLength, already);
 
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);
-            log.warn("Some integer value has broken by the fixed length! OriginalValue({}) OutputValue({})", integerAsStringValue, formatted);
+            log.warn("Integer value of column({}) has broken by the fixed length! OriginalValue({}) OutputValue({})", columnName, integerAsStringValue, formatted);
             application.hasWarning = true;
         } else {
             formatted = integerAsStringValue;
@@ -195,7 +207,7 @@ public class FixedLengthFormatter extends DataFormatter {
         return formatted;
     }
 
-    private String fixedLengthDecimal(String decimalAsStringValue, BigDecimal decimalLength) {
+    private String fixedLengthDecimal(String decimalAsStringValue, BigDecimal decimalLength, String columnName) {
         boolean warning = false;
 
         // length = 11.2, targetLength = 11, right = 2 then left = 9
@@ -233,7 +245,7 @@ public class FixedLengthFormatter extends DataFormatter {
         if (warning) {
             application.hasWarning = true;
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);
-            log.warn("Some decimal value has broken by the fixed length! OriginalValue({}) OutputValue({})", decimalAsStringValue, formatted);
+            log.warn("Decimal value of column({}) has broken by the fixed length! OriginalValue({}) OutputValue({})", columnName, decimalAsStringValue, formatted);
         }
 
         return formatted;

@@ -46,7 +46,7 @@ public class DataSourceConfig extends Config {
 
         url = properties.getString(dataSource.connectKey(name, Property.URL));
         driver = properties.getString(dataSource.connectKey(name, Property.DRIVER));
-        schema = properties.getString(dataSource.connectKey(name, Property.SCHEMA));
+        schema = properties.getString(dataSource.connectKey(name, Property.SCHEMA),"");
         user = properties.getString(dataSource.connectKey(name, Property.USER));
         password = properties.getString(dataSource.connectKey(name, Property.PASSWORD));
 
@@ -66,7 +66,7 @@ public class DataSourceConfig extends Config {
         log.trace("DataSourceConfig.validateProperties.");
 
         if (!isEmailDataSource()) {
-            if (url == null || driver == null || schema == null || user == null || password == null) {
+            if (url == null || driver == null || user == null || password == null) {
                 log.debug("some value is null, please check datasource.{} section", name);
                 return false;
             }

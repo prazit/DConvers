@@ -22,7 +22,6 @@ public class TargetConfig extends Config {
     private int index;
 
     private String source;
-    private String table;
     private String id;
     private long rowNumberStartAt;
 
@@ -59,7 +58,6 @@ public class TargetConfig extends Config {
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         source = targetProperties.getString(Property.SOURCE.key());
-        table = targetProperties.getString(Property.TABLE.key());
         id = targetProperties.getString(Property.ID.key(), "id");
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
@@ -96,10 +94,6 @@ public class TargetConfig extends Config {
         return source;
     }
 
-    public String getTable() {
-        return table;
-    }
-
     public String getId() {
         return id;
     }
@@ -126,7 +120,6 @@ public class TargetConfig extends Config {
                 .append("outputConfig", outputConfig)
                 .append("index", index)
                 .append("source", source)
-                .append("table", table)
                 .append("id", id)
                 .append("rowNumberStartAt", rowNumberStartAt)
                 .append("columnList", columnList)

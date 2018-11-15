@@ -2,7 +2,6 @@ package com.clevel.dconvers.ngin.transform;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
-import com.clevel.dconvers.ngin.Transform;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
@@ -28,13 +27,14 @@ public class ConcatTransform extends Transform {
         String newColumnName = firstArg[0];
         int newColumnIndex = Integer.parseInt(firstArg[1]) - 1;
 
-        List<Integer> indexList = createIndexList(arguments, 1);
-
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();
+        DataRow newRow;
+
+        List<Integer> indexList = createIndexList(arguments, 1, 1, rowList.get(0).getColumnList().size());
+
         List<DataColumn> newColumnList;
         DataColumn newColumn;
-        DataRow newRow;
 
         for (DataRow row : rowList) {
             newColumn = application.createDataColumn(newColumnName, Types.VARCHAR, "");
@@ -49,8 +49,8 @@ public class ConcatTransform extends Transform {
             newRowList.add(newRow);
             newColumnList = newRow.getColumnList();
             newColumnList.addAll(row.getColumnList());
-            newColumnList.remove(newColumnIndex);
             newColumnList.add(newColumnIndex, newColumn);
+            newRow.updateColumnMap();
         }
 
         rowList.clear();

@@ -148,7 +148,9 @@ public class Converter extends AppBase {
             dataTable = source.getDataTable();
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
-                OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
+                    return false;
+                }
             }
 
         }
@@ -163,7 +165,9 @@ public class Converter extends AppBase {
             dataTable = target.getDataTable();
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
-                OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
+                    return false;
+                }
             }
 
             // -- Outputs for Mapping Table

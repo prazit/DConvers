@@ -7,6 +7,7 @@ public abstract class DataColumn extends ValidatorBase {
     protected String name;
     protected int index;
     protected int type;
+    protected String quotes;
     protected String nullString;
 
     DataColumn(int index, int type, String name) {
@@ -14,6 +15,7 @@ public abstract class DataColumn extends ValidatorBase {
         this.type = type;
         this.name = name;
         nullString = "null";
+        quotes = "\"";
         valid = (index >= 0) && (name != null);
     }
 
@@ -23,6 +25,14 @@ public abstract class DataColumn extends ValidatorBase {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getQuotes() {
+        return quotes;
+    }
+
+    public void setQuotes(String quotes) {
+        this.quotes = quotes;
     }
 
     public int getType() {

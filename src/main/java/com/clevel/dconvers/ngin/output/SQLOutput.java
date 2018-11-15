@@ -4,7 +4,6 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.SystemVariable;
-import com.clevel.dconvers.ngin.Output;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;
@@ -29,10 +28,15 @@ public class SQLOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
+        String tableName = outputConfig.getSqlTable();
+        String nameQuotes = outputConfig.getSqlNameQuotes();
+        String valueQuotes = outputConfig.getSqlValueQuotes();
 
-        if (outputConfig.isSqlCreate()) dataFormatterList.add(new SQLCreateFormatter(application, name));
-        if (outputConfig.isSqlInsert()) dataFormatterList.add(new SQLInsertFormatter(application, name));
-        if (outputConfig.isSqlUpdate()) dataFormatterList.add(new SQLUpdateFormatter(application, name));
+        if (outputConfig.isSqlCreate()) {
+            dataFormatterList.add(new SQLCreateFormatter(application, tableName, nameQuotes, outputConfig.isSqlInsert() && outputConfig.isSqlUpdate()));
+        }
+        if (outputConfig.isSqlInsert()) dataFormatterList.add(new SQLInsertFormatter(application, tableName, nameQuotes, valueQuotes));
+        if (outputConfig.isSqlUpdate()) dataFormatterList.add(new SQLUpdateFormatter(application, tableName, nameQuotes, valueQuotes));
 
         return dataFormatterList;
     }
@@ -75,7 +79,47 @@ public class SQLOutput extends Output {
             }
         }
 
+        List<String> preSQL = outputConfig.getSqlPreSQL();
+        if (preSQL.size() > 0) {
+            try {
+                for (String sql : preSQL) {
+                    writer.write(sql + "\n");
+                }
+            } catch (IOException e) {
+                log.error("SQLOutput: write the pre-sql failed, {}", e.getMessage());
+                return null;
+            }
+        }
+
         return writer;
+    }
+
+    @Override
+    protected boolean closeWriter(OutputConfig outputConfig, DataTable dataTable, Writer writer, boolean success) {
+
+        if (!success) {
+            return false;
+        }
+
+        List<String> postSQL = outputConfig.getSqlPostSQL();
+        if (postSQL.size() > 0) {
+            try {
+                for (String sql : postSQL) {
+                    writer.write(sql + "\n");
+                }
+            } catch (IOException e) {
+                log.error("SQLOutput: write the post-sql failed, {}", e.getMessage());
+                success = false;
+            }
+        }
+
+        try {
+            writer.close();
+        } catch (IOException e) {
+            // do nothing
+        }
+
+        return success;
     }
 
     @Override

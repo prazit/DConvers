@@ -3,6 +3,7 @@ package com.clevel.dconvers;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.ngin.data.*;
+import com.clevel.dconvers.ngin.input.DataSource;
 import com.clevel.dconvers.ngin.input.EmailDataSource;
 import com.clevel.dconvers.ngin.input.SQLDataSource;
 import org.apache.commons.cli.HelpFormatter;

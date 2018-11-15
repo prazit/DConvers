@@ -2,7 +2,6 @@ package com.clevel.dconvers.ngin.transform;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
-import com.clevel.dconvers.ngin.Transform;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
@@ -24,14 +23,15 @@ public class RemoveTransform extends Transform {
 
         String argument = getArgument(Property.ARGUMENTS.key());
         String[] arguments = argument.split("[,]");
-        List<Integer> indexList = createIndexList(arguments, 0);
-        Collections.sort(indexList, Collections.reverseOrder());
-        log.debug("RemoveTransform.reverseOrderIndex => {}", indexList);
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();
         List<DataColumn> newColumnList;
         DataRow newRow;
+
+        List<Integer> indexList = createIndexList(arguments, 0, 1, rowList.get(0).getColumnList().size());
+        Collections.sort(indexList, Collections.reverseOrder());
+        log.debug("RemoveTransform.reverseOrderIndex => {}", indexList);
 
         for (DataRow row : rowList) {
             newRow = new DataRow(dataTable);
@@ -39,12 +39,13 @@ public class RemoveTransform extends Transform {
 
             newColumnList.addAll(row.getColumnList());
             for (Integer index : indexList) {
-                if(newColumnList.remove(index.intValue()) == null) {
+                if (newColumnList.remove(index.intValue()) == null) {
                     log.error("RemoveTransform: Can't remove column(columnIndex:{}), columnlist-size = {}", index, newColumnList.size());
                     return false;
                 }
             }
 
+            newRow.updateColumnMap();
             newRowList.add(newRow);
         }
 

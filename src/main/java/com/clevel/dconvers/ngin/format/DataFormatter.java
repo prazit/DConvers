@@ -106,7 +106,7 @@ public abstract class DataFormatter extends AppBase {
         return null;
     }
 
-    protected abstract String format(DataRow row);
+    public abstract String format(DataRow row);
 
     protected String postFormat(DataTable dataTable) {
         // Override this method to write something by DataTable after write each DataRow

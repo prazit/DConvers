@@ -6,8 +6,7 @@ import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
-import com.clevel.dconvers.ngin.output.OutputFactory;
-import com.clevel.dconvers.ngin.output.OutputTypes;
+import com.clevel.dconvers.ngin.transform.Transform;
 import com.clevel.dconvers.ngin.transform.TransformFactory;
 import com.clevel.dconvers.ngin.transform.TransformTypes;
 import javafx.util.Pair;
@@ -75,15 +74,14 @@ public class Target extends AppBase {
         String sourceIdColumnName = sourceDataTable.getIdColumnName();
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
-        String targetTableName = targetConfig.getTable();
         String targetIdColumnName = targetConfig.getId();
 
         String mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
-        String mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, targetTableName);
+        String mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, name);
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
-        dataTable = new DataTable(targetTableName, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostUpdate(), this);
+        dataTable = new DataTable(name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
         mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
         mappingTable.setOwner(dataTable);
 

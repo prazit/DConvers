@@ -58,6 +58,17 @@ public class DataRow extends ValidatorBase {
         }
     }
 
+    /**
+     * When you get column list and modify content within them, you need to call this function to update the column map to make sure all processes will work correctly.
+     */
+    public void updateColumnMap() {
+        dataColumnMap = new HashMap<>();
+
+        for (DataColumn column : columnList) {
+            dataColumnMap.put(column.getName(), column);
+        }
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)

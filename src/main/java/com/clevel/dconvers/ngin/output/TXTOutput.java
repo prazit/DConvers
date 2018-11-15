@@ -3,7 +3,6 @@ package com.clevel.dconvers.ngin.output;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
-import com.clevel.dconvers.ngin.Output;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;

@@ -34,7 +34,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     }
 
     @Override
-    protected String format(DataRow row) {
+    public String format(DataRow row) {
 
 
         List<DataColumn> columnList = row.getColumnList();

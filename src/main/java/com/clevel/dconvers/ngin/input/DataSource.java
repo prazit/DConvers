@@ -1,7 +1,8 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.*;
 import com.clevel.dconvers.ngin.format.*;
 import me.tongfei.progressbar.ProgressBar;
@@ -41,6 +42,8 @@ public class DataSource extends AppBase {
         log.trace("DataSource({}).open.", name);
 
         String schema = (useInformationSchema ? "information_schema" : dataSourceConfig.getSchema());
+        String url = dataSourceConfig.getUrl();
+        url = schema.isEmpty() ? url : url + "/" + schema;
         try {
 
             log.trace("Loading database driver ...");
@@ -48,7 +51,7 @@ public class DataSource extends AppBase {
             log.trace("Load driver is successful");
 
             log.trace("Connecting to database({}) ...", name);
-            connection = DriverManager.getConnection(dataSourceConfig.getUrl() + "/" + schema, dataSourceConfig.getUser(), dataSourceConfig.getPassword());
+            connection = DriverManager.getConnection(url, dataSourceConfig.getUser(), dataSourceConfig.getPassword());
             log.info("Connected to database({})", name);
 
             return true;
@@ -82,15 +85,26 @@ public class DataSource extends AppBase {
 
         DataTable dataTable = new DataTable(tableName, idColumnName);
         Statement statement = null;
+        CallableStatement callableStatement = null;
+
+        boolean callStoredProcedure = query.startsWith("{call") && query.endsWith("}");
+        ResultSet resultSet;
 
         try {
-            log.trace("Open statement...");
-            //statement = connection.createStatement();
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-            log.debug("Querying: {}", query);
-            log.info("Loading table({})...", tableName);
-            ResultSet resultSet = statement.executeQuery(query);
+            if (callStoredProcedure) {
+                log.trace("Open statement...");
+                callableStatement = connection.prepareCall(query); // query like this: {call SHOW_SUPPLIERS()}
+                log.debug("Querying: {}", query);
+                log.info("Loading table({})...", tableName);
+                resultSet = callableStatement.executeQuery();
+            } else {
+                log.trace("Open statement...");
+                statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                log.debug("Querying: {}", query);
+                log.info("Loading table({})...", tableName);
+                resultSet = statement.executeQuery(query);
+            }
             ResultSetMetaData metaData = resultSet.getMetaData();
 
             log.trace("Creating DataTable...");
@@ -100,7 +114,6 @@ public class DataSource extends AppBase {
 
             log.trace("Close statement...");
             resultSet.close();
-            statement.close();
 
         } catch (SQLException se) {
             log.error("SQLException: ", se);
@@ -110,7 +123,10 @@ public class DataSource extends AppBase {
 
         } finally {
             try {
-                if (statement != null) statement.close();
+                if (statement != null) {
+                    log.trace("Close statement...");
+                    statement.close();
+                }
             } catch (SQLException se2) {
             }
         }
@@ -346,7 +362,7 @@ public class DataSource extends AppBase {
 
 
         log.trace("DataSource({}).generateConverterFile.print", name);
-        ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter(application,name);
+        ConverterConfigFileFormatter formatter = new ConverterConfigFileFormatter(application, name);
         formatter.setDataSourceName(name);
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
@@ -457,5 +473,42 @@ public class DataSource extends AppBase {
 
     public void runPost() {
         // TODO Run SQL from file specified in dataSourceConfig.getPost()
+    }
+
+    public boolean executeUpdate(String sql) {
+        Statement statement = null;
+        boolean success = true;
+
+        try {
+            log.trace("Open statement...");
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+            log.debug("DataSource({}).executeUpdate: sql = {}", name, sql);
+            int affected = statement.executeUpdate(sql);
+            if (affected == 0) {
+                log.warn("DataSource({}) no data has changed by last sql!", name);
+                application.hasWarning = true;
+            }
+
+        } catch (SQLException se) {
+            log.error("SQLException: {}", se.getMessage());
+            success = false;
+
+        } catch (Exception e) {
+            log.error("Exception", e);
+            success = false;
+
+        } finally {
+            try {
+                if (statement != null) {
+                    log.trace("Close statement...");
+                    statement.close();
+                }
+            } catch (SQLException se2) {
+                // do nothing
+            }
+        }
+
+        return success;
     }
 }

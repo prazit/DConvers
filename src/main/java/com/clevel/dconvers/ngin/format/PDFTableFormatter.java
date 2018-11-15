@@ -61,15 +61,10 @@ public class PDFTableFormatter extends DataFormatter {
     }
 
     @Override
-    protected String format(DataRow row) {
+    public String format(DataRow row) {
         return null;
     }
 
-
-    @Override
-    protected String postFormat(DataTable dataTable) {
-        return null;
-    }
 
     @Override
     protected Logger loadLogger() {

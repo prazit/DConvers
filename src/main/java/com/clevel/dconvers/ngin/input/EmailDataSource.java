@@ -2,7 +2,6 @@ package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.ngin.DataSource;
 import com.clevel.dconvers.ngin.data.*;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;

@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +18,15 @@ public class OutputConfig extends Config {
     private boolean sqlOutputAppend;
     private String sqlOutputCharset;
     private String sqlOutputEOL;
+    private String sqlTable;
+    private String sqlNameQuotes;
+    private String sqlValueQuotes;
     private boolean sqlCreate;
     private boolean sqlInsert;
     private boolean sqlUpdate;
-    private List<String> sqlPostUpdate;
+    private List<String> sqlPostSQL;
+    private List<String> sqlPreSQL;
+
 
     private boolean markdown;
     private String markdownOutput;
@@ -30,9 +34,11 @@ public class OutputConfig extends Config {
     private String markdownOutputCharset;
     private String markdownOutputEOL;
 
+
     private boolean pdf;
     private Object pdfJRXML;
     private String pdfOutput;
+
 
     private boolean txt;
     private String txtOutput;
@@ -47,12 +53,33 @@ public class OutputConfig extends Config {
     private String txtFillNumber;
     private String txtFillDate;
 
+
     private boolean csv;
     private String csvOutput;
     private boolean csvOutputAppend;
     private String csvOutputCharset;
     private String csvOutputEOL;
     private String csvSeparator;
+
+
+    private boolean dbInsert;
+    private String dbInsertDataSource;
+    private String dbInsertTable;
+    private String dbInsertNameQuotes;
+    private String dbInsertValueQuotes;
+    private List<String> dbInsertPostSQL;
+    private List<String> dbInsertPreSQL;
+
+
+    private boolean dbUpdate;
+    private String dbUpdateDataSource;
+    private String dbUpdateTable;
+    private String dbUpdateId;
+    private String dbUpdateNameQuotes;
+    private String dbUpdateValueQuotes;
+    private List<String> dbUpdatePostSQL;
+    private List<String> dbUpdatePreSQL;
+
 
     private List<OutputTypes> outputTypeList;
 
@@ -69,7 +96,6 @@ public class OutputConfig extends Config {
     @Override
     protected boolean loadProperties() {
         String baseProperty = name;
-        Configuration baseProperties = properties;
         outputTypeList = new ArrayList<>();
 
         // Defaults Properties for SQL
@@ -78,35 +104,33 @@ public class OutputConfig extends Config {
         sqlOutputAppend = false;
         sqlOutputCharset = "UTF-8";
         sqlOutputEOL = "\n";
+        sqlTable = name;
+        sqlNameQuotes = "";
+        sqlValueQuotes = "\"";
         sqlCreate = false;
         sqlInsert = false;
         sqlUpdate = false;
-        sqlPostUpdate = new ArrayList<>();
+        sqlPreSQL = new ArrayList<>();
+        sqlPostSQL = new ArrayList<>();
 
-        String key = baseProperty + "." + Property.SQL.key();
-        sql = baseProperties.getBoolean(key, sql);
+        String key = Property.SQL.prefixKey(baseProperty);
+        sql = properties.getBoolean(key, sql);
         if (sql) {
             outputTypeList.add(OutputTypes.SQL_FILE);
 
-            Configuration sqlProperties = properties.subset(baseProperty + "." + Property.SQL.key());
+            Configuration sqlProperties = properties.subset(key);
             sqlOutput = sqlProperties.getString(Property.OUTPUT_FILE.key(), sqlOutput);
             sqlOutputAppend = sqlProperties.getBoolean(Property.OUTPUT_APPEND.key(), sqlOutputAppend);
             sqlOutputCharset = sqlProperties.getString(Property.OUTPUT_CHARSET.key(), sqlOutputCharset);
             sqlOutputEOL = sqlProperties.getString(Property.OUTPUT_EOL.key(), sqlOutputEOL);
+            sqlTable = sqlProperties.getString(Property.TABLE.key(), sqlTable);
+            sqlNameQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
+            sqlValueQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
             sqlCreate = sqlProperties.getBoolean(Property.CREATE.key(), sqlCreate);
             sqlInsert = sqlProperties.getBoolean(Property.INSERT.key(), sqlInsert);
             sqlUpdate = sqlProperties.getBoolean(Property.UPDATE.key(), sqlUpdate);
-
-            List<Object> postUpdateObjectList;
-            try {
-                postUpdateObjectList = sqlProperties.getList(Property.POST_UPDATE.key());
-            } catch (ConversionException ex) {
-                postUpdateObjectList = new ArrayList<>();
-            }
-            sqlPostUpdate = new ArrayList<>();
-            for (Object obj : postUpdateObjectList) {
-                sqlPostUpdate.add(obj.toString());
-            }
+            sqlPreSQL = getStringList(sqlProperties, Property.PRE_SQL.key());
+            sqlPostSQL = getStringList(sqlProperties, Property.POST_SQL.key());
         }
 
         // Default Properties for Markdown
@@ -116,12 +140,12 @@ public class OutputConfig extends Config {
         markdownOutputCharset = "UTF-8";
         markdownOutputEOL = "\n";
 
-        key = baseProperty + "." + Property.MARKDOWN.key();
-        markdown = baseProperties.getBoolean(key, markdown);
+        key =  Property.MARKDOWN.prefixKey(baseProperty);
+        markdown = properties.getBoolean(key, markdown);
         if (markdown) {
             outputTypeList.add(OutputTypes.MARKDOWN_FILE);
 
-            Configuration markdownProperties = properties.subset(baseProperty + "." + Property.MARKDOWN.key());
+            Configuration markdownProperties = properties.subset(key);
             markdownOutput = markdownProperties.getString(Property.OUTPUT_FILE.key(), markdownOutput);
             markdownOutputAppend = markdownProperties.getBoolean(Property.OUTPUT_APPEND.key(), markdownOutputAppend);
             markdownOutputCharset = markdownProperties.getString(Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
@@ -133,12 +157,12 @@ public class OutputConfig extends Config {
         pdfOutput = baseProperty + ".md";
         pdfJRXML = "";
 
-        key = baseProperty + "." + Property.PDF_TABLE.key();
-        pdf = baseProperties.getBoolean(key, pdf);
+        key = Property.PDF_TABLE.prefixKey(baseProperty);
+        pdf = properties.getBoolean(key, pdf);
         if (pdf) {
             outputTypeList.add(OutputTypes.PDF_FILE);
 
-            Configuration pdfProperties = properties.subset(baseProperty + "." + Property.PDF_TABLE.key());
+            Configuration pdfProperties = properties.subset(key);
             pdfOutput = pdfProperties.getString(Property.OUTPUT_FILE.key(), pdfOutput);
             String jrxml = pdfProperties.getString(Property.OUTPUT_FILE.key(), (String) pdfJRXML);
             if (jrxml.isEmpty()) {
@@ -156,18 +180,18 @@ public class OutputConfig extends Config {
         txtOutputEOL = "\n";
         txtSeparator = "";
         txtFormat = "STR:80";
-        txtFormatDate = "YYYYMMDD";
-        txtFormatDatetime = "YYYYMMDDhhmmss";
+        txtFormatDate = "YYYYMMdd";
+        txtFormatDatetime = "YYYYMMddHHmmss";
         txtFillString = " ";
         txtFillNumber = "0";
         txtFillDate = " ";
 
-        key = baseProperty + "." + Property.TXT.key();
-        txt = baseProperties.getBoolean(key, txt);
+        key = Property.TXT.prefixKey(baseProperty);
+        txt = properties.getBoolean(key, txt);
         if (txt) {
             outputTypeList.add(OutputTypes.TXT_FILE);
 
-            Configuration txtProperties = properties.subset(baseProperty + "." + Property.TXT.key());
+            Configuration txtProperties = properties.subset(key);
             txtOutput = txtProperties.getString(Property.OUTPUT_FILE.key(), txtOutput);
             txtOutputAppend = txtProperties.getBoolean(Property.OUTPUT_APPEND.key(), txtOutputAppend);
             txtOutputCharset = txtProperties.getString(Property.OUTPUT_CHARSET.key(), txtOutputCharset);
@@ -189,12 +213,12 @@ public class OutputConfig extends Config {
         csvOutputEOL = "\n";
         csvSeparator = ",";
 
-        key = baseProperty + "." + Property.CSV.key();
-        csv = baseProperties.getBoolean(key, csv);
+        key = Property.CSV.prefixKey(baseProperty);
+        csv = properties.getBoolean(key, csv);
         if (csv) {
             outputTypeList.add(OutputTypes.CSV_FILE);
 
-            Configuration csvProperties = properties.subset(baseProperty + "." + Property.CSV.key());
+            Configuration csvProperties = properties.subset(key);
             csvOutput = csvProperties.getString(Property.OUTPUT_FILE.key(), csvOutput);
             csvOutputAppend = csvProperties.getBoolean(Property.OUTPUT_APPEND.key(), csvOutputAppend);
             csvOutputCharset = csvProperties.getString(Property.OUTPUT_CHARSET.key(), csvOutputCharset);
@@ -203,12 +227,69 @@ public class OutputConfig extends Config {
         }
 
         // DBInsert Output Properties
+        dbInsert = false;
+        dbInsertDataSource = "";
+        dbInsertTable = name;
+        dbInsertNameQuotes = "";
+        dbInsertValueQuotes = "\"";
+        dbInsertPreSQL = new ArrayList<>();
+        dbInsertPostSQL = new ArrayList<>();
 
+        key = Property.DBINSERT.prefixKey(baseProperty);
+        dbInsert = properties.getBoolean(key, dbInsert);
+        if (dbInsert) {
+            outputTypeList.add(OutputTypes.INSERT_DB);
+
+            Configuration dbInsertProperties = properties.subset(key);
+            dbInsertDataSource = dbInsertProperties.getString(Property.DATA_SOURCE.key(), dbInsertDataSource);
+            dbInsertTable = dbInsertProperties.getString(Property.TABLE.key(), dbInsertTable);
+            dbInsertNameQuotes = dbInsertProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
+            dbInsertValueQuotes = dbInsertProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
+            dbInsertPreSQL = getStringList(dbInsertProperties, Property.PRE_SQL.key());
+            dbInsertPostSQL = getStringList(dbInsertProperties, Property.POST_SQL.key());
+        }
 
         // DBUpdate Output Properties
+        dbUpdate = false;
+        dbUpdateDataSource = "";
+        dbUpdateTable = name;
+        dbUpdateNameQuotes = "";
+        dbUpdateValueQuotes = "\"";
+        dbUpdateId = properties.getString(Property.ID.key(), "id");
+        dbUpdatePreSQL = new ArrayList<>();
+        dbUpdatePostSQL = new ArrayList<>();
 
+        key = Property.DBUPDATE.prefixKey(baseProperty);
+        dbUpdate = properties.getBoolean(key, dbUpdate);
+        if (dbUpdate) {
+            outputTypeList.add(OutputTypes.UPDATE_DB);
+
+            Configuration dbUpdateProperties = properties.subset(key);
+            dbUpdateDataSource = dbUpdateProperties.getString(Property.DATA_SOURCE.key(), dbUpdateDataSource);
+            dbUpdateTable = dbUpdateProperties.getString(Property.TABLE.key(), dbUpdateTable);
+            dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
+            dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
+            dbUpdateValueQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbUpdateValueQuotes);
+            dbUpdatePreSQL = getStringList(dbUpdateProperties, Property.PRE_SQL.key());
+            dbUpdatePostSQL = getStringList(dbUpdateProperties, Property.POST_SQL.key());
+        }
 
         return true;
+    }
+
+    private List<String> getStringList(Configuration properties, String key) {
+        List<Object> objectList;
+        try {
+            objectList = properties.getList(key);
+        } catch (ConversionException ex) {
+            objectList = new ArrayList<>();
+        }
+
+        List<String> stringList = new ArrayList<>();
+        for (Object obj : objectList) {
+            stringList.add(obj.toString());
+        }
+        return stringList;
     }
 
     @Override
@@ -248,6 +329,18 @@ public class OutputConfig extends Config {
         return sqlOutputEOL;
     }
 
+    public String getSqlTable() {
+        return sqlTable;
+    }
+
+    public String getSqlNameQuotes() {
+        return sqlNameQuotes;
+    }
+
+    public String getSqlValueQuotes() {
+        return sqlValueQuotes;
+    }
+
     public boolean isSqlCreate() {
         return sqlCreate;
     }
@@ -260,8 +353,12 @@ public class OutputConfig extends Config {
         return sqlUpdate;
     }
 
-    public List<String> getSqlPostUpdate() {
-        return sqlPostUpdate;
+    public List<String> getSqlPostSQL() {
+        return sqlPostSQL;
+    }
+
+    public List<String> getSqlPreSQL() {
+        return sqlPreSQL;
     }
 
     public boolean isMarkdown() {
@@ -366,6 +463,66 @@ public class OutputConfig extends Config {
 
     public String getCsvOutputEOL() {
         return csvOutputEOL;
+    }
+
+    public boolean isDbInsert() {
+        return dbInsert;
+    }
+
+    public String getDbInsertDataSource() {
+        return dbInsertDataSource;
+    }
+
+    public String getDbInsertTable() {
+        return dbInsertTable;
+    }
+
+    public String getDbInsertNameQuotes() {
+        return dbInsertNameQuotes;
+    }
+
+    public String getDbInsertValueQuotes() {
+        return dbInsertValueQuotes;
+    }
+
+    public List<String> getDbInsertPostSQL() {
+        return dbInsertPostSQL;
+    }
+
+    public List<String> getDbInsertPreSQL() {
+        return dbInsertPreSQL;
+    }
+
+    public boolean isDbUpdate() {
+        return dbUpdate;
+    }
+
+    public String getDbUpdateDataSource() {
+        return dbUpdateDataSource;
+    }
+
+    public String getDbUpdateTable() {
+        return dbUpdateTable;
+    }
+
+    public String getDbUpdateId() {
+        return dbUpdateId;
+    }
+
+    public String getDbUpdateNameQuotes() {
+        return dbUpdateNameQuotes;
+    }
+
+    public String getDbUpdateValueQuotes() {
+        return dbUpdateValueQuotes;
+    }
+
+    public List<String> getDbUpdatePostSQL() {
+        return dbUpdatePostSQL;
+    }
+
+    public List<String> getDbUpdatePreSQL() {
+        return dbUpdatePreSQL;
     }
 
     public List<OutputTypes> getOutputTypeList() {

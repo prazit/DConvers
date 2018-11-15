@@ -1,7 +1,8 @@
-package com.clevel.dconvers.ngin;
+package com.clevel.dconvers.ngin.output;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.OutputConfig;
+import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
 
@@ -38,7 +39,9 @@ public abstract class Output extends AppBase {
             }
         }
 
-        closeWriter(outputConfig, dataTable, writer, true);
+        if (!closeWriter(outputConfig, dataTable, writer, true)) {
+            return false;
+        }
         return true;
     }
 
@@ -46,12 +49,13 @@ public abstract class Output extends AppBase {
 
     protected abstract Writer openWriter(OutputConfig outputConfig, DataTable dataTable);
 
-    protected void closeWriter(OutputConfig outputConfig, DataTable dataTable, Writer writer, boolean success) {
+    protected boolean closeWriter(OutputConfig outputConfig, DataTable dataTable, Writer writer, boolean success) {
         try {
             writer.close();
         } catch (IOException e) {
             // do nothing
         }
+        return true;
     }
 
     protected Writer createFile(String outputFile, boolean append, String charset) {

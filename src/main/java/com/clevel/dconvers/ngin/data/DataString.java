@@ -33,7 +33,7 @@ public class DataString extends DataColumn {
             return nullString;
         }
 
-        return "\"" + value + "\"";
+        return quotes + value + quotes;
     }
 
     @Override

@@ -70,7 +70,7 @@ public class DataDate extends DataColumn {
         }
 
         simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
-        return "\"" + simpleDateFormat.format(value) + "\"";
+        return quotes + simpleDateFormat.format(value) + quotes;
     }
 
     private Date getValue(String quotedValue) {

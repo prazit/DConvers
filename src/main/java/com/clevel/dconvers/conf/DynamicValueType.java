@@ -17,7 +17,7 @@ public enum DynamicValueType {
 
     COL(0),                 // source-column-name>>MAPPING>>column-name = id>>MAP:branch_to_branch.source_id>>target_id
     NON(0),                 // None (no specified type) will use as source-column-name
-    INV(0),                 // Invalid Specified Type
+    INV(0)                  // Invalid Specified Type
     ;
 
     private int dataType;

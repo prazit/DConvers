@@ -97,7 +97,7 @@ public class MarkdownFormatter extends DataFormatter {
     }
 
     @Override
-    protected String format(DataRow row) {
+    public String format(DataRow row) {
         List<DataColumn> columnList = row.getColumnList();
         rowIndex++;
 
@@ -184,22 +184,6 @@ public class MarkdownFormatter extends DataFormatter {
         record += "|\n";
 
         return record;
-    }
-
-
-    @Override
-    protected String postFormat(DataTable dataTable) {
-        List<String> postUpdate = dataTable.getPostUpdate();
-
-        if (postUpdate.size() > 0) {
-            String lines = "> Post Update:  ";
-            for (String sql : postUpdate) {
-                lines += "> " + sql + "  \n";
-            }
-            return lines;
-        }
-
-        return null;
     }
 
     @Override

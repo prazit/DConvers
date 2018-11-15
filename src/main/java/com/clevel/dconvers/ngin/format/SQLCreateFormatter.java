@@ -14,21 +14,25 @@ public class SQLCreateFormatter extends DataFormatter {
 
     private String tableName;
     private String idColumnName;
+    private String nameQuotes;
+    private boolean needBegin;
 
-    public SQLCreateFormatter(Application application, String name) {
+    public SQLCreateFormatter(Application application, String name, String nameQuotes, boolean needBegin) {
         super(application, name, true);
+        tableName = name;
+        this.nameQuotes = nameQuotes;
+        this.needBegin = needBegin;
         outputType = "sql file";
     }
 
     @Override
     protected String preFormat(DataTable dataTable) {
-        tableName = dataTable.getTableName();
         idColumnName = dataTable.getIdColumnName();
         return null;
     }
 
     @Override
-    protected String format(DataRow row) {
+    public String format(DataRow row) {
         /*
             create table source_to_target
             (
@@ -58,25 +62,25 @@ public class SQLCreateFormatter extends DataFormatter {
                 continue;
             }
 
-            columnString = "`" + columnString + "`" +getColumnTypeString(column);
+            columnString = nameQuotes + columnString + nameQuotes + getColumnTypeString(column);
             columns += columnString + ", ";
         }
 
         columns = columns.substring(0, columns.length() - 2);
         switch (idColumnType) {
             case Types.INTEGER:
-                columnString = "`" + idColumnName + "` int auto_increment primary key, ";
+                columnString = nameQuotes + idColumnName + nameQuotes + " int auto_increment primary key, ";
                 break;
 
             case Types.BIGINT:
-                columnString = "`" + idColumnName + "` bigint auto_increment primary key, ";
+                columnString = nameQuotes + idColumnName + nameQuotes + " bigint auto_increment primary key, ";
                 break;
 
             default:
-                columnString = "`" + idColumnName + "` varchar(255) primary key, ";
+                columnString = nameQuotes + idColumnName + nameQuotes + " varchar(255) primary key, ";
         }
 
-        String sqlCreate = "DROP TABLE IF EXISTS `" + tableName + "`;\nCREATE TABLE `" + tableName + "` ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
+        String sqlCreate = "DROP TABLE IF EXISTS " + nameQuotes + tableName + nameQuotes + ";\nCREATE TABLE " + nameQuotes + tableName + nameQuotes + " ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
         return sqlCreate;
     }
 
@@ -118,7 +122,10 @@ public class SQLCreateFormatter extends DataFormatter {
 
     @Override
     protected String postFormat(DataTable dataTable) {
-        return "\nBEGIN;\n";
+        if (needBegin) {
+            return "\nBEGIN;\n";
+        }
+        return null;
     }
 
     @Override
