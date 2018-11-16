@@ -35,7 +35,11 @@ public class TransformConfig extends Config {
         Configuration baseProperties = properties;
 
         String transformProperty = baseProperty + "." + Property.TRANSFORM.key();
-        transform = baseProperties.getString(transformProperty);
+        transformList = new ArrayList<>();
+        transform = baseProperties.getString(transformProperty,"");
+        if (transform.length() == 0) {
+            return true;
+        }
 
         Map<String, String> argumentList;
         Configuration transProperties;
@@ -44,7 +48,6 @@ public class TransformConfig extends Config {
         String transformTypeName;
         String argumentValue;
         String argumentName;
-        transformList = new ArrayList<>();
 
         // example: transform=TRANSOP1(arguments),TRANSOP2(arguments),TRANSOP3(arguments)
         // transformValues=[TRANSOP1, arguments, TRANSOP2, arguments, TRANSOP3, arguments]
