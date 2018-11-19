@@ -115,7 +115,7 @@ public class FixedLengthFormatter extends DataFormatter {
         String columnName = dataColumn.getName();
         BigDecimal txtLength = txtLengthList.get(columnIndex);
         if (txtLength.equals(BigDecimal.ZERO)) {
-            log.debug("Column({}) is ignored by length = 0.", columnName);
+            log.debug("Column({}) is ignored by specific-length(0).", columnName);
             return "";
         }
 
@@ -198,7 +198,7 @@ public class FixedLengthFormatter extends DataFormatter {
             formatted = integerAsStringValue.substring(already - targetLength, already);
 
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);
-            log.warn("Integer value of column({}) has broken by the fixed length! OriginalValue({}) OutputValue({})", columnName, integerAsStringValue, formatted);
+            log.warn("Integer value of column({}) has broken by the fixed length({})! OriginalValue({}) OutputValue({})", columnName, formatted.length(), integerAsStringValue, formatted);
             application.hasWarning = true;
         } else {
             formatted = integerAsStringValue;

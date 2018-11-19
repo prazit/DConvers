@@ -4,6 +4,7 @@ import java.sql.Types;
 
 public enum DynamicValueType {
     VAR(0),                 // VAR:system-variable-name
+
     STR(Types.VARCHAR),     // STR:My string is longer than other value
     INT(Types.INTEGER),     // INT:integer-value = INT:12345
     DEC(Types.DECIMAL),     // DEC:decimal-value = DEC:12345.54321

@@ -2,14 +2,12 @@ package com.clevel.dconvers.ngin.transform;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
-import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.FixedLengthFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,31 +38,12 @@ public class FixedLengthTransform extends Transform {
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();
-        DataRow newRow;
-
-        List<DataColumn> newColumnList;
-        DataColumn newColumn;
 
         String formatted;
-        /*int columnIndex;*/
 
         for (DataRow row : rowList) {
-            /*columnIndex = -1;*/
             formatted = fixedLengthFormatter.format(row);
-
-            /*for (DataColumn column : row.getColumnList()) {
-                columnIndex++;
-                column.setIndex(columnIndex);
-                formatted += separator + fixedLengthFormatter.format(column);
-            }*/
-
-            newRow = new DataRow(dataTable);
-            newRowList.add(newRow);
-            newColumnList = newRow.getColumnList();
-            newColumnList.addAll(row.getColumnList());
-            newColumn = application.createDataColumn(newColumnName, Types.VARCHAR, formatted);
-            newColumnList.add(newColumnIndex, newColumn);
-            newRow.updateColumnMap();
+            newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, formatted));
         }
 
         rowList.clear();

@@ -28,8 +28,10 @@ public class Application {
     public DataConversionConfigFile dataConversionConfigFile;
 
     public Map<String, DataSource> dataSourceMap;
-    public List<Converter> converterList;
     public Map<SystemVariable, DataColumn> systemVariableMap;
+
+    public List<Converter> converterList;
+    public Converter currentConverter;
 
     public DataTable reportTable;
 
@@ -42,6 +44,7 @@ public class Application {
         reportTable = new DataTable("Report", "id");
         hasWarning = false;
 
+        currentConverter = null;
         systemVariableMap = createSystemVariableMap();
 
         log.trace("Application is created.");
@@ -121,16 +124,16 @@ public class Application {
         log.trace("Application. Launch Converters.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
-        boolean printSource = !dataConversionConfigFile.getOutputSourcePath().isEmpty();
-        boolean printTarget = !dataConversionConfigFile.getOutputTargetPath().isEmpty();
-        boolean printMapping = !dataConversionConfigFile.getOutputMappingPath().isEmpty();
         boolean success = false;
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
+                currentConverter = convert;
                 success = convert.convert();
                 success = success && convert.print();
             }
         }
+        currentConverter = null;
+
         if (!success) {
             stopWithError();
         }

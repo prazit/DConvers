@@ -4,6 +4,7 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.transform.TransformTypes;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,15 +32,6 @@ public class TransformConfig extends Config {
 
     @Override
     protected boolean loadProperties() {
-        String baseProperty = name;
-        Configuration baseProperties = properties;
-
-        String transformProperty = baseProperty + "." + Property.TRANSFORM.key();
-        transformList = new ArrayList<>();
-        transform = baseProperties.getString(transformProperty,"");
-        if (transform.length() == 0) {
-            return true;
-        }
 
         Map<String, String> argumentList;
         Configuration transProperties;
@@ -49,31 +41,56 @@ public class TransformConfig extends Config {
         String argumentValue;
         String argumentName;
 
-        // example: transform=TRANSOP1(arguments),TRANSOP2(arguments),TRANSOP3(arguments)
-        // transformValues=[TRANSOP1, arguments, TRANSOP2, arguments, TRANSOP3, arguments]
-        String[] transformValues = transform.split("\\),|[()]");
-        log.debug("transformValues = {}", Arrays.asList(transformValues));
-        for (int index = 0; index < transformValues.length; index += 2) {
-            transformTypeName = transformValues[index];
-            transformType = TransformTypes.valueOf(transformTypeName.toUpperCase());
+        String baseProperty = name;
+        String transformProperty = baseProperty + "." + Property.TRANSFORM.key();
 
-            argumentList = new HashMap<>();
-            argumentName = "arguments";
-            argumentValue = transformValues[index + 1];
-            argumentList.put(argumentName, argumentValue);
-
-            transProperties = properties.subset(transformProperty + "." + transformTypeName);
-            transKeyList = transProperties.getKeys();
-            for (Iterator<String> it = transKeyList; it.hasNext(); ) {
-                argumentName = it.next();
-                argumentValue = transProperties.getString(argumentName);
-                argumentList.put(argumentName, argumentValue);
-            }
-
-            transformList.add(new Pair<>(transformType, argumentList));
+        List<Object> transformArray;
+        try {
+            transformArray = properties.getList(transformProperty);
+        } catch (ConversionException ex) {
+            transformArray = new ArrayList<>();
         }
 
-        log.debug("transformList = {}", transformList);
+        transformList = new ArrayList<>();
+        transform = "";
+
+        String transformString;
+        for (Object transformObject : transformArray) {
+
+            transformString = transformObject.toString();
+            if (transformString.length() == 0) {
+                continue;
+            }
+            transform += transformString + ",";
+
+            // example: transformString=TRANSOP1(arguments),TRANSOP2(arguments),TRANSOP3(arguments)
+            // transformValues=[TRANSOP1, arguments, TRANSOP2, arguments, TRANSOP3, arguments]
+            String[] transformValues = transformString.split("\\),|[()]");
+            log.debug("transformValues = {}", Arrays.asList(transformValues));
+            for (int index = 0; index < transformValues.length; index += 2) {
+                transformTypeName = transformValues[index];
+                transformType = TransformTypes.valueOf(transformTypeName.toUpperCase());
+
+                argumentList = new HashMap<>();
+                argumentName = "arguments";
+                argumentValue = transformValues[index + 1];
+                argumentList.put(argumentName, argumentValue);
+
+                transProperties = properties.subset(transformProperty + "." + transformTypeName);
+                transKeyList = transProperties.getKeys();
+                for (Iterator<String> it = transKeyList; it.hasNext(); ) {
+                    argumentName = it.next();
+                    argumentValue = transProperties.getString(argumentName);
+                    argumentList.put(argumentName, argumentValue);
+                }
+
+                this.transformList.add(new Pair<>(transformType, argumentList));
+            }
+
+        }
+
+        transform = transform.substring(0, transform.length() - 2);
+        log.debug("transformList = {}", this.transformList);
         return true;
     }
 

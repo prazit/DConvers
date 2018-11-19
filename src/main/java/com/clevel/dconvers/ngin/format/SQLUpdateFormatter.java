@@ -43,7 +43,6 @@ public class SQLUpdateFormatter extends DataFormatter {
         }
         values = values.substring(0, values.length() - 2);
 
-        log.debug("SQLUpdateFormatter.format: idColumnName({}) idColumn({}) values({})", idColumnName, idColumn, values);
         String where = nameQuotes + idColumnName + nameQuotes + " = " + idColumn.getQuotedValue();
 
         String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";\n";

@@ -4,7 +4,9 @@ public enum TransformTypes {
 
     FIXEDLENGTH(FixedLengthTransform.class),
     CONCAT(ConcatTransform.class),
-    REMOVE(RemoveTransform.class);
+    REMOVE(RemoveTransform.class),
+    ROWCOUNT(RowCountTransform.class),
+    SUM(SumTransform.class);
 
     private Class transformClass;
 

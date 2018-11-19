@@ -57,6 +57,8 @@ public enum Property {
     FILL_DATE("fill.date"),
     TRANSFORM("transform"),
     ARGUMENTS("arguments"),
+    REPLACE("replace"),
+    CURRENT("current"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

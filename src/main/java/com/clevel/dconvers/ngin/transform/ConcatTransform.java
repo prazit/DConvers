@@ -8,7 +8,6 @@ import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +20,7 @@ public class ConcatTransform extends Transform {
     @Override
     public boolean transform(DataTable dataTable) {
 
+        // value([replace or [ColumnNameToInsert]]:[ColumnIndexToInsert],[current or [[TableType]:[TableName]]],[[ColumnRange] or [ColumnIndex]],..)
         String argument = getArgument(Property.ARGUMENTS.key());
         String[] arguments = argument.split("[,]");
         String[] firstArg = arguments[0].split("[:]");
@@ -29,49 +29,29 @@ public class ConcatTransform extends Transform {
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();
-        DataRow newRow;
 
-        List<Integer> indexList = createIndexList(arguments, 1, 1, rowList.get(0).getColumnList().size());
+        List<Integer> indexList = createIndexList(arguments, 2, 0, rowList.get(0).getColumnList().size());
 
-        List<DataColumn> newColumnList;
-        DataColumn newColumn;
+        List<DataColumn> columnList;
+        DataColumn column;
+        String value = "";
 
         for (DataRow row : rowList) {
-            newColumn = application.createDataColumn(newColumnName, Types.VARCHAR, "");
 
+            columnList = row.getColumnList();
             for (Integer index : indexList) {
-                if (!concatByIndex(newColumn, row, index)) {
-                    return false;
-                }
+                column = columnList.get(index);
+                value += column.getValue();
             }
 
-            newRow = new DataRow(dataTable);
-            newRowList.add(newRow);
-            newColumnList = newRow.getColumnList();
-            newColumnList.addAll(row.getColumnList());
-            newColumnList.add(newColumnIndex, newColumn);
-            newRow.updateColumnMap();
+            newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, value));
+
         }
 
         rowList.clear();
         rowList.addAll(newRowList);
 
         return true;
-
-    }
-
-    private boolean concatByIndex(DataColumn column, DataRow row, int index) {
-
-        String value = column.getValue();
-
-        DataColumn dataColumn = row.getColumnList().get(index);
-        String concat = dataColumn.getValue();
-
-        value += concat;
-        column.setValue(value);
-
-        return true;
-
     }
 
     @Override
