@@ -45,7 +45,7 @@ public class TXTOutput extends Output {
             outputPath = dataConversionConfigFile.getOutputMappingPath();
         }
 
-        Writer writer = createFile(outputPath + outputConfig.getTxtOutput(), outputConfig.isTxtOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        Writer writer = createFile(outputPath + outputConfig.getTxtOutput(), outputConfig.isTxtOutputAutoCreateDir(), outputConfig.isTxtOutputAppend(), outputConfig.getMarkdownOutputCharset());
         return writer;
     }
 

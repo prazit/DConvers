@@ -69,7 +69,7 @@ public class SQLOutput extends Output {
             headPrint = "";
         }
 
-        Writer writer = createFile(outputPath + outputConfig.getSqlOutput(), outputConfig.isSqlOutputAppend(), outputConfig.getSqlOutputCharset());
+        Writer writer = createFile(outputPath + outputConfig.getSqlOutput(), outputConfig.isSqlOutputAutoCreateDir(), outputConfig.isSqlOutputAppend(), outputConfig.getSqlOutputCharset());
         if (headPrint != null) {
             try {
                 writer.write(headPrint);

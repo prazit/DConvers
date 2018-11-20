@@ -6,10 +6,7 @@ import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -58,18 +55,44 @@ public abstract class Output extends AppBase {
         return true;
     }
 
-    protected Writer createFile(String outputFile, boolean append, String charset) {
+    protected Writer createFile(String outputFile, boolean autoCreateDir, boolean append, String charset) {
+        Writer writer = tryToCreateFile(outputFile, append, charset);
+
+        if (writer == null) {
+            if (autoCreateDir && autoCreateDir(outputFile)) {
+                writer = tryToCreateFile(outputFile, append, charset);
+            } else {
+                log.error("Create output file({}) is failed! please check directory path.", outputFile);
+                application.hasWarning = true;
+                try {
+                    writer = new PrintWriter(new OutputStreamWriter(System.out, charset));
+                } catch (UnsupportedEncodingException e1) {
+                    writer = new StringWriter();
+                }
+            }
+        }
+
+        return writer;
+    }
+
+    private Writer tryToCreateFile(String outputFile, boolean append, String charset) {
         Writer writer;
 
         try {
             writer = new OutputStreamWriter(new FileOutputStream(outputFile, append), charset);
         } catch (Exception e) {
-            log.error("Create output file({}) is failed, {}", outputFile, e.getMessage());
-            application.hasWarning = true;
+            log.debug("try to create file({}) is failed, {}", outputFile, e.getMessage());
             return null;
         }
 
         return writer;
+    }
+
+    protected boolean autoCreateDir(String outputFile) {
+        File file = new File(outputFile);
+        File parentFile = file.getParentFile();
+        log.debug("try to create directory path({})", parentFile);
+        return parentFile.mkdirs();
     }
 
 }

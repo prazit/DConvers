@@ -41,6 +41,7 @@ public enum Property {
     VALUE("value"),
     OUTPUT_FILE("output"),
     OUTPUT_APPEND("append"),
+    OUTPUT_AUTOCREATEDIR("auto.create.dir"),
     OUTPUT_CHARSET("charset"),
     OUTPUT_EOL("eol"),
     TABLE("table"),

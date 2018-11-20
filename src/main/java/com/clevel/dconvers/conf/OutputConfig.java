@@ -16,6 +16,7 @@ public class OutputConfig extends Config {
     private boolean sql;
     private String sqlOutput;
     private boolean sqlOutputAppend;
+    private boolean sqlOutputAutoCreateDir;
     private String sqlOutputCharset;
     private String sqlOutputEOL;
     private String sqlTable;
@@ -31,6 +32,7 @@ public class OutputConfig extends Config {
     private boolean markdown;
     private String markdownOutput;
     private boolean markdownOutputAppend;
+    private boolean markdownOutputAutoCreateDir;
     private String markdownOutputCharset;
     private String markdownOutputEOL;
 
@@ -38,11 +40,13 @@ public class OutputConfig extends Config {
     private boolean pdf;
     private Object pdfJRXML;
     private String pdfOutput;
+    private boolean pdfOutputAutoCreateDir;
 
 
     private boolean txt;
     private String txtOutput;
     private boolean txtOutputAppend;
+    private boolean txtOutputAutoCreateDir;
     private String txtOutputCharset;
     private String txtOutputEOL;
     private String txtSeparator;
@@ -57,6 +61,7 @@ public class OutputConfig extends Config {
     private boolean csv;
     private String csvOutput;
     private boolean csvOutputAppend;
+    private boolean csvOutputAutoCreateDir;
     private String csvOutputCharset;
     private String csvOutputEOL;
     private String csvSeparator;
@@ -102,6 +107,7 @@ public class OutputConfig extends Config {
         sql = false;
         sqlOutput = baseProperty + ".sql";
         sqlOutputAppend = false;
+        sqlOutputAutoCreateDir = true;
         sqlOutputCharset = "UTF-8";
         sqlOutputEOL = "\n";
         sqlTable = name;
@@ -121,6 +127,7 @@ public class OutputConfig extends Config {
             Configuration sqlProperties = properties.subset(key);
             sqlOutput = sqlProperties.getString(Property.OUTPUT_FILE.key(), sqlOutput);
             sqlOutputAppend = sqlProperties.getBoolean(Property.OUTPUT_APPEND.key(), sqlOutputAppend);
+            sqlOutputAutoCreateDir = sqlProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), sqlOutputAutoCreateDir);
             sqlOutputCharset = sqlProperties.getString(Property.OUTPUT_CHARSET.key(), sqlOutputCharset);
             sqlOutputEOL = sqlProperties.getString(Property.OUTPUT_EOL.key(), sqlOutputEOL);
             sqlTable = sqlProperties.getString(Property.TABLE.key(), sqlTable);
@@ -137,6 +144,7 @@ public class OutputConfig extends Config {
         markdown = false;
         markdownOutput = baseProperty + ".md";
         markdownOutputAppend = false;
+        markdownOutputAutoCreateDir = true;
         markdownOutputCharset = "UTF-8";
         markdownOutputEOL = "\n";
 
@@ -148,6 +156,7 @@ public class OutputConfig extends Config {
             Configuration markdownProperties = properties.subset(key);
             markdownOutput = markdownProperties.getString(Property.OUTPUT_FILE.key(), markdownOutput);
             markdownOutputAppend = markdownProperties.getBoolean(Property.OUTPUT_APPEND.key(), markdownOutputAppend);
+            markdownOutputAutoCreateDir = markdownProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), markdownOutputAutoCreateDir);
             markdownOutputCharset = markdownProperties.getString(Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
             markdownOutputEOL = markdownProperties.getString(Property.OUTPUT_EOL.key(), markdownOutputEOL);
         }
@@ -155,6 +164,7 @@ public class OutputConfig extends Config {
         // Default Properties for PDF
         pdf = false;
         pdfOutput = baseProperty + ".md";
+        pdfOutputAutoCreateDir = true;
         pdfJRXML = "";
 
         key = Property.PDF_TABLE.prefixKey(baseProperty);
@@ -164,6 +174,7 @@ public class OutputConfig extends Config {
 
             Configuration pdfProperties = properties.subset(key);
             pdfOutput = pdfProperties.getString(Property.OUTPUT_FILE.key(), pdfOutput);
+            pdfOutputAutoCreateDir = pdfProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), pdfOutputAutoCreateDir);
             String jrxml = pdfProperties.getString(Property.OUTPUT_FILE.key(), (String) pdfJRXML);
             if (jrxml.isEmpty()) {
                 pdfJRXML = getDefaultJRXML();
@@ -176,6 +187,7 @@ public class OutputConfig extends Config {
         txt = false;
         txtOutput = baseProperty + ".txt";
         txtOutputAppend = false;
+        txtOutputAutoCreateDir = true;
         txtOutputCharset = "UTF-8";
         txtOutputEOL = "\n";
         txtSeparator = "";
@@ -194,6 +206,7 @@ public class OutputConfig extends Config {
             Configuration txtProperties = properties.subset(key);
             txtOutput = txtProperties.getString(Property.OUTPUT_FILE.key(), txtOutput);
             txtOutputAppend = txtProperties.getBoolean(Property.OUTPUT_APPEND.key(), txtOutputAppend);
+            txtOutputAutoCreateDir = txtProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), txtOutputAutoCreateDir);
             txtOutputCharset = txtProperties.getString(Property.OUTPUT_CHARSET.key(), txtOutputCharset);
             txtOutputEOL = txtProperties.getString(Property.OUTPUT_EOL.key(), txtOutputEOL);
             txtSeparator = txtProperties.getString(Property.SEPARATOR.key(), txtSeparator);
@@ -209,6 +222,7 @@ public class OutputConfig extends Config {
         csv = false;
         csvOutput = baseProperty + ".txt";
         csvOutputAppend = false;
+        csvOutputAutoCreateDir = true;
         csvOutputCharset = "UTF-8";
         csvOutputEOL = "\n";
         csvSeparator = ",";
@@ -221,6 +235,7 @@ public class OutputConfig extends Config {
             Configuration csvProperties = properties.subset(key);
             csvOutput = csvProperties.getString(Property.OUTPUT_FILE.key(), csvOutput);
             csvOutputAppend = csvProperties.getBoolean(Property.OUTPUT_APPEND.key(), csvOutputAppend);
+            csvOutputAutoCreateDir = csvProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), csvOutputAutoCreateDir);
             csvOutputCharset = csvProperties.getString(Property.OUTPUT_CHARSET.key(), csvOutputCharset);
             csvOutputEOL = csvProperties.getString(Property.OUTPUT_EOL.key(), csvOutputEOL);
             csvSeparator = csvProperties.getString(Property.SEPARATOR.key(), csvSeparator);
@@ -321,6 +336,10 @@ public class OutputConfig extends Config {
         return sqlOutputAppend;
     }
 
+    public boolean isSqlOutputAutoCreateDir() {
+        return sqlOutputAutoCreateDir;
+    }
+
     public String getSqlOutputCharset() {
         return sqlOutputCharset;
     }
@@ -373,6 +392,10 @@ public class OutputConfig extends Config {
         return markdownOutputAppend;
     }
 
+    public boolean isMarkdownOutputAutoCreateDir() {
+        return markdownOutputAutoCreateDir;
+    }
+
     public String getMarkdownOutputCharset() {
         return markdownOutputCharset;
     }
@@ -393,6 +416,10 @@ public class OutputConfig extends Config {
         return pdfOutput;
     }
 
+    public boolean isPdfOutputAutoCreateDir() {
+        return pdfOutputAutoCreateDir;
+    }
+
     public boolean isTxt() {
         return txt;
     }
@@ -403,6 +430,10 @@ public class OutputConfig extends Config {
 
     public boolean isTxtOutputAppend() {
         return txtOutputAppend;
+    }
+
+    public boolean isTxtOutputAutoCreateDir() {
+        return txtOutputAutoCreateDir;
     }
 
     public String getTxtOutputCharset() {
@@ -455,6 +486,10 @@ public class OutputConfig extends Config {
 
     public boolean isCsvOutputAppend() {
         return csvOutputAppend;
+    }
+
+    public boolean isCsvOutputAutoCreateDir() {
+        return csvOutputAutoCreateDir;
     }
 
     public String getCsvOutputCharset() {

@@ -58,7 +58,7 @@ public class MarkdownOutput extends Output {
             headPrint = "";
         }
 
-        Writer writer = createFile(outputPath + outputConfig.getMarkdownOutput(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        Writer writer = createFile(outputPath + outputConfig.getMarkdownOutput(), outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
         if (headPrint != null) {
             try {
                 writer.write(headPrint);
