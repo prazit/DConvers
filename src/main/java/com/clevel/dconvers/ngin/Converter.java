@@ -2,14 +2,23 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.calc.Calc;
+import com.clevel.dconvers.ngin.calc.CalcFactory;
+import com.clevel.dconvers.ngin.calc.CalcTypes;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
+import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.output.OutputFactory;
 import com.clevel.dconvers.ngin.output.OutputTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Types;
 import java.util.*;
 
 public class Converter extends AppBase {
@@ -22,6 +31,9 @@ public class Converter extends AppBase {
     private List<Source> sortedSource;
 
     private String mappingTablePrefix;
+
+    private DataTable currentTable;
+    private int currentRowIndex;
 
     public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -127,9 +139,7 @@ public class Converter extends AppBase {
     }
 
     public boolean print() {
-
         log.trace("Converter({}).print", name);
-        boolean success = true;
 
         Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
@@ -140,6 +150,7 @@ public class Converter extends AppBase {
         DataTable dataTable;
 
         for (Source source : sortedSource) {
+            setCurrentTable(source.getDataTable());
             sourceFileNumber.increaseValueBy(1);
 
             // -- Outputs for Source Table
@@ -156,6 +167,7 @@ public class Converter extends AppBase {
         }
 
         for (Target target : sortedTarget) {
+            setCurrentTable(target.getDataTable());
             targetFileNumber.increaseValueBy(1);
             mappingFileNumber.increaseValueBy(1);
 
@@ -183,7 +195,7 @@ public class Converter extends AppBase {
 
         }
 
-        return success;
+        return true;
     }
 
     public ConverterConfigFile getConverterConfigFile() {
@@ -242,4 +254,189 @@ public class Converter extends AppBase {
         return dataTable;
     }
 
+
+    public String compileDynamicValues(String sourceString) {
+        log.debug("Converter.compileDynamicValues");
+
+        String returnValue = sourceString;
+        String compileResult;
+
+        try {
+            for (; true; returnValue = compileResult) {
+                compileResult = compileFirstDynamicValue(returnValue);
+                if (compileResult == null) {
+                    return returnValue;
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Converter.compileDynamicValues({}) has unexpected exception, {}", sourceString, ex);
+            return null;
+        }
+
+    }
+
+    private String compileFirstDynamicValue(String sourceString) {
+        int start = sourceString.indexOf("$(");
+        if (start < 0) {
+            return null;
+        }
+
+        int end = sourceString.indexOf(")", start);
+        if (end < 0) {
+            end = sourceString.length() - 1;
+        }
+
+        String dynamicValue = sourceString.substring(start + 2, end);
+        log.debug("Converter.compileFirstDynamicValue: dynamicValue({})", dynamicValue);
+
+        DataColumn dataColumn = getDynamicValue(dynamicValue);
+        if (dataColumn == null) {
+            return null;
+        }
+
+        String replacement = dataColumn.getValue();
+        String replaced = sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
+
+        return replaced;
+    }
+
+
+    private String valuesFromDataTable(String dataTableMapping, String columnName) {
+        log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
+
+        DataTable dataTable = getDataTable(dataTableMapping);
+        if (dataTable == null) {
+            log.warn("Source.valuesFromDataTable. The specified dataTable({}) is not found.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable == null || dataTable.getRowCount() == 0) {
+            log.warn("Source.valuesFromDataTable. dataTable({}) is empty.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable.getRow(0).getColumn(columnName) == null) {
+            log.warn("Source.valuesFromDataTable. The specified column({}) is not found in dataTable({}).", columnName, dataTableMapping);
+            return "";
+        }
+
+        String value = "";
+        for (DataRow row : dataTable.getAllRow()) {
+            value += row.getColumn(columnName).getQuotedValue() + ",";
+        }
+
+        value = value.substring(0, value.length() - 1);
+        log.debug("Source.valuesFromDataTable. return-value={}", value);
+        return value;
+    }
+
+    private String valueFromFile(String fileName) {
+
+        BufferedReader br = null;
+        String content = "";
+        try {
+            br = new BufferedReader(new FileReader(fileName));
+            for (String line; (line = br.readLine()) != null; ) {
+                content += line + "\n";
+            }
+
+        } catch (FileNotFoundException fx) {
+            log.error("SQLSource.queryFromFile. file not found: {}", fx.getMessage());
+
+        } catch (Exception ex) {
+            log.error("SQLSource.queryFromFile. has exception: {}", ex);
+
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.warn("close file {} is failed, {}", fileName, e);
+                }
+            }
+        }
+
+        return content;
+    }
+
+
+    public DataColumn getDynamicValue(String dynamicValue) {
+        // dynamicValue look like this
+        // $(VAR:SOURCE_FILE_NUMBER)
+        // $(TXT:FILE_NAME.txt)
+        // $(CAL:function(argument1,argument2))
+        log.trace("Converter.getDynamicValue.");
+
+        if (dynamicValue.length() < 5) {
+            log.error("Invalid syntax for DynamicValue({})", dynamicValue);
+            return null;
+        }
+
+        String valueType = dynamicValue.substring(0, 3);
+        String valueIdentifier = dynamicValue.substring(4);
+        log.debug("valueType({}) valueIdentifier({})", valueType, valueIdentifier);
+
+        DynamicValueType dynamicValueType = DynamicValueType.parse(valueType);
+        if (dynamicValueType == null) {
+            log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
+            return null;
+        }
+
+        DataColumn dataColumn = null;
+        String value;
+        switch (dynamicValueType) {
+            case TXT:
+                value = valueFromFile(valueIdentifier);
+                if (value == null) {
+                    return null;
+                }
+                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                break;
+
+            case VAR:
+                SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
+                if (systemVariable == null) {
+                    log.error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
+                    return null;
+                }
+                dataColumn = application.systemVariableMap.get(systemVariable);
+                break;
+
+            case CAL:
+                String[] values = valueIdentifier.split("[()]");
+                CalcTypes calcType = CalcTypes.parse(values[0]);
+                if (calcType == null) {
+                    log.error("Invalid Calculator({}) for DynamicValue({}), see 'Calculator Types' for detailed", values[0], dynamicValue);
+                    return null;
+                }
+                Calc calculator = CalcFactory.getCalc(application, calcType);
+                calculator.setArguments(values[1]);
+                value = calculator.calc();
+                if (value == null) {
+                    return null;
+                }
+                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+
+            default:
+                log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
+        }
+
+        return dataColumn;
+    }
+
+    public DataTable getCurrentTable() {
+        return currentTable;
+    }
+
+    public int getCurrentRowIndex() {
+        return currentRowIndex;
+    }
+
+    public void setCurrentTable(DataTable currentTable) {
+        this.currentTable = currentTable;
+    }
+
+    public void setCurrentRowIndex(int currentRowIndex) {
+        this.currentRowIndex = currentRowIndex;
+    }
 }

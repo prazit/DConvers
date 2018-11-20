@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.transform;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.calc.Calc;
 import com.clevel.dconvers.ngin.calc.CalcFactory;
@@ -43,14 +44,13 @@ public abstract class Transform extends UtilBase {
 
         Calc calculator = CalcFactory.getCalc(application, calcType);
         calculator.setArguments(arguments);
-        calculator.setCurrentConverter(application.currentConverter);
-        calculator.setCurrentTable(currentTable);
 
+        Converter currentConverter = application.currentConverter;
         String value;
         int rowIndex = -1;
         for (DataRow row : destRowList) {
             rowIndex ++;
-            calculator.setCurrentRowIndex(rowIndex);
+            currentConverter.setCurrentRowIndex(rowIndex);
             value = calculator.calc();
             newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, value));
         }

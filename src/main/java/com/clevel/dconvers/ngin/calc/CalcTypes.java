@@ -16,4 +16,15 @@ public enum CalcTypes {
         return calcClass;
     }
 
+    public static CalcTypes parse(String name) {
+        CalcTypes calcType;
+
+        try {
+            calcType = CalcTypes.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            calcType = null;
+        }
+
+        return calcType;
+    }
 }

@@ -82,6 +82,8 @@ public class Target extends AppBase {
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
         dataTable = new DataTable(name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
+        converter.setCurrentTable(dataTable);
+
         mappingTable = new DataTable(mappingTableName, mappingTargetIdColumnName);
         mappingTable.setOwner(dataTable);
 

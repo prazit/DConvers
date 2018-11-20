@@ -10,11 +10,6 @@ import com.clevel.dconvers.ngin.data.DataTable;
 public abstract class Calc extends UtilBase {
 
     private String arguments;
-
-    private Converter currentConverter;
-    private DataTable currentTable;
-    private int currentRowIndex;
-
     private boolean prepared;
 
     public void setArguments(String arguments) {
@@ -22,41 +17,13 @@ public abstract class Calc extends UtilBase {
         prepared = false;
     }
 
-    public void setCurrentConverter(Converter currentConverter) {
-        this.currentConverter = currentConverter;
-        prepared = false;
-    }
-
-    public void setCurrentTable(DataTable currentTable) {
-        this.currentTable = currentTable;
-        prepared = false;
-    }
-
-    public void setCurrentRowIndex(int currentRowIndex) {
-        this.currentRowIndex = currentRowIndex;
-    }
-
     protected String getArguments() {
         return arguments;
-    }
-
-    protected Converter getCurrentConverter() {
-        return currentConverter;
-    }
-
-    protected DataTable getCurrentTable() {
-        return currentTable;
-    }
-
-    protected int getCurrentRowIndex() {
-        return currentRowIndex;
     }
 
     public Calc(Application application, String name) {
         super(application, name);
 
-        currentRowIndex = -1;
-        currentTable = null;
         prepared = false;
     }
 
@@ -76,12 +43,10 @@ public abstract class Calc extends UtilBase {
     }
 
     protected DataTable getDataTable(String tableIdentifier) {
-        if (Property.CURRENT.key().equalsIgnoreCase(tableIdentifier)) {
-            return currentTable;
-        }
+        Converter currentConverter = application.currentConverter;
 
-        if (currentConverter == null) {
-            return null;
+        if (Property.CURRENT.key().equalsIgnoreCase(tableIdentifier)) {
+            return currentConverter.getCurrentTable();
         }
 
         return currentConverter.getDataTable(tableIdentifier);
@@ -92,8 +57,9 @@ public abstract class Calc extends UtilBase {
             return null;
         }
 
+        Converter currentConverter = application.currentConverter;
         if (Property.CURRENT.key().equalsIgnoreCase(rowIdentifier)) {
-            DataRow row = dataTable.getRow(currentRowIndex);
+            DataRow row = dataTable.getRow(currentConverter.getCurrentRowIndex());
             if (row.getColumnCount() == 0) {
                 return null;
             }

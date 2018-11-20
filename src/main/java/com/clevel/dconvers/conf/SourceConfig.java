@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 public class SourceConfig extends Config {
 
-
     private int index;
 
     private String dataSource;
@@ -73,7 +72,7 @@ public class SourceConfig extends Config {
     }
 
     public String getQuery() {
-        return query;
+        return application.currentConverter.compileDynamicValues(query);
     }
 
     public String getId() {

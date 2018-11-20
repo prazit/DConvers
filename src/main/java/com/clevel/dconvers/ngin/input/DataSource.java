@@ -136,6 +136,7 @@ public class DataSource extends AppBase {
 
     private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String idColumnName) throws Exception {
         DataTable dataTable = new DataTable(tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
         dataTable.setMetaData(metaData);
 
         int columnCount = metaData.getColumnCount();

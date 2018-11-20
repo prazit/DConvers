@@ -4,6 +4,7 @@ import java.sql.Types;
 
 public enum DynamicValueType {
     VAR(0),                 // VAR:system-variable-name
+    CAL(0),                 // CAL:calculator(argument1,argument2,...)
 
     STR(Types.VARCHAR),     // STR:My string is longer than other value
     INT(Types.INTEGER),     // INT:integer-value = INT:12345
@@ -33,5 +34,17 @@ public enum DynamicValueType {
 
     public String getValuePrefix() {
         return name() + ":";
+    }
+
+    public static DynamicValueType parse(String name) {
+        DynamicValueType dynamicValueType;
+
+        try {
+            dynamicValueType = DynamicValueType.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            dynamicValueType = null;
+        }
+
+        return dynamicValueType;
     }
 }

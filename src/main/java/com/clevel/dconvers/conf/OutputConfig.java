@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
@@ -148,7 +149,7 @@ public class OutputConfig extends Config {
         markdownOutputCharset = "UTF-8";
         markdownOutputEOL = "\n";
 
-        key =  Property.MARKDOWN.prefixKey(baseProperty);
+        key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
         if (markdown) {
             outputTypeList.add(OutputTypes.MARKDOWN_FILE);
@@ -329,7 +330,7 @@ public class OutputConfig extends Config {
     }
 
     public String getSqlOutput() {
-        return sqlOutput;
+        return application.currentConverter.compileDynamicValues(sqlOutput);
     }
 
     public boolean isSqlOutputAppend() {
@@ -385,7 +386,7 @@ public class OutputConfig extends Config {
     }
 
     public String getMarkdownOutput() {
-        return markdownOutput;
+        return application.currentConverter.compileDynamicValues(markdownOutput);
     }
 
     public boolean isMarkdownOutputAppend() {
@@ -413,7 +414,7 @@ public class OutputConfig extends Config {
     }
 
     public String getPdfOutput() {
-        return pdfOutput;
+        return application.currentConverter.compileDynamicValues(pdfOutput);
     }
 
     public boolean isPdfOutputAutoCreateDir() {
@@ -425,7 +426,7 @@ public class OutputConfig extends Config {
     }
 
     public String getTxtOutput() {
-        return txtOutput;
+        return application.currentConverter.compileDynamicValues(txtOutput);
     }
 
     public boolean isTxtOutputAppend() {
@@ -477,7 +478,7 @@ public class OutputConfig extends Config {
     }
 
     public String getCsvOutput() {
-        return csvOutput;
+        return application.currentConverter.compileDynamicValues(csvOutput);
     }
 
     public String getCsvSeparator() {
@@ -521,11 +522,25 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbInsertPostSQL() {
-        return dbInsertPostSQL;
+        Converter currentConverter = application.currentConverter;
+        List<String> values = new ArrayList<>();
+
+        for (String sql : dbInsertPostSQL) {
+            values.add(currentConverter.compileDynamicValues(sql));
+        }
+
+        return values;
     }
 
     public List<String> getDbInsertPreSQL() {
-        return dbInsertPreSQL;
+        Converter currentConverter = application.currentConverter;
+        List<String> values = new ArrayList<>();
+
+        for (String sql : dbInsertPreSQL) {
+            values.add(currentConverter.compileDynamicValues(sql));
+        }
+
+        return values;
     }
 
     public boolean isDbUpdate() {
@@ -553,11 +568,25 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbUpdatePostSQL() {
-        return dbUpdatePostSQL;
+        Converter currentConverter = application.currentConverter;
+        List<String> values = new ArrayList<>();
+
+        for (String sql : dbUpdatePostSQL) {
+            values.add(currentConverter.compileDynamicValues(sql));
+        }
+
+        return values;
     }
 
     public List<String> getDbUpdatePreSQL() {
-        return dbUpdatePreSQL;
+        Converter currentConverter = application.currentConverter;
+        List<String> values = new ArrayList<>();
+
+        for (String sql : dbUpdatePreSQL) {
+            values.add(currentConverter.compileDynamicValues(sql));
+        }
+
+        return values;
     }
 
     public List<OutputTypes> getOutputTypeList() {

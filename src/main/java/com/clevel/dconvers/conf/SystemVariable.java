@@ -21,4 +21,16 @@ public enum SystemVariable {
     public int getDataType() {
         return dataType;
     }
+
+    public static SystemVariable parse(String name) {
+        SystemVariable systemVariable;
+
+        try {
+            systemVariable = SystemVariable.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            systemVariable = null;
+        }
+
+        return systemVariable;
+    }
 }
