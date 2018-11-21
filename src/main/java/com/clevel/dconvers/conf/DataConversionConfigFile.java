@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.SFTP;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -18,6 +19,7 @@ import java.util.Map;
 public class DataConversionConfigFile extends ConfigFile {
 
     private Map<String, DataSourceConfig> dataSourceConfigMap;
+    private Map<String, SFTPConfig> sftpConfigMap;
     private Map<String, ConverterConfigFile> converterConfigMap;
 
     private String outputReportPath;
@@ -32,6 +34,9 @@ public class DataConversionConfigFile extends ConfigFile {
     private int sourceFileNumber;
     private int targetFileNumber;
     private int mappingFileNumber;
+
+    private String progressOutput;
+    private boolean exitOnError;
 
     private boolean childValid;
 
@@ -65,6 +70,9 @@ public class DataConversionConfigFile extends ConfigFile {
         mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
         reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
 
+        progressOutput = properties.getString(converterProperty.connectKey(Property.PROGRESS_OUTPUT),"progress.txt");
+        exitOnError = properties.getBoolean(converterProperty.connectKey(Property.EXIT_ON_ERROR), true);
+
         List<Object> dataSourceNameList;
         try {
             dataSourceNameList = properties.getList(Property.DATA_SOURCE.key());
@@ -72,13 +80,27 @@ public class DataConversionConfigFile extends ConfigFile {
             dataSourceNameList = new ArrayList<>();
             dataSourceNameList.add(properties.getString(Property.DATA_SOURCE.key()));
         }
-
         dataSourceConfigMap = new HashMap<>();
         String name;
         for (Object object : dataSourceNameList) {
             name = object.toString();
             dataSourceConfigMap.put(name, new DataSourceConfig(application, name));
         }
+
+
+        List<Object> sftpNameList;
+        try {
+            sftpNameList = properties.getList(Property.SFTP.key());
+        } catch (ConversionException ex) {
+            sftpNameList = new ArrayList<>();
+            sftpNameList.add(properties.getString(Property.SFTP.key()));
+        }
+        sftpConfigMap = new HashMap<>();
+        for (Object object : sftpNameList) {
+            name = object.toString();
+            sftpConfigMap.put(name, new SFTPConfig(application, name));
+        }
+
 
         List<Object> converterNameList;
         try {
@@ -87,7 +109,6 @@ public class DataConversionConfigFile extends ConfigFile {
             converterNameList = new ArrayList<>();
             converterNameList.add(properties.getString(converterProperty.key()));
         }
-
         converterConfigMap = new HashMap<>();
         for (Object object : converterNameList) {
             name = object.toString();
@@ -96,6 +117,7 @@ public class DataConversionConfigFile extends ConfigFile {
             }
             converterConfigMap.put(name, new ConverterConfigFile(application, name));
         }
+
 
         childValid = true;
         return true;
@@ -142,6 +164,14 @@ public class DataConversionConfigFile extends ConfigFile {
         return outputMappingPath;
     }
 
+    public String getProgressOutput() {
+        return progressOutput;
+    }
+
+    public boolean isExitOnError() {
+        return exitOnError;
+    }
+
     public int getReportFileNumber() {
         return reportFileNumber;
     }
@@ -166,6 +196,10 @@ public class DataConversionConfigFile extends ConfigFile {
         return dataSourceConfigMap;
     }
 
+    public Map<String, SFTPConfig> getSftpConfigMap() {
+        return sftpConfigMap;
+    }
+
     public boolean isChildValid() {
         return childValid;
     }
@@ -178,25 +212,4 @@ public class DataConversionConfigFile extends ConfigFile {
         return reportTableName;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("dataSourceConfigMap", dataSourceConfigMap)
-                .append("converterConfigMap", converterConfigMap)
-                .append("outputReportPath", outputReportPath)
-                .append("outputSourcePath", outputSourcePath)
-                .append("outputTargetPath", outputTargetPath)
-                .append("outputMappingPath", outputMappingPath)
-                .append("mappingTablePrefix", mappingTablePrefix)
-                .append("reportTableName", reportTableName)
-                .append("reportFileNumber", reportFileNumber)
-                .append("sourceFileNumber", sourceFileNumber)
-                .append("targetFileNumber", targetFileNumber)
-                .append("mappingFileNumber", mappingFileNumber)
-                .append("childValid", childValid)
-                .append("name", name)
-                .append("valid", valid)
-                .toString()
-                .replace('=', ':');
-    }
 }

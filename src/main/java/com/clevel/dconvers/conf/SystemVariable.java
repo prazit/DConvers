@@ -7,9 +7,14 @@ public enum SystemVariable {
     SOURCE_FILE_NUMBER(Types.INTEGER),
     TARGET_FILE_NUMBER(Types.INTEGER),
     MAPPING_FILE_NUMBER(Types.INTEGER),
+
     ROWNUMBER(Types.INTEGER),
     NOW(Types.TIMESTAMP),
-    NULL(Types.VARCHAR)
+    NULL(Types.VARCHAR),
+
+    ERROR_MESSAGES(Types.VARCHAR),
+    WARNING_MESSAGES(Types.VARCHAR),
+    PROGRESS_MESSAGES(Types.VARCHAR),
     ;
 
     private int dataType;

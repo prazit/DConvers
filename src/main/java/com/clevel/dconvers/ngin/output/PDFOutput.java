@@ -1,7 +1,11 @@
 package com.clevel.dconvers.ngin.output;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
+import com.clevel.dconvers.conf.SystemVariable;
+import com.clevel.dconvers.ngin.Source;
+import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.*;
 import org.slf4j.Logger;
@@ -21,7 +25,13 @@ public class PDFOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new PDFTableFormatter(application, name, outputConfig.getPdfOutput(), outputConfig.getPdfJRXML()));
+
+        String rootPath = getRootPath(dataTable);
+        String pdfOutputFileName = rootPath + outputConfig.getPdfOutput();
+
+        dataFormatterList.add(new PDFTableFormatter(application, name, pdfOutputFileName, outputConfig.getPdfJRXML()));
+        registerPostSFTP(pdfOutputFileName, outputConfig.getPdfSftpOutput(), outputConfig.getPdfSftp());
+
         return dataFormatterList;
     }
 

@@ -3,6 +3,7 @@ package com.clevel.dconvers.conf;
 public enum Property {
 
     DATA_SOURCE("datasource"),
+    SFTP("sftp"),
     URL("url"),
     DRIVER("driver"),
     SCHEMA("schema"),
@@ -11,6 +12,7 @@ public enum Property {
     PRE("pre"),
     POST("post"),
     HOST("host"),
+    PORT("port"),
     SSL("ssl"),
 
     CONVERTER_FILE("converter"),
@@ -18,6 +20,9 @@ public enum Property {
     SOURCE_PATH("source.output"),
     TARGET_PATH("target.output"),
     MAPPING_PATH("mapping.output"),
+
+    PROGRESS_OUTPUT("progress.output"),
+    EXIT_ON_ERROR("exit.on.error"),
 
     SOURCE("source"),
     SQL("sql"),

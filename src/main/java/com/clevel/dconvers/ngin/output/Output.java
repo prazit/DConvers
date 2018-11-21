@@ -1,10 +1,16 @@
 package com.clevel.dconvers.ngin.output;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.AppBase;
+import com.clevel.dconvers.ngin.SFTP;
+import com.clevel.dconvers.ngin.Source;
+import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.*;
 import java.util.List;
@@ -14,8 +20,34 @@ import java.util.List;
  */
 public abstract class Output extends AppBase {
 
+    private class PostSFTP {
+        public String localFile;
+        public String remoteFile;
+        public String sftp;
+
+        public PostSFTP(String localFile, String remoteFile, String sftp) {
+            this.localFile = localFile;
+            this.remoteFile = remoteFile;
+            this.sftp = sftp;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                    .append("localFile", localFile)
+                    .append("remoteFile", remoteFile)
+                    .append("sftp", sftp)
+                    .toString()
+                    .replace('=', ':');
+        }
+    }
+
+    private PostSFTP postSFTP;
+
     public Output(Application application, String name) {
         super(application, name);
+
+        postSFTP = null;
     }
 
     public boolean print(OutputConfig outputConfig, DataTable dataTable) {
@@ -52,6 +84,22 @@ public abstract class Output extends AppBase {
         } catch (IOException e) {
             // do nothing
         }
+
+        if (postSFTP == null) {
+            return true;
+        }
+
+        SFTP sftp = application.sftpMap.get(postSFTP.sftp);
+        if (sftp == null) {
+            log.error("No sftp({}) that required to copy file to remote sftp, please check sftp name ({}).", postSFTP.sftp, postSFTP);
+            return false;
+        }
+
+        if (!sftp.copyToSFTP(postSFTP.localFile, postSFTP.remoteFile)) {
+            return false;
+        }
+
+        log.info("Copied to SFTP, {}", postSFTP);
         return true;
     }
 
@@ -62,7 +110,7 @@ public abstract class Output extends AppBase {
             if (autoCreateDir && autoCreateDir(outputFile)) {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
-                log.error("Create output file({}) is failed! please check directory path.", outputFile);
+                log.error("Create output file({}) is failed! please check output path.", outputFile);
                 application.hasWarning = true;
                 try {
                     writer = new PrintWriter(new OutputStreamWriter(System.out, charset));
@@ -93,6 +141,30 @@ public abstract class Output extends AppBase {
         File parentFile = file.getParentFile();
         log.debug("try to create directory path({})", parentFile);
         return parentFile.mkdirs();
+    }
+
+    protected void registerPostSFTP(String localFile, String remoteFile, String sftp) {
+        if (localFile == null || remoteFile == null || sftp == null) {
+            return;
+        }
+
+        postSFTP = new PostSFTP(localFile, remoteFile, sftp);
+    }
+
+    protected String getRootPath(DataTable dataTable) {
+        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        Object owner = dataTable.getOwner();
+        String outputPath;
+
+        if (owner instanceof Source) {
+            outputPath = dataConversionConfigFile.getOutputSourcePath();
+        } else if (owner instanceof Target) {
+            outputPath = dataConversionConfigFile.getOutputTargetPath();
+        } else {
+            outputPath = dataConversionConfigFile.getOutputMappingPath();
+        }
+
+        return outputPath;
     }
 
 }

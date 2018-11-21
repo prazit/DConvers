@@ -257,6 +257,9 @@ public class Converter extends AppBase {
 
     public String compileDynamicValues(String sourceString) {
         log.debug("Converter.compileDynamicValues");
+        if (sourceString == null) {
+            return null;
+        }
 
         String returnValue = sourceString;
         String compileResult;

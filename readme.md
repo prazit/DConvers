@@ -72,18 +72,24 @@ string | all string | character array as string
 
 ### Conversion File
 
-Explain what these tests test and why
+Conversion file is a properties file which contains 4 groups of property as follow
+1 Conversion Properties
+2 DataSource Properties 
+3 SFTP Properties 
+4 Converter File Properties 
 
-```
-Give an example
-```
+#### Conversion Properties
+#### DataSource Properties 
+#### SFTP Properties 
+#### Converter File Properties 
+
 
 ### Converter File
 
-Converter file is a properties file which contains 3 property-groups as following
-- Converter Properties
-- Source Properties
-- Target Properties
+Converter file is a properties file which contains 3 groups of property as follow
+1 Converter Properties
+2 Source Properties
+3 Target Properties
 
 #### Converter Properties
 
@@ -118,8 +124,8 @@ source.transform | Property Set |  | see [Transform Properties](#Transform_Prope
 Before define the target properties, you need to enable the target property group first.
 
 ```properties
-source=source_name
-source.source_name.property=value
+target=target_name
+target.target_name.property=value
 ```
 
 You can see full example in 'sample-converter.conf' file. However, the possible properties of the target are described in this table only. 
@@ -129,8 +135,8 @@ Property | Data Type | Default Value | Description
 target.index | int | 0 | Some converters contain a lot of sources, this property make all sources are sorted by this index.
 target.source | string | empty string | A query string is used to retrieve data from a datasource. In a query string can contains runtime contents called "Dynamic Value" (see Dynamic Value Expression for detailed)
 target.id | string | id | name of primary key column, this is used by mapping table and used as default value of Output.DBUpdate.ID.
-target.[output] | Property Set |  | see [Output Properties](#Output_Properties)
-target.[transform] | Property Set |  | see [Transform Properties](#Transform_Properties)
+target.[outputs] | Property Set |  | see [Output Properties](#Output_Properties)
+target.[transforms] | Property Set |  | see [Transform Properties](#Transform_Properties)
 
 #### Output Properties
 
@@ -148,6 +154,8 @@ The DConvers program has 7 optional output types with different set of property,
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 sql | bool | false | create sql file or not 
+sql.sftp | string | null | name of sftp.
+sql.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 sql.output | string | table-name.sql | custom file name. (Dynamic Value Enabled)
 sql.create.dir | bool | true | auto create directory for non-existing path. 
 sql.append | bool | false | append or always replace
@@ -169,6 +177,8 @@ sql.post | string | null | your sql statements to put at the end of file
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 markdown | bool | false | create markdown file or not 
+markdown.sftp | string | null | name of sftp.
+markdown.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 markdown.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 markdown.create.dir | bool | true | auto create directory for non-existing path. 
 markdown.append | bool | false | append or always replace
@@ -180,6 +190,8 @@ markdown.eol | string | \n | characters put at the end of line
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 pdf | bool | false | create markdown file or not 
+pdf.sftp | string | null | name of sftp.
+pdf.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 pdf.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 pdf.create.dir | bool | true | auto create directory for non-existing path. 
 pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
@@ -189,6 +201,8 @@ pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 txt | bool | false | create text file or not 
+txt.sftp | string | null | name of sftp.
+txt.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 txt.output | string | table-name.txt | custom file name. (Dynamic Value Enabled)
 txt.create.dir | bool | true | auto create directory for non-existing path. 
 txt.append | bool | false | append or always replace
@@ -207,6 +221,8 @@ txt.fill.date | char(1) | blank:right | the character to fill the date column
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 csv | bool | false | create csv file or not 
+csv.sftp | string | null | name of sftp.
+csv.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 csv.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
 csv.create.dir | bool | true | auto create directory for non-existing path. 
 csv.append | bool | false | append or always replace

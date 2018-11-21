@@ -69,8 +69,9 @@ public class SQLOutput extends Output {
             headPrint = "";
         }
 
-        Writer writer = createFile(outputPath + outputConfig.getSqlOutput(), outputConfig.isSqlOutputAutoCreateDir(), outputConfig.isSqlOutputAppend(), outputConfig.getSqlOutputCharset());
-        if (headPrint != null) {
+        String sqlOutputFilename = outputPath + outputConfig.getSqlOutput();
+        Writer writer = createFile(sqlOutputFilename, outputConfig.isSqlOutputAutoCreateDir(), outputConfig.isSqlOutputAppend(), outputConfig.getSqlOutputCharset());
+        if (headPrint != null && writer != null) {
             try {
                 writer.write(headPrint);
             } catch (IOException e) {
@@ -78,6 +79,7 @@ public class SQLOutput extends Output {
                 return null;
             }
         }
+        registerPostSFTP(sqlOutputFilename, outputConfig.getSqlSftpOutput(), outputConfig.getSqlSftp());
 
         List<String> preSQL = outputConfig.getSqlPreSQL();
         if (preSQL.size() > 0) {
@@ -126,4 +128,5 @@ public class SQLOutput extends Output {
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(SQLOutput.class);
     }
+
 }

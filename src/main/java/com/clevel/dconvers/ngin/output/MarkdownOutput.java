@@ -58,8 +58,9 @@ public class MarkdownOutput extends Output {
             headPrint = "";
         }
 
-        Writer writer = createFile(outputPath + outputConfig.getMarkdownOutput(), outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
-        if (headPrint != null) {
+        String markdownOutputFilename = outputPath + outputConfig.getMarkdownOutput();
+        Writer writer = createFile(markdownOutputFilename, outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        if (headPrint != null && writer != null) {
             try {
                 writer.write(headPrint);
             } catch (IOException e) {
@@ -67,6 +68,7 @@ public class MarkdownOutput extends Output {
                 return null;
             }
         }
+        registerPostSFTP(markdownOutputFilename, outputConfig.getMarkdownSftpOutput(), outputConfig.getMarkdownSftp());
 
         return writer;
     }

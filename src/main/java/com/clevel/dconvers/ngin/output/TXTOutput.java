@@ -33,19 +33,12 @@ public class TXTOutput extends Output {
 
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
-        String outputPath;
-        Object owner = dataTable.getOwner();
+        String outputPath = getRootPath(dataTable);
+        String txtOutputFilename = outputPath + outputConfig.getTxtOutput();
 
-        if (owner instanceof Source) {
-            outputPath = dataConversionConfigFile.getOutputSourcePath();
-        } else if (owner instanceof Target) {
-            outputPath = dataConversionConfigFile.getOutputTargetPath();
-        } else {
-            outputPath = dataConversionConfigFile.getOutputMappingPath();
-        }
+        Writer writer = createFile(txtOutputFilename, outputConfig.isTxtOutputAutoCreateDir(), outputConfig.isTxtOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        registerPostSFTP(txtOutputFilename, outputConfig.getTxtSftpOutput(), outputConfig.getTxtSftp());
 
-        Writer writer = createFile(outputPath + outputConfig.getTxtOutput(), outputConfig.isTxtOutputAutoCreateDir(), outputConfig.isTxtOutputAppend(), outputConfig.getMarkdownOutputCharset());
         return writer;
     }
 

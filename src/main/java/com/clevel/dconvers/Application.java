@@ -28,6 +28,7 @@ public class Application {
     public DataConversionConfigFile dataConversionConfigFile;
 
     public Map<String, DataSource> dataSourceMap;
+    public Map<String, SFTP> sftpMap;
     public Map<SystemVariable, DataColumn> systemVariableMap;
 
     public List<Converter> converterList;
@@ -35,6 +36,9 @@ public class Application {
 
     public DataTable reportTable;
 
+    public DataString errorMessages;
+    public DataString warningMessages;
+    public DataString progressMessages;
     public boolean hasWarning;
 
     public Application(String[] args) {
@@ -51,6 +55,13 @@ public class Application {
     }
 
     public void start() {
+        errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
+        warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
+        progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
+        errorMessages.setValue("");
+        warningMessages.setValue("");
+        progressMessages.setValue("");
+
         switches = new Switches(this);
         if (!switches.isValid()) {
             performInvalidSwitches();
@@ -65,7 +76,7 @@ public class Application {
         dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
         if (!dataConversionConfigFile.isValid()) {
             if (dataConversionConfigFile.isChildValid()) {
-                performInvalidSource();
+                performInvalidConfigFile();
             } else {
                 stopWithError();
             }
@@ -76,10 +87,10 @@ public class Application {
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
-        targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber() - 1));
-        mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber() - 1));
-        sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber() - 1));
-        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber() - 1));
+        targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()));
+        mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()));
+        sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()));
+        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber()));
         now.setValue(new Date());
 
         log.trace("Application. Load DataSources.");
@@ -104,6 +115,20 @@ public class Application {
         }
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
+        log.trace("Application. Load SFTP Services.");
+        sftpMap = new HashMap<>();
+        SFTP sftp;
+        String sftpName;
+        for (SFTPConfig sftpConfig : dataConversionConfigFile.getSftpConfigMap().values()) {
+            sftpName = sftpConfig.getName();
+
+            sftp = new SFTP(this, sftpName, sftpConfig);
+            if (!sftp.isValid()) {
+                performInvalidSFTP(sftp);
+            }
+            sftpMap.put(sftpName, sftp);
+        }
 
         log.trace("Application. Load Converters.");
         converterList = new ArrayList<>();
@@ -155,19 +180,25 @@ public class Application {
     }
 
     public void stop() {
+        closeAllSFTP();
         closeAllDataSource();
+
         log.info("SUCCESS");
         System.exit(0);
     }
 
     public void stopWithError() {
         closeAllDataSource();
+        closeAllSFTP();
+
         log.info("EXIT WITH SOME ERROR");
         System.exit(1);
     }
 
     public void stopWithWarning() {
         closeAllDataSource();
+        closeAllSFTP();
+
         log.info("SUCCESSFUL WITH WARNING");
         System.exit(2);
     }
@@ -184,31 +215,50 @@ public class Application {
         }
     }
 
+    private void closeAllSFTP() {
+        log.trace("Application.closeAllSFTP.");
+
+        if (sftpMap == null) {
+            return;
+        }
+
+        for (SFTP sftp : sftpMap.values()) {
+            sftp.close();
+        }
+    }
+
     private void performInvalidSwitches() {
         log.trace("Application.performInvalidSwitches.");
-        log.error("Invalid CLI Switches ({}) Please see help below", switches);
+        log.error("Invalid CLI Switches({}) please see help below", switches);
         log.debug("invalid switches: {}", switches);
         performHelp();
         stopWithError();
     }
 
-    private void performInvalidSource() {
-        log.trace("Application.performInvalidSource.");
-        log.error("Invalid Source File ({}) Please see 'sample-conversion.conf' for detailed", switches.getSource());
+    private void performInvalidConfigFile() {
+        log.trace("Application.performInvalidConfigFile.");
+        log.error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("source = {}", dataConversionConfigFile);
         stopWithError();
     }
 
     private void performInvalidDataSource(DataSource dataSource) {
         log.trace("Application.performInvalidDataSource.");
-        log.error("Invalid Datasource ({}) Please see 'sample-conversion.conf' for detailed", dataSource);
+        log.error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
+        stopWithError();
+    }
+
+    private void performInvalidSFTP(SFTP sftp) {
+        log.trace("Application.performInvalidSFTP.");
+        log.error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
+        log.debug("sftp = {}", sftp);
         stopWithError();
     }
 
     private void performInvalidConverter(Converter converter) {
         log.trace("Application.performInvalidConverter.");
-        log.error("Invalid Converter ({}) Please see 'sample-converter.conf' for detailed", converter);
+        log.error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
         log.debug("converter = {}", dataConversionConfigFile.toString());
         stopWithError();
     }

@@ -45,6 +45,14 @@ public class DataString extends DataColumn {
         return value;
     }
 
+    public void appendValue(String value) {
+        if (this.value == null) {
+            this.value = value;
+        } else {
+            this.value += value;
+        }
+    }
+
     @Override
     public void setValue(String value) {
         this.value = value;

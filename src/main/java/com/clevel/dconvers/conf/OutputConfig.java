@@ -15,6 +15,8 @@ import java.util.List;
 public class OutputConfig extends Config {
 
     private boolean sql;
+    private String sqlSftp;
+    private String sqlSftpOutput;
     private String sqlOutput;
     private boolean sqlOutputAppend;
     private boolean sqlOutputAutoCreateDir;
@@ -31,6 +33,8 @@ public class OutputConfig extends Config {
 
 
     private boolean markdown;
+    private String markdownSftp;
+    private String markdownSftpOutput;
     private String markdownOutput;
     private boolean markdownOutputAppend;
     private boolean markdownOutputAutoCreateDir;
@@ -40,11 +44,15 @@ public class OutputConfig extends Config {
 
     private boolean pdf;
     private Object pdfJRXML;
+    private String pdfSftp;
+    private String pdfSftpOutput;
     private String pdfOutput;
     private boolean pdfOutputAutoCreateDir;
 
 
     private boolean txt;
+    private String txtSftp;
+    private String txtSftpOutput;
     private String txtOutput;
     private boolean txtOutputAppend;
     private boolean txtOutputAutoCreateDir;
@@ -60,6 +68,8 @@ public class OutputConfig extends Config {
 
 
     private boolean csv;
+    private String csvSftp;
+    private String csvSftpOutput;
     private String csvOutput;
     private boolean csvOutputAppend;
     private boolean csvOutputAutoCreateDir;
@@ -106,6 +116,8 @@ public class OutputConfig extends Config {
 
         // Defaults Properties for SQL
         sql = false;
+        sqlSftp = null;
+        sqlSftpOutput = null;
         sqlOutput = baseProperty + ".sql";
         sqlOutputAppend = false;
         sqlOutputAutoCreateDir = true;
@@ -126,6 +138,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.SQL_FILE);
 
             Configuration sqlProperties = properties.subset(key);
+            sqlSftp = sqlProperties.getString(Property.SFTP.key(), sqlSftp);
+            sqlSftpOutput = sqlProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), sqlSftpOutput);
             sqlOutput = sqlProperties.getString(Property.OUTPUT_FILE.key(), sqlOutput);
             sqlOutputAppend = sqlProperties.getBoolean(Property.OUTPUT_APPEND.key(), sqlOutputAppend);
             sqlOutputAutoCreateDir = sqlProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), sqlOutputAutoCreateDir);
@@ -143,6 +157,8 @@ public class OutputConfig extends Config {
 
         // Default Properties for Markdown
         markdown = false;
+        markdownSftp = null;
+        markdownSftpOutput = null;
         markdownOutput = baseProperty + ".md";
         markdownOutputAppend = false;
         markdownOutputAutoCreateDir = true;
@@ -155,6 +171,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.MARKDOWN_FILE);
 
             Configuration markdownProperties = properties.subset(key);
+            markdownSftp = markdownProperties.getString(Property.SFTP.key(), markdownSftp);
+            markdownSftpOutput = markdownProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), markdownSftpOutput);
             markdownOutput = markdownProperties.getString(Property.OUTPUT_FILE.key(), markdownOutput);
             markdownOutputAppend = markdownProperties.getBoolean(Property.OUTPUT_APPEND.key(), markdownOutputAppend);
             markdownOutputAutoCreateDir = markdownProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), markdownOutputAutoCreateDir);
@@ -164,6 +182,8 @@ public class OutputConfig extends Config {
 
         // Default Properties for PDF
         pdf = false;
+        pdfSftp = null;
+        pdfSftpOutput = null;
         pdfOutput = baseProperty + ".md";
         pdfOutputAutoCreateDir = true;
         pdfJRXML = "";
@@ -174,6 +194,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.PDF_FILE);
 
             Configuration pdfProperties = properties.subset(key);
+            pdfSftp = pdfProperties.getString(Property.SFTP.key(), pdfSftp);
+            pdfSftpOutput = pdfProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), pdfSftpOutput);
             pdfOutput = pdfProperties.getString(Property.OUTPUT_FILE.key(), pdfOutput);
             pdfOutputAutoCreateDir = pdfProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), pdfOutputAutoCreateDir);
             String jrxml = pdfProperties.getString(Property.OUTPUT_FILE.key(), (String) pdfJRXML);
@@ -186,6 +208,8 @@ public class OutputConfig extends Config {
 
         // TXT Output Properties
         txt = false;
+        txtSftp = null;
+        txtSftpOutput = null;
         txtOutput = baseProperty + ".txt";
         txtOutputAppend = false;
         txtOutputAutoCreateDir = true;
@@ -205,6 +229,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.TXT_FILE);
 
             Configuration txtProperties = properties.subset(key);
+            txtSftp = txtProperties.getString(Property.SFTP.key(), txtSftp);
+            txtSftpOutput = txtProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), txtSftpOutput);
             txtOutput = txtProperties.getString(Property.OUTPUT_FILE.key(), txtOutput);
             txtOutputAppend = txtProperties.getBoolean(Property.OUTPUT_APPEND.key(), txtOutputAppend);
             txtOutputAutoCreateDir = txtProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), txtOutputAutoCreateDir);
@@ -221,6 +247,8 @@ public class OutputConfig extends Config {
 
         // CSV Output Properties
         csv = false;
+        csvSftp = null;
+        csvSftpOutput = null;
         csvOutput = baseProperty + ".txt";
         csvOutputAppend = false;
         csvOutputAutoCreateDir = true;
@@ -234,6 +262,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.CSV_FILE);
 
             Configuration csvProperties = properties.subset(key);
+            csvSftp = csvProperties.getString(Property.SFTP.key(), csvSftp);
+            csvSftpOutput = csvProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), csvSftpOutput);
             csvOutput = csvProperties.getString(Property.OUTPUT_FILE.key(), csvOutput);
             csvOutputAppend = csvProperties.getBoolean(Property.OUTPUT_APPEND.key(), csvOutputAppend);
             csvOutputAutoCreateDir = csvProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), csvOutputAutoCreateDir);
@@ -329,6 +359,14 @@ public class OutputConfig extends Config {
         return sql;
     }
 
+    public String getSqlSftp() {
+        return sqlSftp;
+    }
+
+    public String getSqlSftpOutput() {
+        return application.currentConverter.compileDynamicValues(sqlSftpOutput);
+    }
+
     public String getSqlOutput() {
         return application.currentConverter.compileDynamicValues(sqlOutput);
     }
@@ -385,6 +423,14 @@ public class OutputConfig extends Config {
         return markdown;
     }
 
+    public String getMarkdownSftp() {
+        return markdownSftp;
+    }
+
+    public String getMarkdownSftpOutput() {
+        return application.currentConverter.compileDynamicValues(markdownSftpOutput);
+    }
+
     public String getMarkdownOutput() {
         return application.currentConverter.compileDynamicValues(markdownOutput);
     }
@@ -409,6 +455,14 @@ public class OutputConfig extends Config {
         return pdf;
     }
 
+    public String getPdfSftp() {
+        return pdfSftp;
+    }
+
+    public String getPdfSftpOutput() {
+        return application.currentConverter.compileDynamicValues(pdfSftpOutput);
+    }
+
     public Object getPdfJRXML() {
         return pdfJRXML;
     }
@@ -423,6 +477,14 @@ public class OutputConfig extends Config {
 
     public boolean isTxt() {
         return txt;
+    }
+
+    public String getTxtSftp() {
+        return txtSftp;
+    }
+
+    public String getTxtSftpOutput() {
+        return application.currentConverter.compileDynamicValues(txtSftpOutput);
     }
 
     public String getTxtOutput() {
@@ -475,6 +537,14 @@ public class OutputConfig extends Config {
 
     public boolean isCsv() {
         return csv;
+    }
+
+    public String getCsvSftp() {
+        return csvSftp;
+    }
+
+    public String getCsvSftpOutput() {
+        return application.currentConverter.compileDynamicValues(csvSftpOutput);
     }
 
     public String getCsvOutput() {
