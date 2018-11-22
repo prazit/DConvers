@@ -13,7 +13,6 @@ public class SFTP extends AppBase implements UserInfo {
     private Session sftpSession;
     private ChannelSftp sftpChannel;
 
-
     public SFTP(Application application, String name, SFTPConfig sftpConfig) {
         super(application, name);
 
@@ -105,15 +104,15 @@ public class SFTP extends AppBase implements UserInfo {
         log.trace("SFTP({}).copyToSFTP(localFile:{}, remoteFile:{})", name, localFile, remoteFile);
 
         if (!isValid()) {
-            log.error("The SFTP({}) is invalid! can not copy local-file({}) to remote-file({}).", name, localFile, remoteFile);
+            log.error("The SFTP({}) is invalid! can not transfer local-file({}) to remote-file({}).", name, localFile, remoteFile);
             return false;
         }
 
         try {
             sftpChannel.put(localFile, remoteFile, ChannelSftp.OVERWRITE);
-            log.info("SFTP({}) transfer file({}) to sftp({}) is completed", name, localFile, remoteFile);
+            log.info("SFTP({}) transfer local-file({}) to remote-file({}) is completed", name, localFile, remoteFile);
         } catch (SftpException e) {
-            log.error("SFTP({}) transfer file({}) to sftp({}) is failed, {}", name, localFile, remoteFile, e.getMessage());
+            log.error("SFTP({}) transfer local-file({}) to remote-file({}) is failed! {}", name, localFile, remoteFile, e.getMessage());
             return false;
         }
 

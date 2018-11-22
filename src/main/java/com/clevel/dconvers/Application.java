@@ -1,7 +1,11 @@
 package com.clevel.dconvers;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.conf.*;
-import com.clevel.dconvers.ngin.*;
+import com.clevel.dconvers.ngin.Converter;
+import com.clevel.dconvers.ngin.SFTP;
 import com.clevel.dconvers.ngin.data.*;
 import com.clevel.dconvers.ngin.input.DataSource;
 import com.clevel.dconvers.ngin.input.EmailDataSource;
@@ -11,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.sql.Types;
 import java.util.*;
 
@@ -42,19 +47,32 @@ public class Application {
     public boolean hasWarning;
 
     public Application(String[] args) {
-        log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         this.args = args;
+        loadLogger();
 
         reportTable = new DataTable("Report", "id");
         hasWarning = false;
 
         currentConverter = null;
-        systemVariableMap = createSystemVariableMap();
+    }
 
-        log.trace("Application is created.");
+    private void loadLogger() {
+        for (String arg : this.args) {
+            if (arg.startsWith("--logback")) {
+                String logback = arg.substring(arg.indexOf("=") + 1).replaceAll("[\"]", "");
+                System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, logback);
+                break;
+            }
+        }
+
+        log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        LoggerContext loggerContext = ((ch.qos.logback.classic.Logger)log).getLoggerContext();
+        URL url = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
+        log.info("Logback configuration file is '{}'.", url);
     }
 
     public void start() {
+        systemVariableMap = createSystemVariableMap();
         errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
         warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
         progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
@@ -81,6 +99,10 @@ public class Application {
                 stopWithError();
             }
         }
+
+        boolean success = true;
+        boolean exitOnError = dataConversionConfigFile.isExitOnError();
+        log.debug("exit on error is '{}'", exitOnError);
 
         DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
@@ -139,7 +161,10 @@ public class Application {
             converter = new Converter(this, converterName, converterConfigFile);
 
             if (!converter.isValid()) {
-                performInvalidConverter(converter);
+                if (exitOnError) {
+                    performInvalidConverter(converter);
+                }
+                success = false;
             }
 
             converterList.add(converter);
@@ -149,11 +174,10 @@ public class Application {
         log.trace("Application. Launch Converters.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
-        boolean success = false;
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
                 currentConverter = convert;
-                success = convert.convert();
+                success = success && convert.convert();
                 success = success && convert.print();
             }
         }
@@ -180,6 +204,8 @@ public class Application {
     }
 
     public void stop() {
+        log.trace("Application.stop.");
+
         closeAllSFTP();
         closeAllDataSource();
 
@@ -188,6 +214,8 @@ public class Application {
     }
 
     public void stopWithError() {
+        log.trace("Application.stopWithError.");
+
         closeAllSFTP();
         closeAllDataSource();
 
@@ -196,6 +224,8 @@ public class Application {
     }
 
     public void stopWithWarning() {
+        log.trace("Application.stopWithWarning.");
+
         closeAllSFTP();
         closeAllDataSource();
 
@@ -229,6 +259,7 @@ public class Application {
 
     private void performInvalidSwitches() {
         log.trace("Application.performInvalidSwitches.");
+
         log.error("Invalid CLI Switches({}) please see help below", switches);
         log.debug("invalid switches: {}", switches);
         performHelp();
@@ -237,6 +268,7 @@ public class Application {
 
     private void performInvalidConfigFile() {
         log.trace("Application.performInvalidConfigFile.");
+
         log.error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("source = {}", dataConversionConfigFile);
         stopWithError();
@@ -244,6 +276,7 @@ public class Application {
 
     private void performInvalidDataSource(DataSource dataSource) {
         log.trace("Application.performInvalidDataSource.");
+
         log.error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
         stopWithError();
@@ -251,6 +284,7 @@ public class Application {
 
     private void performInvalidSFTP(SFTP sftp) {
         log.trace("Application.performInvalidSFTP.");
+
         log.error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
         stopWithError();
@@ -258,8 +292,9 @@ public class Application {
 
     private void performInvalidConverter(Converter converter) {
         log.trace("Application.performInvalidConverter.");
+
         log.error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
-        log.debug("converter = {}", dataConversionConfigFile.toString());
+        log.debug("converter = {}", converter);
         stopWithError();
     }
 

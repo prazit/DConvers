@@ -1,5 +1,7 @@
 cd "C:\Users\prazi\Documents\GitHub\Data Conversion\out"
-cd mapping
+cd log
+del /Q *.*
+cd ../mapping
 del /Q *.*
 cd ../report
 del /Q *.*

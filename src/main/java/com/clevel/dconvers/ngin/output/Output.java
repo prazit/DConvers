@@ -34,9 +34,9 @@ public abstract class Output extends AppBase {
         @Override
         public String toString() {
             return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                    .append("localFile", localFile)
-                    .append("remoteFile", remoteFile)
                     .append("sftp", sftp)
+                    .append("remoteFile", remoteFile)
+                    .append("localFile", localFile)
                     .toString()
                     .replace('=', ':');
         }
@@ -91,7 +91,7 @@ public abstract class Output extends AppBase {
 
         SFTP sftp = application.sftpMap.get(postSFTP.sftp);
         if (sftp == null) {
-            log.error("No sftp({}) that required to copy file to remote sftp, please check sftp name ({}).", postSFTP.sftp, postSFTP);
+            log.error("The sftp({}) is not found, please check sftp name ({}).", postSFTP.sftp, postSFTP);
             return false;
         }
 

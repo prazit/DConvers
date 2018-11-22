@@ -4,7 +4,7 @@
     <property name="root-path" value="C:/Users/prazi/Documents/GitHub/Data Conversion/"/>
 
     <turboFilter class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
-        <AllowedRepetitions>1</AllowedRepetitions>
+        <AllowedRepetitions>2</AllowedRepetitions>
     </turboFilter>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

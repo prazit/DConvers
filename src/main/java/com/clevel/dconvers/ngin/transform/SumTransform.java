@@ -16,7 +16,7 @@ public class SumTransform extends Transform {
     @Override
     public boolean transform(DataTable dataTable) {
 
-        // sum([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
+        // sum([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String arguments = getArgument(Property.ARGUMENTS.key());
 
         String columnIdentifier = getFirstValue(arguments);
@@ -28,6 +28,7 @@ public class SumTransform extends Transform {
         calcToRowList(dataTable.getAllRow(), CalcTypes.SUM, arguments, dataTable, newColumnName, newColumnIndex);
 
         return true;
+
     }
 
     @Override

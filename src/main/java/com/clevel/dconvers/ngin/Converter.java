@@ -34,12 +34,15 @@ public class Converter extends AppBase {
 
     private DataTable currentTable;
     private int currentRowIndex;
+    private boolean exitOnError;
 
     public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
-
         this.converterConfigFile = converterConfigFile;
-        mappingTablePrefix = application.dataConversionConfigFile.getMappingTablePrefix();
+
+        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
+        exitOnError = dataConversionConfigFile.isExitOnError();
 
         valid = prepare();
         if (valid) {
@@ -114,11 +117,15 @@ public class Converter extends AppBase {
 
     public boolean convert() {
         log.trace("Converter({}).convert", name);
+        boolean successOrFailure = true;
 
         for (Source source : sortedSource) {
             valid = source.buildDataTable();
             if (!valid) {
-                return false;
+                successOrFailure = false;
+                if (exitOnError) {
+                    return false;
+                }
             }
         }
         log.info("{} source-table(s) are retrieved.", sortedSource.size());
@@ -127,19 +134,23 @@ public class Converter extends AppBase {
         for (Target target : sortedTarget) {
             valid = target.buildDataTable();
             if (!valid) {
-                return false;
+                successOrFailure = false;
+                if (exitOnError) {
+                    return false;
+                }
             }
 
             mapping = target.getMappingTable();
             mappingTableMap.put(mapping.getTableName(), mapping);
         }
-        log.info("{} target-table(s) are built", sortedTarget.size());
+        log.info("{} target-table(s) are built.", sortedTarget.size());
 
-        return true;
+        return successOrFailure;
     }
 
     public boolean print() {
         log.trace("Converter({}).print", name);
+        boolean success = true;
 
         Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
@@ -160,7 +171,10 @@ public class Converter extends AppBase {
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
-                    return false;
+                    success = false;
+                    if (exitOnError) {
+                        return false;
+                    }
                 }
             }
 
@@ -178,7 +192,10 @@ public class Converter extends AppBase {
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
-                    return false;
+                    success = false;
+                    if (exitOnError) {
+                        return false;
+                    }
                 }
             }
 
@@ -190,12 +207,17 @@ public class Converter extends AppBase {
 
             for (OutputTypes outputType : mappingOutputConfig.getOutputTypeList()) {
                 log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
-                OutputFactory.getOutput(outputType).print(outputConfig, dataTable);
+                if(!OutputFactory.getOutput(outputType).print(outputConfig, dataTable)) {
+                    success = false;
+                    if (exitOnError) {
+                        return false;
+                    }
+                }
             }*/
 
         }
 
-        return true;
+        return success;
     }
 
     public ConverterConfigFile getConverterConfigFile() {
@@ -254,9 +276,8 @@ public class Converter extends AppBase {
         return dataTable;
     }
 
-
     public String compileDynamicValues(String sourceString) {
-        log.debug("Converter.compileDynamicValues");
+        log.trace("Converter.compileDynamicValues.");
         if (sourceString == null) {
             return null;
         }
@@ -302,7 +323,6 @@ public class Converter extends AppBase {
 
         return replaced;
     }
-
 
     private String valuesFromDataTable(String dataTableMapping, String columnName) {
         log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
@@ -361,7 +381,6 @@ public class Converter extends AppBase {
 
         return content;
     }
-
 
     public DataColumn getDynamicValue(String dynamicValue) {
         // dynamicValue look like this
@@ -442,4 +461,5 @@ public class Converter extends AppBase {
     public void setCurrentRowIndex(int currentRowIndex) {
         this.currentRowIndex = currentRowIndex;
     }
+
 }

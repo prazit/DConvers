@@ -27,8 +27,6 @@ public class DataTable extends ValidatorBase implements JRDataSource {
     private String query;
     private List<String> postUpdate;
 
-    private Logger log;
-
     public DataTable(String tableName, String idColumnName) {
         this.tableName = tableName;
         this.idColumnName = idColumnName;
@@ -40,7 +38,6 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         postUpdate = new ArrayList<>();
         currentRow = -1;
         needHeader = true;
-        log = LoggerFactory.getLogger(DataTable.class);
     }
 
     public DataTable(String tableName, String idColumnName, List<String> postUpdate, Object owner) {
@@ -54,7 +51,6 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         query = "";
         currentRow = -1;
         needHeader = true;
-        log = LoggerFactory.getLogger(DataTable.class);
     }
 
     public Object getOwner() {

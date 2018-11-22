@@ -25,7 +25,7 @@ public abstract class ConfigFile extends Config {
             valid = true;
             log.trace("load properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
-            log.error("Load file '{}' is failed!", configFile);
+            log.error("Load properties '{}' is failed!", configFile);
 
             if (log.isDebugEnabled()) {
                 StringWriter errors = new StringWriter();
@@ -33,13 +33,7 @@ public abstract class ConfigFile extends Config {
                 log.debug(nc.getMessage(), errors.toString());
             }
         } catch (Exception e) {
-            log.error("Load file '{}' is failed!", configFile);
-
-            if (log.isDebugEnabled()) {
-                StringWriter errors = new StringWriter();
-                e.printStackTrace(new PrintWriter(errors));
-                log.debug(e.getMessage(), errors.toString());
-            }
+            log.error("Load properties '{}' is failed! {}", configFile, e.getMessage());
         }
 
         if (valid) valid = loadProperties();

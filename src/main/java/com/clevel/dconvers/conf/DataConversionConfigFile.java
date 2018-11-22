@@ -35,7 +35,6 @@ public class DataConversionConfigFile extends ConfigFile {
     private int targetFileNumber;
     private int mappingFileNumber;
 
-    private String progressOutput;
     private boolean exitOnError;
 
     private boolean childValid;
@@ -70,8 +69,7 @@ public class DataConversionConfigFile extends ConfigFile {
         mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
         reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
 
-        progressOutput = properties.getString(converterProperty.connectKey(Property.PROGRESS_OUTPUT),"progress.txt");
-        exitOnError = properties.getBoolean(converterProperty.connectKey(Property.EXIT_ON_ERROR), true);
+        exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
 
         List<Object> dataSourceNameList;
         try {
@@ -162,10 +160,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public String getOutputMappingPath() {
         return outputMappingPath;
-    }
-
-    public String getProgressOutput() {
-        return progressOutput;
     }
 
     public boolean isExitOnError() {

@@ -2,6 +2,8 @@ package com.clevel.dconvers;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.util.ContextInitializer;
+import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.ValidatorBase;
 import org.apache.commons.cli.*;
@@ -10,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URL;
 import java.util.List;
 
 public class Switches extends ValidatorBase {
@@ -21,16 +24,17 @@ public class Switches extends ValidatorBase {
     private Options options;
 
     private String source;
+    private String logback;
     private boolean verbose;
     private Level verboseLevel;
     private boolean help;
 
     public Switches(Application application) {
         this.application = application;
-        log = LoggerFactory.getLogger(Switches.class);
-        options = new Options();
+        loadLogger();
 
-        registerSwitches();
+        options = new Options();
+        registerSwitchesByOptions();
 
         valid = loadSwitches();
         if (valid) {
@@ -40,7 +44,7 @@ public class Switches extends ValidatorBase {
         log.trace("Switches is created.");
     }
 
-    private void registerSwitches() {
+    private void registerSwitchesByOptions() {
         for (Option option : Option.values()) {
             if (option.isRequired()) {
                 options.addRequiredOption(option.getShortOpt(), option.getLongOpt(), option.isHasArgument(), option.getDescription());
@@ -48,6 +52,10 @@ public class Switches extends ValidatorBase {
                 options.addOption(option.getShortOpt(), option.getLongOpt(), option.isHasArgument(), option.getDescription());
             }
         }
+    }
+
+    private void loadLogger() {
+        log = LoggerFactory.getLogger(Switches.class);
     }
 
     private boolean loadSwitches() {
@@ -61,7 +69,7 @@ public class Switches extends ValidatorBase {
 
         String level;
         verbose = cmd.hasOption(Option.VERBOSE.getShortOpt());
-        if(verbose) {
+        if (verbose) {
             level = cmd.getOptionValue(Option.LEVEL.getShortOpt());
             if (level == null) {
                 level = Defaults.VERBOSE_LOG_LEVEL.getStringValue();
@@ -82,8 +90,6 @@ public class Switches extends ValidatorBase {
         loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));
         log.trace("Switches.loadSwitches.");
         log.debug("verbose level is {}", verboseLevel.toString());
-
-        // TODO: (low priority) when verboseLevel is DEBUG must change to use logback-debug.xml instead of logback.xml
 
         source = cmd.getOptionValue(Option.SOURCE.getShortOpt());
         if (source != null && source.lastIndexOf(".") < 0) {
@@ -130,6 +136,7 @@ public class Switches extends ValidatorBase {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("logback", logback)
                 .append("source", source)
                 .append("verbose", verbose)
                 .append("verboseLevel", verboseLevel)

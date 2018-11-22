@@ -324,6 +324,19 @@ transform | <td colspan=3>ROWCOUNT([insertAsNewColumn],[current or [dataTableIde
 [dataTableIdentifier] | string | empty | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget
 [columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
 
+##### Sum Transformer Function Properties
+
+This transformation is simple get the size of specific table. possible properties are described as below
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+transform | <td colspan=3>SUM([insertAsNewColumn],[current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)</td>
+[insertAsNewColumn] | string | unnamed:1 | syntax is [ColumnName]:[insertColumnIndex] 
+[ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
+[insertColumnIndex] | int | 1 | index of column to insert, start at 1
+[dataTableIdentifier] | string | empty | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget
+[columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
+
 ##### Remove Transformer Function Properties
 
 This transformation used for column deletion. After transformed by REMOVE, recommended to remove from the last column to avoid index out of bound exception. possible properties are described below
