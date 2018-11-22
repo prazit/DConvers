@@ -115,15 +115,14 @@ public class Converter extends AppBase {
     public boolean convert() {
         log.trace("Converter({}).convert", name);
 
-        log.info("Build {} source tables", sortedSource.size());
         for (Source source : sortedSource) {
             valid = source.buildDataTable();
             if (!valid) {
                 return false;
             }
         }
+        log.info("{} source-table(s) are retrieved.", sortedSource.size());
 
-        log.info("Build {} target tables", sortedTarget.size());
         DataTable mapping;
         for (Target target : sortedTarget) {
             valid = target.buildDataTable();
@@ -134,6 +133,7 @@ public class Converter extends AppBase {
             mapping = target.getMappingTable();
             mappingTableMap.put(mapping.getTableName(), mapping);
         }
+        log.info("{} target-table(s) are built", sortedTarget.size());
 
         return true;
     }

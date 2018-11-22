@@ -1,28 +1,74 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
+    <turboFilter class="ch.qos.logback.classic.turbo.DuplicateMessageFilter">
+        <AllowedRepetitions>1</AllowedRepetitions>
+    </turboFilter>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <!--<pattern>[%-5level] %logger: %msg%n</pattern>-->
-            <!--<pattern>%-5level %date %logger [%file:%line] %msg%n</pattern>-->
-            <pattern>%date |-%-5level in %file:%line - %msg%n</pattern>
+            <pattern>%date |-%-5level at %file:%line-| %msg%n</pattern>
         </encoder>
+        <immediateFlush>true</immediateFlush>
     </appender>
 
-    <!--Daily rolling file appender -->
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/dconvers.log</File>
+    <appender name="TRACE_FILE" class="ch.qos.logback.core.FileAppender">
+        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/out/log/trace.log</File>
         <append>false</append>
         <encoder>
-            <pattern>%date %-5level [%thread] %logger [%file:%line] %msg%n</pattern>
+            <pattern>%-5level |- %msg at [%file:%line]%n</pattern>
         </encoder>
+        <immediateFlush>true</immediateFlush>
     </appender>
 
-    <logger name="com.clevel" level="DEBUG"/>
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/out/log/error.log</File>
+        <append>false</append>
+        <encoder>
+            <pattern>%-5level %date |- %msg%n</pattern>
+        </encoder>
+        <immediateFlush>true</immediateFlush>
+    </appender>
 
-    <root level="DEBUG">
+    <appender name="WARN_FILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/out/log/warning.log</File>
+        <append>false</append>
+        <encoder>
+            <pattern>%date %-5level %msg%n</pattern>
+        </encoder>
+        <immediateFlush>true</immediateFlush>
+    </appender>
+
+    <appender name="INFO_FILE" class="ch.qos.logback.core.FileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <File>C:/Users/prazi/Documents/GitHub/Data Conversion/out/log/info.log</File>
+        <append>false</append>
+        <encoder>
+            <pattern>%date %msg%n</pattern>
+        </encoder>
+        <immediateFlush>true</immediateFlush>
+    </appender>
+
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="TRACE_FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <appender-ref ref="WARN_FILE"/>
+        <appender-ref ref="INFO_FILE"/>
     </root>
 
 </configuration>

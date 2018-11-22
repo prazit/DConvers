@@ -251,6 +251,9 @@ public class Target extends AppBase {
         } // end of for(DataRow)
         progressBar.close();
 
+        log.info("TAR:{} has {} row(s)", name, dataTable.getRowCount());
+        log.info("MAP:{} has {} row(s)", mappingTableName, dataTable.getRowCount());
+
         if (log.isDebugEnabled()) {
             if (dataTable.getRowCount() > 10) {
                 log.debug("buildDataTable({}). targetTable has {} rows, firstRow is {}", name, dataTable.getRowCount(), dataTable.getRow(0));
@@ -284,6 +287,7 @@ public class Target extends AppBase {
                 log.debug("Transform({}) is failed in Target({})", name, transformType.name());
                 return false;
             }
+            log.info("TAR:{} is transformed by {}, remain {} row(s)", name, transformType.name(), dataTable.getRowCount());
         }
 
         return true;

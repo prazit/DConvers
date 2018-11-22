@@ -102,17 +102,18 @@ public class SFTP extends AppBase implements UserInfo {
     }
 
     public boolean copyToSFTP(String localFile, String remoteFile) {
-        log.trace("sftp({}).copyToSFTP(localFile:{}, remoteFile{})", name, localFile, remoteFile);
+        log.trace("SFTP({}).copyToSFTP(localFile:{}, remoteFile:{})", name, localFile, remoteFile);
 
         if (!isValid()) {
-            log.error("SFTP.copyToSFTP. this sftp({}) is invalid and can not copy local-file({}) to remote-file({}).", name, localFile, remoteFile);
+            log.error("The SFTP({}) is invalid! can not copy local-file({}) to remote-file({}).", name, localFile, remoteFile);
             return false;
         }
 
         try {
             sftpChannel.put(localFile, remoteFile, ChannelSftp.OVERWRITE);
+            log.info("SFTP({}) transfer file({}) to sftp({}) is completed", name, localFile, remoteFile);
         } catch (SftpException e) {
-            log.error("sftp({}).copyToSFTP is failed, can't copy local-file({}) to remote-file({}). {}", name, localFile, remoteFile, e.getMessage());
+            log.error("SFTP({}) transfer file({}) to sftp({}) is failed, {}", name, localFile, remoteFile, e.getMessage());
             return false;
         }
 

@@ -96,13 +96,11 @@ public class DataSource extends AppBase {
                 log.trace("Open statement...");
                 callableStatement = connection.prepareCall(query); // query like this: {call SHOW_SUPPLIERS()}
                 log.debug("Querying: {}", query);
-                log.info("Loading table({})...", tableName);
                 resultSet = callableStatement.executeQuery();
             } else {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 log.debug("Querying: {}", query);
-                log.info("Loading table({})...", tableName);
                 resultSet = statement.executeQuery(query);
             }
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -110,7 +108,7 @@ public class DataSource extends AppBase {
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
             dataTable.setQuery(query);
-            log.info("Table({}) has {} rows", tableName, dataTable.getRowCount());
+            log.debug("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
 
             log.trace("Close statement...");
             resultSet.close();

@@ -110,7 +110,7 @@ public abstract class Output extends AppBase {
             if (autoCreateDir && autoCreateDir(outputFile)) {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
-                log.error("Create output file({}) is failed! please check output path.", outputFile);
+                log.error("Output file creation is failed! please check output path ({}).", outputFile);
                 application.hasWarning = true;
                 try {
                     writer = new PrintWriter(new OutputStreamWriter(System.out, charset));
@@ -118,6 +118,10 @@ public abstract class Output extends AppBase {
                     writer = new StringWriter();
                 }
             }
+        }
+
+        if (writer != null) {
+            log.info("Output file is created, local-file:{}", outputFile);
         }
 
         return writer;

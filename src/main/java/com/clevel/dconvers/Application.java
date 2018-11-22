@@ -144,7 +144,7 @@ public class Application {
 
             converterList.add(converter);
         }
-        log.info("Has {} converters", converterList.size());
+        log.info("Has {} converter(s)", converterList.size());
 
         log.trace("Application. Launch Converters.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
@@ -188,16 +188,16 @@ public class Application {
     }
 
     public void stopWithError() {
-        closeAllDataSource();
         closeAllSFTP();
+        closeAllDataSource();
 
         log.info("EXIT WITH SOME ERROR");
         System.exit(1);
     }
 
     public void stopWithWarning() {
-        closeAllDataSource();
         closeAllSFTP();
+        closeAllDataSource();
 
         log.info("SUCCESSFUL WITH WARNING");
         System.exit(2);
