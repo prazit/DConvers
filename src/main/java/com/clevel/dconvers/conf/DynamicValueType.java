@@ -1,10 +1,10 @@
 package com.clevel.dconvers.conf;
 
+import org.slf4j.LoggerFactory;
+
 import java.sql.Types;
 
 public enum DynamicValueType {
-    VAR(0),                 // VAR:system-variable-name
-    CAL(0),                 // CAL:calculator(argument1,argument2,...)
 
     STR(Types.VARCHAR),     // STR:My string is longer than other value
     INT(Types.INTEGER),     // INT:integer-value = INT:12345
@@ -19,7 +19,10 @@ public enum DynamicValueType {
 
     COL(0),                 // source-column-name>>MAPPING>>column-name = id>>MAP:branch_to_branch.source_id>>target_id
     NON(0),                 // None (no specified type) will use as source-column-name
-    INV(0)                  // Invalid Specified Type
+    INV(0),                  // Invalid Specified Type
+
+    VAR(0),                 // VAR:system-variable-name
+    CAL(0),                 // CAL:calculator(argument1,argument2,)
     ;
 
     private int dataType;
@@ -40,9 +43,10 @@ public enum DynamicValueType {
         DynamicValueType dynamicValueType;
 
         try {
-            dynamicValueType = DynamicValueType.valueOf(name);
-        } catch (IllegalArgumentException ex) {
+            dynamicValueType = DynamicValueType.valueOf(name.toUpperCase());
+        } catch (Exception ex) {
             dynamicValueType = null;
+            LoggerFactory.getLogger(DynamicValueType.class).error("DynamicValueType.parse(name:{}) is failed!", name, ex);
         }
 
         return dynamicValueType;

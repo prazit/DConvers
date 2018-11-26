@@ -6,7 +6,8 @@ public enum TransformTypes {
     CONCAT(ConcatTransform.class),
     REMOVE(RemoveTransform.class),
     ROWCOUNT(RowCountTransform.class),
-    SUM(SumTransform.class);
+    SUM(SumTransform.class),
+    FORMAT(FormatTransform.class);
 
     private Class transformClass;
 

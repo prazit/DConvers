@@ -37,6 +37,10 @@ public class DataRow extends ValidatorBase {
         return dataColumn;
     }
 
+    public DataColumn getColumn(int columnIndex) {
+        return columnList.get(columnIndex);
+    }
+
     public Map<String, DataColumn> getColumnMap() {
         return dataColumnMap;
     }

@@ -115,9 +115,11 @@ public class DataSource extends AppBase {
 
         } catch (SQLException se) {
             log.error("SQLException: ", se);
+            return null;
 
         } catch (Exception e) {
             log.error("Exception", e);
+            return null;
 
         } finally {
             try {

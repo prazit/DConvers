@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class DataBigDecimal extends DataColumn {
 
@@ -57,6 +58,16 @@ public class DataBigDecimal extends DataColumn {
         }
 
         return value.toString();
+    }
+
+    @Override
+    public String getFormattedValue(String pattern) {
+        if (value == null) {
+            return nullString;
+        }
+
+        DecimalFormat myFormatter = new DecimalFormat(pattern);
+        return myFormatter.format(value);
     }
 
     @Override

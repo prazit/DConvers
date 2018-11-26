@@ -15,7 +15,7 @@ public class SumCalc extends Calc {
         super(application, name);
     }
 
-    private String rowIndex;
+    private String rowIdentifier;
     private DataTable srcTable;
     private String defaultValue;
     private List<Integer> columnIndexList;
@@ -24,7 +24,7 @@ public class SumCalc extends Calc {
     protected boolean prepare() {
         defaultValue = "0";
 
-        // sum([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
+        // sum([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
         int argumentCount = arguments.length;
         if (argumentCount < 3) {
@@ -36,7 +36,7 @@ public class SumCalc extends Calc {
             return false;
         }
 
-        rowIndex = arguments[1];
+        rowIdentifier = arguments[1];
 
         DataRow firstRow = srcTable.getRow(0);
         int maxIndex = firstRow.getColumnCount() - 1;
@@ -47,11 +47,11 @@ public class SumCalc extends Calc {
 
     @Override
     protected String calculate() {
-
-        DataRow currentRow = getDataRow(rowIndex, srcTable);
+        DataRow currentRow = getDataRow(rowIdentifier, srcTable);
         if (currentRow == null) {
             return defaultValue;
         }
+        log.debug("SumCalc.calculate() datatable({}) datarow({})", srcTable.getTableName(), currentRow.toString());
 
         List<DataColumn> columnList = currentRow.getColumnList();
         DataColumn column;
@@ -73,7 +73,14 @@ public class SumCalc extends Calc {
                     break;
 
                 default:
+                    try {
+                        bigDecimalValue = new BigDecimal(column.getValue());
+                    } catch (Exception ex) {
+                        bigDecimalValue = null;
+                    }
+                    sum += bigDecimalValue == null ? 0.0 : bigDecimalValue.doubleValue();
             }
+            log.debug("at colum(index:{},name:{},value:{}) sum = {}", index, column.getName(), column.getValue(), sum);
         }
 
         String value = String.valueOf(sum);

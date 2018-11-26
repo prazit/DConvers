@@ -54,6 +54,7 @@ public abstract class DataColumn extends ValidatorBase {
     public abstract String getQuotedValue();
 
     public abstract String getValue();
+    public abstract String getFormattedValue(String pattern);
     public abstract void setValue(String value);
 
     public abstract DataColumn clone(String value);

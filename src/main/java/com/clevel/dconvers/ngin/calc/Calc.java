@@ -4,6 +4,7 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.UtilBase;
+import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 
@@ -66,11 +67,19 @@ public abstract class Calc extends UtilBase {
             return row;
         }
 
-        DataRow row = dataTable.getRow(Integer.parseInt(rowIdentifier));
+        DataRow row = dataTable.getRow(Integer.parseInt(rowIdentifier) - 1);
         if (row.getColumnCount() == 0) {
             return null;
         }
 
         return row;
+    }
+
+    protected DataColumn getDataColumn(String columnIndex, DataRow dataRow) {
+        if (dataRow == null) {
+            return null;
+        }
+
+        return dataRow.getColumn(Integer.parseInt(columnIndex) - 1);
     }
 }

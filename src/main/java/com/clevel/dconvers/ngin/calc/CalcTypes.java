@@ -1,9 +1,11 @@
 package com.clevel.dconvers.ngin.calc;
 
+import org.slf4j.LoggerFactory;
+
 public enum CalcTypes {
 
     ROWCOUNT(RowCountCalc.class),
-    //VALUE(ValueCalc.class),
+    FORMAT(FormatCalc.class),
     SUM(SumCalc.class);
 
     private Class calcClass;
@@ -20,9 +22,10 @@ public enum CalcTypes {
         CalcTypes calcType;
 
         try {
-            calcType = CalcTypes.valueOf(name);
+            calcType = CalcTypes.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException ex) {
             calcType = null;
+            LoggerFactory.getLogger(CalcTypes.class).error("CalcTypes.parse(name:{}) is failed!", name, ex);
         }
 
         return calcType;

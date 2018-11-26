@@ -109,6 +109,7 @@ public class DataDate extends DataColumn {
         return getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
     }
 
+    @Override
     public String getFormattedValue(String format) {
         if (value == null) {
             return nullString;

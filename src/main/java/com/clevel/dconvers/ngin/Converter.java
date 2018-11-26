@@ -300,12 +300,12 @@ public class Converter extends AppBase {
     }
 
     private String compileFirstDynamicValue(String sourceString) {
-        int start = sourceString.indexOf("$(");
+        int start = sourceString.indexOf("$[");
         if (start < 0) {
             return null;
         }
 
-        int end = sourceString.indexOf(")", start);
+        int end = sourceString.indexOf("]", start);
         if (end < 0) {
             end = sourceString.length() - 1;
         }
@@ -318,9 +318,24 @@ public class Converter extends AppBase {
             return null;
         }
 
-        String replacement = dataColumn.getValue();
-        String replaced = sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
+        String replacement;
+        switch (dataColumn.getType()) {
+            case Types.INTEGER:
+            case Types.BIGINT:
+            case Types.DECIMAL:
+                replacement = dataColumn.getFormattedValue(Defaults.NUMBER_FORMAT.getStringValue());
+                break;
 
+            case Types.DATE:
+            case Types.TIMESTAMP:
+                replacement = dataColumn.getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
+                break;
+
+            default:
+                replacement = dataColumn.getValue();
+        }
+
+        String replaced = sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
         return replaced;
     }
 
@@ -384,9 +399,9 @@ public class Converter extends AppBase {
 
     public DataColumn getDynamicValue(String dynamicValue) {
         // dynamicValue look like this
-        // $(VAR:SOURCE_FILE_NUMBER)
-        // $(TXT:FILE_NAME.txt)
-        // $(CAL:function(argument1,argument2))
+        // $[VAR:SOURCE_FILE_NUMBER]
+        // $[TXT:FILE_NAME.txt]
+        // $[CAL:function(argument1,argument2)]
         log.trace("Converter.getDynamicValue.");
 
         if (dynamicValue.length() < 5) {
@@ -438,6 +453,7 @@ public class Converter extends AppBase {
                     return null;
                 }
                 dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                break;
 
             default:
                 log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);

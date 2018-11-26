@@ -51,8 +51,8 @@ public class FixedLengthFormatter extends DataFormatter {
 
         separator = notNull(outputConfig.getTxtSeparator(), "");
         eol = notNull(outputConfig.getTxtOutputEOL(), "");
-        dateFormat = notNull(outputConfig.getTxtFormatDate(), "");
-        datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), "");
+        dateFormat = notNull(outputConfig.getTxtFormatDate(), "YYYYMMdd");
+        datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), "YYYYMMddHHmmss");
         fillString = notNull(outputConfig.getTxtFillString(), " ");
         fillNumber = notNull(outputConfig.getTxtFillNumber(), "0");
         fillDate = notNull(outputConfig.getTxtFillDate(), " ");
@@ -127,10 +127,10 @@ public class FixedLengthFormatter extends DataFormatter {
             case Types.DATE:
             case Types.TIMESTAMP:
                 dataColumn.setNullString(fillDate);
-                if (txtType.equals(DynamicValueType.DTT)) {
-                    value = ((DataDate) dataColumn).getFormattedValue(datetimeFormat);
-                } else {
+                if (DynamicValueType.DTE.equals(txtType)) {
                     value = ((DataDate) dataColumn).getFormattedValue(dateFormat);
+                } else {
+                    value = ((DataDate) dataColumn).getFormattedValue(datetimeFormat);
                 }
                 break;
 

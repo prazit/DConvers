@@ -45,6 +45,11 @@ public class DataString extends DataColumn {
         return value;
     }
 
+    @Override
+    public String getFormattedValue(String pattern) {
+        return getValue();
+    }
+
     public void appendValue(String value) {
         if (this.value == null) {
             this.value = value;

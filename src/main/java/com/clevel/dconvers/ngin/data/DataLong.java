@@ -3,6 +3,9 @@ package com.clevel.dconvers.ngin.data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class DataLong extends DataColumn {
     private Long value;
 
@@ -44,6 +47,16 @@ public class DataLong extends DataColumn {
             return nullString;
         }
         return String.valueOf(value);
+    }
+
+    @Override
+    public String getFormattedValue(String pattern) {
+        if (value == null) {
+            return nullString;
+        }
+
+        DecimalFormat myFormatter = new DecimalFormat(pattern);
+        return myFormatter.format(value);
     }
 
     @Override
