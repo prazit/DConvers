@@ -121,7 +121,7 @@ public abstract class Output extends AppBase {
         }
 
         if (writer != null) {
-            log.info("Output file is created, local-file:{}", outputFile);
+            log.info("Output file is created(append:{}), local-file:{}", append, outputFile);
         }
 
         return writer;

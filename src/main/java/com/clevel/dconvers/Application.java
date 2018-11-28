@@ -133,7 +133,6 @@ public class Application {
             dataSourceMap.put(dataSourceName, dataSource);
 
             dataSource.runPre();
-            dataSource.generateConverterFile();
         }
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
@@ -209,7 +208,7 @@ public class Application {
         closeAllSFTP();
         closeAllDataSource();
 
-        log.info("SUCCESS");
+        log.info("SUCCESS\n\n");
         System.exit(0);
     }
 
@@ -219,7 +218,7 @@ public class Application {
         closeAllSFTP();
         closeAllDataSource();
 
-        log.info("EXIT WITH SOME ERROR");
+        log.info("EXIT WITH SOME ERROR\n\n");
         System.exit(1);
     }
 
@@ -229,7 +228,7 @@ public class Application {
         closeAllSFTP();
         closeAllDataSource();
 
-        log.info("SUCCESSFUL WITH WARNING");
+        log.info("SUCCESSFUL WITH WARNING\n\n");
         System.exit(2);
     }
 

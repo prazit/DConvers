@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.DynamicValueType;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.data.DataColumn;
@@ -21,13 +22,14 @@ public class FixedLengthFormatter extends DataFormatter {
     private List<BigDecimal> txtLengthList;
     private String separator;
     private String eol;
+    private String eof;
     private String dateFormat;
     private String datetimeFormat;
     private String fillString;
     private String fillNumber;
     private String fillDate;
 
-    public FixedLengthFormatter(Application application, String name, String format, String separator, String eol, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
+    public FixedLengthFormatter(Application application, String name, String format, String separator, String eol, String eof, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
         super(application, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
@@ -35,8 +37,9 @@ public class FixedLengthFormatter extends DataFormatter {
 
         this.separator = notNull(separator, "");
         this.eol = notNull(eol, "");
-        this.dateFormat = notNull(dateFormat, "");
-        this.datetimeFormat = notNull(datetimeFormat, "");
+        this.eof = notNull(eof, this.eol);
+        this.dateFormat = notNull(dateFormat, Defaults.DATE_FORMAT.getStringValue());
+        this.datetimeFormat = notNull(datetimeFormat, this.dateFormat);
         this.fillString = notNull(fillString, " ");
         this.fillNumber = notNull(fillNumber, "0");
         this.fillDate = notNull(fillDate, " ");
@@ -51,8 +54,9 @@ public class FixedLengthFormatter extends DataFormatter {
 
         separator = notNull(outputConfig.getTxtSeparator(), "");
         eol = notNull(outputConfig.getTxtOutputEOL(), "");
-        dateFormat = notNull(outputConfig.getTxtFormatDate(), "YYYYMMdd");
-        datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), "YYYYMMddHHmmss");
+        eof = notNull(outputConfig.getTxtOutputEOL(), this.eol);
+        dateFormat = notNull(outputConfig.getTxtFormatDate(), Defaults.DATE_FORMAT.getStringValue());
+        datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), this.dateFormat);
         fillString = notNull(outputConfig.getTxtFillString(), " ");
         fillNumber = notNull(outputConfig.getTxtFillNumber(), "0");
         fillDate = notNull(outputConfig.getTxtFillDate(), " ");
@@ -257,6 +261,17 @@ public class FixedLengthFormatter extends DataFormatter {
 
     private String fillRight(String value, String fill, int count) {
         return value.concat(StringUtils.repeat(fill, count));
+    }
+
+    @Override
+    protected boolean allowToWrite(StringBuffer stringBuffer) {
+        int eolLength = eol.length();
+        int bufferLength = stringBuffer.length();
+
+        stringBuffer.delete(bufferLength - eolLength, bufferLength);
+        stringBuffer.append(eof);
+
+        return super.allowToWrite(stringBuffer);
     }
 
     @Override

@@ -19,10 +19,14 @@ public class MarkdownFormatter extends DataFormatter {
     private boolean needHeader;
     private int rowIndex;
     private int rowIndexWidth;
+    private String eol;
+    private String eof;
 
-    public MarkdownFormatter(Application application, String name) {
+    public MarkdownFormatter(Application application, String name, String eol, String eof) {
         super(application, name, true);
 
+        this.eol = eol;
+        this.eof = eof;
         outputType = "markdown";
     }
 
@@ -68,7 +72,7 @@ public class MarkdownFormatter extends DataFormatter {
             }
         }
 
-        return "\n\n# TABLE: " + dataTable.getTableName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getTableName() + ")</sup></sup>\n\n";
+        return eol + "# TABLE: " + dataTable.getTableName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getTableName() + ")</sup></sup>" + eol;
     }
 
     private void registerColumnWidth(int columnIndex, String value) {
@@ -152,9 +156,9 @@ public class MarkdownFormatter extends DataFormatter {
                 columnIndex++;
             }
 
-            header += "|\n";
-            headerSeparator += "|\n";
-            record += "|\n";
+            header += "|" + eol;
+            headerSeparator += "|" + eol;
+            record += "|" + eol;
 
             return header + headerSeparator + record;
 
@@ -181,9 +185,14 @@ public class MarkdownFormatter extends DataFormatter {
 
             columnIndex++;
         }
-        record += "|\n";
+        record += "|" + eol;
 
         return record;
+    }
+
+    @Override
+    protected String postFormat(DataTable dataTable) {
+        return eof;
     }
 
     @Override

@@ -14,6 +14,20 @@ import java.util.List;
 
 public class OutputConfig extends Config {
 
+    private boolean conf;
+    private String confSftp;
+    private String confSftpOutput;
+    private String confOutput;
+    private boolean confOutputAppend;
+    private boolean confOutputAutoCreateDir;
+    private String confOutputCharset;
+    private String confOutputEOL;
+    private String confOutputEOF;
+    private String confTable;
+    private String confColumnName;
+    private String confColumnType;
+    private String confColumnIsKey;
+
     private boolean sql;
     private String sqlSftp;
     private String sqlSftpOutput;
@@ -22,6 +36,7 @@ public class OutputConfig extends Config {
     private boolean sqlOutputAutoCreateDir;
     private String sqlOutputCharset;
     private String sqlOutputEOL;
+    private String sqlOutputEOF;
     private String sqlTable;
     private String sqlNameQuotes;
     private String sqlValueQuotes;
@@ -40,6 +55,7 @@ public class OutputConfig extends Config {
     private boolean markdownOutputAutoCreateDir;
     private String markdownOutputCharset;
     private String markdownOutputEOL;
+    private String markdownOutputEOF;
 
 
     private boolean pdf;
@@ -58,6 +74,7 @@ public class OutputConfig extends Config {
     private boolean txtOutputAutoCreateDir;
     private String txtOutputCharset;
     private String txtOutputEOL;
+    private String txtOutputEOF;
     private String txtSeparator;
     private String txtFormat;
     private String txtFormatDate;
@@ -75,6 +92,7 @@ public class OutputConfig extends Config {
     private boolean csvOutputAutoCreateDir;
     private String csvOutputCharset;
     private String csvOutputEOL;
+    private String csvOutputEOF;
     private String csvSeparator;
 
 
@@ -123,6 +141,7 @@ public class OutputConfig extends Config {
         sqlOutputAutoCreateDir = true;
         sqlOutputCharset = "UTF-8";
         sqlOutputEOL = "\n";
+        sqlOutputEOF = "\n";
         sqlTable = name;
         sqlNameQuotes = "";
         sqlValueQuotes = "\"";
@@ -145,6 +164,7 @@ public class OutputConfig extends Config {
             sqlOutputAutoCreateDir = sqlProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), sqlOutputAutoCreateDir);
             sqlOutputCharset = sqlProperties.getString(Property.OUTPUT_CHARSET.key(), sqlOutputCharset);
             sqlOutputEOL = sqlProperties.getString(Property.OUTPUT_EOL.key(), sqlOutputEOL);
+            sqlOutputEOF = sqlProperties.getString(Property.OUTPUT_EOF.key(), sqlOutputEOF);
             sqlTable = sqlProperties.getString(Property.TABLE.key(), sqlTable);
             sqlNameQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
             sqlValueQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
@@ -164,6 +184,7 @@ public class OutputConfig extends Config {
         markdownOutputAutoCreateDir = true;
         markdownOutputCharset = "UTF-8";
         markdownOutputEOL = "\n";
+        markdownOutputEOF = "\n";
 
         key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
@@ -178,6 +199,7 @@ public class OutputConfig extends Config {
             markdownOutputAutoCreateDir = markdownProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), markdownOutputAutoCreateDir);
             markdownOutputCharset = markdownProperties.getString(Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
             markdownOutputEOL = markdownProperties.getString(Property.OUTPUT_EOL.key(), markdownOutputEOL);
+            markdownOutputEOF = markdownProperties.getString(Property.OUTPUT_EOF.key(), markdownOutputEOF);
         }
 
         // Default Properties for PDF
@@ -215,6 +237,7 @@ public class OutputConfig extends Config {
         txtOutputAutoCreateDir = true;
         txtOutputCharset = "UTF-8";
         txtOutputEOL = "\n";
+        txtOutputEOF = "\n";
         txtSeparator = "";
         txtFormat = "STR:80";
         txtFormatDate = "YYYYMMdd";
@@ -236,6 +259,7 @@ public class OutputConfig extends Config {
             txtOutputAutoCreateDir = txtProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), txtOutputAutoCreateDir);
             txtOutputCharset = txtProperties.getString(Property.OUTPUT_CHARSET.key(), txtOutputCharset);
             txtOutputEOL = txtProperties.getString(Property.OUTPUT_EOL.key(), txtOutputEOL);
+            txtOutputEOF = txtProperties.getString(Property.OUTPUT_EOF.key(), txtOutputEOF);
             txtSeparator = txtProperties.getString(Property.SEPARATOR.key(), txtSeparator);
             txtFormat = txtProperties.getString(Property.FORMAT.key(), txtFormat);
             txtFormatDate = txtProperties.getString(Property.FORMAT_DATE.key(), txtFormatDate);
@@ -254,6 +278,7 @@ public class OutputConfig extends Config {
         csvOutputAutoCreateDir = true;
         csvOutputCharset = "UTF-8";
         csvOutputEOL = "\n";
+        csvOutputEOF = "\n";
         csvSeparator = ",";
 
         key = Property.CSV.prefixKey(baseProperty);
@@ -269,6 +294,7 @@ public class OutputConfig extends Config {
             csvOutputAutoCreateDir = csvProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), csvOutputAutoCreateDir);
             csvOutputCharset = csvProperties.getString(Property.OUTPUT_CHARSET.key(), csvOutputCharset);
             csvOutputEOL = csvProperties.getString(Property.OUTPUT_EOL.key(), csvOutputEOL);
+            csvOutputEOF = csvProperties.getString(Property.OUTPUT_EOF.key(), csvOutputEOF);
             csvSeparator = csvProperties.getString(Property.SEPARATOR.key(), csvSeparator);
         }
 
@@ -320,6 +346,39 @@ public class OutputConfig extends Config {
             dbUpdatePostSQL = getStringList(dbUpdateProperties, Property.POST_SQL.key());
         }
 
+        // Default Properties for PDF
+        conf = false;
+        confTable = "TABLE_NAME";           // name of column to use as table name
+        confColumnName = "COLUMN_NAME";     // name of column to use as column name
+        confColumnType = "COLUMN_TYPE";     // name of column to use as column type
+        confColumnIsKey = "IS_KEY";         // name of column to use as column is a primary key
+        confOutput = baseProperty + ".conf";
+        confOutputAppend = false;
+        confOutputAutoCreateDir = true;
+        confOutputCharset = "UTF-8";
+        confOutputEOL = "\n";
+        confOutputEOF = "\n";
+
+        key = Property.CONF.prefixKey(baseProperty);
+        conf = properties.getBoolean(key, conf);
+        if (conf) {
+            outputTypeList.add(OutputTypes.CONFIG_FILE);
+
+            Configuration confProperties = properties.subset(key);
+            confTable = confProperties.getString(Property.TABLE.key(), confTable);
+            confSftp = confProperties.getString(Property.SFTP.key(), confSftp);
+            confSftpOutput = confProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), confSftpOutput);
+            confColumnName = confProperties.getString(Property.TABLE.key(), confColumnName);
+            confColumnType = confProperties.getString(Property.TABLE.key(), confColumnType);
+            confColumnIsKey = confProperties.getString(Property.TABLE.key(), confColumnIsKey);
+            confOutput = confProperties.getString(Property.OUTPUT_FILE.key(), confOutput);
+            confOutputAppend = confProperties.getBoolean(Property.OUTPUT_APPEND.key(), confOutputAppend);
+            confOutputAutoCreateDir = confProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), confOutputAutoCreateDir);
+            confOutputCharset = confProperties.getString(Property.OUTPUT_CHARSET.key(), confOutputCharset);
+            confOutputEOL = confProperties.getString(Property.OUTPUT_EOL.key(), confOutputEOL);
+            confOutputEOF = confProperties.getString(Property.OUTPUT_EOF.key(), confOutputEOF);
+        }
+
         return true;
     }
 
@@ -355,6 +414,59 @@ public class OutputConfig extends Config {
         return reportStream;
     }
 
+    public boolean isConf() {
+        return conf;
+    }
+
+    public String getConfSftp() {
+        return confSftp;
+    }
+
+    public String getConfSftpOutput() {
+        return confSftpOutput;
+    }
+
+    public String getConfTable() {
+        return confTable;
+    }
+
+    public String getConfColumnName() {
+        return confColumnName;
+    }
+
+    public String getConfColumnType() {
+        return confColumnType;
+    }
+
+    public String getConfColumnIsKey() {
+        return confColumnIsKey;
+    }
+
+    public String getConfOutput() {
+        return confOutput;
+    }
+
+    public boolean isConfOutputAppend() {
+        return confOutputAppend;
+    }
+
+    public boolean isConfOutputAutoCreateDir() {
+        return confOutputAutoCreateDir;
+    }
+
+    public String getConfOutputCharset() {
+        return confOutputCharset;
+    }
+
+    public String getConfOutputEOL() {
+        return application.currentConverter.compileDynamicValues(confOutputEOL);
+
+    }
+
+    public String getConfOutputEOF() {
+        return application.currentConverter.compileDynamicValues(confOutputEOF);
+    }
+
     public boolean isSql() {
         return sql;
     }
@@ -384,7 +496,11 @@ public class OutputConfig extends Config {
     }
 
     public String getSqlOutputEOL() {
-        return sqlOutputEOL;
+        return application.currentConverter.compileDynamicValues(sqlOutputEOL);
+    }
+
+    public String getSqlOutputEOF() {
+        return application.currentConverter.compileDynamicValues(sqlOutputEOF);
     }
 
     public String getSqlTable() {
@@ -448,7 +564,11 @@ public class OutputConfig extends Config {
     }
 
     public String getMarkdownOutputEOL() {
-        return markdownOutputEOL;
+        return application.currentConverter.compileDynamicValues(markdownOutputEOL);
+    }
+
+    public String getMarkdownOutputEOF() {
+        return application.currentConverter.compileDynamicValues(markdownOutputEOF);
     }
 
     public boolean isPdf() {
@@ -504,7 +624,11 @@ public class OutputConfig extends Config {
     }
 
     public String getTxtOutputEOL() {
-        return txtOutputEOL;
+        return application.currentConverter.compileDynamicValues(txtOutputEOL);
+    }
+
+    public String getTxtOutputEOF() {
+        return application.currentConverter.compileDynamicValues(txtOutputEOF);
     }
 
     public String getTxtSeparator() {
@@ -568,7 +692,11 @@ public class OutputConfig extends Config {
     }
 
     public String getCsvOutputEOL() {
-        return csvOutputEOL;
+        return application.currentConverter.compileDynamicValues(csvOutputEOL);
+    }
+
+    public String getCsvOutputEOF() {
+        return application.currentConverter.compileDynamicValues(csvOutputEOF);
     }
 
     public boolean isDbInsert() {

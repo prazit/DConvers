@@ -287,7 +287,7 @@ public class Target extends AppBase {
                 log.debug("Transform({}) is failed in Target({})", name, transformType.name());
                 return false;
             }
-            log.info("TAR:{} is transformed by {}, remain {} row(s)", name, transformType.name(), dataTable.getRowCount());
+            log.info("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount()==0)?0:dataTable.getRow(0).getColumnCount());
         }
 
         return true;

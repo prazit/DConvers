@@ -57,15 +57,12 @@ public abstract class DataFormatter extends AppBase {
             progressBar.maxHint(rowCount);
         }
 
+        StringBuffer stringBuffer = new StringBuffer();
         String string;
-        try {
-            string = preFormat(dataTable);
-            if (string != null) {
-                writer.write(string);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+
+        string = preFormat(dataTable);
+        if (string != null) {
+            stringBuffer.append(string);
         }
 
         for (DataRow row : rows) {
@@ -76,26 +73,30 @@ public abstract class DataFormatter extends AppBase {
             if (string == null) {
                 continue;
             }
-
-            try {
-                writer.write(string);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+            stringBuffer.append(string);
         }
         if (allRow) {
             progressBar.close();
         }
 
-        try {
-            string = postFormat(dataTable);
-            if (string != null) {
-                writer.write(string);
+        string = postFormat(dataTable);
+        if (string != null) {
+            stringBuffer.append(string);
+        }
+
+        if (stringBuffer.length() > 0) {
+
+            if (!allowToWrite(stringBuffer)) {
+                return false;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
+
+            try {
+                writer.write(stringBuffer.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+
         }
 
         return true;
@@ -111,6 +112,21 @@ public abstract class DataFormatter extends AppBase {
     protected String postFormat(DataTable dataTable) {
         // Override this method to write something by DataTable after write each DataRow
         return null;
+    }
+
+    protected boolean allowToWrite(StringBuffer stringBuffer) {
+        // this function allow you to see buffer before write to the output writer, this allow you to modify stringBuffer too.
+        int lines = 0;
+        int length = stringBuffer.length();
+        int index = 0;
+
+        for (index = stringBuffer.indexOf("\n"); index >= 0 && index < length; index = stringBuffer.indexOf("\n", index) + 1) {
+            lines++;
+        }
+        log.debug("allowToWrite({} character(s), {} line break(s)).", stringBuffer.length(), lines);
+
+        // return true allow to write, false not allow to write.
+        return true;
     }
 
     public Writer getWriter() {

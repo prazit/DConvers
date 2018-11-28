@@ -30,7 +30,7 @@ public class DBUpdateOutput extends Output {
         String nameQuotes = outputConfig.getDbUpdateNameQuotes();
         String valueQuotes = outputConfig.getDbUpdateValueQuotes();
 
-        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, nameQuotes, valueQuotes));
+        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, nameQuotes, valueQuotes, "\n"));
 
         return dataFormatterList;
     }

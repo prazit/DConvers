@@ -19,7 +19,7 @@ converter-1.conf         # store sources and targets as set number 1
 converter-2.conf         # store sources and targets as set number 2
 ```
 
-### Installing
+### Installation
 
 A step by step series of examples that tell you how to get a development env running
 
@@ -37,17 +37,9 @@ until finished
 
 End with an example of getting some data out of the system or using it for a little demo
 
-### Testing
+### Run
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-### Running
-
-Windows Scheduler Guide is required here.
+DConvers is a command line tool built on JDK1.8 call java application, you need a command line terminal to run java application. Try commands below to run sample-conversion.conf 
 
 ```
 until finished
@@ -119,6 +111,7 @@ source.id | string | id | Name of column that contains a key value for a data ta
 source.output | Property Set |  | see [Output Properties](#Output_Properties)
 source.transform | Property Set |  | see [Transform Properties](#Transform_Properties)
 
+
 #### Target Properties
 
 Before define the target properties, you need to enable the target property group first.
@@ -138,6 +131,7 @@ target.id | string | id | name of primary key column, this is used by mapping ta
 target.[outputs] | Property Set |  | see [Output Properties](#Output_Properties)
 target.[transforms] | Property Set |  | see [Transform Properties](#Transform_Properties)
 
+
 #### Output Properties
 
 The DConvers program has 7 optional output types with different set of property, they are listed below
@@ -148,6 +142,8 @@ The DConvers program has 7 optional output types with different set of property,
 - CSV File Output (comma separated values)
 - DBInsert Output (execute sql insert)
 - DBUpdate Output (execute sql update)
+- Configuration File Output (create converter configuration that can use to backup data from database)
+
 
 ##### SQL Output Properties
 
@@ -160,7 +156,8 @@ sql.output | string | table-name.sql | custom file name. (Dynamic Value Enabled)
 sql.create.dir | bool | true | auto create directory for non-existing path. 
 sql.append | bool | false | append or always replace
 sql.charset | string | UTF-8 | name of character set
-sql.eol | string | \n | characters put at the end of line
+sql.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+sql.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
 sql.quotes.name | string | empty | one character for quotes of table-name and column-name
 sql.quotes.value | string | empty | one character for quotes of string-value and date-value
 sql.table | string | target name | name of table to generate sql for
@@ -171,6 +168,7 @@ sql.pre | string | null | your sql statements to put at the beginning of file
 sql.post | string | null | your sql statements to put at the end of file
 
 > Remark: SQL Output for MySQL may be need property sql.post=SET FOREIGN_KEY_CHECKS = 0;
+
 
 ##### Markdown Output Properties
 
@@ -183,7 +181,9 @@ markdown.output | string | table-name.md | custom file name. (Dynamic Value Enab
 markdown.create.dir | bool | true | auto create directory for non-existing path. 
 markdown.append | bool | false | append or always replace
 markdown.charset | string | UTF-8 | name of character set
-markdown.eol | string | \n | characters put at the end of line
+markdown.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+markdown.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
+
 
 ##### PDF Output Properties
 
@@ -196,6 +196,7 @@ pdf.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 pdf.create.dir | bool | true | auto create directory for non-existing path. 
 pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
 
+
 ##### TXT Output Properties
 
 Property | Data Type | Default Value | Description
@@ -207,7 +208,8 @@ txt.output | string | table-name.txt | custom file name. (Dynamic Value Enabled)
 txt.create.dir | bool | true | auto create directory for non-existing path. 
 txt.append | bool | false | append or always replace
 txt.charset | string | UTF-8 | name of character set
-txt.eol | string | \n | characters put at the end of line
+txt.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+txt.eof | string | \n | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled)
 txt.separator | string | empty | separator character or words use to separate values 
 txt.format | string | STR:1024 | see Fixed Length Format
 txt.format.date | string | YYYYMMdd | date format (pattern)
@@ -215,6 +217,7 @@ txt.format.datetime | string | YYYYMMddHHmmss | datetime format (pattern)
 txt.fill.string | char(1) | blank:right | the character to fill the string column 
 txt.fill.number | char(1) | 0:left | the character to fill the number column 
 txt.fill.date | char(1) | blank:right | the character to fill the date column 
+
 
 ##### CSV Output Properties
 
@@ -227,8 +230,10 @@ csv.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
 csv.create.dir | bool | true | auto create directory for non-existing path. 
 csv.append | bool | false | append or always replace
 csv.charset | string | UTF-8 | name of character set
-csv.eol | string | \n | characters put at the end of line
+csv.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+csv.eof | string | \n | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled)
 csv.separator | string | , | separator character or words use to separate values 
+
 
 ##### DBInsert Output Properties
 
@@ -242,6 +247,7 @@ dbinsert.quotes.value | string | empty | one character for quotes of string-valu
 dbinsert.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbinsert.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
 
+
 ##### DBUpdate Output Properties
 
 Property | Data Type | Default Value | Description
@@ -254,6 +260,25 @@ dbupdate.quotes.name | string | empty | one character for quotes of table-name a
 dbupdate.quotes.value | string | empty | one character for quotes of string-value and date-value
 dbupdate.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbupdate.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
+
+
+##### Configuration Output Properties
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+conf | bool | false | create configuration file or not 
+conf.sftp | string | null | name of sftp.
+conf.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
+conf.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
+conf.create.dir | bool | true | auto create directory for non-existing path. 
+conf.append | bool | false | append or always replace
+conf.charset | string | UTF-8 | name of character set
+conf.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+conf.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
+conf.table | string | null | column name in current table that store Table Name.
+conf.name | string | null | column name in current table that store Column Name.
+conf.type | string | null | column name in current table that store Column Type.(ref: java.sql.Types)
+conf.iskey | string | null | column name in current table that store boolean value when it's true mean this Column Name is a primary key.
 
 
 #### Transform Properties

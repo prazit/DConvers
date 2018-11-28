@@ -16,11 +16,13 @@ public class SQLCreateFormatter extends DataFormatter {
     private String idColumnName;
     private String nameQuotes;
     private boolean needBegin;
+    private String eol;
 
-    public SQLCreateFormatter(Application application, String name, String nameQuotes, boolean needBegin) {
+    public SQLCreateFormatter(Application application, String name, String nameQuotes, String eol, boolean needBegin) {
         super(application, name, true);
         tableName = name;
         this.nameQuotes = nameQuotes;
+        this.eol = eol;
         this.needBegin = needBegin;
         outputType = "sql file";
     }
@@ -80,7 +82,7 @@ public class SQLCreateFormatter extends DataFormatter {
                 columnString = nameQuotes + idColumnName + nameQuotes + " varchar(255) primary key, ";
         }
 
-        String sqlCreate = "DROP TABLE IF EXISTS " + nameQuotes + tableName + nameQuotes + ";\nCREATE TABLE " + nameQuotes + tableName + nameQuotes + " ( " + columnString + columns + ") COLLATE=utf8_bin;\n";
+        String sqlCreate = "DROP TABLE IF EXISTS " + nameQuotes + tableName + nameQuotes + ";" + eol + "CREATE TABLE " + nameQuotes + tableName + nameQuotes + " ( " + columnString + columns + ") COLLATE=utf8_bin;" + eol;
         return sqlCreate;
     }
 
@@ -123,7 +125,7 @@ public class SQLCreateFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         if (needBegin) {
-            return "\nBEGIN;\n";
+            return eol + "BEGIN;" + eol;
         }
         return null;
     }

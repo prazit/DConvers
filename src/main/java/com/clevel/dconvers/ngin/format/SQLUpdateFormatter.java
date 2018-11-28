@@ -13,12 +13,14 @@ public class SQLUpdateFormatter extends DataFormatter {
     private String idColumnName;
     private String nameQuotes;
     private String valueQuotes;
+    private String eol;
 
-    public SQLUpdateFormatter(Application application, String name, String nameQuotes, String valueQuotes) {
+    public SQLUpdateFormatter(Application application, String name, String nameQuotes, String valueQuotes, String eol) {
         super(application, name, true);
         tableName = name;
         this.nameQuotes = nameQuotes;
         this.valueQuotes = valueQuotes;
+        this.eol = eol;
         outputType = "sql file";
     }
 
@@ -45,7 +47,7 @@ public class SQLUpdateFormatter extends DataFormatter {
 
         String where = nameQuotes + idColumnName + nameQuotes + " = " + idColumn.getQuotedValue();
 
-        String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";\n";
+        String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";" + eol;
         return sqlUpdate;
 
     }

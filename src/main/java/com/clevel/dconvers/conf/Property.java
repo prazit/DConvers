@@ -41,6 +41,7 @@ public enum Property {
     CSV("csv"),
     DBINSERT("dbinsert"),
     DBUPDATE("dbupdate"),
+    CONF("conf"),
     QUOTES("quotes"),
     NAME("name"),
     VALUE("value"),
@@ -49,8 +50,11 @@ public enum Property {
     OUTPUT_AUTOCREATEDIR("auto.create.dir"),
     OUTPUT_CHARSET("charset"),
     OUTPUT_EOL("eol"),
+    OUTPUT_EOF("eof"),
     TABLE("table"),
     COLUMN("column"),
+    TYPE("type"),
+    IS_KEY("iskey"),
     INDEX("index"),
     POST_SQL("post"),
     PRE_SQL("pre"),
@@ -65,6 +69,8 @@ public enum Property {
     ARGUMENTS("arguments"),
     REPLACE("replace"),
     CURRENT("current"),
+
+
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

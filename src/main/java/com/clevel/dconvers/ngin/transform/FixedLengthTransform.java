@@ -34,7 +34,7 @@ public class FixedLengthTransform extends Transform {
         String fillString = getArgument(Property.FILL_STRING.key()," ");
         String fillNumber = getArgument(Property.FILL_NUMBER.key(), "0");
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");
-        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
+        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", "", dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();

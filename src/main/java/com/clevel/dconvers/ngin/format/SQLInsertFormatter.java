@@ -11,12 +11,14 @@ public class SQLInsertFormatter extends DataFormatter {
     private String tableName;
     private String nameQuotes;
     private String valueQuotes;
+    private String eol;
 
-    public SQLInsertFormatter(Application application, String name, String nameQuotes, String valueQuotes) {
+    public SQLInsertFormatter(Application application, String name, String nameQuotes, String valueQuotes, String eol) {
         super(application, name, true);
         tableName = name;
         this.nameQuotes = nameQuotes;
         this.valueQuotes = valueQuotes;
+        this.eol = eol;
         outputType = "sql file";
     }
 
@@ -33,7 +35,7 @@ public class SQLInsertFormatter extends DataFormatter {
         columns = columns.substring(0, columns.length() - 2);
         values = values.substring(0, values.length() - 2);
 
-        String sqlInsert = "INSERT INTO " + nameQuotes + tableName + nameQuotes + " (" + columns + ") VALUES (" + values + ");\n";
+        String sqlInsert = "INSERT INTO " + nameQuotes + tableName + nameQuotes + " (" + columns + ") VALUES (" + values + ");" + eol;
         return sqlInsert;
     }
 

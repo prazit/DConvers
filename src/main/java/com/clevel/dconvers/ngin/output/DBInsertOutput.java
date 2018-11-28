@@ -30,7 +30,7 @@ public class DBInsertOutput extends Output {
         String nameQuotes = outputConfig.getDbInsertNameQuotes();
         String valueQuotes = outputConfig.getDbInsertValueQuotes();
 
-        dataFormatterList.add(new SQLInsertFormatter(application, tableName, nameQuotes, valueQuotes));
+        dataFormatterList.add(new SQLInsertFormatter(application, tableName, nameQuotes, valueQuotes, "\n"));
 
         return dataFormatterList;
     }

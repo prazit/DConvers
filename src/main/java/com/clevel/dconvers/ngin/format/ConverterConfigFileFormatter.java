@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
@@ -23,9 +24,9 @@ public class ConverterConfigFileFormatter extends DataFormatter {
 
     private Logger log;
 
-    public ConverterConfigFileFormatter(Application application, String name) {
+    public ConverterConfigFileFormatter(Application application, String name, OutputConfig outputConfig) {
         super(application, name, true);
-        
+
         sourceNumber = 0;
         sqlCount = "\n\n#-------SQL-------\n\n#-- Count row for all tables\n# ";
         truncateTables = "#-- Truncate for all tables\n# SET FOREIGN_KEY_CHECKS=0;";
@@ -35,7 +36,6 @@ public class ConverterConfigFileFormatter extends DataFormatter {
 
     @Override
     public String format(DataRow row) {
-
 
         List<DataColumn> columnList = row.getColumnList();
         String tableName = "";
@@ -58,7 +58,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
         }
         targets += "\n\n# " + (columnList.size() - 9) + " columns from table '" + tableName + "'\n" + generated;
 
-        sourceNumber ++;
+        sourceNumber++;
         String query = "SELECT * FROM " + tableName + " ORDER BY " + id;
         String sourceKey = Property.SOURCE.connectKey(tableName);
         sources += "# generated from table '" + tableName + "'\n"
@@ -80,7 +80,7 @@ public class ConverterConfigFileFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";\n";
-        truncateTables =  truncateTables + "SET FOREIGN_KEY_CHECKS=1;\n\n\n";
+        truncateTables = truncateTables + "SET FOREIGN_KEY_CHECKS=1;\n\n\n";
         return sqlCount + truncateTables + sources + targets + "\n\n#EOF";
     }
 
