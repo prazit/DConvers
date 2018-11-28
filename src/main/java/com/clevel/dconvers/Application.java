@@ -72,13 +72,7 @@ public class Application {
     }
 
     public void start() {
-        systemVariableMap = createSystemVariableMap();
-        errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
-        warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
-        progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
-        errorMessages.setValue("");
-        warningMessages.setValue("");
-        progressMessages.setValue("");
+        initSystemVariables();
 
         switches = new Switches(this);
         if (!switches.isValid()) {
@@ -108,12 +102,10 @@ public class Application {
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
         targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()));
         mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()));
         sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()));
         reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber()));
-        now.setValue(new Date());
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();
@@ -200,6 +192,23 @@ public class Application {
 
         // Successful without warning
         stop();
+    }
+
+    private void initSystemVariables() {
+        systemVariableMap = createSystemVariableMap();
+
+        errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
+        warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
+        progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
+        errorMessages.setValue("");
+        warningMessages.setValue("");
+        progressMessages.setValue("");
+
+        DataString emptyString = (DataString) systemVariableMap.get(SystemVariable.EMPTY_STRING);
+        emptyString.setValue("");
+
+        DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
+        now.setValue(new Date());
     }
 
     public void stop() {

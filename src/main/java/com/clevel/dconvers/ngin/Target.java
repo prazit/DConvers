@@ -88,7 +88,7 @@ public class Target extends AppBase {
         mappingTable.setOwner(dataTable);
 
         Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
-        DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROWNUMBER);
+        DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROW_NUMBER);
         varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
 
         DynamicValueType sourceColumnType;

@@ -26,7 +26,10 @@ public class MarkdownOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new MarkdownFormatter(application, name));
+        String eol = outputConfig.getMarkdownOutputEOL();
+        String eof = outputConfig.getMarkdownOutputEOF();
+
+        dataFormatterList.add(new MarkdownFormatter(application, name, eol, eof));
         return dataFormatterList;
     }
 

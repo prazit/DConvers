@@ -8,13 +8,16 @@ public enum SystemVariable {
     TARGET_FILE_NUMBER(Types.INTEGER),
     MAPPING_FILE_NUMBER(Types.INTEGER),
 
-    ROWNUMBER(Types.INTEGER),
-    NOW(Types.TIMESTAMP),
-    NULL(Types.VARCHAR),
+    ROW_NUMBER(Types.INTEGER),
 
+    // System Messages to see detail of status
     ERROR_MESSAGES(Types.VARCHAR),
     WARNING_MESSAGES(Types.VARCHAR),
     PROGRESS_MESSAGES(Types.VARCHAR),
+
+    // Constant values for configuration
+    EMPTY_STRING(Types.VARCHAR),    // ""
+    NOW(Types.TIMESTAMP),           // Time to start the application
     ;
 
     private int dataType;
