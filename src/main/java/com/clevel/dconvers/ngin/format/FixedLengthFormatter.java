@@ -37,7 +37,7 @@ public class FixedLengthFormatter extends DataFormatter {
 
         this.separator = notNull(separator, "");
         this.eol = notNull(eol, "");
-        this.eof = notNull(eof, this.eol);
+        this.eof = notNull(eof, "");
         this.dateFormat = notNull(dateFormat, Defaults.DATE_FORMAT.getStringValue());
         this.datetimeFormat = notNull(datetimeFormat, this.dateFormat);
         this.fillString = notNull(fillString, " ");
@@ -54,7 +54,7 @@ public class FixedLengthFormatter extends DataFormatter {
 
         separator = notNull(outputConfig.getTxtSeparator(), "");
         eol = notNull(outputConfig.getTxtOutputEOL(), "");
-        eof = notNull(outputConfig.getTxtOutputEOL(), this.eol);
+        eof = notNull(outputConfig.getTxtOutputEOF(), "");
         dateFormat = notNull(outputConfig.getTxtFormatDate(), Defaults.DATE_FORMAT.getStringValue());
         datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), this.dateFormat);
         fillString = notNull(outputConfig.getTxtFillString(), " ");
@@ -212,6 +212,12 @@ public class FixedLengthFormatter extends DataFormatter {
     }
 
     private String fixedLengthDecimal(String decimalAsStringValue, BigDecimal decimalLength, String columnName) {
+        log.debug("fixedLengthDecimal(decimalAsStringValue:{}, decimalLength:{}, columnName:{})", decimalAsStringValue, decimalLength, columnName);
+
+        if (decimalLength.equals(BigDecimal.ZERO)) {
+            return "";
+        }
+
         boolean warning = false;
 
         // length = 11.2, targetLength = 11, right = 2 then left = 9
@@ -221,8 +227,15 @@ public class FixedLengthFormatter extends DataFormatter {
 
         String[] decimal = decimalAsStringValue.split(".");
         String formatted;
-        int usedLeft = decimal[0].length();
-        int usedRight = decimal[1].length();
+        int usedLeft;
+        int usedRight;
+        if (decimal.length < 2) {
+            usedLeft = decimal[0].length();
+            usedRight = 0;
+        } else {
+            usedLeft = decimal[0].length();
+            usedRight = decimal[1].length();
+        }
 
         // left
         if (left > usedLeft) {
@@ -265,12 +278,14 @@ public class FixedLengthFormatter extends DataFormatter {
 
     @Override
     protected boolean allowToWrite(StringBuffer stringBuffer) {
+
         int eolLength = eol.length();
         int bufferLength = stringBuffer.length();
 
         stringBuffer.delete(bufferLength - eolLength, bufferLength);
         stringBuffer.append(eof);
 
+        log.debug("FixedLengthFormatter.allowToWrite. eol({}), eof({}), lengthBefore({}), lengthAfter({})", eol, eof, bufferLength, stringBuffer.length());
         return super.allowToWrite(stringBuffer);
     }
 

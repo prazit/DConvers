@@ -5,6 +5,8 @@ import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,19 +16,30 @@ import java.util.List;
 
 public class OutputConfig extends Config {
 
-    private boolean conf;
-    private String confSftp;
-    private String confSftpOutput;
-    private String confOutput;
-    private boolean confOutputAppend;
-    private boolean confOutputAutoCreateDir;
-    private String confOutputCharset;
-    private String confOutputEOL;
-    private String confOutputEOF;
-    private String confTable;
-    private String confColumnName;
-    private String confColumnType;
-    private String confColumnIsKey;
+    private boolean src;
+    private String srcSftp;
+    private String srcSftpOutput;
+    private String srcOutput;
+    private boolean srcOutputAppend;
+    private boolean srcOutputAutoCreateDir;
+    private String srcOutputCharset;
+    private String srcOutputEOL;
+    private String srcOutputEOF;
+    private String srcTable;
+    private String srcId;
+    private String srcDataSource;
+    private String srcOutputs;
+
+    private boolean tar;
+    private String tarSftp;
+    private String tarSftpOutput;
+    private String tarOutput;
+    private boolean tarOutputAppend;
+    private boolean tarOutputAutoCreateDir;
+    private String tarOutputCharset;
+    private String tarOutputEOL;
+    private String tarOutputEOF;
+    private String tarOutputs;
 
     private boolean sql;
     private String sqlSftp;
@@ -132,6 +145,67 @@ public class OutputConfig extends Config {
         String baseProperty = name;
         outputTypeList = new ArrayList<>();
 
+        // Default Properties for Source
+        src = false;
+        srcTable = "TABLE_NAME";           // name of column to use as table name
+        srcId = "COLUMN_NAME";             // name of column to use as column name
+        srcDataSource = "datasource-name";
+        srcOutputs = "sql,md";
+        srcOutput = baseProperty + ".conf";
+        srcOutputAppend = false;
+        srcOutputAutoCreateDir = true;
+        srcOutputCharset = "UTF-8";
+        srcOutputEOL = "\n";
+        srcOutputEOF = "\n";
+
+        String key = Property.SRC.prefixKey(baseProperty);
+        src = properties.getBoolean(key, src);
+        if (src) {
+            outputTypeList.add(OutputTypes.CONVERTER_SOURCE_FILE);
+
+            Configuration srcProperties = properties.subset(key);
+            srcTable = srcProperties.getString(Property.TABLE.key(), srcTable);
+            srcId = srcProperties.getString(Property.ID.key(), srcId);
+            srcDataSource = srcProperties.getString(Property.DATA_SOURCE.key(), srcDataSource);
+            srcOutputs = srcProperties.getString(Property.OUTPUT_TYPES.key(), srcOutputs);
+            srcSftp = srcProperties.getString(Property.SFTP.key(), srcSftp);
+            srcSftpOutput = srcProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), srcSftpOutput);
+            srcOutput = srcProperties.getString(Property.OUTPUT_FILE.key(), srcOutput);
+            srcOutputAppend = srcProperties.getBoolean(Property.OUTPUT_APPEND.key(), srcOutputAppend);
+            srcOutputAutoCreateDir = srcProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), srcOutputAutoCreateDir);
+            srcOutputCharset = srcProperties.getString(Property.OUTPUT_CHARSET.key(), srcOutputCharset);
+            srcOutputEOL = srcProperties.getString(Property.OUTPUT_EOL.key(), srcOutputEOL);
+            srcOutputEOF = srcProperties.getString(Property.OUTPUT_EOF.key(), srcOutputEOF);
+        }
+
+        // Default Properties for Target
+        tar = false;
+        tarOutputs = "sql,md";
+        tarOutput = baseProperty + ".conf";
+        tarOutputAppend = false;
+        tarOutputAutoCreateDir = true;
+        tarOutputCharset = "UTF-8";
+        tarOutputEOL = "\n";
+        tarOutputEOF = "\n";
+
+        key = Property.TAR.prefixKey(baseProperty);
+        tar = properties.getBoolean(key, tar);
+        if (tar) {
+            outputTypeList.add(OutputTypes.CONVERTER_TARGET_FILE);
+
+            Configuration tarProperties = properties.subset(key);
+            tarOutputs = tarProperties.getString(Property.OUTPUT_TYPES.key(), tarOutputs);
+            tarSftp = tarProperties.getString(Property.SFTP.key(), tarSftp);
+            tarSftpOutput = tarProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
+            tarOutputs = tarProperties.getString(Property.TABLE.key(), tarOutputs);
+            tarOutput = tarProperties.getString(Property.OUTPUT_FILE.key(), tarOutput);
+            tarOutputAppend = tarProperties.getBoolean(Property.OUTPUT_APPEND.key(), tarOutputAppend);
+            tarOutputAutoCreateDir = tarProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), tarOutputAutoCreateDir);
+            tarOutputCharset = tarProperties.getString(Property.OUTPUT_CHARSET.key(), tarOutputCharset);
+            tarOutputEOL = tarProperties.getString(Property.OUTPUT_EOL.key(), tarOutputEOL);
+            tarOutputEOF = tarProperties.getString(Property.OUTPUT_EOF.key(), tarOutputEOF);
+        }
+
         // Defaults Properties for SQL
         sql = false;
         sqlSftp = null;
@@ -151,7 +225,7 @@ public class OutputConfig extends Config {
         sqlPreSQL = new ArrayList<>();
         sqlPostSQL = new ArrayList<>();
 
-        String key = Property.SQL.prefixKey(baseProperty);
+        key = Property.SQL.prefixKey(baseProperty);
         sql = properties.getBoolean(key, sql);
         if (sql) {
             outputTypeList.add(OutputTypes.SQL_FILE);
@@ -346,39 +420,6 @@ public class OutputConfig extends Config {
             dbUpdatePostSQL = getStringList(dbUpdateProperties, Property.POST_SQL.key());
         }
 
-        // Default Properties for PDF
-        conf = false;
-        confTable = "TABLE_NAME";           // name of column to use as table name
-        confColumnName = "COLUMN_NAME";     // name of column to use as column name
-        confColumnType = "COLUMN_TYPE";     // name of column to use as column type
-        confColumnIsKey = "IS_KEY";         // name of column to use as column is a primary key
-        confOutput = baseProperty + ".conf";
-        confOutputAppend = false;
-        confOutputAutoCreateDir = true;
-        confOutputCharset = "UTF-8";
-        confOutputEOL = "\n";
-        confOutputEOF = "\n";
-
-        key = Property.CONF.prefixKey(baseProperty);
-        conf = properties.getBoolean(key, conf);
-        if (conf) {
-            outputTypeList.add(OutputTypes.CONFIG_FILE);
-
-            Configuration confProperties = properties.subset(key);
-            confTable = confProperties.getString(Property.TABLE.key(), confTable);
-            confSftp = confProperties.getString(Property.SFTP.key(), confSftp);
-            confSftpOutput = confProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), confSftpOutput);
-            confColumnName = confProperties.getString(Property.TABLE.key(), confColumnName);
-            confColumnType = confProperties.getString(Property.TABLE.key(), confColumnType);
-            confColumnIsKey = confProperties.getString(Property.TABLE.key(), confColumnIsKey);
-            confOutput = confProperties.getString(Property.OUTPUT_FILE.key(), confOutput);
-            confOutputAppend = confProperties.getBoolean(Property.OUTPUT_APPEND.key(), confOutputAppend);
-            confOutputAutoCreateDir = confProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), confOutputAutoCreateDir);
-            confOutputCharset = confProperties.getString(Property.OUTPUT_CHARSET.key(), confOutputCharset);
-            confOutputEOL = confProperties.getString(Property.OUTPUT_EOL.key(), confOutputEOL);
-            confOutputEOF = confProperties.getString(Property.OUTPUT_EOF.key(), confOutputEOF);
-        }
-
         return true;
     }
 
@@ -414,57 +455,96 @@ public class OutputConfig extends Config {
         return reportStream;
     }
 
-    public boolean isConf() {
-        return conf;
+    public boolean isSrc() {
+        return src;
     }
 
-    public String getConfSftp() {
-        return confSftp;
+    public String getSrcSftp() {
+        return srcSftp;
     }
 
-    public String getConfSftpOutput() {
-        return confSftpOutput;
+    public String getSrcSftpOutput() {
+        return srcSftpOutput;
     }
 
-    public String getConfTable() {
-        return confTable;
+    public String getSrcOutput() {
+        return srcOutput;
     }
 
-    public String getConfColumnName() {
-        return confColumnName;
+    public boolean isSrcOutputAppend() {
+        return srcOutputAppend;
     }
 
-    public String getConfColumnType() {
-        return confColumnType;
+    public boolean isSrcOutputAutoCreateDir() {
+        return srcOutputAutoCreateDir;
     }
 
-    public String getConfColumnIsKey() {
-        return confColumnIsKey;
+    public String getSrcOutputCharset() {
+        return srcOutputCharset;
     }
 
-    public String getConfOutput() {
-        return confOutput;
+    public String getSrcOutputEOL() {
+        return srcOutputEOL;
     }
 
-    public boolean isConfOutputAppend() {
-        return confOutputAppend;
+    public String getSrcOutputEOF() {
+        return srcOutputEOF;
     }
 
-    public boolean isConfOutputAutoCreateDir() {
-        return confOutputAutoCreateDir;
+    public String getSrcTable() {
+        return srcTable;
     }
 
-    public String getConfOutputCharset() {
-        return confOutputCharset;
+    public String getSrcId() {
+        return srcId;
     }
 
-    public String getConfOutputEOL() {
-        return application.currentConverter.compileDynamicValues(confOutputEOL);
-
+    public String getSrcDataSource() {
+        return srcDataSource;
     }
 
-    public String getConfOutputEOF() {
-        return application.currentConverter.compileDynamicValues(confOutputEOF);
+    public String getSrcOutputs() {
+        return srcOutputs;
+    }
+
+    public boolean isTar() {
+        return tar;
+    }
+
+    public String getTarSftp() {
+        return tarSftp;
+    }
+
+    public String getTarSftpOutput() {
+        return tarSftpOutput;
+    }
+
+    public String getTarOutput() {
+        return tarOutput;
+    }
+
+    public boolean isTarOutputAppend() {
+        return tarOutputAppend;
+    }
+
+    public boolean isTarOutputAutoCreateDir() {
+        return tarOutputAutoCreateDir;
+    }
+
+    public String getTarOutputCharset() {
+        return tarOutputCharset;
+    }
+
+    public String getTarOutputEOL() {
+        return tarOutputEOL;
+    }
+
+    public String getTarOutputEOF() {
+        return tarOutputEOF;
+    }
+
+    public String getTarOutputs() {
+        return tarOutputs;
     }
 
     public boolean isSql() {
@@ -791,4 +871,107 @@ public class OutputConfig extends Config {
         return outputTypeList;
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("src", src)
+                .append("srcSftp", srcSftp)
+                .append("srcSftpOutput", srcSftpOutput)
+                .append("srcOutput", srcOutput)
+                .append("srcOutputAppend", srcOutputAppend)
+                .append("srcOutputAutoCreateDir", srcOutputAutoCreateDir)
+                .append("srcOutputCharset", srcOutputCharset)
+                .append("srcOutputEOL", srcOutputEOL)
+                .append("srcOutputEOF", srcOutputEOF)
+                .append("srcTable", srcTable)
+                .append("srcId", srcId)
+                .append("srcDataSource", srcDataSource)
+                .append("srcOutputs", srcOutputs)
+                .append("tar", tar)
+                .append("tarSftp", tarSftp)
+                .append("tarSftpOutput", tarSftpOutput)
+                .append("tarOutput", tarOutput)
+                .append("tarOutputAppend", tarOutputAppend)
+                .append("tarOutputAutoCreateDir", tarOutputAutoCreateDir)
+                .append("tarOutputCharset", tarOutputCharset)
+                .append("tarOutputEOL", tarOutputEOL)
+                .append("tarOutputEOF", tarOutputEOF)
+                .append("tarOutputs", tarOutputs)
+                .append("sql", sql)
+                .append("sqlSftp", sqlSftp)
+                .append("sqlSftpOutput", sqlSftpOutput)
+                .append("sqlOutput", sqlOutput)
+                .append("sqlOutputAppend", sqlOutputAppend)
+                .append("sqlOutputAutoCreateDir", sqlOutputAutoCreateDir)
+                .append("sqlOutputCharset", sqlOutputCharset)
+                .append("sqlOutputEOL", sqlOutputEOL)
+                .append("sqlOutputEOF", sqlOutputEOF)
+                .append("sqlTable", sqlTable)
+                .append("sqlNameQuotes", sqlNameQuotes)
+                .append("sqlValueQuotes", sqlValueQuotes)
+                .append("sqlCreate", sqlCreate)
+                .append("sqlInsert", sqlInsert)
+                .append("sqlUpdate", sqlUpdate)
+                .append("sqlPostSQL", sqlPostSQL)
+                .append("sqlPreSQL", sqlPreSQL)
+                .append("markdown", markdown)
+                .append("markdownSftp", markdownSftp)
+                .append("markdownSftpOutput", markdownSftpOutput)
+                .append("markdownOutput", markdownOutput)
+                .append("markdownOutputAppend", markdownOutputAppend)
+                .append("markdownOutputAutoCreateDir", markdownOutputAutoCreateDir)
+                .append("markdownOutputCharset", markdownOutputCharset)
+                .append("markdownOutputEOL", markdownOutputEOL)
+                .append("markdownOutputEOF", markdownOutputEOF)
+                .append("pdf", pdf)
+                .append("pdfJRXML", pdfJRXML)
+                .append("pdfSftp", pdfSftp)
+                .append("pdfSftpOutput", pdfSftpOutput)
+                .append("pdfOutput", pdfOutput)
+                .append("pdfOutputAutoCreateDir", pdfOutputAutoCreateDir)
+                .append("txt", txt)
+                .append("txtSftp", txtSftp)
+                .append("txtSftpOutput", txtSftpOutput)
+                .append("txtOutput", txtOutput)
+                .append("txtOutputAppend", txtOutputAppend)
+                .append("txtOutputAutoCreateDir", txtOutputAutoCreateDir)
+                .append("txtOutputCharset", txtOutputCharset)
+                .append("txtOutputEOL", txtOutputEOL)
+                .append("txtOutputEOF", txtOutputEOF)
+                .append("txtSeparator", txtSeparator)
+                .append("txtFormat", txtFormat)
+                .append("txtFormatDate", txtFormatDate)
+                .append("txtFormatDatetime", txtFormatDatetime)
+                .append("txtFillString", txtFillString)
+                .append("txtFillNumber", txtFillNumber)
+                .append("txtFillDate", txtFillDate)
+                .append("csv", csv)
+                .append("csvSftp", csvSftp)
+                .append("csvSftpOutput", csvSftpOutput)
+                .append("csvOutput", csvOutput)
+                .append("csvOutputAppend", csvOutputAppend)
+                .append("csvOutputAutoCreateDir", csvOutputAutoCreateDir)
+                .append("csvOutputCharset", csvOutputCharset)
+                .append("csvOutputEOL", csvOutputEOL)
+                .append("csvOutputEOF", csvOutputEOF)
+                .append("csvSeparator", csvSeparator)
+                .append("dbInsert", dbInsert)
+                .append("dbInsertDataSource", dbInsertDataSource)
+                .append("dbInsertTable", dbInsertTable)
+                .append("dbInsertNameQuotes", dbInsertNameQuotes)
+                .append("dbInsertValueQuotes", dbInsertValueQuotes)
+                .append("dbInsertPostSQL", dbInsertPostSQL)
+                .append("dbInsertPreSQL", dbInsertPreSQL)
+                .append("dbUpdate", dbUpdate)
+                .append("dbUpdateDataSource", dbUpdateDataSource)
+                .append("dbUpdateTable", dbUpdateTable)
+                .append("dbUpdateId", dbUpdateId)
+                .append("dbUpdateNameQuotes", dbUpdateNameQuotes)
+                .append("dbUpdateValueQuotes", dbUpdateValueQuotes)
+                .append("dbUpdatePostSQL", dbUpdatePostSQL)
+                .append("dbUpdatePreSQL", dbUpdatePreSQL)
+                .append("outputTypeList", outputTypeList)
+                .toString()
+                .replace('=', ':');
+    }
 }

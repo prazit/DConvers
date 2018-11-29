@@ -136,8 +136,13 @@ public class Target extends AppBase {
                         break;
 
                     case VAR:
-                        sourceColumnName = sourceColumnName.substring(4).toUpperCase();
-                        targetColumn = systemVars.get(SystemVariable.valueOf(sourceColumnName));
+                        sourceColumnName = sourceColumnName.substring(4);
+                        SystemVariable systemVariable = SystemVariable.parse(sourceColumnName);
+                        if (systemVariable == null) {
+                            log.error("Invalid name of SystemVariable({})", sourceColumnName);
+                            return false;
+                        }
+                        targetColumn = systemVars.get(systemVariable);
                         if (targetColumn == null) {
                             progressBar.close();
                             log.error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);

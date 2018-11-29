@@ -83,7 +83,7 @@ public class DataSource extends AppBase {
     public DataTable getDataTable(String tableName, String idColumnName, String query) {
         log.trace("DataSource.getDataTable.");
 
-        DataTable dataTable = new DataTable(tableName, idColumnName);
+        DataTable dataTable;
         Statement statement = null;
         CallableStatement callableStatement = null;
 
@@ -100,6 +100,7 @@ public class DataSource extends AppBase {
             } else {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                query = query.replaceAll("[\"]", dataSourceConfig.getValueQuotes());
                 log.debug("Querying: {}", query);
                 resultSet = statement.executeQuery(query);
             }
@@ -252,20 +253,6 @@ public class DataSource extends AppBase {
         } catch (SQLException se) {
             log.error("disconnect is failed");
             log.debug("SQLException = {}", se);
-        }
-    }
-
-    private String defaultValue(int columnType) {
-        switch (columnType) {
-            case Types.BIGINT:
-            case Types.INTEGER:
-                return "INT:0";
-            case Types.DECIMAL:
-                return "DEC:0.0";
-            case Types.DATE:
-                return "DTT:NULL";
-            default: // Types.VARCHAR:
-                return "STR:NULL";
         }
     }
 

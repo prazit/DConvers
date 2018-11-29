@@ -199,4 +199,5 @@ public class MarkdownFormatter extends DataFormatter {
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(MarkdownFormatter.class);
     }
+
 }

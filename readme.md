@@ -64,6 +64,8 @@ string | all string | character array as string
 
 ### Conversion File
 
+> All directory path must use '/' instead of '\' on all operating systems.
+
 Conversion file is a properties file which contains 4 groups of property as follow
 1 Conversion Properties
 2 DataSource Properties 
@@ -71,9 +73,34 @@ Conversion file is a properties file which contains 4 groups of property as foll
 4 Converter File Properties 
 
 #### Conversion Properties
+
 #### DataSource Properties 
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+datasource.url | string | null | jdbc connection string
+datasource.driver | string | null | driver class name with full package location
+datasource.user | string | null | user name to connect to DBMS
+datasource.password | string | null | password to connect to DBMS
+datasource.quotes.name | string | ` | one character for quotes of string-value and date-value
+datasource.quotes.value | string | " | one character for quotes of string-value and date-value
+
+
 #### SFTP Properties 
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+sftp.host | string | null | ip address or domain name of the SFTP server
+sftp.port | string | 22 | port use to connect to SFTP server
+sftp.user | string | null | user name to connect to SFTP server
+sftp.password | string | null | password to connect to SFTP server
+
+
 #### Converter File Properties 
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+converter | string | null | list of the converter files
 
 
 ### Converter File
@@ -262,23 +289,45 @@ dbupdate.pre | string | null | your sql statements to put at the beginning of ge
 dbupdate.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
 
 
-##### Configuration Output Properties
+##### Converter Source Output Properties
+
+Generate source configuration for each table-name in the DataTable.
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
-conf | bool | false | create configuration file or not 
-conf.sftp | string | null | name of sftp.
-conf.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
-conf.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
-conf.create.dir | bool | true | auto create directory for non-existing path. 
-conf.append | bool | false | append or always replace
-conf.charset | string | UTF-8 | name of character set
-conf.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
-conf.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
-conf.table | string | null | column name in current table that store Table Name.
-conf.name | string | null | column name in current table that store Column Name.
-conf.type | string | null | column name in current table that store Column Type.(ref: java.sql.Types)
-conf.iskey | string | null | column name in current table that store boolean value when it's true mean this Column Name is a primary key.
+src | bool | false | create configuration file and generate source for all table name 
+src.sftp | string | null | name of sftp.
+src.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
+src.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
+src.create.dir | bool | true | auto create directory for non-existing path. 
+src.append | bool | false | append or always replace
+src.charset | string | UTF-8 | name of character set
+src.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+src.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
+src.table | string | table_name | column name in current table that store Table Name.
+src.id | string | id_name | column name in current table that store Column Name of Primary Key.
+src.datasource | string | datasource-name | datasource name for all sources
+src.outputs | string | sql,md | comma separated output-type-name
+
+
+##### Converter Target Output Properties
+
+Generate target configuration for each sources in the current converter file.(one target for one source)
+
+> Recommended: include only for all sources that already have data.
+
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+tar | bool | false | create configuration file and generate source for all table name 
+tar.sftp | string | null | name of sftp.
+tar.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
+tar.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
+tar.create.dir | bool | true | auto create directory for non-existing path. 
+tar.append | bool | false | append or always replace
+tar.charset | string | UTF-8 | name of character set
+tar.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
+tar.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
+tar.outputs | string | sql,md | comma separated output-type-name
 
 
 #### Transform Properties
@@ -376,45 +425,76 @@ transform | <td colspan=3>REMOVE([columnRange] or [columnIndex,anotherColumnInde
 
 #### Dynamic Value Expression for Source.Query
 
-$([Type]:[Value-Identifier])
+$[[Type]:[Value-Identifier])
 
-When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($(SRC:abc.c),$(SRC:bcd.c))```.
+When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
 
 The possible types of Dynamic Value for Query are described as below.
 
 Type | Value Identifier | Example | Description
 -----|------------------|---------|------------
-TXT | Full path name of a text file | $(TXT:C:\path\file.ext) | Insert content from a specified file.
-SRC  | [SourceName].[SourceColumn] | $(SRC:MySourceTable.id) | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
-TAR  | [TargetName].[TargetColumn] | $(TAR:MyTargetTable.id) | Insert list of values from a target table in formatted of CSV (value1,value2,...).
-MAP  | [MappingName].[MappingColumn] | $(MAP:MappingTable.source_id) | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
+TXT | Full path name of a text file | $[TXT:C:\path\file.ext] | Insert content from a specified file.
+SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
+TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
+MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
+
 
 
 #### Dynamic Value Expression for Target.Column.Value
 
 [Type]:[Value-Identifier]
 
-When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($(SRC:abc.c),$(SRC:bcd.c))```.
+When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
 
 The possible types of Dynamic Value for Query are described as below.
 
 Type | Value Identifier | Example | Description
 -----|------------------|---------|------------
-SRC  | [SourceName].[SourceColumn] | $(SRC:MySourceTable.id) | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
-TAR  | [TargetName].[TargetColumn] | $(TAR:MyTargetTable.id) | Insert list of values from a target table in formatted of CSV (value1,value2,...).
-MAP  | [MappingName].[MappingColumn] | $(MAP:MappingTable.source_id) | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
+SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
+TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
+MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
 MORE | | | |
+
+
+
+#### System Variables
+
+System Variables are used for the Dynamic Value to get value from constant value or system value.
+
+```
+syntax: VAR:NAME
+```
+
+System variable can contain 2 groups of value as following
+1. System Values
+2. Constant Values
+
+##### System Values
+NAME | Type | Description
+-----|------|-------------
+PROGRESS_MESSAGES | String | log message of the current status
+WARNING_MESSAGES | String | log message of all warning
+ERROR_MESSAGES | String | log message of all error
+
+##### Constant Values
+
+NAME | Type | Description
+-----|------|-------------
+NOW | String | not for now, in fact this variable contains the time to start application.
+EMPTY_STRING | String | "" for some configuration that has another default string.
+
+> You can see full list in the source code of SystemVariable.java
+
 
 #### Fixed Length Format
 
 Explain how to defined Fixed Length Format for the property "txt.format".
 
+----
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+* [IntelliJ IDEA](https://maven.apache.org/) - The popular java ide.
 
 ## Contributing
 
@@ -436,6 +516,5 @@ This project is a part of C-Level Company Limited in Thailand and protected by t
 
 ## Acknowledgments
 
-* Hat tip to anyone whose code was used
-* Inspiration
+* Inspiration: this application birth in the Data Migration Project for SCT-Gold Version2.x.
 * etc

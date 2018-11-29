@@ -23,6 +23,9 @@ public class DataSourceConfig extends Config {
     private String host;
     private boolean ssl;
 
+    private String valueQuotes;
+    private String nameQuotes;
+
     public DataSourceConfig(Application application, String name) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
@@ -57,6 +60,9 @@ public class DataSourceConfig extends Config {
 
         host = properties.getString(dataSource.connectKey(name, Property.HOST), "");
         ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
+
+        valueQuotes = properties.getString(dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
+        nameQuotes = properties.getString(dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
 
         return true;
     }
@@ -118,6 +124,14 @@ public class DataSourceConfig extends Config {
 
     public boolean isSsl() {
         return ssl;
+    }
+
+    public String getValueQuotes() {
+        return valueQuotes;
+    }
+
+    public String getNameQuotes() {
+        return nameQuotes;
     }
 
     public boolean isEmailDataSource() {

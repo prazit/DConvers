@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Converter extends AppBase {
 
@@ -358,14 +359,24 @@ public class Converter extends AppBase {
             return "";
         }
 
-        String value = "";
+        List<String> valueList = new ArrayList<>();
         for (DataRow row : dataTable.getAllRow()) {
-            value += row.getColumn(columnName).getQuotedValue() + ",";
+            valueList.add(row.getColumn(columnName).getQuotedValue());
         }
+        valueList = valueList.stream()
+                .distinct()
+                .collect(Collectors.toList());
+        Collections.sort(valueList);
+        String values = String.join(",", valueList);
 
-        value = value.substring(0, value.length() - 1);
-        log.debug("Source.valuesFromDataTable. return-value={}", value);
-        return value;
+        /*String values = "";
+        for (String value : valueList) {
+            values += value + ",";
+        }
+        values = values.substring(0, values.length() - 1);*/
+
+        log.debug("Source.valuesFromDataTable. return-value={}", values);
+        return values;
     }
 
     private String valueFromFile(String fileName) {
@@ -430,15 +441,6 @@ public class Converter extends AppBase {
                 dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
-            case VAR:
-                SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
-                if (systemVariable == null) {
-                    log.error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
-                    return null;
-                }
-                dataColumn = application.systemVariableMap.get(systemVariable);
-                break;
-
             case CAL:
                 String[] values = valueIdentifier.split("[()]");
                 CalcTypes calcType = CalcTypes.parse(values[0]);
@@ -455,10 +457,31 @@ public class Converter extends AppBase {
                 dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
+            case SRC:
+            case TAR:
+            case MAP:
+                String[] dataTableParameters = dynamicValue.split("[.]");
+                value = valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
+                if (value == null) {
+                    return null;
+                }
+                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                break;
+
+            case VAR:
+                SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
+                if (systemVariable == null) {
+                    log.error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
+                    return null;
+                }
+                dataColumn = application.systemVariableMap.get(systemVariable);
+                break;
+
             default:
                 log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
         }
 
+        log.debug("Converter.getDynamicValue. dynamicValue({}) = dataColumn({})", dynamicValue, dataColumn);
         return dataColumn;
     }
 
@@ -476,6 +499,14 @@ public class Converter extends AppBase {
 
     public void setCurrentRowIndex(int currentRowIndex) {
         this.currentRowIndex = currentRowIndex;
+    }
+
+    public List<Source> getSourceList() {
+        return sortedSource;
+    }
+
+    public List<Target> getTargetList() {
+        return sortedTarget;
     }
 
 }

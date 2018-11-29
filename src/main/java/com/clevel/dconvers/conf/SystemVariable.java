@@ -34,7 +34,7 @@ public enum SystemVariable {
         SystemVariable systemVariable;
 
         try {
-            systemVariable = SystemVariable.valueOf(name);
+            systemVariable = SystemVariable.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException ex) {
             systemVariable = null;
         }

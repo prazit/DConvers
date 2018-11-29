@@ -39,6 +39,8 @@ public enum Property {
     PDF_TABLE("pdf"),
     TXT("txt"),
     CSV("csv"),
+    SRC("src"),
+    TAR("tar"),
     DBINSERT("dbinsert"),
     DBUPDATE("dbupdate"),
     CONF("conf"),
@@ -46,6 +48,7 @@ public enum Property {
     NAME("name"),
     VALUE("value"),
     OUTPUT_FILE("output"),
+    OUTPUT_TYPES("outputs"),
     OUTPUT_APPEND("append"),
     OUTPUT_AUTOCREATEDIR("auto.create.dir"),
     OUTPUT_CHARSET("charset"),
@@ -69,8 +72,6 @@ public enum Property {
     ARGUMENTS("arguments"),
     REPLACE("replace"),
     CURRENT("current"),
-
-
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

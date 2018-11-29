@@ -14,7 +14,8 @@ public enum OutputTypes {
     CSV_FILE(null),//(CSVOutput.class),
     INSERT_DB(DBInsertOutput.class),
     UPDATE_DB(DBUpdateOutput.class),
-    CONFIG_FILE(ConfOutput.class)
+    CONVERTER_SOURCE_FILE(ConverterSourceOutput.class),
+    CONVERTER_TARGET_FILE(ConverterTargetOutput.class)
     ;
 
     private Class outputClass;

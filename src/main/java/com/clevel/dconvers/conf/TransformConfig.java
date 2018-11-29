@@ -54,6 +54,10 @@ public class TransformConfig extends Config {
         transformList = new ArrayList<>();
         transform = "";
 
+        if (transformArray.size() == 0) {
+            return true;
+        }
+
         String transformString;
         for (Object transformObject : transformArray) {
 
@@ -84,13 +88,13 @@ public class TransformConfig extends Config {
                     argumentList.put(argumentName, argumentValue);
                 }
 
-                this.transformList.add(new Pair<>(transformType, argumentList));
+                transformList.add(new Pair<>(transformType, argumentList));
             }
 
         }
 
         transform = transform.substring(0, transform.length() - 2);
-        log.debug("transformList = {}", this.transformList);
+        log.debug("transformList = {}", transformList);
         return true;
     }
 
