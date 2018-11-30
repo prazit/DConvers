@@ -1,13 +1,10 @@
 package com.clevel.dconvers.ngin.output;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
-import com.clevel.dconvers.ngin.Source;
-import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.ngin.format.CSVFormatter;
 import com.clevel.dconvers.ngin.format.DataFormatter;
-import com.clevel.dconvers.ngin.format.FixedLengthFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,35 +13,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Fixed Length File Format
+ * Comma Separated Values
  */
-public class TXTOutput extends Output {
+public class CSVOutput extends Output {
 
-    public TXTOutput(Application application, String name) {
+    public CSVOutput(Application application, String name) {
         super(application, name);
     }
 
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new FixedLengthFormatter(application, name, outputConfig));
+        dataFormatterList.add(new CSVFormatter(application, name, outputConfig));
         return dataFormatterList;
     }
 
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
         String outputPath = getRootPath(dataTable);
-        String txtOutputFilename = outputPath + outputConfig.getTxtOutput();
+        String csvOutputFilename = outputPath + outputConfig.getCsvOutput();
 
-        Writer writer = createFile(txtOutputFilename, outputConfig.isTxtOutputAutoCreateDir(), outputConfig.isTxtOutputAppend(), outputConfig.getTxtOutputCharset());
-        registerPostSFTP(txtOutputFilename, outputConfig.getTxtSftpOutput(), outputConfig.getTxtSftp());
+        Writer writer = createFile(csvOutputFilename, outputConfig.isCsvOutputAutoCreateDir(), outputConfig.isCsvOutputAppend(), outputConfig.getCsvOutputCharset());
+        registerPostSFTP(csvOutputFilename, outputConfig.getCsvSftpOutput(), outputConfig.getCsvSftp());
 
         return writer;
     }
 
     @Override
     protected Logger loadLogger() {
-        return LoggerFactory.getLogger(TXTOutput.class);
+        return LoggerFactory.getLogger(CSVOutput.class);
     }
 
 }

@@ -132,44 +132,31 @@ public class FixedLengthFormatter extends DataFormatter {
             case Types.TIMESTAMP:
                 dataColumn.setNullString(fillDate);
                 if (DynamicValueType.DTE.equals(txtType)) {
-                    value = ((DataDate) dataColumn).getFormattedValue(dateFormat);
+                    value = dataColumn.getFormattedValue(dateFormat);
                 } else {
-                    value = ((DataDate) dataColumn).getFormattedValue(datetimeFormat);
+                    value = dataColumn.getFormattedValue(datetimeFormat);
                 }
+                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
                 break;
 
             case Types.DECIMAL:
             case Types.INTEGER:
                 dataColumn.setNullString(fillNumber);
                 value = dataColumn.getValue();
+                if (DynamicValueType.DEC.equals(txtType)) {
+                    formatted = fixedLengthDecimal(value, txtLength, columnName);
+                } else {
+                    formatted = fixedLengthInteger(value, txtLength.intValue(), columnName);
+                }
                 break;
 
             default: /*case Types.VARCHAR:*/
                 dataColumn.setNullString(fillString);
                 value = dataColumn.getValue();
+                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
         }
 
-        formatted = format(txtType, txtLength, value, columnName);
         return formatted;
-    }
-
-    private String format(DynamicValueType txtType, BigDecimal txtLength, String stringValue, String columnName) {
-        switch (txtType) {
-            case INT:
-                return fixedLengthInteger(stringValue, txtLength.intValue(), columnName);
-
-            case DEC:
-                return fixedLengthDecimal(stringValue, txtLength, columnName);
-
-            default:
-            /*
-            case DTE:
-            case DTT:
-            case STR:
-            */
-                return fixedLengthString(stringValue, txtLength.intValue(), columnName);
-
-        }
     }
 
     /**

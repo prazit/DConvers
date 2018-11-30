@@ -11,7 +11,7 @@ public enum OutputTypes {
 
     // first used: LHBank ETL
     TXT_FILE(TXTOutput.class),
-    CSV_FILE(null),//(CSVOutput.class),
+    CSV_FILE(CSVOutput.class),
     INSERT_DB(DBInsertOutput.class),
     UPDATE_DB(DBUpdateOutput.class),
     CONVERTER_SOURCE_FILE(ConverterSourceOutput.class),

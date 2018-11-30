@@ -30,6 +30,7 @@ public class OutputConfig extends Config {
     private String srcDataSource;
     private String srcOutputs;
 
+
     private boolean tar;
     private String tarSftp;
     private String tarSftpOutput;
@@ -40,6 +41,7 @@ public class OutputConfig extends Config {
     private String tarOutputEOL;
     private String tarOutputEOF;
     private String tarOutputs;
+
 
     private boolean sql;
     private String sqlSftp;
@@ -106,7 +108,13 @@ public class OutputConfig extends Config {
     private String csvOutputCharset;
     private String csvOutputEOL;
     private String csvOutputEOF;
+    private boolean csvHeader;
     private String csvSeparator;
+    private String csvNullString;
+    private String csvFormatDatetime;
+    private String csvFormatInteger;
+    private String csvFormatDecimal;
+    private String csvFormatString;
 
 
     private boolean dbInsert;
@@ -347,13 +355,19 @@ public class OutputConfig extends Config {
         csv = false;
         csvSftp = null;
         csvSftpOutput = null;
-        csvOutput = baseProperty + ".txt";
+        csvOutput = baseProperty + ".csv";
         csvOutputAppend = false;
         csvOutputAutoCreateDir = true;
         csvOutputCharset = "UTF-8";
         csvOutputEOL = "\n";
         csvOutputEOF = "\n";
+        csvHeader = true;
         csvSeparator = ",";
+        csvNullString = "";
+        csvFormatDatetime = "dd/MM/YYYY HH:mm:ss";
+        csvFormatInteger = "#,##0";
+        csvFormatDecimal = "#,##0.00";
+        csvFormatString = "";
 
         key = Property.CSV.prefixKey(baseProperty);
         csv = properties.getBoolean(key, csv);
@@ -370,6 +384,12 @@ public class OutputConfig extends Config {
             csvOutputEOL = csvProperties.getString(Property.OUTPUT_EOL.key(), csvOutputEOL);
             csvOutputEOF = csvProperties.getString(Property.OUTPUT_EOF.key(), csvOutputEOF);
             csvSeparator = csvProperties.getString(Property.SEPARATOR.key(), csvSeparator);
+            csvNullString = csvProperties.getString(Property.NULL.key(), csvNullString);
+            csvHeader = csvProperties.getBoolean(Property.HEADER.key(), csvHeader);
+            csvFormatDatetime = csvProperties.getString(Property.FORMAT_DATETIME.key(), csvFormatDatetime);
+            csvFormatInteger = csvProperties.getString(Property.FORMAT_INTEGER.key(), csvFormatInteger);
+            csvFormatDecimal = csvProperties.getString(Property.FORMAT_DECIMAL.key(), csvFormatDecimal);
+            csvFormatString = csvProperties.getString(Property.FORMAT_STRING.key(), csvFormatString);
         }
 
         // DBInsert Output Properties
@@ -759,6 +779,14 @@ public class OutputConfig extends Config {
         return csvSeparator;
     }
 
+    public String getCsvNullString() {
+        return csvNullString;
+    }
+
+    public boolean isCsvHeader() {
+        return csvHeader;
+    }
+
     public boolean isCsvOutputAppend() {
         return csvOutputAppend;
     }
@@ -777,6 +805,22 @@ public class OutputConfig extends Config {
 
     public String getCsvOutputEOF() {
         return application.currentConverter.compileDynamicValues(csvOutputEOF);
+    }
+
+    public String getCsvFormatDatetime() {
+        return csvFormatDatetime;
+    }
+
+    public String getCsvFormatInteger() {
+        return csvFormatInteger;
+    }
+
+    public String getCsvFormatDecimal() {
+        return csvFormatDecimal;
+    }
+
+    public String getCsvFormatString() {
+        return csvFormatString;
     }
 
     public boolean isDbInsert() {

@@ -7,6 +7,7 @@ import com.clevel.dconvers.ngin.data.*;
 import com.clevel.dconvers.ngin.format.*;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
+import oracle.jdbc.OracleTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class DataSource extends AppBase {
             log.debug("getRowCount.size = {}", size);
             return size;
         } catch (Exception ex) {
-            log.error("getRowCount.error: ", ex);
+            log.warn("getRowCount can failed for some cases, same as this case: ", ex.getMessage());
         }
         return 0;
     }
@@ -87,7 +88,7 @@ public class DataSource extends AppBase {
         Statement statement = null;
         CallableStatement callableStatement = null;
 
-        boolean callStoredProcedure = query.startsWith("{call") && query.endsWith("}");
+        boolean callStoredProcedure = query.startsWith("{");
         ResultSet resultSet;
 
         try {
@@ -95,8 +96,15 @@ public class DataSource extends AppBase {
             if (callStoredProcedure) {
                 log.trace("Open statement...");
                 callableStatement = connection.prepareCall(query); // query like this: {call SHOW_SUPPLIERS()}
-                log.debug("Querying: {}", query);
-                resultSet = callableStatement.executeQuery();
+                if (query.indexOf("?") < 0) {
+                    log.debug("Querying by callableStatement(): {}", query);
+                    resultSet = callableStatement.executeQuery();
+                } else {
+                    callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
+                    log.debug("Querying by callableStatement(OUT): {}", query);
+                    callableStatement.execute();
+                    resultSet = (ResultSet) callableStatement.getObject(1);
+                }
             } else {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
