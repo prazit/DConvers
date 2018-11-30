@@ -55,6 +55,7 @@ public enum Property {
     OUTPUT_EOL("eol"),
     OUTPUT_EOF("eof"),
     HEADER("header"),
+    OWNER("owner"),
     TABLE("table"),
     COLUMN("column"),
     TYPE("type"),

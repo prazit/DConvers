@@ -76,7 +76,7 @@ public class DataSource extends AppBase {
             log.debug("getRowCount.size = {}", size);
             return size;
         } catch (Exception ex) {
-            log.warn("getRowCount can failed for some cases, same as this case: ", ex.getMessage());
+            log.warn("DataSource.getRowCount() function will failed when try on the query that use the Stored Procedure call: {}", ex.getMessage());
         }
         return 0;
     }

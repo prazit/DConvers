@@ -25,6 +25,7 @@ public class OutputConfig extends Config {
     private String srcOutputCharset;
     private String srcOutputEOL;
     private String srcOutputEOF;
+    private String srcOwner;
     private String srcTable;
     private String srcId;
     private String srcDataSource;
@@ -155,7 +156,8 @@ public class OutputConfig extends Config {
 
         // Default Properties for Source
         src = false;
-        srcTable = "TABLE_NAME";           // name of column to use as table name
+        srcOwner = "OWNER";                // name of owner to use as owner/schema name
+        srcTable = "TABLE_NAME";           // name of table to use as table name
         srcId = "COLUMN_NAME";             // name of column to use as column name
         srcDataSource = "datasource-name";
         srcOutputs = "sql,md";
@@ -172,6 +174,7 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.CONVERTER_SOURCE_FILE);
 
             Configuration srcProperties = properties.subset(key);
+            srcOwner = srcProperties.getString(Property.OWNER.key(), srcOwner);
             srcTable = srcProperties.getString(Property.TABLE.key(), srcTable);
             srcId = srcProperties.getString(Property.ID.key(), srcId);
             srcDataSource = srcProperties.getString(Property.DATA_SOURCE.key(), srcDataSource);
@@ -509,6 +512,10 @@ public class OutputConfig extends Config {
 
     public String getSrcOutputEOF() {
         return srcOutputEOF;
+    }
+
+    public String getSrcOwner() {
+        return srcOwner;
     }
 
     public String getSrcTable() {
@@ -927,6 +934,7 @@ public class OutputConfig extends Config {
                 .append("srcOutputCharset", srcOutputCharset)
                 .append("srcOutputEOL", srcOutputEOL)
                 .append("srcOutputEOF", srcOutputEOF)
+                .append("srcOwner", srcOwner)
                 .append("srcTable", srcTable)
                 .append("srcId", srcId)
                 .append("srcDataSource", srcDataSource)
@@ -998,7 +1006,13 @@ public class OutputConfig extends Config {
                 .append("csvOutputCharset", csvOutputCharset)
                 .append("csvOutputEOL", csvOutputEOL)
                 .append("csvOutputEOF", csvOutputEOF)
+                .append("csvHeader", csvHeader)
                 .append("csvSeparator", csvSeparator)
+                .append("csvNullString", csvNullString)
+                .append("csvFormatDatetime", csvFormatDatetime)
+                .append("csvFormatInteger", csvFormatInteger)
+                .append("csvFormatDecimal", csvFormatDecimal)
+                .append("csvFormatString", csvFormatString)
                 .append("dbInsert", dbInsert)
                 .append("dbInsertDataSource", dbInsertDataSource)
                 .append("dbInsertTable", dbInsertTable)
