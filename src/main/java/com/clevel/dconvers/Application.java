@@ -9,6 +9,7 @@ import com.clevel.dconvers.ngin.SFTP;
 import com.clevel.dconvers.ngin.data.*;
 import com.clevel.dconvers.ngin.input.DataSource;
 import com.clevel.dconvers.ngin.input.EmailDataSource;
+import com.clevel.dconvers.ngin.input.MarkdownDataSource;
 import com.clevel.dconvers.ngin.input.SQLDataSource;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
@@ -66,7 +67,7 @@ public class Application {
         }
 
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        LoggerContext loggerContext = ((ch.qos.logback.classic.Logger)log).getLoggerContext();
+        LoggerContext loggerContext = ((ch.qos.logback.classic.Logger) log).getLoggerContext();
         URL url = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
         log.info("Logback configuration file is '{}'.", url);
     }
@@ -126,8 +127,12 @@ public class Application {
 
             dataSource.runPre();
         }
+
         dataSourceName = Property.SQL.key();
         dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
+        dataSourceName = Property.MARKDOWN.key();
+        dataSourceMap.put(dataSourceName, new MarkdownDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();

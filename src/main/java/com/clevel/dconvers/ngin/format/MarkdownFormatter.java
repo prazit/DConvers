@@ -116,7 +116,7 @@ public class MarkdownFormatter extends DataFormatter {
         if (needHeader) {
             needHeader = false;
 
-            String headerSeparator = "|:" + StringUtils.repeat('-', rowIndexWidth - 2) + ":";
+            String headerSeparator = "|-" + StringUtils.repeat('-', rowIndexWidth - 2) + ":";
             String header = "| No." + StringUtils.repeat(' ', rowIndexWidth - 4);
             String name;
             int nameLength;
