@@ -359,35 +359,37 @@ public class Application {
             case Types.INTEGER:
             case Types.SMALLINT:
             case Types.BOOLEAN:
-            case Types.BIGINT:
             case Types.BIT:
-            case Types.NUMERIC:
-                dataColumn = new DataLong(0, columnType, columnName, value == null ? null : Long.valueOf(value));
+                dataColumn = new DataLong(0, Types.INTEGER, columnName, value == null ? null : Long.valueOf(value));
                 break;
 
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.NVARCHAR:
-            case Types.NCHAR:
-            case Types.LONGNVARCHAR:
-            case Types.LONGVARCHAR:
-                dataColumn = new DataString(0, columnType, columnName, value);
+            case Types.BIGINT:
+            case Types.NUMERIC:
+                dataColumn = new DataLong(0, Types.BIGINT, columnName, value == null ? null : Long.valueOf(value));
                 break;
 
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                dataColumn = new DataBigDecimal(0, columnType, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
+                dataColumn = new DataBigDecimal(0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
                 break;
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                dataColumn = new DataDate(0, columnType, columnName, value);
+                dataColumn = new DataDate(0, Types.DATE, columnName, value);
                 break;
 
+            /*case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.LONGVARCHAR:
+                dataColumn = new DataString(0, Types.VARCHAR, columnName, value);
+                break;*/
             default:
-                dataColumn = new DataString(0, columnType, columnName, value);
+                dataColumn = new DataString(0, Types.VARCHAR, columnName, value);
         }
 
         return dataColumn;

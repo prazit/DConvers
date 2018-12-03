@@ -25,6 +25,8 @@ public class FixedLengthFormatter extends DataFormatter {
     private String eof;
     private String dateFormat;
     private String datetimeFormat;
+    private String decimalFormat = "#0.00";
+    private String integerFormat = "#0";
     private String fillString;
     private String fillNumber;
     private String fillDate;
@@ -117,6 +119,7 @@ public class FixedLengthFormatter extends DataFormatter {
     private String format(DataColumn dataColumn) {
         int columnIndex = dataColumn.getIndex();
         String columnName = dataColumn.getName();
+        int columnType = dataColumn.getType();
         BigDecimal txtLength = txtLengthList.get(columnIndex);
         if (txtLength.equals(BigDecimal.ZERO)) {
             log.debug("Column({}) is ignored by specific-length(0).", columnName);
@@ -127,7 +130,56 @@ public class FixedLengthFormatter extends DataFormatter {
         String formatted;
         String value;
 
-        switch (dataColumn.getType()) {
+        switch (txtType) {
+            case DTE:
+                dataColumn.setNullString(fillDate);
+                if (columnType == Types.DATE) {
+                    value = dataColumn.getFormattedValue(dateFormat);
+                } else {
+                    value = dataColumn.getValue();
+                }
+                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+                break;
+
+            case DTT:
+                dataColumn.setNullString(fillDate);
+                if (columnType == Types.DATE) {
+                    value = dataColumn.getFormattedValue(datetimeFormat);
+                } else {
+                    value = dataColumn.getValue();
+                }
+                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+                break;
+
+            case DEC:
+                dataColumn.setNullString(fillNumber);
+                if (columnType == Types.DECIMAL) {
+                    value = dataColumn.getFormattedValue(decimalFormat);
+                } else if (columnType == Types.INTEGER) {
+                    value = dataColumn.getFormattedValue(integerFormat);
+                } else {
+                    value = dataColumn.getValue();
+                }
+                formatted = fixedLengthDecimal(value, txtLength, columnName);
+                break;
+
+            case INT:
+                dataColumn.setNullString(fillNumber);
+                if (columnType == Types.DECIMAL || columnType == Types.INTEGER) {
+                    value = dataColumn.getFormattedValue(integerFormat);
+                } else {
+                    value = dataColumn.getValue();
+                }
+                formatted = fixedLengthInteger(value, txtLength.intValue(), columnName);
+                break;
+
+            default: // case STR:
+                dataColumn.setNullString(fillString);
+                value = dataColumn.getValue();
+                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+        }
+
+        /*switch (dataColumn.getType()) {
             case Types.DATE:
             case Types.TIMESTAMP:
                 dataColumn.setNullString(fillDate);
@@ -141,6 +193,7 @@ public class FixedLengthFormatter extends DataFormatter {
 
             case Types.DECIMAL:
             case Types.INTEGER:
+            case Types.BIGINT:
                 dataColumn.setNullString(fillNumber);
                 value = dataColumn.getValue();
                 if (DynamicValueType.DEC.equals(txtType)) {
@@ -150,12 +203,13 @@ public class FixedLengthFormatter extends DataFormatter {
                 }
                 break;
 
-            default: /*case Types.VARCHAR:*/
+            default: *//*case Types.VARCHAR:*//*
                 dataColumn.setNullString(fillString);
                 value = dataColumn.getValue();
                 formatted = fixedLengthString(value, txtLength.intValue(), columnName);
-        }
+        }*/
 
+        log.debug("format(type:{},value:{}) = {}({})", dataColumn.getType(), value, txtType, formatted);
         return formatted;
     }
 

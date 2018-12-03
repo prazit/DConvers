@@ -174,19 +174,19 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.CONVERTER_SOURCE_FILE);
 
             Configuration srcProperties = properties.subset(key);
-            srcOwner = srcProperties.getString(Property.OWNER.key(), srcOwner);
-            srcTable = srcProperties.getString(Property.TABLE.key(), srcTable);
-            srcId = srcProperties.getString(Property.ID.key(), srcId);
-            srcDataSource = srcProperties.getString(Property.DATA_SOURCE.key(), srcDataSource);
-            srcOutputs = srcProperties.getString(Property.OUTPUT_TYPES.key(), srcOutputs);
-            srcSftp = srcProperties.getString(Property.SFTP.key(), srcSftp);
-            srcSftpOutput = srcProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), srcSftpOutput);
-            srcOutput = srcProperties.getString(Property.OUTPUT_FILE.key(), srcOutput);
+            srcOwner = getPropertyString(srcProperties, Property.OWNER.key(), srcOwner);
+            srcTable = getPropertyString(srcProperties, Property.TABLE.key(), srcTable);
+            srcId = getPropertyString(srcProperties, Property.ID.key(), srcId);
+            srcDataSource = getPropertyString(srcProperties, Property.DATA_SOURCE.key(), srcDataSource);
+            srcOutputs = getPropertyString(srcProperties, Property.OUTPUT_TYPES.key(), srcOutputs);
+            srcSftp = getPropertyString(srcProperties, Property.SFTP.key(), srcSftp);
+            srcSftpOutput = getPropertyString(srcProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), srcSftpOutput);
+            srcOutput = getPropertyString(srcProperties, Property.OUTPUT_FILE.key(), srcOutput);
             srcOutputAppend = srcProperties.getBoolean(Property.OUTPUT_APPEND.key(), srcOutputAppend);
             srcOutputAutoCreateDir = srcProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), srcOutputAutoCreateDir);
-            srcOutputCharset = srcProperties.getString(Property.OUTPUT_CHARSET.key(), srcOutputCharset);
-            srcOutputEOL = srcProperties.getString(Property.OUTPUT_EOL.key(), srcOutputEOL);
-            srcOutputEOF = srcProperties.getString(Property.OUTPUT_EOF.key(), srcOutputEOF);
+            srcOutputCharset = getPropertyString(srcProperties, Property.OUTPUT_CHARSET.key(), srcOutputCharset);
+            srcOutputEOL = getPropertyString(srcProperties, Property.OUTPUT_EOL.key(), srcOutputEOL);
+            srcOutputEOF = getPropertyString(srcProperties, Property.OUTPUT_EOF.key(), srcOutputEOF);
         }
 
         // Default Properties for Target
@@ -205,16 +205,16 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.CONVERTER_TARGET_FILE);
 
             Configuration tarProperties = properties.subset(key);
-            tarOutputs = tarProperties.getString(Property.OUTPUT_TYPES.key(), tarOutputs);
-            tarSftp = tarProperties.getString(Property.SFTP.key(), tarSftp);
-            tarSftpOutput = tarProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
-            tarOutputs = tarProperties.getString(Property.TABLE.key(), tarOutputs);
-            tarOutput = tarProperties.getString(Property.OUTPUT_FILE.key(), tarOutput);
+            tarOutputs = getPropertyString(tarProperties, Property.OUTPUT_TYPES.key(), tarOutputs);
+            tarSftp = getPropertyString(tarProperties, Property.SFTP.key(), tarSftp);
+            tarSftpOutput = getPropertyString(tarProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
+            tarOutputs = getPropertyString(tarProperties, Property.TABLE.key(), tarOutputs);
+            tarOutput = getPropertyString(tarProperties, Property.OUTPUT_FILE.key(), tarOutput);
             tarOutputAppend = tarProperties.getBoolean(Property.OUTPUT_APPEND.key(), tarOutputAppend);
             tarOutputAutoCreateDir = tarProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), tarOutputAutoCreateDir);
-            tarOutputCharset = tarProperties.getString(Property.OUTPUT_CHARSET.key(), tarOutputCharset);
-            tarOutputEOL = tarProperties.getString(Property.OUTPUT_EOL.key(), tarOutputEOL);
-            tarOutputEOF = tarProperties.getString(Property.OUTPUT_EOF.key(), tarOutputEOF);
+            tarOutputCharset = getPropertyString(tarProperties, Property.OUTPUT_CHARSET.key(), tarOutputCharset);
+            tarOutputEOL = getPropertyString(tarProperties, Property.OUTPUT_EOL.key(), tarOutputEOL);
+            tarOutputEOF = getPropertyString(tarProperties, Property.OUTPUT_EOF.key(), tarOutputEOF);
         }
 
         // Defaults Properties for SQL
@@ -242,17 +242,17 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.SQL_FILE);
 
             Configuration sqlProperties = properties.subset(key);
-            sqlSftp = sqlProperties.getString(Property.SFTP.key(), sqlSftp);
-            sqlSftpOutput = sqlProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), sqlSftpOutput);
-            sqlOutput = sqlProperties.getString(Property.OUTPUT_FILE.key(), sqlOutput);
+            sqlSftp = getPropertyString(sqlProperties, Property.SFTP.key(), sqlSftp);
+            sqlSftpOutput = getPropertyString(sqlProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), sqlSftpOutput);
+            sqlOutput = getPropertyString(sqlProperties, Property.OUTPUT_FILE.key(), sqlOutput);
             sqlOutputAppend = sqlProperties.getBoolean(Property.OUTPUT_APPEND.key(), sqlOutputAppend);
             sqlOutputAutoCreateDir = sqlProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), sqlOutputAutoCreateDir);
-            sqlOutputCharset = sqlProperties.getString(Property.OUTPUT_CHARSET.key(), sqlOutputCharset);
-            sqlOutputEOL = sqlProperties.getString(Property.OUTPUT_EOL.key(), sqlOutputEOL);
-            sqlOutputEOF = sqlProperties.getString(Property.OUTPUT_EOF.key(), sqlOutputEOF);
-            sqlTable = sqlProperties.getString(Property.TABLE.key(), sqlTable);
-            sqlNameQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
-            sqlValueQuotes = sqlProperties.getString(Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
+            sqlOutputCharset = getPropertyString(sqlProperties, Property.OUTPUT_CHARSET.key(), sqlOutputCharset);
+            sqlOutputEOL = getPropertyString(sqlProperties, Property.OUTPUT_EOL.key(), sqlOutputEOL);
+            sqlOutputEOF = getPropertyString(sqlProperties, Property.OUTPUT_EOF.key(), sqlOutputEOF);
+            sqlTable = getPropertyString(sqlProperties, Property.TABLE.key(), sqlTable);
+            sqlNameQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
+            sqlValueQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
             sqlCreate = sqlProperties.getBoolean(Property.CREATE.key(), sqlCreate);
             sqlInsert = sqlProperties.getBoolean(Property.INSERT.key(), sqlInsert);
             sqlUpdate = sqlProperties.getBoolean(Property.UPDATE.key(), sqlUpdate);
@@ -277,14 +277,14 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.MARKDOWN_FILE);
 
             Configuration markdownProperties = properties.subset(key);
-            markdownSftp = markdownProperties.getString(Property.SFTP.key(), markdownSftp);
-            markdownSftpOutput = markdownProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), markdownSftpOutput);
-            markdownOutput = markdownProperties.getString(Property.OUTPUT_FILE.key(), markdownOutput);
+            markdownSftp = getPropertyString(markdownProperties, Property.SFTP.key(), markdownSftp);
+            markdownSftpOutput = getPropertyString(markdownProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), markdownSftpOutput);
+            markdownOutput = getPropertyString(markdownProperties, Property.OUTPUT_FILE.key(), markdownOutput);
             markdownOutputAppend = markdownProperties.getBoolean(Property.OUTPUT_APPEND.key(), markdownOutputAppend);
             markdownOutputAutoCreateDir = markdownProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), markdownOutputAutoCreateDir);
-            markdownOutputCharset = markdownProperties.getString(Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
-            markdownOutputEOL = markdownProperties.getString(Property.OUTPUT_EOL.key(), markdownOutputEOL);
-            markdownOutputEOF = markdownProperties.getString(Property.OUTPUT_EOF.key(), markdownOutputEOF);
+            markdownOutputCharset = getPropertyString(markdownProperties, Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
+            markdownOutputEOL = getPropertyString(markdownProperties, Property.OUTPUT_EOL.key(), markdownOutputEOL);
+            markdownOutputEOF = getPropertyString(markdownProperties, Property.OUTPUT_EOF.key(), markdownOutputEOF);
         }
 
         // Default Properties for PDF
@@ -301,11 +301,11 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.PDF_FILE);
 
             Configuration pdfProperties = properties.subset(key);
-            pdfSftp = pdfProperties.getString(Property.SFTP.key(), pdfSftp);
-            pdfSftpOutput = pdfProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), pdfSftpOutput);
-            pdfOutput = pdfProperties.getString(Property.OUTPUT_FILE.key(), pdfOutput);
+            pdfSftp = getPropertyString(pdfProperties, Property.SFTP.key(), pdfSftp);
+            pdfSftpOutput = getPropertyString(pdfProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), pdfSftpOutput);
+            pdfOutput = getPropertyString(pdfProperties, Property.OUTPUT_FILE.key(), pdfOutput);
             pdfOutputAutoCreateDir = pdfProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), pdfOutputAutoCreateDir);
-            String jrxml = pdfProperties.getString(Property.OUTPUT_FILE.key(), (String) pdfJRXML);
+            String jrxml = getPropertyString(pdfProperties, Property.OUTPUT_FILE.key(), (String) pdfJRXML);
             if (jrxml.isEmpty()) {
                 pdfJRXML = getDefaultJRXML();
             } else {
@@ -337,21 +337,21 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.TXT_FILE);
 
             Configuration txtProperties = properties.subset(key);
-            txtSftp = txtProperties.getString(Property.SFTP.key(), txtSftp);
-            txtSftpOutput = txtProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), txtSftpOutput);
-            txtOutput = txtProperties.getString(Property.OUTPUT_FILE.key(), txtOutput);
+            txtSftp = getPropertyString(txtProperties, Property.SFTP.key(), txtSftp);
+            txtSftpOutput = getPropertyString(txtProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), txtSftpOutput);
+            txtOutput = getPropertyString(txtProperties, Property.OUTPUT_FILE.key(), txtOutput);
             txtOutputAppend = txtProperties.getBoolean(Property.OUTPUT_APPEND.key(), txtOutputAppend);
             txtOutputAutoCreateDir = txtProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), txtOutputAutoCreateDir);
-            txtOutputCharset = txtProperties.getString(Property.OUTPUT_CHARSET.key(), txtOutputCharset);
-            txtOutputEOL = txtProperties.getString(Property.OUTPUT_EOL.key(), txtOutputEOL);
-            txtOutputEOF = txtProperties.getString(Property.OUTPUT_EOF.key(), txtOutputEOF);
-            txtSeparator = txtProperties.getString(Property.SEPARATOR.key(), txtSeparator);
-            txtFormat = txtProperties.getString(Property.FORMAT.key(), txtFormat);
-            txtFormatDate = txtProperties.getString(Property.FORMAT_DATE.key(), txtFormatDate);
-            txtFormatDatetime = txtProperties.getString(Property.FORMAT_DATETIME.key(), txtFormatDatetime);
-            txtFillString = txtProperties.getString(Property.FILL_STRING.key(), txtFillString);
-            txtFillNumber = txtProperties.getString(Property.FILL_NUMBER.key(), txtFillNumber);
-            txtFillDate = txtProperties.getString(Property.FILL_DATE.key(), txtFillDate);
+            txtOutputCharset = getPropertyString(txtProperties, Property.OUTPUT_CHARSET.key(), txtOutputCharset);
+            txtOutputEOL = getPropertyString(txtProperties, Property.OUTPUT_EOL.key(), txtOutputEOL);
+            txtOutputEOF = getPropertyString(txtProperties, Property.OUTPUT_EOF.key(), txtOutputEOF);
+            txtSeparator = getPropertyString(txtProperties, Property.SEPARATOR.key(), txtSeparator);
+            txtFormat = getPropertyString(txtProperties, Property.FORMAT.key(), txtFormat);
+            txtFormatDate = getPropertyString(txtProperties, Property.FORMAT_DATE.key(), txtFormatDate);
+            txtFormatDatetime = getPropertyString(txtProperties, Property.FORMAT_DATETIME.key(), txtFormatDatetime);
+            txtFillString = getPropertyString(txtProperties, Property.FILL_STRING.key(), txtFillString);
+            txtFillNumber = getPropertyString(txtProperties, Property.FILL_NUMBER.key(), txtFillNumber);
+            txtFillDate = getPropertyString(txtProperties, Property.FILL_DATE.key(), txtFillDate);
         }
 
         // CSV Output Properties
@@ -378,21 +378,21 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.CSV_FILE);
 
             Configuration csvProperties = properties.subset(key);
-            csvSftp = csvProperties.getString(Property.SFTP.key(), csvSftp);
-            csvSftpOutput = csvProperties.getString(Property.SFTP.connectKey(Property.OUTPUT_FILE), csvSftpOutput);
-            csvOutput = csvProperties.getString(Property.OUTPUT_FILE.key(), csvOutput);
+            csvSftp = getPropertyString(csvProperties, Property.SFTP.key(), csvSftp);
+            csvSftpOutput = getPropertyString(csvProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), csvSftpOutput);
+            csvOutput = getPropertyString(csvProperties, Property.OUTPUT_FILE.key(), csvOutput);
             csvOutputAppend = csvProperties.getBoolean(Property.OUTPUT_APPEND.key(), csvOutputAppend);
             csvOutputAutoCreateDir = csvProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), csvOutputAutoCreateDir);
-            csvOutputCharset = csvProperties.getString(Property.OUTPUT_CHARSET.key(), csvOutputCharset);
-            csvOutputEOL = csvProperties.getString(Property.OUTPUT_EOL.key(), csvOutputEOL);
-            csvOutputEOF = csvProperties.getString(Property.OUTPUT_EOF.key(), csvOutputEOF);
-            csvSeparator = csvProperties.getString(Property.SEPARATOR.key(), csvSeparator);
-            csvNullString = csvProperties.getString(Property.NULL.key(), csvNullString);
+            csvOutputCharset = getPropertyString(csvProperties, Property.OUTPUT_CHARSET.key(), csvOutputCharset);
+            csvOutputEOL = getPropertyString(csvProperties, Property.OUTPUT_EOL.key(), csvOutputEOL);
+            csvOutputEOF = getPropertyString(csvProperties, Property.OUTPUT_EOF.key(), csvOutputEOF);
+            csvSeparator = getPropertyString(csvProperties, Property.SEPARATOR.key(), csvSeparator);
+            csvNullString = getPropertyString(csvProperties, Property.NULL.key(), csvNullString);
             csvHeader = csvProperties.getBoolean(Property.HEADER.key(), csvHeader);
-            csvFormatDatetime = csvProperties.getString(Property.FORMAT_DATETIME.key(), csvFormatDatetime);
-            csvFormatInteger = csvProperties.getString(Property.FORMAT_INTEGER.key(), csvFormatInteger);
-            csvFormatDecimal = csvProperties.getString(Property.FORMAT_DECIMAL.key(), csvFormatDecimal);
-            csvFormatString = csvProperties.getString(Property.FORMAT_STRING.key(), csvFormatString);
+            csvFormatDatetime = getPropertyString(csvProperties, Property.FORMAT_DATETIME.key(), csvFormatDatetime);
+            csvFormatInteger = getPropertyString(csvProperties, Property.FORMAT_INTEGER.key(), csvFormatInteger);
+            csvFormatDecimal = getPropertyString(csvProperties, Property.FORMAT_DECIMAL.key(), csvFormatDecimal);
+            csvFormatString = getPropertyString(csvProperties, Property.FORMAT_STRING.key(), csvFormatString);
         }
 
         // DBInsert Output Properties
@@ -410,10 +410,10 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.INSERT_DB);
 
             Configuration dbInsertProperties = properties.subset(key);
-            dbInsertDataSource = dbInsertProperties.getString(Property.DATA_SOURCE.key(), dbInsertDataSource);
-            dbInsertTable = dbInsertProperties.getString(Property.TABLE.key(), dbInsertTable);
-            dbInsertNameQuotes = dbInsertProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
-            dbInsertValueQuotes = dbInsertProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
+            dbInsertDataSource = getPropertyString(dbInsertProperties, Property.DATA_SOURCE.key(), dbInsertDataSource);
+            dbInsertTable = getPropertyString(dbInsertProperties, Property.TABLE.key(), dbInsertTable);
+            dbInsertNameQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
+            dbInsertValueQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
             dbInsertPreSQL = getStringList(dbInsertProperties, Property.PRE_SQL.key());
             dbInsertPostSQL = getStringList(dbInsertProperties, Property.POST_SQL.key());
         }
@@ -424,7 +424,7 @@ public class OutputConfig extends Config {
         dbUpdateTable = name;
         dbUpdateNameQuotes = "";
         dbUpdateValueQuotes = "\"";
-        dbUpdateId = properties.getString(Property.ID.key(), "id");
+        dbUpdateId = getPropertyString(properties, Property.ID.key(), "id");
         dbUpdatePreSQL = new ArrayList<>();
         dbUpdatePostSQL = new ArrayList<>();
 
@@ -434,8 +434,8 @@ public class OutputConfig extends Config {
             outputTypeList.add(OutputTypes.UPDATE_DB);
 
             Configuration dbUpdateProperties = properties.subset(key);
-            dbUpdateDataSource = dbUpdateProperties.getString(Property.DATA_SOURCE.key(), dbUpdateDataSource);
-            dbUpdateTable = dbUpdateProperties.getString(Property.TABLE.key(), dbUpdateTable);
+            dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
+            dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
             dbUpdateValueQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbUpdateValueQuotes);

@@ -56,18 +56,18 @@ public class DataConversionConfigFile extends ConfigFile {
         application.dataConversionConfigFile = this;
 
         Property converterProperty = Property.CONVERTER_FILE;
-        outputReportPath = properties.getString(converterProperty.connectKey(Property.REPORT_PATH),"");
-        outputSourcePath = properties.getString(converterProperty.connectKey(Property.SOURCE_PATH),"");
-        outputTargetPath = properties.getString(converterProperty.connectKey(Property.TARGET_PATH),"");
-        outputMappingPath = properties.getString(converterProperty.connectKey(Property.MAPPING_PATH),"");
+        outputReportPath = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_PATH),"");
+        outputSourcePath = getPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH),"");
+        outputTargetPath = getPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH),"");
+        outputMappingPath = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PATH),"");
 
         reportFileNumber = properties.getInt(converterProperty.connectKey(Property.REPORT_PATH.connectKey(Property.FILE_NUMBER)), 1);
         sourceFileNumber = properties.getInt(converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1);
         targetFileNumber = properties.getInt(converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1);
         mappingFileNumber = properties.getInt(converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1);
 
-        mappingTablePrefix = properties.getString(converterProperty.connectKey(Property.MAPPING_PREFIX),"");
-        reportTableName = properties.getString(converterProperty.connectKey(Property.REPORT_TABLE),"");
+        mappingTablePrefix = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PREFIX),"");
+        reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE),"");
 
         exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
 
@@ -76,7 +76,7 @@ public class DataConversionConfigFile extends ConfigFile {
             dataSourceNameList = properties.getList(Property.DATA_SOURCE.key());
         } catch (ConversionException ex) {
             dataSourceNameList = new ArrayList<>();
-            dataSourceNameList.add(properties.getString(Property.DATA_SOURCE.key()));
+            dataSourceNameList.add(getPropertyString(properties, Property.DATA_SOURCE.key()));
         }
         dataSourceConfigMap = new HashMap<>();
         String name;
@@ -91,7 +91,7 @@ public class DataConversionConfigFile extends ConfigFile {
             sftpNameList = properties.getList(Property.SFTP.key());
         } catch (ConversionException ex) {
             sftpNameList = new ArrayList<>();
-            sftpNameList.add(properties.getString(Property.SFTP.key()));
+            sftpNameList.add(getPropertyString(properties, Property.SFTP.key()));
         }
         sftpConfigMap = new HashMap<>();
         for (Object object : sftpNameList) {
@@ -105,7 +105,7 @@ public class DataConversionConfigFile extends ConfigFile {
             converterNameList = properties.getList(converterProperty.key());
         } catch (ConversionException ex) {
             converterNameList = new ArrayList<>();
-            converterNameList.add(properties.getString(converterProperty.key()));
+            converterNameList.add(getPropertyString(properties, converterProperty.key()));
         }
         converterConfigMap = new HashMap<>();
         for (Object object : converterNameList) {

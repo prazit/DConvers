@@ -108,7 +108,7 @@ public class MarkdownDataSource extends DataSource {
 
     private String[] getHeaders(String line) {
         String[] columns = splitColumns(line);
-        log.debug("header columns = {}", columns);
+        log.debug("header columns = {}", (Object[]) columns);
 
         if (columns.length > 0 && columns[0].trim().equals("No.")) {
             skipFirstColumn = true;
@@ -119,7 +119,7 @@ public class MarkdownDataSource extends DataSource {
 
     private int[] getColumnType(String line) {
         String[] columns = splitColumns(line);
-        log.debug("separator columns = {}", columns);
+        log.debug("separator columns = {}", (Object[]) columns);
 
         int[] types = new int[columns.length];
         int index = -1;
@@ -150,7 +150,7 @@ public class MarkdownDataSource extends DataSource {
 
     private DataRow getDataRow(String line, String[] columnNames, int[] columnTypes, DataTable dataTable) {
         String[] columns = splitColumns(line);
-        log.debug("separator columns = {}", columns);
+        log.debug("separator columns = {}", (Object[]) columns);
 
         DataRow dataRow = new DataRow(dataTable);
         int index = -1;

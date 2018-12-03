@@ -40,7 +40,7 @@ public class ConverterConfigFile extends ConfigFile {
             sourceNameList = properties.getList(Property.SOURCE.key());
         } catch (ConversionException ex) {
             sourceNameList = new ArrayList<>();
-            sourceNameList.add(properties.getString(Property.SOURCE.key()));
+            sourceNameList.add(getPropertyString(properties, Property.SOURCE.key()));
         }
 
         sourceConfigMap = new HashMap<>();
@@ -60,7 +60,7 @@ public class ConverterConfigFile extends ConfigFile {
             targetNameList = properties.getList(Property.TARGET.key());
         } catch (ConversionException ex) {
             targetNameList = new ArrayList<>();
-            targetNameList.add(properties.getString(Property.TARGET.key()));
+            targetNameList.add(getPropertyString(properties, Property.TARGET.key()));
         }
 
         targetConfigMap = new HashMap<>();

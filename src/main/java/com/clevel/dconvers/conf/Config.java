@@ -6,9 +6,31 @@ import org.apache.commons.configuration2.Configuration;
 
 public abstract class Config extends AppBase {
 
-    //-- Shared Objects
+    //-- Shared
 
     protected Configuration properties;
+
+    protected String getPropertyString(Configuration properties, String key) {
+        String value = properties.getString(key);
+        if (value == null) {
+            return null;
+        }
+        return trim(value);
+    }
+
+    protected String getPropertyString(Configuration properties, String key, String defaultValue) {
+        String value = properties.getString(key, defaultValue);
+        if (value == null) {
+            return null;
+        }
+        return trim(value);
+    }
+
+    protected String trim(String value) {
+        //value = value.replaceFirst("^[\\u0020]+", "");
+        //value = value.replaceFirst("[\\u0020]+$", "");
+        return value;
+    }
 
     public Config(Application application, String name) {
         super(application, name);
@@ -29,6 +51,5 @@ public abstract class Config extends AppBase {
     public Configuration getProperties() {
         return properties;
     }
-
 
 }

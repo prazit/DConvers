@@ -47,22 +47,22 @@ public class DataSourceConfig extends Config {
 
         Property dataSource = Property.DATA_SOURCE;
 
-        url = properties.getString(dataSource.connectKey(name, Property.URL));
-        driver = properties.getString(dataSource.connectKey(name, Property.DRIVER));
-        schema = properties.getString(dataSource.connectKey(name, Property.SCHEMA),"");
-        user = properties.getString(dataSource.connectKey(name, Property.USER));
-        password = properties.getString(dataSource.connectKey(name, Property.PASSWORD));
+        url = getPropertyString(properties, dataSource.connectKey(name, Property.URL));
+        driver = getPropertyString(properties, dataSource.connectKey(name, Property.DRIVER));
+        schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA),"");
+        user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
+        password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
 
-        pre = properties.getString(dataSource.connectKey(name, Property.PRE), "");
-        post = properties.getString(dataSource.connectKey(name, Property.POST), "");
+        pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), "");
+        post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
 
         generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
 
-        host = properties.getString(dataSource.connectKey(name, Property.HOST), "");
+        host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
         ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
 
-        valueQuotes = properties.getString(dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
-        nameQuotes = properties.getString(dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
+        valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
+        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
 
         return true;
     }

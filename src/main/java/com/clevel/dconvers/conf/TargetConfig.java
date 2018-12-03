@@ -57,8 +57,8 @@ public class TargetConfig extends Config {
         log.trace("TargetConfig({}).loadProperties.", name);
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
-        source = targetProperties.getString(Property.SOURCE.key());
-        id = targetProperties.getString(Property.ID.key(), "id");
+        source = getPropertyString(targetProperties, Property.SOURCE.key());
+        id = getPropertyString(targetProperties, Property.ID.key(), "id");
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 
@@ -67,7 +67,7 @@ public class TargetConfig extends Config {
         columnList = new ArrayList<>();
         for (Iterator<String> it = columnKeyList; it.hasNext(); ) {
             String key = it.next();
-            columnList.add(new Pair<>(key,columnProperties.getString(key)));
+            columnList.add(new Pair<>(key,getPropertyString(columnProperties, key)));
         }
         log.debug("columnList = {}", columnList);
 

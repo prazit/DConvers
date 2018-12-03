@@ -84,7 +84,7 @@ public class TransformConfig extends Config {
                 transKeyList = transProperties.getKeys();
                 for (Iterator<String> it = transKeyList; it.hasNext(); ) {
                     argumentName = it.next();
-                    argumentValue = transProperties.getString(argumentName);
+                    argumentValue = getPropertyString(transProperties, argumentName);
                     argumentList.put(argumentName, argumentValue);
                 }
 
