@@ -85,8 +85,11 @@ public class Application {
             stop();
         }
 
+        String dataConversionConfigFilename = switches.getSource();
+        log.info("DConvers configuration file is '{}'.", dataConversionConfigFilename);
+
         log.trace("Application. Load DataConversionConfigFile.");
-        dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
+        dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
         if (!dataConversionConfigFile.isValid()) {
             if (dataConversionConfigFile.isChildValid()) {
                 performInvalidConfigFile();

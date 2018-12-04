@@ -39,24 +39,35 @@ public abstract class Transform extends UtilBase {
 
     public abstract boolean transform(DataTable dataTable);
 
-    protected void calcToRowList(List<DataRow> destRowList, CalcTypes calcType, String arguments, DataTable currentTable, String newColumnName, int newColumnIndex) {
+    protected boolean calcToRowList(List<DataRow> destRowList, CalcTypes calcType, String arguments, DataTable currentTable, String newColumnName, int newColumnIndex) {
         List<DataRow> newRowList = new ArrayList<>();
 
         Calc calculator = CalcFactory.getCalc(application, calcType);
         calculator.setArguments(arguments);
 
         Converter currentConverter = application.currentConverter;
+        currentConverter.setCurrentTable(currentTable);
+
         String value;
+        DataRow newRow;
         int rowIndex = -1;
+
         for (DataRow row : destRowList) {
             rowIndex ++;
             currentConverter.setCurrentRowIndex(rowIndex);
             value = calculator.calc();
-            newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, value));
+
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, value);
+            if (newRow == null) {
+                return false;
+            }
+            newRowList.add(newRow);
         }
 
         destRowList.clear();
         destRowList.addAll(newRowList);
+
+        return true;
     }
 
 }

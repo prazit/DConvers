@@ -40,10 +40,15 @@ public class FixedLengthTransform extends Transform {
         List<DataRow> rowList = dataTable.getAllRow();
 
         String formatted;
+        DataRow newRow;
 
         for (DataRow row : rowList) {
             formatted = fixedLengthFormatter.format(row);
-            newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, formatted));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, formatted);
+            if (newRow == null) {
+                return false;
+            }
+            newRowList.add(newRow);
         }
 
         rowList.clear();

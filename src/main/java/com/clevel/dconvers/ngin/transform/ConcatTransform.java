@@ -35,6 +35,7 @@ public class ConcatTransform extends Transform {
         List<DataColumn> columnList;
         DataColumn column;
         String value = "";
+        DataRow newRow;
 
         for (DataRow row : rowList) {
 
@@ -44,7 +45,11 @@ public class ConcatTransform extends Transform {
                 value += column.getValue();
             }
 
-            newRowList.add(insertReplaceColumn(row, newColumnName, newColumnIndex, value));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, value);
+            if (newRow == null) {
+                return false;
+            }
+            newRowList.add(newRow);
 
         }
 

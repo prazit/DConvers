@@ -74,11 +74,16 @@ public abstract class UtilBase extends AppBase {
             newColumnName = dataColumn.getName();
             columnList.remove(dataColumn);
         }
-
         dataColumn = application.createDataColumn(newColumnName, Types.VARCHAR, value);
-        columnList.add(newColumnIndex, dataColumn);
-        newRow.updateColumnMap();
 
+        try {
+            columnList.add(newColumnIndex, dataColumn);
+        } catch (Exception ex) {
+            log.error("Invalid columnIndex({}) please find and fix this config-value({}:{}), error-detail({})", newColumnIndex, newColumnName, newColumnIndex + 1, ex.getMessage());
+            return null;
+        }
+
+        newRow.updateColumnMap();
         return newRow;
 
     }
