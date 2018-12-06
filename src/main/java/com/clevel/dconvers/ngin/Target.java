@@ -2,6 +2,9 @@ package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.calc.Calc;
+import com.clevel.dconvers.ngin.calc.CalcFactory;
+import com.clevel.dconvers.ngin.calc.CalcTypes;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataRow;
@@ -15,6 +18,7 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 
@@ -122,7 +126,7 @@ public class Target extends AppBase {
                 targetColumnName = columnPair.getKey();
                 sourceColumnName = columnPair.getValue();
 
-                sourceColumnType = parseSourceColumnType(sourceColumnName);
+                sourceColumnType = parseDynamicValueType(sourceColumnName);
                 switch (sourceColumnType) {
                     case NON:
                         targetColumn = sourceRow.getColumn(sourceColumnName);
@@ -136,20 +140,33 @@ public class Target extends AppBase {
                         break;
 
                     case VAR:
-                        sourceColumnName = sourceColumnName.substring(4);
                         SystemVariable systemVariable = SystemVariable.parse(sourceColumnName);
                         if (systemVariable == null) {
-                            log.error("Invalid name of SystemVariable({})", sourceColumnName);
-                            return false;
-                        }
-                        targetColumn = systemVars.get(systemVariable);
-                        if (targetColumn == null) {
                             progressBar.close();
                             log.error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
                             return false;
                         }
-
+                        targetColumn = application.systemVariableMap.get(systemVariable);
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
+                        break;
+
+                    case ARG:
+                        int argIndex;
+                        try {
+                            argIndex = Integer.parseInt(sourceColumnName.substring(4)) - 1;
+                        } catch (Exception ex) {
+                            log.warn("{}, invalid argument index, first argument is returned", sourceColumnName);
+                            argIndex = 0;
+                        }
+                        String[] args = application.args;
+                        if (argIndex < 0) {
+                            log.warn("{}, invalid argument index({}), argument index is start at 1", sourceColumnName, argIndex + 1);
+                            argIndex = 0;
+                        } else if (argIndex > args.length) {
+                            log.warn("{}, invalid argument index({}), last argument index is {}", sourceColumnName, args.length);
+                            argIndex = args.length - 1;
+                        }
+                        targetColumn = application.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
                         break;
 
                     case COL:
@@ -192,20 +209,40 @@ public class Target extends AppBase {
                         targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
                         break;
 
+                    case TXT:
+                        String value = converter.valueFromFile(sourceColumnName);
+                        if (value == null) {
+                            return false;
+                        }
+                        targetColumn = application.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
+                        break;
+
+                    case CAL:
+                        String[] values = sourceColumnName.split("[()]");
+                        CalcTypes calcType = CalcTypes.parse(values[0]);
+                        if (calcType == null) {
+                            log.error("Invalid Calculator({}) for target column({})", sourceColumnName, targetColumnName);
+                            return false;
+                        }
+                        Calc calculator = CalcFactory.getCalc(application, calcType);
+                        calculator.setArguments(values[1]);
+                        value = calculator.calc();
+                        if (value == null) {
+                            return false;
+                        }
+                        targetColumn = application.createDataColumn(DynamicValueType.CAL.name(), Types.VARCHAR, value);
+                        break;
+
                     case SRC:
-                        progressBar.close();
-                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>SRC:source-name.mapping-column-name>>mapping-column-name", sourceColumnName);
-                        return false;
-
                     case TAR:
-                        progressBar.close();
-                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>TAR:target-name.mapping-column-name>>mapping-column-name", sourceColumnName);
-                        return false;
-
                     case MAP:
-                        progressBar.close();
-                        log.error("Incorrect syntax for {}, please use this syntax: source-column-name>>MAP:source_to_target.mapping-column-name>>mapping-column-name", sourceColumnName);
-                        return false;
+                        String[] dataTableParameters = sourceColumnName.split("[.]");
+                        value = converter.valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
+                        if (value == null) {
+                            return false;
+                        }
+                        targetColumn = application.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
+                        break;
 
                     case INV:
                         progressBar.close();
@@ -292,13 +329,13 @@ public class Target extends AppBase {
                 log.debug("Transform({}) is failed in Target({})", name, transformType.name());
                 return false;
             }
-            log.info("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount()==0)?0:dataTable.getRow(0).getColumnCount());
+            log.info("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount() == 0) ? 0 : dataTable.getRow(0).getColumnCount());
         }
 
         return true;
     }
 
-    private DynamicValueType parseSourceColumnType(String sourceColumnName) {
+    private DynamicValueType parseDynamicValueType(String sourceColumnName) {
         if (sourceColumnName.length() < 5) {
             return DynamicValueType.NON;
         }

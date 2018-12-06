@@ -340,7 +340,7 @@ public class Converter extends AppBase {
         return replaced;
     }
 
-    private String valuesFromDataTable(String dataTableMapping, String columnName) {
+    public String valuesFromDataTable(String dataTableMapping, String columnName) {
         log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
 
         DataTable dataTable = getDataTable(dataTableMapping);
@@ -379,7 +379,7 @@ public class Converter extends AppBase {
         return values;
     }
 
-    private String valueFromFile(String fileName) {
+    public String valueFromFile(String fileName) {
 
         BufferedReader br = null;
         String content = "";
@@ -475,6 +475,19 @@ public class Converter extends AppBase {
                     return null;
                 }
                 dataColumn = application.systemVariableMap.get(systemVariable);
+                break;
+
+            case ARG:
+                int argIndex = Integer.parseInt(valueIdentifier) - 1;
+                String[] args = application.args;
+                if (argIndex < 0) {
+                    log.warn("Invalid argument index({}), argument index is start at 1", ++argIndex);
+                    argIndex = 0;
+                } else if (argIndex > args.length) {
+                    log.warn("Invalid argument index({}), last argument index is {}", argIndex, args.length);
+                    argIndex = args.length - 1;
+                }
+                dataColumn = application.createDataColumn("argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
                 break;
 
             default:
