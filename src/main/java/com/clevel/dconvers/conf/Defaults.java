@@ -11,7 +11,7 @@ public enum Defaults {
     PROGRESS_SHOW_KILO_AFTER(4000),
     PROGRESS_UPDATE_INTERVAL_MILLISEC(100),
 
-    DATE_FORMAT("YYYY/MM/dd HH:mm:ss"),
+    DATE_FORMAT("yyyy/MM/dd HH:mm:ss"),
     NUMBER_FORMAT("#,##0.00"),
     ;
 

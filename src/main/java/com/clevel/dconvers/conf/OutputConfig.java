@@ -325,8 +325,8 @@ public class OutputConfig extends Config {
         txtOutputEOF = "\n";
         txtSeparator = "";
         txtFormat = "STR:80";
-        txtFormatDate = "YYYYMMdd";
-        txtFormatDatetime = "YYYYMMddHHmmss";
+        txtFormatDate = "yyyyMMdd";
+        txtFormatDatetime = "yyyyMMddHHmmss";
         txtFillString = " ";
         txtFillNumber = "0";
         txtFillDate = " ";
@@ -367,7 +367,7 @@ public class OutputConfig extends Config {
         csvHeader = true;
         csvSeparator = ",";
         csvNullString = "";
-        csvFormatDatetime = "dd/MM/YYYY HH:mm:ss";
+        csvFormatDatetime = "dd/MM/yyyy HH:mm:ss";
         csvFormatInteger = "#,##0";
         csvFormatDecimal = "#,##0.00";
         csvFormatString = "";

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class DataSourceConfig extends Config {
 
+    private String dbms;
+
     private String url;
     private String driver;
     private String schema;
@@ -86,6 +88,16 @@ public class DataSourceConfig extends Config {
         return super.getProperties();
     }
 
+    public String getDbms() {
+        if (dbms == null && url != null) {
+            String[] urls = url.split("[:]");
+            if (urls.length > 1) {
+                dbms = urls[1];
+            }
+        }
+        return dbms;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -141,14 +153,22 @@ public class DataSourceConfig extends Config {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("isEmailDataSource", isEmailDataSource())
-                .append("host", host)
-                .append("ssl", ssl)
+                .append("dbms", dbms)
                 .append("url", url)
                 .append("driver", driver)
                 .append("schema", schema)
                 .append("user", user)
                 .append("password", password)
-                .toString();
+                .append("pre", pre)
+                .append("post", post)
+                .append("generateConverterFile", generateConverterFile)
+                .append("host", host)
+                .append("ssl", ssl)
+                .append("valueQuotes", valueQuotes)
+                .append("nameQuotes", nameQuotes)
+                .append("name", name)
+                .append("valid", valid)
+                .toString()
+                .replace('=', ':');
     }
 }

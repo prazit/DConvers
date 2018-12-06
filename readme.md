@@ -239,8 +239,8 @@ txt.eol | string | \n | characters put at the end of line. (Dynamic Value Enable
 txt.eof | string | \n | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled)
 txt.separator | string | empty | separator character or words use to separate values 
 txt.format | string | STR:1024 | see Fixed Length Format
-txt.format.date | string | YYYYMMdd | date format (pattern)
-txt.format.datetime | string | YYYYMMddHHmmss | datetime format (pattern)
+txt.format.date | string | yyyyMMdd | date format (pattern)
+txt.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 txt.fill.string | char(1) | blank:right | the character to fill the string column 
 txt.fill.number | char(1) | 0:left | the character to fill the number column 
 txt.fill.date | char(1) | blank:right | the character to fill the date column 
@@ -263,8 +263,8 @@ csv.separator | string | , | separator character or words use to separate values
 csv.format.string | string | null | string format still in the future plan
 csv.format.integer | string | #,##0 | integer number format (pattern)
 csv.format.decimal | string | #,##0.00 | decimal format (pattern)
-csv.format.date | string | YYYYMMdd | date format (pattern)
-csv.format.datetime | string | YYYYMMddHHmmss | datetime format (pattern)
+csv.format.date | string | yyyyMMdd | date format (pattern)
+csv.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 
 
 ##### DBInsert Output Properties
@@ -365,8 +365,8 @@ transform | <td colspan="2">fixedlength([[insertAsNewColumn] or [replace:[Column
 [ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
 [columnIndex] and [anotherColumnIndex] and [insertColumnIndex] | int | 1 | index of any column, start at 1
 [format] | string | STR:1024 | see [Fixed Length Format](#Fixed Length Format)
-fixedlength.format.date | string | YYYYMMdd | date format (pattern)
-fixedlength.format.datetime | string | YYYYMMddHHmmss | datetime format (pattern)
+fixedlength.format.date | string | yyyyMMdd | date format (pattern)
+fixedlength.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 fixedlength.fill.string | char(1) | blank:right | the character to fill the string column 
 fixedlength.fill.number | char(1) | 0:left | the character to fill the number column 
 fixedlength.fill.date | char(1) | blank:right | the character to fill the date column 

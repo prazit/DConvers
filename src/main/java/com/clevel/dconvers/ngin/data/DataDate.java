@@ -27,10 +27,8 @@ public class DataDate extends DataColumn {
         if (value == null) {
             this.value = null;
         } else {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-            simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
             try {
-                this.value = simpleDateFormat.parse(value);
+                this.value = parse(value, Defaults.DATE_FORMAT.getStringValue());
             } catch (Exception e) {
                 log.error("DataDate. parse date ({}) is failed.", value, e.getMessage());
                 this.value = null;
@@ -62,15 +60,12 @@ public class DataDate extends DataColumn {
             return nullString;
         }
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern("YYYY");
-        long year = Long.parseLong(simpleDateFormat.format(value));
-        if (year > 9999) {
+        String formatted = format(value, Defaults.DATE_FORMAT.getStringValue());
+        if (nullString.equals(formatted)) {
             return nullString;
         }
 
-        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
-        return quotes + simpleDateFormat.format(value) + quotes;
+        return quotes + formatted + quotes;
     }
 
     private Date getValue(String quotedValue) {
@@ -78,56 +73,55 @@ public class DataDate extends DataColumn {
             return null;
         }
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
-
-        try {
-            return simpleDateFormat.parse(quotedValue);
-        } catch (ParseException e) {
-            log.warn("DataDate.getValue. has exception: {}", e);
-            return null;
-        }
+        return parse(quotedValue, Defaults.DATE_FORMAT.getStringValue());
     }
 
     @Override
     public void setValue(String value) {
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern(Defaults.DATE_FORMAT.getStringValue());
-
-        try {
-            this.value = simpleDateFormat.parse(value);
-        } catch (ParseException e) {
-            log.warn("DataDate.getValue. has exception: {}", e);
-            this.value = null;
-        }
-
+        this.value = parse(value, Defaults.DATE_FORMAT.getStringValue());
     }
 
     @Override
     public String getValue() {
-        return getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
+        return format(value, Defaults.DATE_FORMAT.getStringValue());
     }
 
     @Override
     public String getFormattedValue(String format) {
-        if (value == null) {
-            return nullString;
-        }
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-        simpleDateFormat.applyPattern("YYYY");
-        long year = Long.parseLong(simpleDateFormat.format(value));
-        if (year > 9999) {
-            return nullString;
-        }
-
-        simpleDateFormat.applyPattern(format);
-        return simpleDateFormat.format(value);
+        return format(value, format);
     }
 
     public void setValue(Date value) {
         this.value = value;
+    }
+
+    private String format(Date date, String format) {
+        if (date == null) {
+            return nullString;
+        }
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+        long year = Long.parseLong(simpleDateFormat.format(date));
+        if (year > 9999) {
+            return nullString;
+        }
+
+        simpleDateFormat = new SimpleDateFormat(format);
+        return simpleDateFormat.format(date);
+    }
+
+    private Date parse(String date, String format) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        Date parsed;
+
+        try {
+            parsed = simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            log.warn("DataDate.parse(date:{}, format:{}). has exception: {}", date, format, e);
+            parsed = null;
+        }
+
+        return parsed;
     }
 
     @Override

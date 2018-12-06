@@ -167,7 +167,13 @@ public class MarkdownFormatter extends DataFormatter {
 
         columnIndex = 0;
         for (DataColumn column : columnList) {
-            value = column.getValue();
+            columnType = column.getType();
+            if (Types.DATE == columnType) {
+                value = column.getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
+            } else {
+                value = column.getValue();
+            }
+
             if (value == null) {
                 valueLength = 4;
             } else {
@@ -176,7 +182,6 @@ public class MarkdownFormatter extends DataFormatter {
             }
             width = columnWidth.get(columnIndex);
 
-            columnType = column.getType();
             if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
                 record += "| " + StringUtils.repeat(' ', width - valueLength - 2) + value + " ";
             } else {

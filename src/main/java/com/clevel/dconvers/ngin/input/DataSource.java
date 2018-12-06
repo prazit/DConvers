@@ -311,13 +311,45 @@ public class DataSource extends AppBase {
         // TODO Run SQL from file specified in dataSourceConfig.getPost()
     }
 
+    private Statement createStatement(String dbmsString) {
+        DBMS dbms = DBMS.parse(dbmsString);
+        if (dbms == null) {
+            return null;
+        }
+        log.debug("createStatement({})", dbms);
+
+        Statement statement = null;
+        try {
+
+            switch (dbms) {
+                case SQLSERVER:
+                    statement = connection.createStatement();
+                    break;
+
+                default:
+                    statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            }
+
+        } catch (SQLException se) {
+            log.error("SQLException: {}", se.getMessage());
+
+        } catch (Exception ex) {
+            log.error("Exception: {}", ex.getMessage());
+        }
+
+        return statement;
+    }
+
     public boolean executeUpdate(String sql) {
         Statement statement = null;
         boolean success = true;
 
         try {
             log.trace("Open statement...");
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            statement = createStatement(dataSourceConfig.getDbms());
+            if (statement == null) {
+                throw new Exception("Create statement for update is failed, sql(" + sql + ")");
+            }
 
             log.debug("DataSource({}).executeUpdate: sql = {}", name, sql);
             int affected = statement.executeUpdate(sql);
@@ -325,7 +357,6 @@ public class DataSource extends AppBase {
                 log.warn("DataSource({}) no data has changed by last sql!", name);
                 application.hasWarning = true;
             }
-
         } catch (SQLException se) {
             log.error("SQLException: {}", se.getMessage());
             success = false;

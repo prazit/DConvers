@@ -29,8 +29,8 @@ public class FixedLengthTransform extends Transform {
         int newColumnIndex = Integer.valueOf(newColumnArgs[1]) - 1;
 
         String separator = getArgument(Property.SEPARATOR.key());
-        String dateFormat = getArgument(Property.FORMAT_DATE.key(), "YYYYMMdd");
-        String datetimeFormat = getArgument(Property.FORMAT_DATETIME.key(), "YYYYMMddHHmmss");
+        String dateFormat = getArgument(Property.FORMAT_DATE.key(), "yyyyMMdd");
+        String datetimeFormat = getArgument(Property.FORMAT_DATETIME.key(), "yyyyMMddHHmmss");
         String fillString = getArgument(Property.FILL_STRING.key()," ");
         String fillNumber = getArgument(Property.FILL_NUMBER.key(), "0");
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");

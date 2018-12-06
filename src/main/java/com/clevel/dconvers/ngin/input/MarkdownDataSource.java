@@ -185,6 +185,7 @@ public class MarkdownDataSource extends DataSource {
             columnType = columnTypes[index];
 
             dataRow.putColumn(columnName, application.createDataColumn(columnName.trim(), columnType, column.trim()));
+            log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
         }
 
         return dataRow;
