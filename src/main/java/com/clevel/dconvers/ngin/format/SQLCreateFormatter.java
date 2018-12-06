@@ -19,7 +19,7 @@ public class SQLCreateFormatter extends DataFormatter {
     private String eol;
 
     public SQLCreateFormatter(Application application, String name, String nameQuotes, String eol, boolean needBegin) {
-        super(application, name, true);
+        super(application, name, false);
         tableName = name;
         this.nameQuotes = nameQuotes;
         this.eol = eol;
