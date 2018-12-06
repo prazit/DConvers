@@ -35,6 +35,7 @@ public class MarkdownDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName) {
+        log.trace("MarkdownDataSource.getDataTable.");
 
         DataTable dataTable = new DataTable(tableName, idColumnName);
         dataTable.setQuery(markdownFileName);
@@ -63,12 +64,15 @@ public class MarkdownDataSource extends DataSource {
 
                 if (!isStarted) {
                     columnNames = getHeaders(line);
+                    log.debug("columnNames = {}", (Object[]) columnNames);
                     isStarted = true;
                     continue;
                 }
 
                 if (columnTypes == null) {
                     columnTypes = getColumnType(line);
+                    log.debug("columnTypes = {}", columnTypes);
+                    normalizeColumnNames(columnNames, columnTypes);
 
                 } else {
                     dataRow = getDataRow(line, columnNames, columnTypes, dataTable);
@@ -110,10 +114,15 @@ public class MarkdownDataSource extends DataSource {
         String[] columns = splitColumns(line);
         log.debug("header columns = {}", (Object[]) columns);
 
-        if (columns.length > 0 && columns[0].trim().equals("No.")) {
+        for (int index = 0; index < columns.length; index++) {
+            columns[index] = columns[index].trim();
+        }
+
+        if (columns.length > 0 && columns[0].equals("No.")) {
             skipFirstColumn = true;
             return Arrays.copyOfRange(columns, 1, columns.length);
         }
+
         return columns;
     }
 
@@ -146,6 +155,19 @@ public class MarkdownDataSource extends DataSource {
         }
 
         return types;
+    }
+
+    private void normalizeColumnNames(String[] columnNames, int[] columnTypes) {
+        int index = -1;
+
+        for (int columnType : columnTypes) {
+            index++;
+
+            if (columnType == Types.DATE) {
+                String[] names = columnNames[index].split("[()]");
+                columnNames[index] = names[0].trim();
+            }
+        }
     }
 
     private DataRow getDataRow(String line, String[] columnNames, int[] columnTypes, DataTable dataTable) {
