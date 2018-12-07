@@ -104,13 +104,14 @@ public abstract class Output extends AppBase {
     }
 
     protected Writer createFile(String outputFile, boolean autoCreateDir, boolean append, String charset) {
+        log.debug("Output.createFile(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
         Writer writer = tryToCreateFile(outputFile, append, charset);
 
         if (writer == null) {
             if (autoCreateDir && autoCreateDir(outputFile)) {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
-                log.error("Output file creation is failed! please check output path ({}).", outputFile);
+                log.error("Output.createFile is failed! please check parameters(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
                 application.hasWarning = true;
                 try {
                     writer = new PrintWriter(new OutputStreamWriter(System.out, charset));

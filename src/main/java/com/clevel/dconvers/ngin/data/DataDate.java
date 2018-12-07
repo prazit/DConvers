@@ -106,7 +106,13 @@ public class DataDate extends DataColumn {
             return nullString;
         }
 
-        simpleDateFormat = new SimpleDateFormat(format);
+        try {
+            simpleDateFormat = new SimpleDateFormat(format);
+        } catch (Exception ex) {
+            log.warn("DataDate.format, invalid date format({})", format);
+            return nullString;
+        }
+
         return simpleDateFormat.format(date);
     }
 
