@@ -6,6 +6,7 @@ import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.calc.Calc;
 import com.clevel.dconvers.ngin.calc.CalcFactory;
 import com.clevel.dconvers.ngin.calc.CalcTypes;
+import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 
@@ -48,14 +49,16 @@ public abstract class Transform extends UtilBase {
         Converter currentConverter = application.currentConverter;
         currentConverter.setCurrentTable(currentTable);
 
-        String value;
+        DataColumn value;
         DataRow newRow;
         int rowIndex = -1;
 
         for (DataRow row : destRowList) {
             rowIndex ++;
             currentConverter.setCurrentRowIndex(rowIndex);
+
             value = calculator.calc();
+            value.setName(newColumnName);
 
             newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, value);
             if (newRow == null) {

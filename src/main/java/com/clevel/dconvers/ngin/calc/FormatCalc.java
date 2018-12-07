@@ -3,9 +3,12 @@ package com.clevel.dconvers.ngin.calc;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Types;
 
 public class FormatCalc extends Calc {
 
@@ -28,7 +31,7 @@ public class FormatCalc extends Calc {
 
         DataTable datatable = getDataTable(arguments[0]);
         DataRow row = getDataRow(arguments[1], datatable);
-        DataColumn column = getDataColumn(arguments[2],row);
+        DataColumn column = getDataColumn(arguments[2], row);
         if (column == null) {
             log.debug("FormatValueCalculator. invalid value identifiers, please check the value identifiers!, default value({}) is used.", arguments[2], value);
             return false;
@@ -40,8 +43,8 @@ public class FormatCalc extends Calc {
     }
 
     @Override
-    protected String calculate() {
-        return value;
+    protected DataColumn calculate() {
+        return new DataString(0, Types.VARCHAR, name, value);
     }
 
     @Override

@@ -62,7 +62,7 @@ public abstract class UtilBase extends AppBase {
         return commaSeparatedValues.substring(0, index);
     }
 
-    protected DataRow insertReplaceColumn(DataRow existingRow, String newColumnName, int newColumnIndex, String value) {
+    protected DataRow insertReplaceColumn(DataRow existingRow, String newColumnName, int newColumnIndex, DataColumn value) {
 
         DataRow newRow = new DataRow(existingRow.getDataTable());
         List<DataColumn> columnList = newRow.getColumnList();
@@ -72,12 +72,12 @@ public abstract class UtilBase extends AppBase {
         if (Property.REPLACE.key().equalsIgnoreCase(newColumnName)) {
             dataColumn = columnList.get(newColumnIndex);
             newColumnName = dataColumn.getName();
+            value.setName(newColumnName);
             columnList.remove(dataColumn);
         }
-        dataColumn = application.createDataColumn(newColumnName, Types.VARCHAR, value);
 
         try {
-            columnList.add(newColumnIndex, dataColumn);
+            columnList.add(newColumnIndex, value);
         } catch (Exception ex) {
             log.error("Invalid columnIndex({}) please find and fix this config-value({}:{}), error-detail({})", newColumnIndex, newColumnName, newColumnIndex + 1, ex.getMessage());
             return null;

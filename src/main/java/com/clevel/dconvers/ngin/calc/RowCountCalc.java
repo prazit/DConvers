@@ -1,9 +1,13 @@
 package com.clevel.dconvers.ngin.calc;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.data.DataColumn;
+import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Types;
 
 public class RowCountCalc extends Calc {
 
@@ -31,8 +35,8 @@ public class RowCountCalc extends Calc {
     }
 
     @Override
-    protected String calculate() {
-        return String.valueOf(srcTable.getRowCount());
+    protected DataColumn calculate() {
+        return new DataLong(0, Types.INTEGER, name, (long) srcTable.getRowCount());
     }
 
     @Override

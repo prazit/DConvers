@@ -450,11 +450,10 @@ public class Converter extends AppBase {
                 }
                 Calc calculator = CalcFactory.getCalc(application, calcType);
                 calculator.setArguments(values[1]);
-                value = calculator.calc();
-                if (value == null) {
+                dataColumn = calculator.calc();
+                if (dataColumn == null) {
                     return null;
                 }
-                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case SRC:

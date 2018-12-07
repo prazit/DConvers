@@ -226,11 +226,10 @@ public class Target extends AppBase {
                         }
                         Calc calculator = CalcFactory.getCalc(application, calcType);
                         calculator.setArguments(values[1]);
-                        value = calculator.calc();
-                        if (value == null) {
+                        targetColumn = calculator.calc();
+                        if (targetColumn == null) {
                             return false;
                         }
-                        targetColumn = application.createDataColumn(DynamicValueType.CAL.name(), Types.VARCHAR, value);
                         break;
 
                     case SRC:

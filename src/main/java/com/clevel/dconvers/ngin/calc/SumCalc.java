@@ -17,12 +17,12 @@ public class SumCalc extends Calc {
 
     private String rowIdentifier;
     private DataTable srcTable;
-    private String defaultValue;
+    private DataColumn defaultValue;
     private List<Integer> columnIndexList;
 
     @Override
     protected boolean prepare() {
-        defaultValue = "0";
+        defaultValue = new DataLong(0, Types.INTEGER, "default", 0L);
 
         // sum([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
@@ -46,7 +46,7 @@ public class SumCalc extends Calc {
     }
 
     @Override
-    protected String calculate() {
+    protected DataColumn calculate() {
         DataRow currentRow = getDataRow(rowIdentifier, srcTable);
         if (currentRow == null) {
             return defaultValue;
@@ -84,10 +84,14 @@ public class SumCalc extends Calc {
         }
 
         String value = String.valueOf(sum);
+        bigDecimalValue = new BigDecimal(sum);
         if (value.endsWith(".0")) {
-            value = value.substring(0, value.length() - 2);
+            //value = value.substring(0, value.length() - 2);
+            return new DataBigDecimal(0, Types.DECIMAL, name, bigDecimalValue);
+        } else {
+            return new DataLong(0, Types.INTEGER, name, bigDecimalValue.longValue());
         }
-        return value;
+
     }
 
     @Override

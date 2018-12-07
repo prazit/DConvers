@@ -43,6 +43,10 @@ public abstract class DataColumn extends ValidatorBase {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getNullString() {
         return nullString;
     }

@@ -3,11 +3,13 @@ package com.clevel.dconvers.ngin.transform;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.FixedLengthFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class FixedLengthTransform extends Transform {
         String separator = getArgument(Property.SEPARATOR.key());
         String dateFormat = getArgument(Property.FORMAT_DATE.key(), "yyyyMMdd");
         String datetimeFormat = getArgument(Property.FORMAT_DATETIME.key(), "yyyyMMddHHmmss");
-        String fillString = getArgument(Property.FILL_STRING.key()," ");
+        String fillString = getArgument(Property.FILL_STRING.key(), " ");
         String fillNumber = getArgument(Property.FILL_NUMBER.key(), "0");
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");
         FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", "", dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
@@ -44,7 +46,7 @@ public class FixedLengthTransform extends Transform {
 
         for (DataRow row : rowList) {
             formatted = fixedLengthFormatter.format(row);
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, formatted);
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(0, Types.VARCHAR, newColumnName, formatted));
             if (newRow == null) {
                 return false;
             }

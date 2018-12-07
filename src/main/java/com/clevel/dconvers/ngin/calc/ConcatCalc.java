@@ -3,11 +3,12 @@ package com.clevel.dconvers.ngin.calc;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.sql.Types;
 import java.util.List;
 
 public class ConcatCalc extends Calc {
@@ -16,14 +17,14 @@ public class ConcatCalc extends Calc {
         super(application, name);
     }
 
-    private String defaultValue;
+    private DataColumn defaultValue;
     private String rowIndex;
     private DataTable srcTable;
     private List<Integer> columnIndexList;
 
     @Override
     public boolean prepare() {
-        defaultValue = "";
+        defaultValue = new DataString(0, Types.VARCHAR, "default", "");
 
         // concat([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
@@ -43,7 +44,7 @@ public class ConcatCalc extends Calc {
     }
 
     @Override
-    protected String calculate() {
+    protected DataColumn calculate() {
 
         DataRow currentRow = getDataRow(rowIndex, srcTable);
         if (currentRow == null) {
@@ -59,7 +60,7 @@ public class ConcatCalc extends Calc {
             value += column.getValue();
         }
 
-        return value;
+        return new DataString(0, Types.VARCHAR, name, value);
     }
 
     @Override

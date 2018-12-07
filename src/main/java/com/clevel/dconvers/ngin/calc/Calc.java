@@ -6,7 +6,10 @@ import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
+
+import java.sql.Types;
 
 public abstract class Calc extends UtilBase {
 
@@ -30,12 +33,12 @@ public abstract class Calc extends UtilBase {
 
     protected abstract boolean prepare();
 
-    protected abstract String calculate();
+    protected abstract DataColumn calculate();
 
-    public String calc() {
+    public DataColumn calc() {
         if (!prepared) {
             if (!prepare()) {
-                return "";
+                return new DataString(0, Types.VARCHAR, "prepare_is_failed", "");
             }
             prepared = true;
         }

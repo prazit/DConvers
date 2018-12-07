@@ -4,10 +4,12 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +47,7 @@ public class ConcatTransform extends Transform {
                 value += column.getValue();
             }
 
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, value);
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(0, Types.VARCHAR, newColumnName, value));
             if (newRow == null) {
                 return false;
             }
