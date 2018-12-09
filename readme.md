@@ -485,16 +485,18 @@ System variable can contain 2 groups of value as following
 ##### System Values
 NAME | Type | Description
 -----|------|-------------
-PROGRESS_MESSAGES | String | log message of the current status
-WARNING_MESSAGES | String | log message of all warning
-ERROR_MESSAGES | String | log message of all error
+PROGRESS_MESSAGES | string | log message of the current status
+WARNING_MESSAGES | string | log message of all warning
+ERROR_MESSAGES | string | log message of all error
+ROW_NUMBER | int | row number will be reset at the beginning of any datatable processes.
+APPLICATION_STATE | int | current state of application, find exit.code in this document for detailed 
 
 ##### Constant Values
 
 NAME | Type | Description
 -----|------|-------------
-NOW | String | not for now, in fact this variable contains the time to start application.
-EMPTY_STRING | String | "" for some configuration that has another default string.
+NOW | string | not for now, in fact this variable contains the time to start application.
+EMPTY_STRING | string | "" for some configuration that has another default string.
 
 > You can see full list in the source code of SystemVariable.java
 

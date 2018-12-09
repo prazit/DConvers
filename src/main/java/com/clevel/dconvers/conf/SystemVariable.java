@@ -8,7 +8,7 @@ public enum SystemVariable {
     TARGET_FILE_NUMBER(Types.INTEGER),
     MAPPING_FILE_NUMBER(Types.INTEGER),
 
-    // Reset every time to start the process of datatable.
+    // Row number will be reset at the beginning of any datatable processes.
     ROW_NUMBER(Types.INTEGER),
 
     // System Messages to see detail of status
