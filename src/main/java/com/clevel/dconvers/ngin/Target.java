@@ -279,6 +279,12 @@ public class Target extends AppBase {
                                 return false;
                             }
 
+                            if (targetColumn.getType() == Types.VARCHAR) {
+                                value = targetColumn.getValue();
+                                value = converter.compileDynamicValues(value);
+                                targetColumn.setValue(value);
+                            }
+
                     }// end of switch(sourceColumnType)
                     targetRow.putColumn(targetColumnName, targetColumn);
 
