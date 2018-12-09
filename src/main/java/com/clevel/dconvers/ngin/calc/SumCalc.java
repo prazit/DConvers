@@ -28,11 +28,13 @@ public class SumCalc extends Calc {
         String[] arguments = getArguments().split(",");
         int argumentCount = arguments.length;
         if (argumentCount < 3) {
+            log.error("CAL:SUM need 3 arguments([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..). default value({}) is returned.", defaultValue);
             return false;
         }
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null || srcTable.getRowCount() == 0) {
+            log.error("CAL:CONCAT. invalid identifier, please check CAL:SUM({})!, default value(\"{}\") is returned.", getArguments(), defaultValue);
             return false;
         }
 

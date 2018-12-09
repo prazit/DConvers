@@ -6,7 +6,8 @@ public enum CalcTypes {
 
     ROWCOUNT(RowCountCalc.class),
     FORMAT(FormatCalc.class),
-    SUM(SumCalc.class);
+    SUM(SumCalc.class),
+    GET(GetCalc.class);
 
     private Class calcClass;
 
@@ -25,7 +26,7 @@ public enum CalcTypes {
             calcType = CalcTypes.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException ex) {
             calcType = null;
-            LoggerFactory.getLogger(CalcTypes.class).error("CalcTypes.parse(name:{}) is failed!", name, ex);
+            LoggerFactory.getLogger(CalcTypes.class).error("CalcTypes.parse(name:{}) is failed! {}", name, ex.getMessage());
         }
 
         return calcType;

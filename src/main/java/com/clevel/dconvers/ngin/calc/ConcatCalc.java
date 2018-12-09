@@ -31,7 +31,7 @@ public class ConcatCalc extends Calc {
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null) {
-            log.debug("ConcatCalculator.srcTable is null!, default value(\"{}\") is returned.", defaultValue);
+            log.error("CAL:CONCAT. invalid identifier, please check CAL:CONCAT({})!, default value(\"{}\") is returned.", defaultValue);
             return false;
         }
 

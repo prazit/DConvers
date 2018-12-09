@@ -27,7 +27,7 @@ public class RowCountCalc extends Calc {
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null) {
-            log.debug("RowCountCalculator.srcTable is null!, default value({}) is returned.", defaultValue);
+            log.error("CAL:ROWCOUNT. invalid identifier, please check CAL:ROWCOUNT({})!, default value({}) is returned.", getArguments(), defaultValue);
             return false;
         }
 

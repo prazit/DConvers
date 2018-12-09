@@ -10,22 +10,22 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 
-public class FormatCalc extends Calc {
+public class GetCalc extends Calc {
 
-    public FormatCalc(Application application, String name) {
+    private DataColumn value;
+
+    public GetCalc(Application application, String name) {
         super(application, name);
     }
 
-    private String value;
-
     @Override
-    public boolean prepare() {
-        value = "";
+    protected boolean prepare() {
+        value = new DataString(0, Types.VARCHAR, name, "");
 
-        // format([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex],[formatPattern])
+        // get([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex])
         String[] arguments = getArguments().split(",");
-        if (arguments.length < 4) {
-            log.error("CAL:FORMAT need 4 arguments!, default value(\"{}\") is used.", value);
+        if (arguments.length < 3) {
+            log.error("CAL:GET need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex]). default value({}) is returned.", value);
             return false;
         }
 
@@ -33,23 +33,22 @@ public class FormatCalc extends Calc {
         DataRow row = getDataRow(arguments[1], datatable);
         DataColumn column = getDataColumn(arguments[2], row);
         if (column == null) {
-            log.error("CAL:FORMAT. invalid value identifiers, please check FORMAT({})!, default value(\"{}\") is used.", getArguments(), value);
+            log.error("CAL:GET. invalid column identifier, please check GET({})!, default value({}) is returned.", getArguments(), value);
             return false;
         }
 
-        value = column.getFormattedValue(arguments[3]);
+        value = column.clone(0, name);
 
         return true;
     }
 
     @Override
     protected DataColumn calculate() {
-        return new DataString(0, Types.VARCHAR, name, value);
+        return value;
     }
 
     @Override
     protected Logger loadLogger() {
-        return LoggerFactory.getLogger(FormatCalc.class);
+        return LoggerFactory.getLogger(GetCalc.class);
     }
-
 }
