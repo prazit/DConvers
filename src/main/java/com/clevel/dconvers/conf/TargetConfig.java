@@ -22,6 +22,7 @@ public class TargetConfig extends Config {
     private int index;
 
     private String source;
+    private List<String> sourceList;
     private String id;
     private long rowNumberStartAt;
 
@@ -62,6 +63,16 @@ public class TargetConfig extends Config {
         rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 
+        sourceList = new ArrayList<>();
+        String[] sources = source.split("[,]");
+        for (String src : sources) {
+            src = src.trim();
+            if ("".equals(src)) {
+                continue;
+            }
+            sourceList.add(src);
+        }
+
         Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
         Iterator<String> columnKeyList = columnProperties.getKeys();
         columnList = new ArrayList<>();
@@ -76,13 +87,6 @@ public class TargetConfig extends Config {
 
     @Override
     public boolean validate() {
-
-        Map<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
-        if (!sourceConfigMap.containsKey(source)) {
-            log.error("Invalid source specified, " + Property.TARGET.connectKey(name, Property.SOURCE) + "=" + source);
-            return false;
-        }
-
         return true;
     }
 
@@ -92,6 +96,10 @@ public class TargetConfig extends Config {
 
     public String getSource() {
         return source;
+    }
+
+    public List<String> getSourceList() {
+        return sourceList;
     }
 
     public String getId() {
@@ -120,6 +128,7 @@ public class TargetConfig extends Config {
                 .append("outputConfig", outputConfig)
                 .append("index", index)
                 .append("source", source)
+                .append("sourceList", sourceList)
                 .append("id", id)
                 .append("rowNumberStartAt", rowNumberStartAt)
                 .append("columnList", columnList)
