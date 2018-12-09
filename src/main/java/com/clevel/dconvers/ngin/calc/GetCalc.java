@@ -20,12 +20,12 @@ public class GetCalc extends Calc {
 
     @Override
     protected boolean prepare() {
-        value = new DataString(0, Types.VARCHAR, name, "");
+        value = new DataString(application, 0, Types.VARCHAR, name, "");
 
         // get([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex])
         String[] arguments = getArguments().split(",");
         if (arguments.length < 3) {
-            log.error("CAL:GET need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex]). default value({}) is returned.", value);
+            error("CAL:GET need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex]). default value({}) is returned.", value);
             return false;
         }
 
@@ -33,7 +33,7 @@ public class GetCalc extends Calc {
         DataRow row = getDataRow(arguments[1], datatable);
         DataColumn column = getDataColumn(arguments[2], row);
         if (column == null) {
-            log.error("CAL:GET. invalid column identifier, please check GET({})!, default value({}) is returned.", getArguments(), value);
+            error("CAL:GET. invalid column identifier, please check GET({})!, default value({}) is returned.", getArguments(), value);
             return false;
         }
 

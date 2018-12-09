@@ -46,7 +46,7 @@ public class FixedLengthTransform extends Transform {
 
         for (DataRow row : rowList) {
             formatted = fixedLengthFormatter.format(row);
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(0, Types.VARCHAR, newColumnName, formatted));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(application, 0, Types.VARCHAR, newColumnName, formatted));
             if (newRow == null) {
                 return false;
             }

@@ -46,14 +46,14 @@ public class PDFTableFormatter extends DataFormatter {
             }
 
             Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("TITLE", "Table: " + dataTable.getTableName());
+            parameters.put("TITLE", "Table: " + dataTable.getName());
             parameters.put("QUERY", "Query: " + dataTable.getQuery());
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataTable);
             JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFileName);
 
         } catch (Exception ex) {
-            log.error("PDFTableFormatter Error: ", ex);
+            error("PDFTableFormatter Error: ", ex);
         }
 
         return null;

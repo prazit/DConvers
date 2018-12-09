@@ -24,14 +24,14 @@ public class ConcatCalc extends Calc {
 
     @Override
     public boolean prepare() {
-        defaultValue = new DataString(0, Types.VARCHAR, "default", "");
+        defaultValue = new DataString(application, 0, Types.VARCHAR, "default", "");
 
         // concat([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null) {
-            log.error("CAL:CONCAT. invalid identifier, please check CAL:CONCAT({})!, default value(\"{}\") is returned.", defaultValue);
+            error("CAL:CONCAT. invalid identifier, please check CAL:CONCAT({})!, default value(\"{}\") is returned.", defaultValue);
             return false;
         }
 
@@ -60,7 +60,7 @@ public class ConcatCalc extends Calc {
             value += column.getValue();
         }
 
-        return new DataString(0, Types.VARCHAR, name, value);
+        return new DataString(application, 0, Types.VARCHAR, name, value);
     }
 
     @Override

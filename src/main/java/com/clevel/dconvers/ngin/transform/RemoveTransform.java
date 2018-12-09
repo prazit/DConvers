@@ -34,13 +34,13 @@ public class RemoveTransform extends Transform {
         log.debug("RemoveTransform.reverseOrderIndex => {}", indexList);
 
         for (DataRow row : rowList) {
-            newRow = new DataRow(dataTable);
+            newRow = new DataRow(application, dataTable);
             newColumnList = newRow.getColumnList();
 
             newColumnList.addAll(row.getColumnList());
             for (Integer index : indexList) {
                 if (newColumnList.remove(index.intValue()) == null) {
-                    log.error("RemoveTransform: Can't remove column(columnIndex:{}), columnlist-size = {}", index, newColumnList.size());
+                    error("RemoveTransform: Can't remove column(columnIndex:{}), columnlist-size = {}", index, newColumnList.size());
                     return false;
                 }
             }

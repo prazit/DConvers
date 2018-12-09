@@ -80,7 +80,7 @@ public class SQLOutput extends Output {
             try {
                 writer.write(headPrint);
             } catch (IOException e) {
-                log.error("SQLOutput: write the head print failed, {}", e.getMessage());
+                error("SQLOutput: write the head print failed, {}", e.getMessage());
                 return null;
             }
         }
@@ -93,7 +93,7 @@ public class SQLOutput extends Output {
                     writer.write(sql + eol);
                 }
             } catch (IOException e) {
-                log.error("SQLOutput: write the pre-sql failed, {}", e.getMessage());
+                error("SQLOutput: write the pre-sql failed, {}", e.getMessage());
                 return null;
             }
         }
@@ -117,7 +117,7 @@ public class SQLOutput extends Output {
                     writer.write(sql + eol);
                 }
             } catch (IOException e) {
-                log.error("SQLOutput: write the post-sql failed, {}", e.getMessage());
+                error("SQLOutput: write the post-sql failed, {}", e.getMessage());
                 success = false;
             }
         }
@@ -126,7 +126,7 @@ public class SQLOutput extends Output {
             try {
                 writer.write(eof);
             } catch (IOException e) {
-                log.error("SQLOutput: write EOF({}) is failed, {}", eof, e);
+                error("SQLOutput: write EOF({}) is failed, {}", eof, e);
                 success = false;
             }
         }

@@ -1,30 +1,37 @@
 package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.Application;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class DataLong extends DataColumn {
     private Long value;
 
-    public DataLong(int index, int type, String name, Long value) {
-        super(index, type, name);
+    public DataLong(Application application, int index, int type, String name, Long value) {
+        super(application, index, type, name);
 
         this.value = value;
     }
 
     @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataLong.class);
+    }
+
+    @Override
     public DataColumn clone(String value) {
-        DataLong dataLong = new DataLong(index, type, name, Long.parseLong(value));
+        DataLong dataLong = new DataLong(application, index, type, name, Long.parseLong(value));
         dataLong.setNullString(nullString);
         return dataLong;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataLong dataLong = new DataLong(index, type, name, value);
+        DataLong dataLong = new DataLong(application, index, type, name, value);
         dataLong.setNullString(nullString);
         return dataLong;
     }

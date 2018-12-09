@@ -37,7 +37,7 @@ public class MarkdownDataSource extends DataSource {
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName) {
         log.trace("MarkdownDataSource.getDataTable.");
 
-        DataTable dataTable = new DataTable(tableName, idColumnName);
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setQuery(markdownFileName);
 
         DataRow dataRow;
@@ -84,11 +84,11 @@ public class MarkdownDataSource extends DataSource {
 
             }
         } catch (FileNotFoundException fx) {
-            log.error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
+            error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
             dataTable = null;
 
         } catch (Exception ex) {
-            log.error("SQLSource.getDataTable. has exception: {}", ex);
+            error("SQLSource.getDataTable. has exception: {}", ex);
             dataTable = null;
 
         } finally {
@@ -174,7 +174,7 @@ public class MarkdownDataSource extends DataSource {
         String[] columns = splitColumns(line);
         log.debug("separator columns = {}", (Object[]) columns);
 
-        DataRow dataRow = new DataRow(dataTable);
+        DataRow dataRow = new DataRow(application, dataTable);
         int index = -1;
         String columnName;
         int columnType;

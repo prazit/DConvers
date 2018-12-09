@@ -5,7 +5,6 @@ import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +63,7 @@ public abstract class UtilBase extends AppBase {
 
     protected DataRow insertReplaceColumn(DataRow existingRow, String newColumnName, int newColumnIndex, DataColumn value) {
 
-        DataRow newRow = new DataRow(existingRow.getDataTable());
+        DataRow newRow = new DataRow(application, existingRow.getDataTable());
         List<DataColumn> columnList = newRow.getColumnList();
         columnList.addAll(existingRow.getColumnList());
 
@@ -79,7 +78,7 @@ public abstract class UtilBase extends AppBase {
         try {
             columnList.add(newColumnIndex, value);
         } catch (Exception ex) {
-            log.error("Invalid columnIndex({}) please find and fix this config-value({}:{}), error-detail({})", newColumnIndex, newColumnName, newColumnIndex + 1, ex.getMessage());
+            error("Invalid columnIndex({}) please find and fix this config-value({}:{}), error-detail({})", newColumnIndex, newColumnName, newColumnIndex + 1, ex.getMessage());
             return null;
         }
 

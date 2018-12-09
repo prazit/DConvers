@@ -26,15 +26,15 @@ public class TransformFactory {
                 constructor.setAccessible(true);
                 transform = (Transform) constructor.newInstance(application, transformType.name());
             } catch (InstantiationException e) {
-                log.error("The transform({}) cannot be instantiated, {}", transformType.name(), e.getMessage());
+                application.error("The transform({}) cannot be instantiated, {}", transformType.name(), e.getMessage());
             } catch (IllegalAccessException e) {
-                log.error("Create transform({}) is failed, {}", transformType.name(), e.getMessage());
+                application.error("Create transform({}) is failed, {}", transformType.name(), e.getMessage());
             } catch (InvocationTargetException e) {
-                log.error("InvocationTargetException has occurred when create transform({}), {}", transformType.name(), e.getMessage());
+                application.error("InvocationTargetException has occurred when create transform({}), {}", transformType.name(), e.getMessage());
             } catch (NoSuchMethodException e) {
-                log.error("No such method/constructor for transform({}), {}", transformType.name(), e.getMessage());
+                application.error("No such method/constructor for transform({}), {}", transformType.name(), e.getMessage());
             } catch (Exception e) {
-                log.error("Unexpected exception, {}", e);
+                application.error("Unexpected exception, {}", e);
             }
 
         }

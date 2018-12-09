@@ -20,6 +20,11 @@ public abstract class AppBase extends ValidatorBase {
         valid = false;
     }
 
+    public AppBase(String name) {
+        this.name = name;
+        valid = false;
+    }
+
     public String getName() {
         return name;
     }
@@ -32,5 +37,38 @@ public abstract class AppBase extends ValidatorBase {
      * @return Logger
      */
     protected abstract Logger loadLogger();
+
+    private void afterError() {
+        application.currentState.setValue((long) application.dataConversionConfigFile.getErrorCode());
+    }
+
+    private void afterWarn() {
+        application.currentState.setValue((long) application.dataConversionConfigFile.getWarningCode());
+    }
+
+    public void error(String format, Object arg1, Object arg2) {
+        error(format, arg1, arg2);
+        afterError();
+    }
+
+    public void error(String format, Object... arguments) {
+        error(format, arguments);
+        afterError();
+    }
+
+    public void error(String format, Object arg) {
+        error(format, arg);
+        afterError();
+    }
+
+    public void error(String msg, Throwable t) {
+        error(msg, t);
+        afterError();
+    }
+
+    public void error(String msg) {
+        error(msg);
+        afterError();
+    }
 
 }

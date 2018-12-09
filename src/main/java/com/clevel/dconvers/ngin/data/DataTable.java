@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.data;
 
-import com.clevel.dconvers.ngin.ValidatorBase;
+import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.AppBase;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
@@ -15,20 +16,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataTable extends ValidatorBase implements JRDataSource {
+public class DataTable extends AppBase implements JRDataSource {
 
     private Object owner;
 
     private List<DataRow> dataRowList;
     private Map<String, DataRow> dataRowMap;
     private ResultSetMetaData metaData;
-    private String tableName;
     private String idColumnName;
     private String query;
     private List<String> postUpdate;
 
-    public DataTable(String tableName, String idColumnName) {
-        this.tableName = tableName;
+    public DataTable(Application application, String tableName, String idColumnName) {
+        super(application, tableName);
+
         this.idColumnName = idColumnName;
         this.owner = null;
         dataRowList = new ArrayList<>();
@@ -40,8 +41,9 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         needHeader = true;
     }
 
-    public DataTable(String tableName, String idColumnName, List<String> postUpdate, Object owner) {
-        this.tableName = tableName;
+    public DataTable(Application application, String tableName, String idColumnName, List<String> postUpdate, Object owner) {
+        super(application, tableName);
+
         this.postUpdate = postUpdate;
         this.idColumnName = idColumnName;
         this.owner = owner;
@@ -53,6 +55,11 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         needHeader = true;
     }
 
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataTable.class);
+    }
+
     public Object getOwner() {
         return owner;
     }
@@ -61,8 +68,8 @@ public class DataTable extends ValidatorBase implements JRDataSource {
         this.owner = owner;
     }
 
-    public String getTableName() {
-        return tableName;
+    public String getName() {
+        return name;
     }
 
     public String getIdColumnName() {
@@ -87,7 +94,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
 
     public DataRow getRow(int row) {
         if (row >= dataRowList.size()) {
-            return new DataRow(this);
+            return new DataRow(application, this);
         }
         return dataRowList.get(row);
     }
@@ -102,12 +109,10 @@ public class DataTable extends ValidatorBase implements JRDataSource {
     public DataRow getRow(String sourceColumnName, String value) {
         DataColumn dataColumn;
 
-        Logger log = LoggerFactory.getLogger(DataTable.class);
-
         for (DataRow dataRow : dataRowList) {
             dataColumn = dataRow.getColumn(sourceColumnName);
             if (dataColumn == null) {
-                log.debug("DataTable({}).getRow({},{}). dataColumn({}) is null then return null", tableName, sourceColumnName, value, sourceColumnName);
+                log.debug("DataTable({}).getRow({},{}). dataColumn({}) is null then return null", name, sourceColumnName, value, sourceColumnName);
                 return null;
             }
 
@@ -116,7 +121,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
             }
         }
 
-        log.debug("DataTable({}).getRow({},{}). return null", tableName, sourceColumnName, value);
+        log.debug("DataTable({}).getRow({},{}). return null", name, sourceColumnName, value);
         return null;
     }
 
@@ -159,7 +164,7 @@ public class DataTable extends ValidatorBase implements JRDataSource {
                 .append("dataRowList", dataRowList)
                 .append("dataRowMap", dataRowMap)
                 .append("metaData", metaData)
-                .append("tableName", tableName)
+                .append("name", name)
                 .append("idColumnName", idColumnName)
                 .append("query", query)
                 .append("postUpdate", postUpdate)

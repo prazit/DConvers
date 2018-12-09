@@ -1,5 +1,6 @@
 package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Defaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -12,17 +13,14 @@ import java.util.Date;
 
 public class DataDate extends DataColumn {
     private Date value;
-    private Logger log;
 
-    public DataDate(int index, int type, String name, Date value) {
-        super(index, type, name);
-        log = LoggerFactory.getLogger(DataDate.class);
+    public DataDate(Application application, int index, int type, String name, Date value) {
+        super(application, index, type, name);
         this.value = value;
     }
 
-    public DataDate(int index, int type, String name, String value) {
-        super(index, type, name);
-        log = LoggerFactory.getLogger(DataDate.class);
+    public DataDate(Application application, int index, int type, String name, String value) {
+        super(application, index, type, name);
 
         if (value == null) {
             this.value = null;
@@ -30,22 +28,27 @@ public class DataDate extends DataColumn {
             try {
                 this.value = parse(value, Defaults.DATE_FORMAT.getStringValue());
             } catch (Exception e) {
-                log.error("DataDate. parse date ({}) is failed.", value, e.getMessage());
+                error("DataDate. parse date ({}) is failed.", value, e.getMessage());
                 this.value = null;
             }
         }
     }
 
     @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataDate.class);
+    }
+
+    @Override
     public DataColumn clone(String value) {
-        DataDate dataDate = new DataDate(index, type, name, getValue(value));
+        DataDate dataDate = new DataDate(application, index, type, name, getValue(value));
         dataDate.setNullString(nullString);
         return dataDate;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataDate dataDate = new DataDate(index, type, name, value);
+        DataDate dataDate = new DataDate(application, index, type, name, value);
         dataDate.setNullString(nullString);
         return dataDate;
     }

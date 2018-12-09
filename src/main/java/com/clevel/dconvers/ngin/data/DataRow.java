@@ -1,27 +1,35 @@
 package com.clevel.dconvers.ngin.data;
 
-import com.clevel.dconvers.ngin.ValidatorBase;
+import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DataRow extends ValidatorBase {
+public class DataRow extends AppBase {
 
     private DataTable dataTable;
     private Map<String, DataColumn> dataColumnMap;
     private List<DataColumn> columnList;
 
-    public DataRow(DataTable dataTable) {
+    public DataRow(Application application, DataTable dataTable) {
+        super(application, dataTable.getName());
+
         this.dataTable = dataTable;
         dataColumnMap = new HashMap<>();
         columnList = new ArrayList<>();
         valid = dataTable != null;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataRow.class);
     }
 
     public DataTable getDataTable() {
@@ -58,7 +66,7 @@ public class DataRow extends ValidatorBase {
             columnList.add(dataColumn);
             dataColumnMap.put(columnName, dataColumn);
         } catch (Exception e) {
-            dataColumnMap.put(columnName, new DataString(0, 0, null, null));
+            dataColumnMap.put(columnName, new DataString(application, 0, 0, null, null));
         }
     }
 

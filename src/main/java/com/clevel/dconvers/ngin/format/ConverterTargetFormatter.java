@@ -65,7 +65,7 @@ public class ConverterTargetFormatter extends DataFormatter {
      * Generate one target for source datatable.
      */
     protected boolean sourceFormat(DataTable dataTable) {
-        String tableName = dataTable.getTableName();
+        String tableName = dataTable.getName();
         if (dataTable.getRowCount() == 0) {
             log.warn("ConverterTargetFormatter.sourceFormat. source({}) does't have column prototype to generate target configuration!", tableName);
             application.hasWarning = true;

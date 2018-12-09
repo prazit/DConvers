@@ -142,7 +142,7 @@ public class Converter extends AppBase {
             }
 
             mapping = target.getMappingTable();
-            mappingTableMap.put(mapping.getTableName(), mapping);
+            mappingTableMap.put(mapping.getName(), mapping);
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
 
@@ -294,7 +294,7 @@ public class Converter extends AppBase {
                 }
             }
         } catch (Exception ex) {
-            log.error("Converter.compileDynamicValues({}) has unexpected exception, {}", sourceString, ex);
+            error("Converter.compileDynamicValues({}) has unexpected exception, {}", sourceString, ex);
             return null;
         }
 
@@ -390,10 +390,10 @@ public class Converter extends AppBase {
             }
 
         } catch (FileNotFoundException fx) {
-            log.error("SQLSource.queryFromFile. file not found: {}", fx.getMessage());
+            error("SQLSource.queryFromFile. file not found: {}", fx.getMessage());
 
         } catch (Exception ex) {
-            log.error("SQLSource.queryFromFile. has exception: {}", ex);
+            error("SQLSource.queryFromFile. has exception: {}", ex);
 
         } finally {
             if (br != null) {
@@ -416,7 +416,7 @@ public class Converter extends AppBase {
         log.trace("Converter.getDynamicValue.");
 
         if (dynamicValue.length() < 5) {
-            log.error("Invalid syntax for DynamicValue({})", dynamicValue);
+            error("Invalid syntax for DynamicValue({})", dynamicValue);
             return null;
         }
 
@@ -426,7 +426,7 @@ public class Converter extends AppBase {
 
         DynamicValueType dynamicValueType = DynamicValueType.parse(valueType);
         if (dynamicValueType == null) {
-            log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
+            error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
             return null;
         }
 
@@ -445,7 +445,7 @@ public class Converter extends AppBase {
                 String[] values = valueIdentifier.split("[()]");
                 CalcTypes calcType = CalcTypes.parse(values[0]);
                 if (calcType == null) {
-                    log.error("Invalid Calculator({}) for DynamicValue({}), see 'Calculator Types' for detailed", values[0], dynamicValue);
+                    error("Invalid Calculator({}) for DynamicValue({}), see 'Calculator Types' for detailed", values[0], dynamicValue);
                     return null;
                 }
                 Calc calculator = CalcFactory.getCalc(application, calcType);
@@ -470,7 +470,7 @@ public class Converter extends AppBase {
             case VAR:
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
                 if (systemVariable == null) {
-                    log.error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
+                    error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
                     return null;
                 }
                 dataColumn = application.systemVariableMap.get(systemVariable);
@@ -490,7 +490,7 @@ public class Converter extends AppBase {
                 break;
 
             default:
-                log.error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
+                error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
         }
 
         log.debug("Converter.getDynamicValue. dynamicValue({}) = dataColumn({})", dynamicValue, dataColumn);

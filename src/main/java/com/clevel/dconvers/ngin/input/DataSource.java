@@ -1,20 +1,17 @@
 package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.conf.DBMS;
+import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.*;
-import com.clevel.dconvers.ngin.format.*;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import oracle.jdbc.OracleTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.sql.*;
 
 public class DataSource extends AppBase {
@@ -58,10 +55,10 @@ public class DataSource extends AppBase {
             return true;
 
         } catch (SQLException se) {
-            log.error("Connection is failed");
+            error("Connection is failed");
             log.debug("SQLException = {}", se);
         } catch (Exception e) {
-            log.error("Load driver is failed");
+            error("Load driver is failed");
             log.debug("Exception = {}", e);
         }
 
@@ -123,11 +120,11 @@ public class DataSource extends AppBase {
             resultSet.close();
 
         } catch (SQLException se) {
-            log.error("SQLException: ", se);
+            error("SQLException: ", se);
             return null;
 
         } catch (Exception e) {
-            log.error("Exception", e);
+            error("Exception", e);
             return null;
 
         } finally {
@@ -144,7 +141,7 @@ public class DataSource extends AppBase {
     }
 
     private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String idColumnName) throws Exception {
-        DataTable dataTable = new DataTable(tableName, idColumnName);
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
         application.currentConverter.setCurrentTable(dataTable);
         dataTable.setMetaData(metaData);
 
@@ -171,7 +168,7 @@ public class DataSource extends AppBase {
         Object object;
         while (resultSet.next()) {
             progressBar.step();
-            dataRow = new DataRow(dataTable);
+            dataRow = new DataRow(application, dataTable);
 
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 columnName = metaData.getColumnName(columnIndex);
@@ -181,7 +178,7 @@ public class DataSource extends AppBase {
                     case Types.BIGINT:
                     case Types.NUMERIC:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(columnIndex, Types.BIGINT, columnName, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(application, columnIndex, Types.BIGINT, columnName, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.INTEGER:
@@ -189,7 +186,7 @@ public class DataSource extends AppBase {
                     case Types.BOOLEAN:
                     case Types.BIT:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(columnIndex, Types.INTEGER, columnName, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(application, columnIndex, Types.INTEGER, columnName, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.CHAR:
@@ -198,14 +195,14 @@ public class DataSource extends AppBase {
                     case Types.NCHAR:
                     case Types.LONGNVARCHAR:
                     case Types.LONGVARCHAR:
-                        dataColumn = new DataString(columnIndex, Types.VARCHAR, columnName, resultSet.getString(columnIndex));
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnName, resultSet.getString(columnIndex));
                         break;
 
                     case Types.DECIMAL:
                     case Types.DOUBLE:
                     case Types.FLOAT:
                     case Types.REAL:
-                        dataColumn = new DataBigDecimal(columnIndex, Types.DECIMAL, columnName, resultSet.getBigDecimal(columnIndex));
+                        dataColumn = new DataBigDecimal(application, columnIndex, Types.DECIMAL, columnName, resultSet.getBigDecimal(columnIndex));
                         break;
 
                     case Types.DATE:
@@ -215,7 +212,7 @@ public class DataSource extends AppBase {
                         } else {
                             dateValue = new Date(date.getTime());
                         }
-                        dataColumn = new DataDate(columnIndex, Types.DATE, columnName, dateValue);
+                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnName, dateValue);
                         break;
 
                     case Types.TIMESTAMP:
@@ -225,11 +222,11 @@ public class DataSource extends AppBase {
                         } else {
                             dateValue = new Date(timestamp.getTime());
                         }
-                        dataColumn = new DataDate(columnIndex, Types.DATE, columnName, dateValue);
+                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnName, dateValue);
                         break;
 
                     default:
-                        dataColumn = new DataString(columnIndex, Types.VARCHAR, columnName, resultSet.getObject(columnIndex).toString());
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnName, resultSet.getObject(columnIndex).toString());
                 }
 
                 dataRow.putColumn(columnName, dataColumn);
@@ -259,7 +256,7 @@ public class DataSource extends AppBase {
             connection = null;
             log.info("Disconnected from database({})", name);
         } catch (SQLException se) {
-            log.error("disconnect is failed");
+            error("disconnect is failed");
             log.debug("SQLException = {}", se);
         }
     }
@@ -331,10 +328,10 @@ public class DataSource extends AppBase {
             }
 
         } catch (SQLException se) {
-            log.error("SQLException: {}", se.getMessage());
+            error("SQLException: {}", se.getMessage());
 
         } catch (Exception ex) {
-            log.error("Exception: {}", ex.getMessage());
+            error("Exception: {}", ex.getMessage());
         }
 
         return statement;
@@ -358,11 +355,11 @@ public class DataSource extends AppBase {
                 application.hasWarning = true;
             }
         } catch (SQLException se) {
-            log.error("SQLException: {}", se.getMessage());
+            error("SQLException: {}", se.getMessage());
             success = false;
 
         } catch (Exception e) {
-            log.error("Exception", e);
+            error("Exception", e);
             success = false;
 
         } finally {

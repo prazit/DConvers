@@ -102,7 +102,7 @@ public class EmailDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query) {
-        DataTable dataTable = new DataTable(query, "id");
+        DataTable dataTable = new DataTable(application, query, "id");
 
         // filters
         String tokenInSubject = null;       // meaning of null is not filter
@@ -156,7 +156,7 @@ public class EmailDataSource extends DataSource {
 
             Folder folder = store.getFolder(query);
             if (folder == null || !folder.exists()) {
-                log.error("Email: Invalid folder({})", query);
+                error("Email: Invalid folder({})", query);
                 System.exit(1);
             }
             log.info("Email: folder({}) is exists", query);
@@ -254,32 +254,32 @@ public class EmailDataSource extends DataSource {
                 String filename = message.getFileName();
                 Enumeration headers = message.getAllHeaders();
 
-                DataRow dataRow = new DataRow(dataTable);
-                dataRow.putColumn("id", new DataLong(columnIndex++, Types.INTEGER, "message_number", (long) msgNumber * 10));
-                dataRow.putColumn("message_number", new DataLong(columnIndex++, Types.INTEGER, "message_number", (long) msgNumber));
-                dataRow.putColumn("size", new DataLong(columnIndex++, Types.INTEGER, "size", (long) size));
-                dataRow.putColumn("line_count", new DataLong(columnIndex++, Types.INTEGER, "line_count", (long) lineCount));
-                dataRow.putColumn("sent_date", new DataDate(columnIndex++, Types.DATE, "sent_date", sentDate));
-                dataRow.putColumn("received_date", new DataDate(columnIndex++, Types.DATE, "received_date", receivedDate));
-                dataRow.putColumn("content_type", new DataString(columnIndex++, Types.VARCHAR, "content_type", contentType));
-                dataRow.putColumn("subject", new DataString(columnIndex++, Types.VARCHAR, "subject", subject));
-                dataRow.putColumn("description", new DataString(columnIndex++, Types.VARCHAR, "description", description));
-                dataRow.putColumn("disposition", new DataString(columnIndex++, Types.VARCHAR, "disposition", disposition));
-                dataRow.putColumn("file_name", new DataString(columnIndex++, Types.VARCHAR, "file_name", filename));
-                dataRow.putColumn("flags", new DataString(columnIndex++, Types.VARCHAR, "flags", flagsToString(flags)));
+                DataRow dataRow = new DataRow(application, dataTable);
+                dataRow.putColumn("id", new DataLong(application, columnIndex++, Types.INTEGER, "message_number", (long) msgNumber * 10));
+                dataRow.putColumn("message_number", new DataLong(application, columnIndex++, Types.INTEGER, "message_number", (long) msgNumber));
+                dataRow.putColumn("size", new DataLong(application, columnIndex++, Types.INTEGER, "size", (long) size));
+                dataRow.putColumn("line_count", new DataLong(application, columnIndex++, Types.INTEGER, "line_count", (long) lineCount));
+                dataRow.putColumn("sent_date", new DataDate(application, columnIndex++, Types.DATE, "sent_date", sentDate));
+                dataRow.putColumn("received_date", new DataDate(application, columnIndex++, Types.DATE, "received_date", receivedDate));
+                dataRow.putColumn("content_type", new DataString(application, columnIndex++, Types.VARCHAR, "content_type", contentType));
+                dataRow.putColumn("subject", new DataString(application, columnIndex++, Types.VARCHAR, "subject", subject));
+                dataRow.putColumn("description", new DataString(application, columnIndex++, Types.VARCHAR, "description", description));
+                dataRow.putColumn("disposition", new DataString(application, columnIndex++, Types.VARCHAR, "disposition", disposition));
+                dataRow.putColumn("file_name", new DataString(application, columnIndex++, Types.VARCHAR, "file_name", filename));
+                dataRow.putColumn("flags", new DataString(application, columnIndex++, Types.VARCHAR, "flags", flagsToString(flags)));
 
-                dataRow.putColumn("from", new DataString(columnIndex++, Types.VARCHAR, "from", addressToString(from)));
-                dataRow.putColumn("recipient", new DataString(columnIndex++, Types.VARCHAR, "recipient", addressToString(recipient)));
-                dataRow.putColumn("reply_to", new DataString(columnIndex++, Types.VARCHAR, "reply_to", addressToString(replyTo)));
+                dataRow.putColumn("from", new DataString(application, columnIndex++, Types.VARCHAR, "from", addressToString(from)));
+                dataRow.putColumn("recipient", new DataString(application, columnIndex++, Types.VARCHAR, "recipient", addressToString(recipient)));
+                dataRow.putColumn("reply_to", new DataString(application, columnIndex++, Types.VARCHAR, "reply_to", addressToString(replyTo)));
 
-                dataRow.putColumn("headers", new DataString(columnIndex++, Types.VARCHAR, "headers", headerToString(headers)));
-                dataRow.putColumn("content", new DataString(columnIndex++, Types.VARCHAR, "content", content));
+                dataRow.putColumn("headers", new DataString(application, columnIndex++, Types.VARCHAR, "headers", headerToString(headers)));
+                dataRow.putColumn("content", new DataString(application, columnIndex++, Types.VARCHAR, "content", content));
 
                 dataTable.addRow(dataRow);
             }
 
         } catch (Exception ex) {
-            log.error("EmailDataSource: Unexpected error has occurred", ex);
+            error("EmailDataSource: Unexpected error has occurred", ex);
         }
         return dataTable;
     }
@@ -315,26 +315,26 @@ public class EmailDataSource extends DataSource {
         String content = contentObject.toString();
 
         int columnIndex = 0;
-        DataRow dataRow = new DataRow(dataTable);
-        dataRow.putColumn("id", new DataLong(columnIndex++, Types.INTEGER, "id", (long) msgNumber));
-        dataRow.putColumn("message_number", new DataLong(columnIndex++, Types.INTEGER, "message_number", (long) msgNumber));
-        dataRow.putColumn("size", new DataLong(columnIndex++, Types.INTEGER, "size", (long) size));
-        dataRow.putColumn("line_count", new DataLong(columnIndex++, Types.INTEGER, "line_count", (long) lineCount));
-        dataRow.putColumn("sent_date", new DataDate(columnIndex++, Types.DATE, "sent_date", (Date) null));
-        dataRow.putColumn("received_date", new DataDate(columnIndex++, Types.DATE, "received_date", (Date) null));
-        dataRow.putColumn("content_type", new DataString(columnIndex++, Types.VARCHAR, "content_type", contentType));
-        dataRow.putColumn("subject", new DataString(columnIndex++, Types.VARCHAR, "subject", null));
-        dataRow.putColumn("description", new DataString(columnIndex++, Types.VARCHAR, "description", description));
-        dataRow.putColumn("disposition", new DataString(columnIndex++, Types.VARCHAR, "disposition", disposition));
-        dataRow.putColumn("file_name", new DataString(columnIndex++, Types.VARCHAR, "file_name", filename));
-        dataRow.putColumn("flags", new DataString(columnIndex++, Types.VARCHAR, "flags", null));
+        DataRow dataRow = new DataRow(application, dataTable);
+        dataRow.putColumn("id", new DataLong(application, columnIndex++, Types.INTEGER, "id", (long) msgNumber));
+        dataRow.putColumn("message_number", new DataLong(application, columnIndex++, Types.INTEGER, "message_number", (long) msgNumber));
+        dataRow.putColumn("size", new DataLong(application, columnIndex++, Types.INTEGER, "size", (long) size));
+        dataRow.putColumn("line_count", new DataLong(application, columnIndex++, Types.INTEGER, "line_count", (long) lineCount));
+        dataRow.putColumn("sent_date", new DataDate(application, columnIndex++, Types.DATE, "sent_date", (Date) null));
+        dataRow.putColumn("received_date", new DataDate(application, columnIndex++, Types.DATE, "received_date", (Date) null));
+        dataRow.putColumn("content_type", new DataString(application, columnIndex++, Types.VARCHAR, "content_type", contentType));
+        dataRow.putColumn("subject", new DataString(application, columnIndex++, Types.VARCHAR, "subject", null));
+        dataRow.putColumn("description", new DataString(application, columnIndex++, Types.VARCHAR, "description", description));
+        dataRow.putColumn("disposition", new DataString(application, columnIndex++, Types.VARCHAR, "disposition", disposition));
+        dataRow.putColumn("file_name", new DataString(application, columnIndex++, Types.VARCHAR, "file_name", filename));
+        dataRow.putColumn("flags", new DataString(application, columnIndex++, Types.VARCHAR, "flags", null));
 
-        dataRow.putColumn("from", new DataString(columnIndex++, Types.VARCHAR, "from", null));
-        dataRow.putColumn("recipient", new DataString(columnIndex++, Types.VARCHAR, "recipient", null));
-        dataRow.putColumn("reply_to", new DataString(columnIndex++, Types.VARCHAR, "reply_to", null));
+        dataRow.putColumn("from", new DataString(application, columnIndex++, Types.VARCHAR, "from", null));
+        dataRow.putColumn("recipient", new DataString(application, columnIndex++, Types.VARCHAR, "recipient", null));
+        dataRow.putColumn("reply_to", new DataString(application, columnIndex++, Types.VARCHAR, "reply_to", null));
 
-        dataRow.putColumn("headers", new DataString(columnIndex++, Types.VARCHAR, "headers", headerToString(headers)));
-        dataRow.putColumn("content", new DataString(columnIndex++, Types.VARCHAR, "content", content));
+        dataRow.putColumn("headers", new DataString(application, columnIndex++, Types.VARCHAR, "headers", headerToString(headers)));
+        dataRow.putColumn("content", new DataString(application, columnIndex++, Types.VARCHAR, "content", content));
 
         dataTable.addRow(dataRow);
 
@@ -346,7 +346,7 @@ public class EmailDataSource extends DataSource {
             md = MessageDigest.getInstance("MD5");
             md.update(sourceText.getBytes());
         } catch (NoSuchAlgorithmException e) {
-            log.error("md5 encode failed: ", e);
+            error("md5 encode failed: ", e);
             return sourceText;
         }
         return DatatypeConverter.printHexBinary(md.digest());
@@ -381,7 +381,7 @@ public class EmailDataSource extends DataSource {
             file = new File(path + newName);
             fileOutputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            log.error("saveAttachedFile: {}", e.getMessage());
+            error("saveAttachedFile: {}", e.getMessage());
             return;
         }
 
@@ -392,7 +392,7 @@ public class EmailDataSource extends DataSource {
                 fileOutputStream.write(buffer);
             }
         } catch (IOException e) {
-            log.error("saveAttachedFile: ", e.getMessage());
+            error("saveAttachedFile: ", e.getMessage());
             return;
         }
 

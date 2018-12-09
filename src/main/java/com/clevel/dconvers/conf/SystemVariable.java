@@ -17,7 +17,7 @@ public enum SystemVariable {
     PROGRESS_MESSAGES(Types.VARCHAR),
 
     // EXIT CODE for now
-    CURRENT_STATE(Types.INTEGER),
+    APPLICATION_STATE(Types.INTEGER),
 
     // Constant values for configuration
     EMPTY_STRING(Types.VARCHAR),    // ""

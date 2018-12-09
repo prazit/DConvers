@@ -52,7 +52,7 @@ public class DBInsertOutput extends Output {
                     writer.write(sql + "\n");
                 }
             } catch (IOException e) {
-                log.error("DBInsertOutput: write the pre-sql failed, {}", e.getMessage());
+                error("DBInsertOutput: write the pre-sql failed, {}", e.getMessage());
                 return null;
             }
         }
@@ -74,7 +74,7 @@ public class DBInsertOutput extends Output {
                     writer.write(sql + "\n");
                 }
             } catch (IOException e) {
-                log.error("DBInsertOutput: write the post-sql failed, {}", e.getMessage());
+                error("DBInsertOutput: write the post-sql failed, {}", e.getMessage());
                 return false;
             }
         }

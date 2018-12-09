@@ -133,7 +133,7 @@ public class DataConversionConfigFile extends ConfigFile {
 
         for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
             if (!dataSourceConfig.isValid()) {
-                log.error("Invalid datasource specified ({})", dataSourceConfig.getName());
+                error("Invalid datasource specified ({})", dataSourceConfig.getName());
                 childValid = false;
                 return false;
             }
@@ -141,7 +141,7 @@ public class DataConversionConfigFile extends ConfigFile {
 
         for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
             if (!converterConfigFile.isValid()) {
-                log.error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
+                error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
                 childValid = false;
                 return false;
             }

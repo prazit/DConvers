@@ -2,23 +2,18 @@ package com.clevel.dconvers;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.conf.Defaults;
-import com.clevel.dconvers.ngin.ValidatorBase;
+import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
 import java.util.List;
 
-public class Switches extends ValidatorBase {
+public class Switches extends AppBase {
 
-    private Application application;
-    private Logger log;
     private CommandLine cmd;
 
     private Options options;
@@ -30,7 +25,7 @@ public class Switches extends ValidatorBase {
     private boolean help;
 
     public Switches(Application application) {
-        this.application = application;
+        super(application, "switches");
         loadLogger();
 
         options = new Options();
@@ -54,8 +49,9 @@ public class Switches extends ValidatorBase {
         }
     }
 
-    private void loadLogger() {
-        log = LoggerFactory.getLogger(Switches.class);
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(Switches.class);
     }
 
     private boolean loadSwitches() {
@@ -63,7 +59,7 @@ public class Switches extends ValidatorBase {
         try {
             cmd = parser.parse(options, application.args);
         } catch (ParseException e) {
-            log.error("parse switches failed: " + e.getMessage());
+            error("parse switches failed: " + e.getMessage());
             return false;
         }
 
@@ -81,7 +77,7 @@ public class Switches extends ValidatorBase {
         try {
             verboseLevel = Level.valueOf(level.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            log.error("parse verbose level failed: " + ex.getMessage());
+            error("parse verbose level failed: " + ex.getMessage());
             return false;
         }
 
@@ -106,7 +102,7 @@ public class Switches extends ValidatorBase {
         log.trace("Switches.validateSwitches.");
 
         if (source == null && !help) {
-            log.error("invalid specified source-file");
+            error("invalid specified source-file");
             return false;
         }
 

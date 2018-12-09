@@ -1,28 +1,36 @@
 package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.Application;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataString extends DataColumn {
 
     private String value;
 
-    public DataString(int index, int type, String name, String value) {
-        super(index, type, name);
+    public DataString(Application application, int index, int type, String name, String value) {
+        super(application, index, type, name);
 
         this.value = value;
     }
 
     @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataString.class);
+    }
+
+    @Override
     public DataColumn clone(String value) {
-        DataString dataString = new DataString(index, type, name, value);
+        DataString dataString = new DataString(application, index, type, name, value);
         dataString.setNullString(nullString);
         return dataString;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataString dataString = new DataString(index, type, name, value);
+        DataString dataString = new DataString(application, index, type, name, value);
         dataString.setNullString(nullString);
         return dataString;
     }

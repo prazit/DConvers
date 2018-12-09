@@ -15,8 +15,6 @@ public class OutputFactory {
     private static Map<OutputTypes, Output> outputMap = new HashMap<>();
 
     public static Output getOutput(@NotNull Application application, @NotNull OutputTypes outputType) {
-        Logger log = LoggerFactory.getLogger(OutputFactory.class);
-
         Output output = outputMap.get(outputType);
         if (output == null) {
 
@@ -26,15 +24,15 @@ public class OutputFactory {
                 constructor.setAccessible(true);
                 output = (Output) constructor.newInstance(application, outputType.name());
             } catch (InstantiationException e) {
-                log.error("The output({}) cannot be instantiated, {}", outputType.name(), e.getMessage());
+                application.error("The output({}) cannot be instantiated, {}", outputType.name(), e.getMessage());
             } catch (IllegalAccessException e) {
-                log.error("Create output({}) is failed, {}", outputType.name(), e.getMessage());
+                application.error("Create output({}) is failed, {}", outputType.name(), e.getMessage());
             } catch (InvocationTargetException e) {
-                log.error("InvocationTargetException has occurred when create output({}), {}", outputType.name(), e.getMessage());
+                application.error("InvocationTargetException has occurred when create output({}), {}", outputType.name(), e.getMessage());
             } catch (NoSuchMethodException e) {
-                log.error("No such method/constructor for output({}), {}", outputType.name(), e.getMessage());
+                application.error("No such method/constructor for output({}), {}", outputType.name(), e.getMessage());
             } catch (Exception e) {
-                log.error("Unexpected exception, {}", e);
+                application.error("Unexpected exception, {}", e);
             }
 
         }

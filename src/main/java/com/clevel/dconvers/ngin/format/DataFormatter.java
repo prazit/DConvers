@@ -7,7 +7,6 @@ import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -45,7 +44,7 @@ public abstract class DataFormatter extends AppBase {
             rows.add(dataTable.getRow(0));
         }
 
-        String tableName = dataTable.getTableName();
+        String tableName = dataTable.getName();
         int rowCount = rows.size();
         ProgressBar progressBar = null;
         if (allRow) {

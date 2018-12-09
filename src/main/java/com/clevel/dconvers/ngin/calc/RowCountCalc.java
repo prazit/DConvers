@@ -27,7 +27,7 @@ public class RowCountCalc extends Calc {
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null) {
-            log.error("CAL:ROWCOUNT. invalid identifier, please check CAL:ROWCOUNT({})!, default value({}) is returned.", getArguments(), defaultValue);
+            error("CAL:ROWCOUNT. invalid identifier, please check CAL:ROWCOUNT({})!, default value({}) is returned.", getArguments(), defaultValue);
             return false;
         }
 
@@ -36,7 +36,7 @@ public class RowCountCalc extends Calc {
 
     @Override
     protected DataColumn calculate() {
-        return new DataLong(0, Types.INTEGER, name, (long) srcTable.getRowCount());
+        return new DataLong(application, 0, Types.INTEGER, name, (long) srcTable.getRowCount());
     }
 
     @Override

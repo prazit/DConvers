@@ -55,12 +55,12 @@ public class SourceConfig extends Config {
         log.trace("SourceConfig({}).validateProperties.", name);
 
         if (dataSource == null) {
-            log.error(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required by source({})", name);
+            error(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required by source({})", name);
             return false;
         }
 
         if (query == null) {
-            log.error(Property.SOURCE.connectKey(name, Property.QUERY) + " is required by source({})", name);
+            error(Property.SOURCE.connectKey(name, Property.QUERY) + " is required by source({})", name);
             return false;
         }
 

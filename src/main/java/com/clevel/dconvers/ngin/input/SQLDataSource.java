@@ -33,7 +33,7 @@ public class SQLDataSource extends DataSource {
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName) {
 
-        DataTable dataTable = new DataTable(tableName, idColumnName);
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setQuery(sqlFileName);
 
         DataRow dataRow;
@@ -53,11 +53,11 @@ public class SQLDataSource extends DataSource {
             }
 
         } catch (FileNotFoundException fx) {
-            log.error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
+            error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
             dataTable = null;
 
         } catch (Exception ex) {
-            log.error("SQLSource.getDataTable. has exception: {}", ex);
+            error("SQLSource.getDataTable. has exception: {}", ex);
             dataTable = null;
 
         } finally {
@@ -85,7 +85,7 @@ public class SQLDataSource extends DataSource {
         String[] columns = columnString.split(",");
         String[] values = valueString.split(",");
 
-        DataRow dataRow = new DataRow(dataTable);
+        DataRow dataRow = new DataRow(application, dataTable);
         int length = columns.length;
         int columnType;
         String columnName;

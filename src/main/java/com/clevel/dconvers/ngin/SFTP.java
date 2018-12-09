@@ -34,7 +34,7 @@ public class SFTP extends AppBase implements UserInfo {
 
             //log.info("sftp({}) session is connected", name);
         } catch (Exception ex) {
-            log.error("sftp({}) session connection is failed! {}", name, ex);
+            error("sftp({}) session connection is failed! {}", name, ex);
             return false;
         }
 
@@ -46,7 +46,7 @@ public class SFTP extends AppBase implements UserInfo {
 
             log.info("Connected to sftp({})", name);
         } catch (Exception ex) {
-            log.error("sftp({}) sftp channel connection is failed! {}", name, ex);
+            error("sftp({}) sftp channel connection is failed! {}", name, ex);
             return false;
         }
 
@@ -104,7 +104,7 @@ public class SFTP extends AppBase implements UserInfo {
         log.trace("SFTP({}).copyToSFTP(localFile:{}, remoteFile:{})", name, localFile, remoteFile);
 
         if (!isValid()) {
-            log.error("The SFTP({}) is invalid! can not transfer local-file({}) to remote-file({}).", name, localFile, remoteFile);
+            error("The SFTP({}) is invalid! can not transfer local-file({}) to remote-file({}).", name, localFile, remoteFile);
             return false;
         }
 
@@ -112,7 +112,7 @@ public class SFTP extends AppBase implements UserInfo {
             sftpChannel.put(localFile, remoteFile, ChannelSftp.OVERWRITE);
             log.info("SFTP({}) transfer local-file({}) to remote-file({}) is completed", name, localFile, remoteFile);
         } catch (SftpException e) {
-            log.error("SFTP({}) transfer local-file({}) to remote-file({}) is failed! {}", name, localFile, remoteFile, e.getMessage());
+            error("SFTP({}) transfer local-file({}) to remote-file({}) is failed! {}", name, localFile, remoteFile, e.getMessage());
             return false;
         }
 

@@ -1,7 +1,10 @@
 package com.clevel.dconvers.ngin.data;
 
+import com.clevel.dconvers.Application;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -10,10 +13,15 @@ public class DataBigDecimal extends DataColumn {
 
     private BigDecimal value;
 
-    public DataBigDecimal(int index, int type, String name, BigDecimal value) {
-        super(index, type, name);
+    public DataBigDecimal(Application application, int index, int type, String name, BigDecimal value) {
+        super(application, index, type, name);
 
         this.value = value;
+    }
+
+    @Override
+    protected Logger loadLogger() {
+        return LoggerFactory.getLogger(DataBigDecimal.class);
     }
 
     @Override
@@ -26,14 +34,14 @@ public class DataBigDecimal extends DataColumn {
             bigDecimal = null;
         }
 
-        DataBigDecimal dataBigDecimal = new DataBigDecimal(index, type, name, bigDecimal);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(application, index, type, name, bigDecimal);
         dataBigDecimal.setNullString(nullString);
         return dataBigDecimal;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataBigDecimal dataBigDecimal = new DataBigDecimal(index, type, name, value);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(application, index, type, name, value);
         dataBigDecimal.setNullString(nullString);
         return dataBigDecimal;
     }

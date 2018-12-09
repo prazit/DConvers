@@ -47,7 +47,7 @@ public class ConcatTransform extends Transform {
                 value += column.getValue();
             }
 
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(0, Types.VARCHAR, newColumnName, value));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(application, 0, Types.VARCHAR, newColumnName, value));
             if (newRow == null) {
                 return false;
             }

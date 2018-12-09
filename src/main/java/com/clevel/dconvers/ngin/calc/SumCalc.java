@@ -22,19 +22,19 @@ public class SumCalc extends Calc {
 
     @Override
     protected boolean prepare() {
-        defaultValue = new DataLong(0, Types.INTEGER, "default", 0L);
+        defaultValue = new DataLong(application, 0, Types.INTEGER, "default", 0L);
 
         // sum([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
         int argumentCount = arguments.length;
         if (argumentCount < 3) {
-            log.error("CAL:SUM need 3 arguments([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..). default value({}) is returned.", defaultValue);
+            error("CAL:SUM need 3 arguments([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..). default value({}) is returned.", defaultValue);
             return false;
         }
 
         srcTable = getDataTable(arguments[0]);
         if (srcTable == null || srcTable.getRowCount() == 0) {
-            log.error("CAL:CONCAT. invalid identifier, please check CAL:SUM({})!, default value(\"{}\") is returned.", getArguments(), defaultValue);
+            error("CAL:CONCAT. invalid identifier, please check CAL:SUM({})!, default value(\"{}\") is returned.", getArguments(), defaultValue);
             return false;
         }
 
@@ -53,7 +53,7 @@ public class SumCalc extends Calc {
         if (currentRow == null) {
             return defaultValue;
         }
-        log.debug("SumCalc.calculate() datatable({}) datarow({})", srcTable.getTableName(), currentRow.toString());
+        log.debug("SumCalc.calculate() datatable({}) datarow({})", srcTable.getName(), currentRow.toString());
 
         List<DataColumn> columnList = currentRow.getColumnList();
         DataColumn column;
@@ -89,9 +89,9 @@ public class SumCalc extends Calc {
         bigDecimalValue = new BigDecimal(sum);
         if (value.endsWith(".0")) {
             //value = value.substring(0, value.length() - 2);
-            return new DataBigDecimal(0, Types.DECIMAL, name, bigDecimalValue);
+            return new DataBigDecimal(application, 0, Types.DECIMAL, name, bigDecimalValue);
         } else {
-            return new DataLong(0, Types.INTEGER, name, bigDecimalValue.longValue());
+            return new DataLong(application, 0, Types.INTEGER, name, bigDecimalValue.longValue());
         }
 
     }

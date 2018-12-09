@@ -4,6 +4,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.conf.*;
+import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.SFTP;
 import com.clevel.dconvers.ngin.data.*;
@@ -25,7 +26,7 @@ import java.util.*;
  * <p>
  * This class contains only the public members to let all process can access them directly.
  */
-public class Application {
+public class Application extends AppBase {
 
     public String[] args;
     public Logger log;
@@ -39,6 +40,7 @@ public class Application {
 
     public List<Converter> converterList;
     public Converter currentConverter;
+    public DataLong currentState;
 
     public DataTable reportTable;
 
@@ -50,16 +52,18 @@ public class Application {
     private Date appStartDate;
 
     public Application(String[] args) {
+        super("DConvers");
         this.args = args;
         loadLogger();
 
-        reportTable = new DataTable("Report", "id");
+        reportTable = new DataTable(this, "Report", "id");
         hasWarning = false;
 
         currentConverter = null;
     }
 
-    private void loadLogger() {
+    @Override
+    protected Logger loadLogger() {
         for (String arg : this.args) {
             if (arg.startsWith("--logback")) {
                 String logback = arg.substring(arg.indexOf("=") + 1).replaceAll("[\"]", "");
@@ -72,6 +76,8 @@ public class Application {
         LoggerContext loggerContext = ((ch.qos.logback.classic.Logger) log).getLoggerContext();
         URL url = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
         log.info("Logback configuration file is '{}'.", url);
+
+        return log;
     }
 
     public void start() {
@@ -94,6 +100,8 @@ public class Application {
 
         log.trace("Application. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
+        currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
+
         if (!dataConversionConfigFile.isValid()) {
             if (dataConversionConfigFile.isChildValid()) {
                 performInvalidConfigFile();
@@ -209,10 +217,12 @@ public class Application {
     private void initSystemVariables() {
         systemVariableMap = createSystemVariableMap();
 
-        systemVariableMap.put(SystemVariable.NOW,new ComputeNow("NOW"));
+        systemVariableMap.put(SystemVariable.NOW, new ComputeNow(this, "NOW"));
         systemVariableMap.get(SystemVariable.EMPTY_STRING).setValue("");
-        ((DataDate)systemVariableMap.get(SystemVariable.APPLICATION_START)).setValue(appStartDate);
-        ((DataLong) systemVariableMap.get(SystemVariable.CURRENT_STATE)).setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
+        ((DataDate) systemVariableMap.get(SystemVariable.APPLICATION_START)).setValue(appStartDate);
+
+        currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
+        currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
 
         errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
         warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
@@ -279,7 +289,7 @@ public class Application {
     private void performInvalidSwitches() {
         log.trace("Application.performInvalidSwitches.");
 
-        log.error("Invalid CLI Switches({}) please see help below", switches);
+        error("Invalid CLI Switches({}) please see help below", switches);
         log.debug("invalid switches: {}", switches);
         performHelp();
         stopWithError();
@@ -288,7 +298,7 @@ public class Application {
     private void performInvalidConfigFile() {
         log.trace("Application.performInvalidConfigFile.");
 
-        log.error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
+        error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("source = {}", dataConversionConfigFile);
         stopWithError();
     }
@@ -296,7 +306,7 @@ public class Application {
     private void performInvalidDataSource(DataSource dataSource) {
         log.trace("Application.performInvalidDataSource.");
 
-        log.error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
+        error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
         stopWithError();
     }
@@ -304,7 +314,7 @@ public class Application {
     private void performInvalidSFTP(SFTP sftp) {
         log.trace("Application.performInvalidSFTP.");
 
-        log.error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
+        error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
         stopWithError();
     }
@@ -312,7 +322,7 @@ public class Application {
     private void performInvalidConverter(Converter converter) {
         log.trace("Application.performInvalidConverter.");
 
-        log.error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
+        error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
         log.debug("converter = {}", converter);
         stopWithError();
     }
@@ -327,7 +337,7 @@ public class Application {
         formatter.printHelp(syntax, switches.getOptions());
     }
 
-    //==== Utilities ====
+    //======= Utilities =======
 
     private Map<SystemVariable, DataColumn> createSystemVariableMap() {
         List<SystemVariable> systemVariableList = Arrays.asList(SystemVariable.values());
@@ -366,24 +376,24 @@ public class Application {
             case Types.SMALLINT:
             case Types.BOOLEAN:
             case Types.BIT:
-                dataColumn = new DataLong(0, Types.INTEGER, columnName, value == null ? null : Long.valueOf(value));
+                dataColumn = new DataLong(this, 0, Types.INTEGER, columnName, value == null ? null : Long.valueOf(value));
                 break;
 
             case Types.BIGINT:
             case Types.NUMERIC:
-                dataColumn = new DataLong(0, Types.BIGINT, columnName, value == null ? null : Long.valueOf(value));
+                dataColumn = new DataLong(this, 0, Types.BIGINT, columnName, value == null ? null : Long.valueOf(value));
                 break;
 
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                dataColumn = new DataBigDecimal(0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
+                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
                 break;
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                dataColumn = new DataDate(0, Types.DATE, columnName, value);
+                dataColumn = new DataDate(this, 0, Types.DATE, columnName, value);
                 break;
 
             /*case Types.CHAR:
@@ -392,10 +402,10 @@ public class Application {
             case Types.NCHAR:
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
-                dataColumn = new DataString(0, Types.VARCHAR, columnName, value);
+                dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
                 break;*/
             default:
-                dataColumn = new DataString(0, Types.VARCHAR, columnName, value);
+                dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
         }
 
         return dataColumn;

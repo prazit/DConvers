@@ -1,19 +1,21 @@
 package com.clevel.dconvers.ngin.data;
 
-import com.clevel.dconvers.ngin.ValidatorBase;
+import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.AppBase;
 
-public abstract class DataColumn extends ValidatorBase {
+public abstract class DataColumn extends AppBase {
 
-    protected String name;
     protected int index;
     protected int type;
     protected String quotes;
     protected String nullString;
 
-    DataColumn(int index, int type, String name) {
+    DataColumn(Application application, int index, int type, String name) {
+        super(application, name);
+
         this.index = index;
         this.type = type;
-        this.name = name;
+
         nullString = "null";
         quotes = "\"";
         valid = (index >= 0) && (name != null);
@@ -47,10 +49,6 @@ public abstract class DataColumn extends ValidatorBase {
         this.name = name;
     }
 
-    public String getNullString() {
-        return nullString;
-    }
-
     public void setNullString(String nullString) {
         this.nullString = nullString;
     }
@@ -58,7 +56,9 @@ public abstract class DataColumn extends ValidatorBase {
     public abstract String getQuotedValue();
 
     public abstract String getValue();
+
     public abstract String getFormattedValue(String pattern);
+
     public abstract void setValue(String value);
 
     public abstract DataColumn clone(String value);

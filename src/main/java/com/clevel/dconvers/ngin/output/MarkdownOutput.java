@@ -68,7 +68,7 @@ public class MarkdownOutput extends Output {
             try {
                 writer.write(headPrint);
             } catch (IOException e) {
-                log.error("MarkdownOutput: write the head print failed, {}", e.getMessage());
+                error("MarkdownOutput: write the head print failed, {}", e.getMessage());
                 return null;
             }
         }

@@ -72,7 +72,7 @@ public class MarkdownFormatter extends DataFormatter {
             }
         }
 
-        return eol + "# TABLE: " + dataTable.getTableName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getTableName() + ")</sup></sup>" + eol;
+        return eol + "# TABLE: " + dataTable.getName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getName() + ")</sup></sup>" + eol;
     }
 
     private void registerColumnWidth(int columnIndex, String value) {

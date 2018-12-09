@@ -91,7 +91,7 @@ public abstract class Output extends AppBase {
 
         SFTP sftp = application.sftpMap.get(postSFTP.sftp);
         if (sftp == null) {
-            log.error("The sftp({}) is not found, please check sftp name ({}).", postSFTP.sftp, postSFTP);
+            error("The sftp({}) is not found, please check sftp name ({}).", postSFTP.sftp, postSFTP);
             return false;
         }
 
@@ -111,7 +111,7 @@ public abstract class Output extends AppBase {
             if (autoCreateDir && autoCreateDir(outputFile)) {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
-                log.error("Output.createFile is failed! please check parameters(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
+                error("Output.createFile is failed! please check parameters(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
                 application.hasWarning = true;
                 try {
                     writer = new PrintWriter(new OutputStreamWriter(System.out, charset));

@@ -25,7 +25,7 @@ public class FormatCalc extends Calc {
         // format([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex],[formatPattern])
         String[] arguments = getArguments().split(",");
         if (arguments.length < 4) {
-            log.error("CAL:FORMAT need 4 arguments!, default value(\"{}\") is used.", value);
+            error("CAL:FORMAT need 4 arguments!, default value(\"{}\") is used.", value);
             return false;
         }
 
@@ -33,7 +33,7 @@ public class FormatCalc extends Calc {
         DataRow row = getDataRow(arguments[1], datatable);
         DataColumn column = getDataColumn(arguments[2], row);
         if (column == null) {
-            log.error("CAL:FORMAT. invalid value identifiers, please check FORMAT({})!, default value(\"{}\") is used.", getArguments(), value);
+            error("CAL:FORMAT. invalid value identifiers, please check FORMAT({})!, default value(\"{}\") is used.", getArguments(), value);
             return false;
         }
 
@@ -44,7 +44,7 @@ public class FormatCalc extends Calc {
 
     @Override
     protected DataColumn calculate() {
-        return new DataString(0, Types.VARCHAR, name, value);
+        return new DataString(application, 0, Types.VARCHAR, name, value);
     }
 
     @Override

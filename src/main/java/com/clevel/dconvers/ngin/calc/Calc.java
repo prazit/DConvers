@@ -38,7 +38,7 @@ public abstract class Calc extends UtilBase {
     public DataColumn calc() {
         if (!prepared) {
             if (!prepare()) {
-                return new DataString(0, Types.VARCHAR, "prepare_is_failed", "");
+                return new DataString(application, 0, Types.VARCHAR, "prepare_is_failed", "");
             }
             prepared = true;
         }
