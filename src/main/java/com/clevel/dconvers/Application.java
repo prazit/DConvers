@@ -226,7 +226,7 @@ public class Application {
         closeAllDataSource();
 
         log.info("SUCCESS\n\n");
-        System.exit(0);
+        System.exit(dataConversionConfigFile.getSuccessCode());
     }
 
     public void stopWithError() {
@@ -236,7 +236,7 @@ public class Application {
         closeAllDataSource();
 
         log.info("EXIT WITH SOME ERROR\n\n");
-        System.exit(1);
+        System.exit(dataConversionConfigFile.getErrorCode());
     }
 
     public void stopWithWarning() {
@@ -246,7 +246,7 @@ public class Application {
         closeAllDataSource();
 
         log.info("SUCCESSFUL WITH WARNING\n\n");
-        System.exit(2);
+        System.exit(dataConversionConfigFile.getWarningCode());
     }
 
     private void closeAllDataSource() {

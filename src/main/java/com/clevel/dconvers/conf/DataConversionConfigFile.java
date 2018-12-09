@@ -36,6 +36,9 @@ public class DataConversionConfigFile extends ConfigFile {
     private int mappingFileNumber;
 
     private boolean exitOnError;
+    private int errorCode;
+    private int warningCode;
+    private int successCode;
 
     private boolean childValid;
 
@@ -70,6 +73,9 @@ public class DataConversionConfigFile extends ConfigFile {
         reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE),"");
 
         exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
+        successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), 0);
+        errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), 1);
+        warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), 2);
 
         List<Object> dataSourceNameList;
         try {
@@ -164,6 +170,18 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public boolean isExitOnError() {
         return exitOnError;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public int getWarningCode() {
+        return warningCode;
+    }
+
+    public int getSuccessCode() {
+        return successCode;
     }
 
     public int getReportFileNumber() {

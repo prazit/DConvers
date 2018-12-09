@@ -74,6 +74,14 @@ Conversion file is a properties file which contains 4 groups of property as foll
 
 #### Conversion Properties
 
+Property | Data Type | Default Value | Description
+---------|-----------|---------------|------------
+exit.on.error | boolean | true | true or false
+exit.code.success | int | 0 | customizable exit code for success 
+exit.code.error | int | 1 | customizable exit code for error 
+exit.code.warning | int | 2 | customizable exit code for warning 
+
+
 #### DataSource Properties 
 
 Property | Data Type | Default Value | Description
@@ -464,7 +472,7 @@ MORE | | | |
 
 #### System Variables
 
-System Variables are used for the Dynamic Value to get value from constant value or system value.
+System Variables used in the Dynamic Value Statement to get value from constant value or system value.
 
 ```
 syntax: VAR:NAME
