@@ -73,9 +73,9 @@ public class DataConversionConfigFile extends ConfigFile {
         reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE),"");
 
         exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
-        successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), 0);
-        errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), 1);
-        warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), 2);
+        successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), Defaults.EXIT_CODE_SUCCESS.getIntValue());
+        errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()),  Defaults.EXIT_CODE_ERROR.getIntValue());
+        warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()),  Defaults.EXIT_CODE_WARNING.getIntValue());
 
         List<Object> dataSourceNameList;
         try {

@@ -47,6 +47,8 @@ public class Application {
     public DataString progressMessages;
     public boolean hasWarning;
 
+    private Date appStartDate;
+
     public Application(String[] args) {
         this.args = args;
         loadLogger();
@@ -73,6 +75,8 @@ public class Application {
     }
 
     public void start() {
+        appStartDate = new Date();
+
         initSystemVariables();
 
         switches = new Switches(this);
@@ -205,18 +209,17 @@ public class Application {
     private void initSystemVariables() {
         systemVariableMap = createSystemVariableMap();
 
+        systemVariableMap.put(SystemVariable.NOW,new ComputeNow("NOW"));
+        systemVariableMap.get(SystemVariable.EMPTY_STRING).setValue("");
+        ((DataDate)systemVariableMap.get(SystemVariable.APPLICATION_START)).setValue(appStartDate);
+        ((DataLong) systemVariableMap.get(SystemVariable.CURRENT_STATE)).setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
+
         errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
         warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
         progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
         errorMessages.setValue("");
         warningMessages.setValue("");
         progressMessages.setValue("");
-
-        DataString emptyString = (DataString) systemVariableMap.get(SystemVariable.EMPTY_STRING);
-        emptyString.setValue("");
-
-        DataDate now = (DataDate) systemVariableMap.get(SystemVariable.NOW);
-        now.setValue(new Date());
     }
 
     public void stop() {

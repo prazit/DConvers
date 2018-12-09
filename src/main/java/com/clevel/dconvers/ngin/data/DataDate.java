@@ -56,6 +56,8 @@ public class DataDate extends DataColumn {
 
     @Override
     public String getQuotedValue() {
+        Date value = getDateValue();
+
         if (value == null) {
             return nullString;
         }
@@ -83,11 +85,13 @@ public class DataDate extends DataColumn {
 
     @Override
     public String getValue() {
+        Date value = getDateValue();
         return format(value, Defaults.DATE_FORMAT.getStringValue());
     }
 
     @Override
     public String getFormattedValue(String format) {
+        Date value = getDateValue();
         return format(value, format);
     }
 

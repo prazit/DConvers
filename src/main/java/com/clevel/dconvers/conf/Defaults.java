@@ -13,6 +13,10 @@ public enum Defaults {
 
     DATE_FORMAT("yyyy/MM/dd HH:mm:ss"),
     NUMBER_FORMAT("#,##0.00"),
+
+    EXIT_CODE_SUCCESS(0),
+    EXIT_CODE_ERROR(1),
+    EXIT_CODE_WARNING(2)
     ;
 
     private int type;

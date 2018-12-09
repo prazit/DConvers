@@ -8,6 +8,7 @@ public enum SystemVariable {
     TARGET_FILE_NUMBER(Types.INTEGER),
     MAPPING_FILE_NUMBER(Types.INTEGER),
 
+    // Reset every time to start the process of datatable.
     ROW_NUMBER(Types.INTEGER),
 
     // System Messages to see detail of status
@@ -15,9 +16,14 @@ public enum SystemVariable {
     WARNING_MESSAGES(Types.VARCHAR),
     PROGRESS_MESSAGES(Types.VARCHAR),
 
+    // EXIT CODE for now
+    CURRENT_STATE(Types.INTEGER),
+
     // Constant values for configuration
     EMPTY_STRING(Types.VARCHAR),    // ""
-    NOW(Types.TIMESTAMP),           // Time to start the application
+    APPLICATION_START(Types.TIMESTAMP),     // The time to start this application.
+
+    NOW(Types.TIMESTAMP),                   // Time in realtime.
     ;
 
     private int dataType;
