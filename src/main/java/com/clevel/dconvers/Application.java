@@ -29,7 +29,6 @@ import java.util.*;
 public class Application extends AppBase {
 
     public String[] args;
-    public Logger log;
     public Switches switches;
 
     public DataConversionConfigFile dataConversionConfigFile;
@@ -47,7 +46,9 @@ public class Application extends AppBase {
     public DataString errorMessages;
     public DataString warningMessages;
     public DataString progressMessages;
+
     public boolean hasWarning;
+    public boolean exitOnError;
 
     private Date appStartDate;
 
@@ -58,6 +59,7 @@ public class Application extends AppBase {
 
         reportTable = new DataTable(this, "Report", "id");
         hasWarning = false;
+        exitOnError = false;
 
         currentConverter = null;
     }
@@ -82,6 +84,7 @@ public class Application extends AppBase {
 
     public void start() {
         appStartDate = new Date();
+        this.application = this;
 
         initSystemVariables();
 
@@ -106,12 +109,12 @@ public class Application extends AppBase {
             if (dataConversionConfigFile.isChildValid()) {
                 performInvalidConfigFile();
             } else {
-                stopWithError();
+                performInvalidConfigChild();
             }
         }
 
         boolean success = true;
-        boolean exitOnError = dataConversionConfigFile.isExitOnError();
+        exitOnError = dataConversionConfigFile.isExitOnError();
         log.debug("exit on error is '{}'", exitOnError);
 
         DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
@@ -182,19 +185,19 @@ public class Application extends AppBase {
         }
         log.info("Has {} converter(s)", converterList.size());
 
-        log.trace("Application. Launch Converters.");
+        log.trace("Application. Launch Converters to transfer, transform and create output.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
                 currentConverter = convert;
-                success = success && convert.convert();
-                success = success && convert.print();
+                success = convert.convert() && success;
+                success = convert.print() && success;
             }
         }
         currentConverter = null;
 
-        if (!success) {
+        if (!success && exitOnError) {
             stopWithError();
         }
 
@@ -203,6 +206,11 @@ public class Application extends AppBase {
         log.trace("Application. Run post process of each datasource.");
         for (DataSource dataSourceItem : dataSourceMap.values()) {
             dataSourceItem.runPost();
+        }
+
+        // Have some errors
+        if (currentState.getLongValue() == dataConversionConfigFile.getErrorCode()) {
+            stopWithError();
         }
 
         // Successful with warning
@@ -291,6 +299,7 @@ public class Application extends AppBase {
 
         error("Invalid CLI Switches({}) please see help below", switches);
         log.debug("invalid switches: {}", switches);
+
         performHelp();
         stopWithError();
     }
@@ -299,8 +308,20 @@ public class Application extends AppBase {
         log.trace("Application.performInvalidConfigFile.");
 
         error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
-        log.debug("source = {}", dataConversionConfigFile);
-        stopWithError();
+        log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
+        if (exitOnError) {
+            stopWithError();
+        }
+    }
+
+    private void performInvalidConfigChild() {
+        log.trace("Application.performInvalidConfigChild.");
+
+        error("Invalid Child of Configuration File({}) please check the file or see readme.md", switches.getSource());
+        log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
+        if (exitOnError) {
+            stopWithError();
+        }
     }
 
     private void performInvalidDataSource(DataSource dataSource) {
@@ -308,7 +329,9 @@ public class Application extends AppBase {
 
         error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
-        stopWithError();
+        if (exitOnError) {
+            stopWithError();
+        }
     }
 
     private void performInvalidSFTP(SFTP sftp) {
@@ -316,7 +339,9 @@ public class Application extends AppBase {
 
         error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
-        stopWithError();
+        if (exitOnError) {
+            stopWithError();
+        }
     }
 
     private void performInvalidConverter(Converter converter) {
@@ -324,7 +349,9 @@ public class Application extends AppBase {
 
         error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
         log.debug("converter = {}", converter);
-        stopWithError();
+        if (exitOnError) {
+            stopWithError();
+        }
     }
 
     private void performHelp() {

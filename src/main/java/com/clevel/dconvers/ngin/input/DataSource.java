@@ -79,8 +79,12 @@ public class DataSource extends AppBase {
     }
 
     public DataTable getDataTable(String tableName, String idColumnName, String query) {
-        log.trace("DataSource.getDataTable.");
+        if (!isValid()) {
+            log.info("DataSource({}).getDataTable return null for invalid datasource.", name);
+            return null;
+        }
 
+        log.trace("DataSource.getDataTable.");
         DataTable dataTable;
         Statement statement = null;
         CallableStatement callableStatement = null;

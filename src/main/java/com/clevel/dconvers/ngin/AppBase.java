@@ -47,27 +47,27 @@ public abstract class AppBase extends ValidatorBase {
     }
 
     public void error(String format, Object arg1, Object arg2) {
-        error(format, arg1, arg2);
+        log.error(format, arg1, arg2);
         afterError();
     }
 
     public void error(String format, Object... arguments) {
-        error(format, arguments);
+        log.error(format, arguments);
         afterError();
     }
 
     public void error(String format, Object arg) {
-        error(format, arg);
+        log.error(format, arg);
         afterError();
     }
 
     public void error(String msg, Throwable t) {
-        error(msg, t);
+        log.error(msg, t);
         afterError();
     }
 
     public void error(String msg) {
-        error(msg);
+        log.error(msg);
         afterError();
     }
 

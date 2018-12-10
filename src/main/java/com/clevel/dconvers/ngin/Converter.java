@@ -43,7 +43,7 @@ public class Converter extends AppBase {
 
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
         mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
-        exitOnError = dataConversionConfigFile.isExitOnError();
+        exitOnError = application.exitOnError;
 
         valid = prepare();
         if (valid) {
@@ -118,24 +118,28 @@ public class Converter extends AppBase {
 
     public boolean convert() {
         log.trace("Converter({}).convert", name);
-        boolean successOrFailure = true;
+        boolean success = true;
 
+        DataTable sourceDataTable;
         for (Source source : sortedSource) {
-            valid = source.buildDataTable();
-            if (!valid) {
-                successOrFailure = false;
+            sourceDataTable = source.getDataTable();
+            if (sourceDataTable == null) {
+                success = false;
                 if (exitOnError) {
                     return false;
                 }
+                continue;
             }
+
+            log.info("SRC:{} has {} row(s)", source.getName(), sourceDataTable.getRowCount());
         }
-        log.info("{} source-table(s) are retrieved.", sortedSource.size());
+        log.info("Retrieved, {} source(s).", sortedSource.size());
 
         DataTable mapping;
         for (Target target : sortedTarget) {
             valid = target.buildDataTable();
             if (!valid) {
-                successOrFailure = false;
+                success = false;
                 if (exitOnError) {
                     return false;
                 }
@@ -146,7 +150,7 @@ public class Converter extends AppBase {
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
 
-        return successOrFailure;
+        return success;
     }
 
     public boolean print() {
@@ -161,14 +165,18 @@ public class Converter extends AppBase {
         OutputConfig outputConfig;
         DataTable dataTable;
 
+        // -- Outputs for Source Table
+
         for (Source source : sortedSource) {
             setCurrentTable(source.getDataTable());
             sourceFileNumber.increaseValueBy(1);
 
-            // -- Outputs for Source Table
+            dataTable = source.getDataTable();
+            if (dataTable == null) {
+                dataTable = new DataTable(application, source.getName(), "id", Collections.EMPTY_LIST, source);
+            }
 
             outputConfig = source.getSourceConfig().getOutputConfig();
-            dataTable = source.getDataTable();
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
@@ -181,6 +189,8 @@ public class Converter extends AppBase {
 
         }
 
+        // -- Outputs for Target Table and Mapping Table
+
         for (Target target : sortedTarget) {
             setCurrentTable(target.getDataTable());
             targetFileNumber.increaseValueBy(1);
@@ -188,8 +198,12 @@ public class Converter extends AppBase {
 
             // -- Outputs for Target Table
 
-            outputConfig = target.getTargetConfig().getOutputConfig();
             dataTable = target.getDataTable();
+            if (dataTable == null) {
+                dataTable = new DataTable(application, target.getName(), "id", Collections.EMPTY_LIST, target);
+            }
+
+            outputConfig = target.getTargetConfig().getOutputConfig();
             for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {

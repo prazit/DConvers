@@ -65,7 +65,6 @@ public class Source extends AppBase {
         if (dataTable == null) {
             return false;
         }
-        log.info("SRC:{} has {} row(s)", name, dataTable.getRowCount());
 
         dataTable.setOwner(this);
         return true;

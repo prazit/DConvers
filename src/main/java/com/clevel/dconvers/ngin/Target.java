@@ -57,7 +57,13 @@ public class Target extends AppBase {
     }
 
     private String getMappingTableName(String prefix, String sourceTableName, String targetTableName) {
-        return prefix + sourceTableName + "_to_" + targetTableName;
+        if (sourceTableName.indexOf(":") > 0) {
+            sourceTableName = sourceTableName.replaceAll("[:]", "");
+        } else {
+            sourceTableName = "SRC" + sourceTableName;
+        }
+        String name = prefix + sourceTableName + "_TO_TAR" + targetTableName;
+        return name.toUpperCase();
     }
 
     public boolean buildDataTable() {
@@ -109,6 +115,7 @@ public class Target extends AppBase {
                 source = converter.getSource(sourceName);
                 if (source == null) {
                     error("Source({}) is not found, required by Target({})", sourceName, name);
+                    valid = false;
                     return false;
                 }
                 sourceDataTable = source.getDataTable();
@@ -116,6 +123,7 @@ public class Target extends AppBase {
 
             if (sourceDataTable == null) {
                 error("Source({}) is not found, required by Target({})", sourceName, name);
+                valid = false;
                 return false;
             }
 
@@ -145,149 +153,14 @@ public class Target extends AppBase {
 
                     sourceColumnType = parseDynamicValueType(sourceColumnName);
                     sourceColumnTypeArg = sourceColumnName.length() > 4 ? sourceColumnName.substring(4) : "";
-                    switch (sourceColumnType) {
-                        case COL:
-                            String[] sourceColumnNames = sourceColumnName.split(">>");
-                            sourceColumnName = sourceColumnNames[0];
-                            targetColumn = sourceRow.getColumn(sourceColumnName);
-                            if (targetColumn == null) {
-                                progressBar.close();
-                                error("No column({}) in source({}) that required by target({})", sourceColumnName, sourceName, name);
-                                log.debug("source({}) has following columns {}", sourceName, sourceRow);
-                                return false;
-                            }
 
-                            String[] mappings = sourceColumnNames[1].split("[.]");
+                    targetColumn = getTargetColumn(progressBar, sourceName, sourceRow, sourceColumnName, sourceColumnType, sourceColumnTypeArg, targetColumnName, targetColumnIndex);
+                    if (targetColumn == null) {
+                        valid = false;
+                        return false;
+                    }
 
-                            DataTable asSourceTable = converter.getDataTable(mappings[0]);
-                            if (asSourceTable == null) {
-                                progressBar.close();
-                                error("No table({}) in converter({}) that required by target({})", mappings[0], converter.getName(), name);
-                                return false;
-                            }
-
-                            sourceColumnName = mappings[1];
-                            DataRow asSourceRow = asSourceTable.getRow(sourceColumnName, targetColumn.getValue());
-                            if (asSourceRow == null) {
-                                progressBar.close();
-                                error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({})", sourceColumnName, targetColumn.getValue(), asSourceTable.getName(), converter.getName(), name);
-                                log.debug("asSourceTable = {}", asSourceTable);
-                                return false;
-                            }
-
-                            sourceColumnName = sourceColumnNames[2];
-                            targetColumn = asSourceRow.getColumn(sourceColumnName);
-                            if (targetColumn == null) {
-                                progressBar.close();
-                                error("No column({}) in data-table({}) in converter({}) that required by target({})", sourceColumnName, mappings[0], converter.getName(), name);
-                                return false;
-                            }
-
-                            targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
-                            break;
-
-                        case TXT:
-                            String value = converter.valueFromFile(sourceColumnName);
-                            if (value == null) {
-                                return false;
-                            }
-                            targetColumn = application.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
-                            break;
-
-                        case CAL:
-                            String[] values = sourceColumnTypeArg.split("[()]");
-                            CalcTypes calcType = CalcTypes.parse(values[0]);
-                            if (calcType == null) {
-                                error("Invalid Calculator({}) for target column({})", sourceColumnTypeArg, targetColumnName);
-                                return false;
-                            }
-                            Calc calculator = CalcFactory.getCalc(application, calcType);
-                            calculator.setArguments(values[1]);
-                            targetColumn = calculator.calc();
-                            if (targetColumn == null) {
-                                return false;
-                            }
-                            targetColumn.setName(targetColumnName);
-                            break;
-
-                        case SRC:
-                        case TAR:
-                        case MAP:
-                            String[] dataTableParameters = sourceColumnName.split("[.]");
-                            value = converter.valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
-                            if (value == null) {
-                                return false;
-                            }
-                            targetColumn = application.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
-                            break;
-
-                        case VAR:
-                            SystemVariable systemVariable = SystemVariable.parse(sourceColumnTypeArg);
-                            if (systemVariable == null) {
-                                progressBar.close();
-                                error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
-                                return false;
-                            }
-                            targetColumn = application.systemVariableMap.get(systemVariable);
-                            targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
-                            break;
-
-                        case ARG:
-                            int argIndex;
-                            try {
-                                argIndex = Integer.parseInt(sourceColumnTypeArg) - 1;
-                            } catch (Exception ex) {
-                                log.warn("{}, invalid argument index, first argument is returned", sourceColumnName);
-                                argIndex = 0;
-                            }
-                            String[] args = application.args;
-                            if (argIndex < 0) {
-                                log.warn("{}, invalid argument index({}), argument index is start at 1", sourceColumnName, argIndex + 1);
-                                argIndex = 0;
-                            } else if (argIndex > args.length) {
-                                log.warn("{}, invalid argument index({}), last argument index is {}", sourceColumnName, args.length);
-                                argIndex = args.length - 1;
-                            }
-                            targetColumn = application.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
-                            break;
-
-                        case NON:
-                            targetColumn = sourceRow.getColumn(sourceColumnName);
-                            if (targetColumn == null) {
-                                progressBar.close();
-                                error("No column({}) in source({}) that required by target({})", sourceColumnName, sourceName, name);
-                                return false;
-                            }
-
-                            targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
-                            break;
-
-                        case INV:
-                            progressBar.close();
-                            error("Invalid source-column({}) for target-column({})", sourceColumnName, targetColumnName);
-                            return false;
-
-                        default: // constants
-                            if (sourceColumnTypeArg.compareToIgnoreCase("NULL") == 0) {
-                                sourceColumnTypeArg = null;
-                            }
-
-                            targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnTypeArg);
-                            if (targetColumn == null) {
-                                progressBar.close();
-                                error("Invalid constant({}) for {} that required by target column({})", sourceColumnTypeArg, sourceColumnType.name(), targetColumnName);
-                                return false;
-                            }
-
-                            if (targetColumn.getType() == Types.VARCHAR) {
-                                value = targetColumn.getValue();
-                                value = converter.compileDynamicValues(value);
-                                targetColumn.setValue(value);
-                            }
-
-                    }// end of switch(sourceColumnType)
                     targetRow.putColumn(targetColumnName, targetColumn);
-
                 } // end of for(ColumnPair)
                 dataTable.addRow(targetRow);
 
@@ -299,6 +172,7 @@ public class Target extends AppBase {
                 if (targetColumn == null) {
                     progressBar.close();
                     error("Invalid target id({}) for target({}) that required by mapping table({})", targetIdColumnName, name, mappingTableName);
+                    valid = false;
                     return false;
                 }
                 mappingRow.putColumn(mappingTargetIdColumnName, targetColumn.clone(1, mappingTargetIdColumnName));
@@ -307,6 +181,7 @@ public class Target extends AppBase {
                 if (targetColumn == null) {
                     progressBar.close();
                     error("Invalid source id({}) for source({}) that required by mapping table({})", sourceIdColumnName, sourceName, mappingTableName);
+                    valid = false;
                     return false;
                 }
                 mappingRow.putColumn(mappingSourceIdColumnName, targetColumn.clone(1, mappingSourceIdColumnName));
@@ -341,6 +216,7 @@ public class Target extends AppBase {
             transform.setArgumentList(argumentList);
             if (!transform.transform(dataTable)) {
                 log.debug("Transform({}) is failed in Target({})", name, transformType.name());
+                valid = false;
                 return false;
             }
             log.info("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount() == 0) ? 0 : dataTable.getRow(0).getColumnCount());
@@ -354,50 +230,177 @@ public class Target extends AppBase {
             return DynamicValueType.NON;
         }
 
+        if (sourceColumnName.indexOf(">>") >= 0) {
+            return DynamicValueType.COL;
+        }
+
         char ch = sourceColumnName.charAt(3);
         if (ch != ':') {
-            if (sourceColumnName.indexOf(">>") >= 0) {
-                return DynamicValueType.COL;
-            }
             return DynamicValueType.NON;
         }
 
         String keyWord = sourceColumnName.substring(0, 3).toUpperCase();
-        DynamicValueType sourceColumn;
+        DynamicValueType dynamicValueType;
         try {
-            sourceColumn = DynamicValueType.valueOf(keyWord);
+            dynamicValueType = DynamicValueType.valueOf(keyWord);
         } catch (IllegalArgumentException e) {
             return DynamicValueType.INV;
         }
 
-        return sourceColumn;
+        return dynamicValueType;
     }
 
-    private DataColumn getTargetColumn(String mappingTablePrefix, String sourceName, DataColumn sourceIdColumn, String targetName, String targetColumnName) {
-        Target target = converter.getTarget(targetName);
-        if (target == null) {
-            return null;
-        }
+    private DataColumn getTargetColumn(ProgressBar progressBar, String sourceName, DataRow sourceRow, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnTypeArg, String targetColumnName, int targetColumnIndex) {
+        DataColumn targetColumn;
 
-        DataTable targetTable = target.getDataTable();
-        String mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, targetTable.getName());
+        switch (sourceColumnType) {
+            case COL:
+                String[] sourceColumnNames = sourceColumnName.split(">>");
+                sourceColumnName = sourceColumnNames[0];
+                if (sourceColumnName.indexOf(":") > 0) {
+                    DynamicValueType sourceColumnType2 = parseDynamicValueType(sourceColumnName);
+                    String sourceColumnTypeArg2 = sourceColumnName.length() > 4 ? sourceColumnName.substring(4) : "";
+                    targetColumn = getTargetColumn(progressBar, sourceName, sourceRow, sourceColumnName, sourceColumnType2, sourceColumnTypeArg2, targetColumnName, targetColumnIndex);
+                } else {
+                    targetColumn = sourceRow.getColumn(sourceColumnName);
+                }
 
-        DataTable mappingTable = target.getMappingTable();
-        if (!mappingTable.getName().equals(mappingTableName)) {
-            error("No mapping table({}) between source({}) and target({})", mappingTableName, sourceName, target.getName());
-            return null;
-        }
+                if (targetColumn == null) {
+                    progressBar.close();
+                    error("No column({}) in source({}) that required by target({})", sourceColumnName, sourceName, name);
+                    log.debug("source({}) has following columns {}", sourceName, sourceRow);
+                    return null;
+                }
 
-        String sourceId = sourceIdColumn.getValue();
-        DataRow mappingRow = mappingTable.getRow(sourceId);
-        DataColumn targetIdColumn = mappingRow.getColumn(Property.TARGET_ID.key());
+                String[] mappings = sourceColumnNames[1].split("[.]");
 
-        DataRow targetRow = targetTable.getRow(targetIdColumn.getValue());
-        DataColumn targetColumn = targetRow.getColumn(targetColumnName);
-        if (targetColumn == null) {
-            error("No column({}) in target({})", targetColumnName, targetName);
-            return null;
-        }
+                DataTable asSourceTable = converter.getDataTable(mappings[0]);
+                if (asSourceTable == null) {
+                    progressBar.close();
+                    error("No table({}) in converter({}) that required by target({})", mappings[0], converter.getName(), name);
+                    return null;
+                }
+
+                sourceColumnName = mappings[1];
+                DataRow asSourceRow = asSourceTable.getRow(sourceColumnName, targetColumn.getValue());
+                if (asSourceRow == null) {
+                    progressBar.close();
+                    error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({})", sourceColumnName, targetColumn.getValue(), asSourceTable.getName(), converter.getName(), name);
+                    log.debug("asSourceTable = {}", asSourceTable);
+                    return null;
+                }
+
+                sourceColumnName = sourceColumnNames[2];
+                targetColumn = asSourceRow.getColumn(sourceColumnName);
+                if (targetColumn == null) {
+                    progressBar.close();
+                    error("No column({}) in data-table({}) in converter({}) that required by target({})", sourceColumnName, mappings[0], converter.getName(), name);
+                    return null;
+                }
+
+                targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
+                break;
+
+            case TXT:
+                String value = converter.valueFromFile(sourceColumnName);
+                if (value == null) {
+                    return null;
+                }
+                targetColumn = application.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
+                break;
+
+            case CAL:
+                String[] values = sourceColumnTypeArg.split("[()]");
+                CalcTypes calcType = CalcTypes.parse(values[0]);
+                if (calcType == null) {
+                    error("Invalid Calculator({}) for target column({})", sourceColumnTypeArg, targetColumnName);
+                    return null;
+                }
+                Calc calculator = CalcFactory.getCalc(application, calcType);
+                calculator.setArguments(values[1]);
+                targetColumn = calculator.calc();
+                if (targetColumn == null) {
+                    return null;
+                }
+                targetColumn.setName(targetColumnName);
+                break;
+
+            case SRC:
+            case TAR:
+            case MAP:
+                String[] dataTableParameters = sourceColumnName.split("[.]");
+                value = converter.valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
+                if (value == null) {
+                    return null;
+                }
+                targetColumn = application.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
+                break;
+
+            case VAR:
+                SystemVariable systemVariable = SystemVariable.parse(sourceColumnTypeArg);
+                if (systemVariable == null) {
+                    progressBar.close();
+                    error("Invalid name({}) for system variable of target column({})", sourceColumnName, targetColumnName);
+                    return null;
+                }
+                targetColumn = application.systemVariableMap.get(systemVariable);
+                targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
+                break;
+
+            case ARG:
+                int argIndex;
+                try {
+                    argIndex = Integer.parseInt(sourceColumnTypeArg) - 1;
+                } catch (Exception ex) {
+                    log.warn("{}, invalid argument index, first argument is returned", sourceColumnName);
+                    argIndex = 0;
+                }
+                String[] args = application.args;
+                if (argIndex < 0) {
+                    log.warn("{}, invalid argument index({}), argument index is start at 1", sourceColumnName, argIndex + 1);
+                    argIndex = 0;
+                } else if (argIndex > args.length) {
+                    log.warn("{}, invalid argument index({}), last argument index is {}", sourceColumnName, args.length);
+                    argIndex = args.length - 1;
+                }
+                targetColumn = application.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
+                break;
+
+            case NON:
+                targetColumn = sourceRow.getColumn(sourceColumnName);
+                if (targetColumn == null) {
+                    progressBar.close();
+                    error("No column({}) in source({}) that required by target({})", sourceColumnName, sourceName, name);
+                    return null;
+                }
+
+                targetColumn = targetColumn.clone(targetColumnIndex, targetColumnName);
+                break;
+
+            case INV:
+                progressBar.close();
+                error("Invalid source-column({}) for target-column({})", sourceColumnName, targetColumnName);
+                return null;
+
+            default: // constants
+                if (sourceColumnTypeArg.compareToIgnoreCase("NULL") == 0) {
+                    sourceColumnTypeArg = null;
+                }
+
+                targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnTypeArg);
+                if (targetColumn == null) {
+                    progressBar.close();
+                    error("Invalid constant({}) for {} that required by target column({})", sourceColumnTypeArg, sourceColumnType.name(), targetColumnName);
+                    return null;
+                }
+
+                if (targetColumn.getType() == Types.VARCHAR) {
+                    value = targetColumn.getValue();
+                    value = converter.compileDynamicValues(value);
+                    targetColumn.setValue(value);
+                }
+
+        }// end of switch(sourceColumnType)
 
         return targetColumn;
     }

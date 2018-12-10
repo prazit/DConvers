@@ -82,7 +82,7 @@ exit.code.error | int | 1 | customizable exit code for error
 exit.code.warning | int | 2 | customizable exit code for warning 
 
 
-#### DataSource Properties 
+#### List of DataSource Properties 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -94,7 +94,7 @@ datasource.quotes.name | string | ` | one character for quotes of string-value a
 datasource.quotes.value | string | " | one character for quotes of string-value and date-value
 
 
-#### SFTP Properties 
+#### List of SFTP Properties 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -104,7 +104,7 @@ sftp.user | string | null | user name to connect to SFTP server
 sftp.password | string | null | password to connect to SFTP server
 
 
-#### Converter File Properties 
+#### List of Converter Properties 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -140,11 +140,11 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 source.index | int | 0 | Some converters contain a lot of sources, this property make all sources are sorted by this index.
-source.datasource | string | empty string | Name of datasource to provide data for this source.
+source.datasource | string | empty string | Name of data provider for this source.
 source.query | string | empty string | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled)
 source.id | string | id | Name of column that contains a key value for a data table of this source.
-source.output | Property Set |  | see [Output Properties](#Output_Properties)
-source.transform | Property Set |  | see [Transform Properties](#Transform_Properties)
+source.output | List |  | see [Output Properties](#Output_Properties)
+source.transform | List |  | see [Transform Properties](#Transform_Properties)
 
 
 #### Target Properties
@@ -161,11 +161,12 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 target.index | int | 0 | Some converters contain a lot of sources, this property make all sources are sorted by this index.
-target.source | string | empty string | A query string is used to retrieve data from a datasource. In a query string can contains runtime contents called "Dynamic Value" (see Dynamic Value Expression for detailed)
+target.source | string | empty string | Name of source or comma separated names for this target.
+target.mapping | string | target name | Name of mapping table, mapping table store ID of source and target  
+target.mapping.output | List |  | see [Output Properties](#Output_Properties)
 target.id | string | id | name of primary key column, this is used by mapping table and used as default value of Output.DBUpdate.ID.
-target.[outputs] | Property Set |  | see [Output Properties](#Output_Properties)
-target.[transforms] | Property Set |  | see [Transform Properties](#Transform_Properties)
-
+target.output | List |  | see [Output Properties](#Output_Properties)
+target.transform | List |  | see [Transform Properties](#Transform_Properties)
 
 #### Output Properties
 
@@ -489,7 +490,7 @@ PROGRESS_MESSAGES | string | log message of the current status
 WARNING_MESSAGES | string | log message of all warning
 ERROR_MESSAGES | string | log message of all error
 ROW_NUMBER | int | row number will be reset at the beginning of any datatable processes.
-APPLICATION_STATE | int | current state of application, find exit.code in this document for detailed 
+APPLICATION_STATE | int | current state of application, find exit.code in this document for possible values 
 
 ##### Constant Values
 
@@ -497,8 +498,9 @@ NAME | Type | Description
 -----|------|-------------
 NOW | string | not for now, in fact this variable contains the time to start application.
 EMPTY_STRING | string | "" for some configuration that has another default string.
+APPLICATION_START | datetime | date and time at start of this application   
 
-> You can see full list in the source code of SystemVariable.java
+> You can see full list in source code of SystemVariable.java
 
 
 #### Fixed Length Format
