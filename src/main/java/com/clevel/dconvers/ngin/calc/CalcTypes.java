@@ -7,7 +7,8 @@ public enum CalcTypes {
     ROWCOUNT(RowCountCalc.class),
     FORMAT(FormatCalc.class),
     SUM(SumCalc.class),
-    GET(GetCalc.class);
+    GET(GetCalc.class),
+    COMPILE(CompileCalc.class);
 
     private Class calcClass;
 

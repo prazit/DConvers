@@ -73,7 +73,7 @@ public class Converter extends AppBase {
             name = sourceConfig.getName();
             source = new Source(application, name, this, sourceConfig);
             valid = source.isValid();
-            if (!valid) {
+            if (!valid && exitOnError) {
                 return false;
             }
             sourceMap.put(name, source);
@@ -88,7 +88,7 @@ public class Converter extends AppBase {
             name = targetConfig.getName();
             target = new Target(application, name, this, targetConfig);
             valid = target.isValid();
-            if (!valid) {
+            if (!valid && exitOnError) {
                 return false;
             }
             targetMap.put(name, target);
@@ -404,10 +404,10 @@ public class Converter extends AppBase {
             }
 
         } catch (FileNotFoundException fx) {
-            error("SQLSource.queryFromFile. file not found: {}", fx.getMessage());
+            error("Converter.valueFromFile({}). file not found: {}", fileName, fx.getMessage());
 
         } catch (Exception ex) {
-            error("SQLSource.queryFromFile. has exception: {}", ex);
+            error("Converter.valueFromFile({}). has exception: {}", fileName, ex);
 
         } finally {
             if (br != null) {

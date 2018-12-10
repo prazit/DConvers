@@ -2,12 +2,14 @@ package com.clevel.dconvers.ngin.transform;
 
 public enum TransformTypes {
 
-    FIXEDLENGTH(FixedLengthTransform.class),
+    COMPILE(CompileTransform.class),
     CONCAT(ConcatTransform.class),
+    FIXEDLENGTH(FixedLengthTransform.class),
+    FORMAT(FormatTransform.class),
+    GET(GetTransform.class),
     REMOVE(RemoveTransform.class),
     ROWCOUNT(RowCountTransform.class),
-    SUM(SumTransform.class),
-    FORMAT(FormatTransform.class);
+    SUM(SumTransform.class);
 
     private Class transformClass;
 

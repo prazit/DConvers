@@ -58,11 +58,11 @@ public class Target extends AppBase {
 
     private String getMappingTableName(String prefix, String sourceTableName, String targetTableName) {
         if (sourceTableName.indexOf(":") > 0) {
-            sourceTableName = sourceTableName.replaceAll("[:]", "");
+            sourceTableName = sourceTableName.replaceAll("[:]", "_");
         } else {
-            sourceTableName = "SRC" + sourceTableName;
+            sourceTableName = "SRC_" + sourceTableName;
         }
-        String name = prefix + sourceTableName + "_TO_TAR" + targetTableName;
+        String name = prefix + sourceTableName + "_TO_TAR_" + targetTableName;
         return name.toUpperCase();
     }
 
