@@ -135,6 +135,7 @@ public class MarkdownFormatter extends DataFormatter {
                     valueLength = 4;
                 } else {
                     value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
+                    value = value.replaceAll("[|]", "&vert;");
                     valueLength = value.length();
                 }
                 width = columnWidth.get(columnIndex);
