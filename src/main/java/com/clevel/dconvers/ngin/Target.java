@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +28,10 @@ public class Target extends AppBase {
     private Converter converter;
     private TargetConfig targetConfig;
 
-    private List<String> sourceList;
-
     private DataTable dataTable;
-    private DataTable mappingTable;
+
+    private List<String> sourceList;
+    private List<DataTable> mappingTableList;
 
     public Target(Application application, String name, Converter converter, TargetConfig targetConfig) {
         super(application, name);
@@ -47,6 +48,7 @@ public class Target extends AppBase {
         log.trace("Target({}).prepare.", name);
 
         sourceList = targetConfig.getSourceList();
+        mappingTableList = new ArrayList<>();
 
         return true;
     }
@@ -101,6 +103,7 @@ public class Target extends AppBase {
         List<DataRow> sourceRowList;
         int rowCount;
 
+        DataTable mappingTable;
         ProgressBar progressBar;
         for (String sourceName : sourceList) {
             log.debug("Target({}).buildDataTable from sourceName({})", name, sourceName);
@@ -108,6 +111,7 @@ public class Target extends AppBase {
             mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, name);
             mappingTable = new DataTable(application, mappingTableName, mappingTargetIdColumnName);
             mappingTable.setOwner(dataTable);
+            mappingTableList.add(mappingTable);
 
             if (sourceName.indexOf(":") > 0) {
                 sourceDataTable = converter.getDataTable(sourceName);
@@ -418,8 +422,8 @@ public class Target extends AppBase {
         return dataTable;
     }
 
-    public DataTable getMappingTable() {
-        return mappingTable;
+    public List<DataTable> getMappingTableList() {
+        return mappingTableList;
     }
 
 }

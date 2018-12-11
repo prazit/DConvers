@@ -35,6 +35,7 @@ public enum Property {
     GENERATE_TARGET("gen"),
 
     TARGET("target"),
+    MAPPING("mapping"),
     CREATE("create"),
     INSERT("insert"),
     UPDATE("update"),

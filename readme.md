@@ -1,66 +1,54 @@
 
-# DConvers<br/>
+# DConvers<br/><sup><sup><sup>(Data Conversion)</sup></sup></sup>
 
 DConvers or Data Conversion is a small program with the basic concept to convert data from source table to target table. 
+But, now has more features to transform data before write to many outputs and the following table show existing inputs and outputs.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+| Name | Data Source Name<br/>(Input) | Output Property Name |
+|------|-------------------------|--------|
+| Database | user's datasource name | DBInsert, DBUpdate |
+| SQL File (Insert) | SQL | SQL |
+| Markdown Table | MARKDOWN | MARKDOWN |
+| Email | EMAIL | - |
+| PDF | PDF | - |
+| Fixed Length | - | TXT |
+| CSV | - | CSV |
+| Configuration Generator for source | - | SRC | 
+| Configuration Generator for target | - | TAR | 
 
 ### Prerequisites
 
-To run this program as well, you need JDK 1.8 and some predefined configuration (datasources,sources,targets). Data sources and converter files are defined within a [conversion file](#ConversionFile), sources and targets are in a [converter file](#ConverterFile).  
-  
-Database driver library is required for some datasource.   
+To run this program as well, you might need to install JDK 1.8 and need to write some configuration (datasources,sftps,converters,sources,targets).
+List of datasource and list of converter file must be defined in a [conversion file](#ConversionFile).
+List of source and list of target must be defined in one or more [converter file](#ConverterFile).  
 
-```
-your-conversion.conf     # store datasources and converters
-converter-1.conf         # store sources and targets as set number 1
-converter-2.conf         # store sources and targets as set number 2
-```
+> Library of database driver are required for user's datasource.   
 
-### Installation
+DConvers is a command line tool built on JDK 1.8 (java application), you need a command line terminal to run the java application. 
+In a terminal, type this command to run sample-conversion.conf 
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
+```batch
+"%JAVA_HOME%\bin\java.exe" -Xms64m -Xmx256m -Dfile.encoding=UTF-8 -classpath "bin\dconvers.jar" com.clevel.dconvers.Main --source=sample-conversion.conf
 ```
 
-And repeat
+And type this command to show help.
 
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-### Run
-
-DConvers is a command line tool built on JDK1.8 call java application, you need a command line terminal to run java application. Try commands below to run sample-conversion.conf 
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
+```batch
+"%JAVA_HOME%\bin\java.exe" -Xms64m -Xmx256m -Dfile.encoding=UTF-8 -classpath "bin\dconvers.jar" com.clevel.dconvers.Main --source=sample-conversion.conf --help
+``` 
 
 ## Configuring
 
 Explain how to write the configuration files before run the DConvers application.  
-All configuration files in DConvers project are the standard properties file.
+All configuration files in DConvers project are in standard properties file format.
 The possible values for any property is depends on the DataType of the property as described below
 
 Data Type | Possible Values | Remark
 ----------|-----------------|-------
 bool | true, false | boolean
 int | 0,1,2,3,... | long number
-dec | 0.00,... | decimal number
-string | all string | character array as string
-
+dec | 0.00,... | big decimal number
+string | string | character array as string
 
 ### Conversion File
 
@@ -68,9 +56,9 @@ string | all string | character array as string
 
 Conversion file is a properties file which contains 4 groups of property as follow
 1 Conversion Properties
-2 DataSource Properties 
-3 SFTP Properties 
-4 Converter File Properties 
+2 List of DataSource Properties 
+3 List of SFTP Properties 
+4 List of Converter File 
 
 #### Conversion Properties
 
@@ -82,7 +70,7 @@ exit.code.error | int | 1 | customizable exit code for error
 exit.code.warning | int | 2 | customizable exit code for warning 
 
 
-#### List of DataSource Properties 
+#### DataSource Properties 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -94,7 +82,7 @@ datasource.quotes.name | string | ` | one character for quotes of string-value a
 datasource.quotes.value | string | " | one character for quotes of string-value and date-value
 
 
-#### List of SFTP Properties 
+#### SFTP Properties 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -104,7 +92,7 @@ sftp.user | string | null | user name to connect to SFTP server
 sftp.password | string | null | password to connect to SFTP server
 
 
-#### List of Converter Properties 
+#### Converter File Property 
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -115,8 +103,8 @@ converter | string | null | list of the converter files
 
 Converter file is a properties file which contains 3 groups of property as follow
 1 Converter Properties
-2 Source Properties
-3 Target Properties
+2 List of Source Properties
+3 List of Target Properties
 
 #### Converter Properties
 
@@ -180,7 +168,6 @@ The DConvers program has 7 optional output types with different set of property,
 - DBUpdate Output (execute sql update)
 - Configuration File Output (create converter configuration that can use to backup data from database)
 
-
 ##### SQL Output Properties
 
 Property | Data Type | Default Value | Description
@@ -205,7 +192,6 @@ sql.post | string | null | your sql statements to put at the end of file
 
 > Remark: SQL Output for MySQL may be need property sql.post=SET FOREIGN_KEY_CHECKS = 0;
 
-
 ##### Markdown Output Properties
 
 Property | Data Type | Default Value | Description
@@ -220,7 +206,6 @@ markdown.charset | string | UTF-8 | name of character set
 markdown.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
 markdown.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
 
-
 ##### PDF Output Properties
 
 Property | Data Type | Default Value | Description
@@ -231,7 +216,6 @@ pdf.sftp.output | string | null | custom output file name to put on the sftp ser
 pdf.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 pdf.create.dir | bool | true | auto create directory for non-existing path. 
 pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
-
 
 ##### TXT Output Properties
 
@@ -254,7 +238,6 @@ txt.fill.string | char(1) | blank:right | the character to fill the string colum
 txt.fill.number | char(1) | 0:left | the character to fill the number column 
 txt.fill.date | char(1) | blank:right | the character to fill the date column 
 
-
 ##### CSV Output Properties
 
 Property | Data Type | Default Value | Description
@@ -275,7 +258,6 @@ csv.format.decimal | string | #,##0.00 | decimal format (pattern)
 csv.format.date | string | yyyyMMdd | date format (pattern)
 csv.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 
-
 ##### DBInsert Output Properties
 
 Property | Data Type | Default Value | Description
@@ -287,7 +269,6 @@ dbinsert.quotes.name | string | empty | one character for quotes of table-name a
 dbinsert.quotes.value | string | empty | one character for quotes of string-value and date-value
 dbinsert.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbinsert.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
-
 
 ##### DBUpdate Output Properties
 
@@ -302,8 +283,7 @@ dbupdate.quotes.value | string | empty | one character for quotes of string-valu
 dbupdate.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbupdate.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
 
-
-##### Converter Source Output Properties
+##### Configuration Generator for Source Properties
 
 Generate source configuration for each table-name in the DataTable.
 
@@ -323,8 +303,7 @@ src.id | string | id_name | column name in current table that store Column Name 
 src.datasource | string | datasource-name | datasource name for all sources
 src.outputs | string | sql,md | comma separated output-type-name
 
-
-##### Converter Target Output Properties
+##### Configuration Generator for Target Properties
 
 Generate target configuration for each sources in the current converter file.(one target for one source)
 
@@ -343,25 +322,14 @@ tar.eol | string | \n | characters put at the end of line. (Dynamic Value Enable
 tar.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
 tar.outputs | string | sql,md | comma separated output-type-name
 
-
 #### Transform Properties
 
 ```properties
 Systax> TRANSFORMATION(argument1,argument2,..),TRANSFORMATION(argument1,argument2,..),..
 ```
 
-The DConvers program has only 3 types for the transformers, described as following
-1. (CC) Calculation using Current Table and choose to insert as new column or replace existing column
-2. (CA) Calculation using Another Table and choose to insert as new column or replace existing column
-3. (RC) Remove Column by specified index/condition
-
-And now, has only 3 transformer function with different set of property, they are listed below
-- CC.fixedlength function - format value of specified columns and choose to insert as new column or replace existing column
-- CC.concat function - concat value of specified columns and choose to insert as new column or replace existing column
-- CC.calc function - calculate value by basic column expression and choose to insert as new column or replace existing column
-    + column expression is basic math expression using only the index of column, see Column Expression for detailed
-- CA.rowcount function - count rows of the specified table and choose to insert as new column or replace existing column
-- RC.remove function - remove specified columns
+The transform function for a target is a calculator which insert/replace result as a column into current datatable.
+And now have many transform functions that are listed below
 
 ##### FixedLength Transformer Function Properties
 

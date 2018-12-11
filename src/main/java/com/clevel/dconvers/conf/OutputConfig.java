@@ -161,7 +161,7 @@ public class OutputConfig extends Config {
         srcId = "COLUMN_NAME";             // name of column to use as column name
         srcDataSource = "datasource-name";
         srcOutputs = "sql,md";
-        srcOutput = baseProperty + ".conf";
+        srcOutput = "$[CAL:NAME(current)].conf";
         srcOutputAppend = false;
         srcOutputAutoCreateDir = true;
         srcOutputCharset = "UTF-8";
@@ -192,7 +192,7 @@ public class OutputConfig extends Config {
         // Default Properties for Target
         tar = false;
         tarOutputs = "sql,md";
-        tarOutput = baseProperty + ".conf";
+        tarOutput = "$[CAL:NAME(current)].conf";
         tarOutputAppend = false;
         tarOutputAutoCreateDir = true;
         tarOutputCharset = "UTF-8";
@@ -221,7 +221,7 @@ public class OutputConfig extends Config {
         sql = false;
         sqlSftp = null;
         sqlSftpOutput = null;
-        sqlOutput = baseProperty + ".sql";
+        sqlOutput = "$[CAL:NAME(current)].sql";
         sqlOutputAppend = false;
         sqlOutputAutoCreateDir = true;
         sqlOutputCharset = "UTF-8";
@@ -264,7 +264,7 @@ public class OutputConfig extends Config {
         markdown = false;
         markdownSftp = null;
         markdownSftpOutput = null;
-        markdownOutput = baseProperty + ".md";
+        markdownOutput = "$[CAL:NAME(current)].md";
         markdownOutputAppend = false;
         markdownOutputAutoCreateDir = true;
         markdownOutputCharset = "UTF-8";
@@ -291,7 +291,7 @@ public class OutputConfig extends Config {
         pdf = false;
         pdfSftp = null;
         pdfSftpOutput = null;
-        pdfOutput = baseProperty + ".md";
+        pdfOutput = "$[CAL:NAME(current)].md";
         pdfOutputAutoCreateDir = true;
         pdfJRXML = "";
 
@@ -317,7 +317,7 @@ public class OutputConfig extends Config {
         txt = false;
         txtSftp = null;
         txtSftpOutput = null;
-        txtOutput = baseProperty + ".txt";
+        txtOutput = "$[CAL:NAME(current)].txt";
         txtOutputAppend = false;
         txtOutputAutoCreateDir = true;
         txtOutputCharset = "UTF-8";
@@ -358,7 +358,7 @@ public class OutputConfig extends Config {
         csv = false;
         csvSftp = null;
         csvSftpOutput = null;
-        csvOutput = baseProperty + ".csv";
+        csvOutput = "$[CAL:NAME(current)].csv";
         csvOutputAppend = false;
         csvOutputAutoCreateDir = true;
         csvOutputCharset = "UTF-8";

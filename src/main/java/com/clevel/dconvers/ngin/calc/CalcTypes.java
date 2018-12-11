@@ -4,11 +4,12 @@ import org.slf4j.LoggerFactory;
 
 public enum CalcTypes {
 
-    ROWCOUNT(RowCountCalc.class),
+    COMPILE(CompileCalc.class),
     FORMAT(FormatCalc.class),
-    SUM(SumCalc.class),
     GET(GetCalc.class),
-    COMPILE(CompileCalc.class);
+    NAME(NameCalc.class),
+    ROWCOUNT(RowCountCalc.class),
+    SUM(SumCalc.class);
 
     private Class calcClass;
 

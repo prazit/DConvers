@@ -135,7 +135,6 @@ public class Converter extends AppBase {
         }
         log.info("Retrieved, {} source(s).", sortedSource.size());
 
-        DataTable mapping;
         for (Target target : sortedTarget) {
             valid = target.buildDataTable();
             if (!valid) {
@@ -145,8 +144,9 @@ public class Converter extends AppBase {
                 }
             }
 
-            mapping = target.getMappingTable();
-            mappingTableMap.put(mapping.getName(), mapping);
+            for (DataTable mappingTable : target.getMappingTableList()) {
+                mappingTableMap.put(mappingTable.getName(), mappingTable);
+            }
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
 
@@ -167,6 +167,7 @@ public class Converter extends AppBase {
 
         // -- Outputs for Source Table
 
+        List<OutputTypes> outputTypeList;
         for (Source source : sortedSource) {
             setCurrentTable(source.getDataTable());
             sourceFileNumber.increaseValueBy(1);
@@ -177,7 +178,13 @@ public class Converter extends AppBase {
             }
 
             outputConfig = source.getSourceConfig().getOutputConfig();
-            for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
+            outputTypeList = outputConfig.getOutputTypeList();
+            for (OutputTypes outputType : outputTypeList) {
+                if (outputTypeList.size() == 0) {
+                    log.debug("no output config for source({})", dataTable.getName());
+                    continue;
+                }
+
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
                     success = false;
@@ -204,7 +211,13 @@ public class Converter extends AppBase {
             }
 
             outputConfig = target.getTargetConfig().getOutputConfig();
-            for (OutputTypes outputType : outputConfig.getOutputTypeList()) {
+            outputTypeList = outputConfig.getOutputTypeList();
+            for (OutputTypes outputType : outputTypeList) {
+                if (outputTypeList.size() == 0) {
+                    log.debug("no output config for target({})", dataTable.getName());
+                    continue;
+                }
+
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
                     success = false;
@@ -216,19 +229,25 @@ public class Converter extends AppBase {
 
             // -- Outputs for Mapping Table
 
-            /* TODO need output for MappingTable (create new Target.mappingOutputConfig and then uncomment this block)
             outputConfig = target.getTargetConfig().getMappingOutputConfig();
-            dataTable = target.getMappingTable();
+            outputTypeList = outputConfig.getOutputTypeList();
+            for (DataTable mappingTable : target.getMappingTableList()) {
+                setCurrentTable(mappingTable);
+                if (outputTypeList.size() == 0) {
+                    log.debug("no output config for mappingTable({})", mappingTable.getName());
+                    continue;
+                }
 
-            for (OutputTypes outputType : mappingOutputConfig.getOutputTypeList()) {
-                log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
-                if(!OutputFactory.getOutput(outputType).print(outputConfig, dataTable)) {
-                    success = false;
-                    if (exitOnError) {
-                        return false;
+                for (OutputTypes outputType : outputTypeList) {
+                    log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
+                    if (!OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable)) {
+                        success = false;
+                        if (exitOnError) {
+                            return false;
+                        }
                     }
                 }
-            }*/
+            }
 
         }
 

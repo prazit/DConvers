@@ -17,6 +17,7 @@ public class TargetConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
     private OutputConfig outputConfig;
+    private OutputConfig mappingOutputConfig;
     private TransformConfig transformConfig;
 
     private int index;
@@ -36,12 +37,20 @@ public class TargetConfig extends Config {
 
         valid = loadProperties();
         if (valid) valid = validate();
+
+        String targetBaseProperty = Property.TARGET.connectKey(name);
         if (valid) {
-            outputConfig = new OutputConfig(application, Property.TARGET.connectKey(name), properties);
+            outputConfig = new OutputConfig(application, targetBaseProperty, properties);
             valid = outputConfig.isValid();
         }
+
         if (valid) {
-            transformConfig = new TransformConfig(application, Property.TARGET.connectKey(name), properties);
+            mappingOutputConfig = new OutputConfig(application, Property.MAPPING.prefixKey(targetBaseProperty), properties);
+            valid = outputConfig.isValid();
+        }
+
+        if (valid) {
+            transformConfig = new TransformConfig(application, targetBaseProperty, properties);
             valid = transformConfig.isValid();
         }
 
@@ -116,6 +125,10 @@ public class TargetConfig extends Config {
 
     public OutputConfig getOutputConfig() {
         return outputConfig;
+    }
+
+    public OutputConfig getMappingOutputConfig() {
+        return mappingOutputConfig;
     }
 
     public TransformConfig getTransformConfig() {
