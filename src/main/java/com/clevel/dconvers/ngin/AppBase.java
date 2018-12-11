@@ -39,11 +39,11 @@ public abstract class AppBase extends ValidatorBase {
     protected abstract Logger loadLogger();
 
     private void afterError() {
-        application.currentState.setValue((long) application.dataConversionConfigFile.getErrorCode());
+        application.currentState.setValue(application.errorCode);
     }
 
     private void afterWarn() {
-        application.currentState.setValue((long) application.dataConversionConfigFile.getWarningCode());
+        application.currentState.setValue(application.warningCode);
     }
 
     public void error(String format, Object arg1, Object arg2) {

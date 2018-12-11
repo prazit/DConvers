@@ -20,6 +20,7 @@ public class Switches extends AppBase {
 
     private String source;
     private String logback;
+    private String arg;
     private boolean verbose;
     private Level verboseLevel;
     private boolean help;
@@ -93,6 +94,7 @@ public class Switches extends AppBase {
         }
 
         help = cmd.hasOption(Option.HELP.getShortOpt());
+        arg = cmd.getOptionValue(Option.ARG.getShortOpt());
 
         return true;
     }
@@ -127,6 +129,10 @@ public class Switches extends AppBase {
 
     public boolean isHelp() {
         return help;
+    }
+
+    public String getArg() {
+        return arg;
     }
 
     @Override

@@ -82,6 +82,7 @@ public enum Property {
     ARGUMENTS("arguments"),
     REPLACE("replace"),
     CURRENT("current"),
+    SYSTEM("system"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

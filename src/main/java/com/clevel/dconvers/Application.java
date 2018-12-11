@@ -8,10 +8,7 @@ import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.SFTP;
 import com.clevel.dconvers.ngin.data.*;
-import com.clevel.dconvers.ngin.input.DataSource;
-import com.clevel.dconvers.ngin.input.EmailDataSource;
-import com.clevel.dconvers.ngin.input.MarkdownDataSource;
-import com.clevel.dconvers.ngin.input.SQLDataSource;
+import com.clevel.dconvers.ngin.input.*;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +40,11 @@ public class Application extends AppBase {
 
     public DataTable reportTable;
 
-    public DataString errorMessages;
-    public DataString warningMessages;
-    public DataString progressMessages;
-
     public boolean hasWarning;
     public boolean exitOnError;
+    public long errorCode;
+    public long warningCode;
+    public long successCode;
 
     private Date appStartDate;
 
@@ -60,6 +56,10 @@ public class Application extends AppBase {
         reportTable = new DataTable(this, "Report", "id");
         hasWarning = false;
         exitOnError = false;
+
+        errorCode = Defaults.EXIT_CODE_ERROR.getIntValue();
+        warningCode = Defaults.EXIT_CODE_WARNING.getIntValue();
+        successCode = Defaults.EXIT_CODE_SUCCESS.getIntValue();
 
         currentConverter = null;
     }
@@ -113,6 +113,19 @@ public class Application extends AppBase {
             }
         }
 
+        errorCode = dataConversionConfigFile.getErrorCode();
+        warningCode = dataConversionConfigFile.getWarningCode();
+        successCode = dataConversionConfigFile.getSuccessCode();
+
+        long currentStatus = currentState.getLongValue();
+        if (currentStatus == Defaults.EXIT_CODE_SUCCESS.getIntValue()) {
+            currentState.setValue(successCode);
+        } else if (currentStatus == Defaults.EXIT_CODE_ERROR.getIntValue()) {
+            currentState.setValue(errorCode);
+        } else {
+            currentState.setValue(warningCode);
+        }
+
         boolean success = true;
         exitOnError = dataConversionConfigFile.isExitOnError();
         log.debug("exit on error is '{}'", exitOnError);
@@ -151,6 +164,9 @@ public class Application extends AppBase {
 
         dataSourceName = Property.MARKDOWN.key();
         dataSourceMap.put(dataSourceName, new MarkdownDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
+        dataSourceName = Property.SYSTEM.key();
+        dataSourceMap.put(dataSourceName, new SystemDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();
@@ -231,13 +247,6 @@ public class Application extends AppBase {
 
         currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
         currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
-
-        errorMessages = (DataString) systemVariableMap.get(SystemVariable.ERROR_MESSAGES);
-        warningMessages = (DataString) systemVariableMap.get(SystemVariable.WARNING_MESSAGES);
-        progressMessages = (DataString) systemVariableMap.get(SystemVariable.PROGRESS_MESSAGES);
-        errorMessages.setValue("");
-        warningMessages.setValue("");
-        progressMessages.setValue("");
     }
 
     public void stop() {
