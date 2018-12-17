@@ -406,6 +406,9 @@ public class Application extends AppBase {
      */
     public DataColumn createDataColumn(String columnName, int columnType, String value) {
         DataColumn dataColumn;
+        if (value != null && value.equalsIgnoreCase("NULL")) {
+            value = null;
+        }
 
         switch (columnType) {
             case Types.INTEGER:

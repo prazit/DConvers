@@ -3,14 +3,13 @@ package com.clevel.dconvers.ngin.input;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.SystemQuery;
-import com.clevel.dconvers.ngin.data.DataLong;
-import com.clevel.dconvers.ngin.data.DataRow;
-import com.clevel.dconvers.ngin.data.DataString;
-import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.conf.SystemVariable;
+import com.clevel.dconvers.ngin.data.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
+import java.util.*;
 
 public class SystemDataSource extends DataSource {
 
@@ -47,7 +46,7 @@ public class SystemDataSource extends DataSource {
             case ARG:
                 return arg();
 
-            case VARIABLES:
+            case VARIABLE:
                 return systemVariables();
 
             case ENVIRONMENT:
@@ -90,8 +89,36 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable systemVariables() {
-        // TODO: System Datasource > System Variables
-        return null;
+        Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+
+        DataTable dataTable = new DataTable(application, "SYSTEM_ARG", "INDEX");
+        DataRow dataRow;
+        String columnName;
+
+        int index = 0;
+        List<DataColumn> variables = (List<DataColumn>) systemVariableMap.values();
+        variables.sort(Comparator.comparing(DataColumn::getName));
+        for (DataColumn variable : variables) {
+            index++;
+
+            dataRow = new DataRow(application, dataTable);
+
+            columnName = "INDEX";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(index)));
+
+            columnName = "VAR";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, variable.getName()));
+
+            columnName = "TYPE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(variable.getType())));
+
+            columnName = "VALUE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, variable.getType(), variable.getValue()));
+
+            dataTable.addRow(dataRow);
+        }
+
+        return dataTable;
     }
 
 }

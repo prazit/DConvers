@@ -3,7 +3,7 @@ package com.clevel.dconvers.conf;
 public enum SystemQuery {
 
     ARG,
-    VARIABLES,
+    VARIABLE,
     ENVIRONMENT;
 
     public static SystemQuery parse(String name) {
