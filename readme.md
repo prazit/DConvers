@@ -1,13 +1,15 @@
 
 # DConvers<br/><sup><sup><sup>(Data Conversion)</sup></sup></sup>
 
-DConvers or Data Conversion is a small program with the basic concept to convert data from source table to target table. 
-But, now has more features to transform data before write to many outputs and the following table show existing inputs and outputs.
+DConvers is a small program with the basic concept to convert data from source table to target table. 
+But, now has many features that help to transform data in a target table before send to output formatter.
 
-| Name | Data Source Name<br/>(Input) | Output Property Name |
-|------|-------------------------|--------|
-| Database | user's datasource name | DBInsert, DBUpdate |
-| SQL File (Insert) | SQL | SQL |
+### Supported Datasource and Output
+
+| Data Provider | Input / Data Source Name | Output / Property Name |
+|---------------|--------------------------|------------------------|
+| Database | <user's datasource name> | DBInsert, DBUpdate |
+| SQL(Insert) File | SQL | SQL |
 | Markdown Table | MARKDOWN | MARKDOWN |
 | Email | EMAIL | - |
 | PDF | PDF | - |
@@ -18,13 +20,13 @@ But, now has more features to transform data before write to many outputs and th
 
 ### Prerequisites
 
-To run this program as well, you might need to install JDK 1.8 and need to write some configuration (datasources,sftps,converters,sources,targets).
-List of datasource and list of converter file must be defined in a [conversion file](#ConversionFile).
-List of source and list of target must be defined in one or more [converter file](#ConverterFile).  
+DConvers is a command line utility built on JDK 1.8 and you need a command line terminal like Windows CMD. 
+To run this program as well, you always need to write some configuration (datasources,sftps,converters,sources,targets).
+Define list of datasource and list of converter file in a [conversion file](#ConversionFile).
+Define list of source and list of target must be defined in one or more [converter file](#ConverterFile).  
 
 > Library of database driver are required for user's datasource.   
 
-DConvers is a command line tool built on JDK 1.8 (java application), you need a command line terminal to run the java application. 
 In a terminal, type this command to run sample-conversion.conf 
 
 ```batch
@@ -49,6 +51,7 @@ bool | true, false | boolean
 int | 0,1,2,3,... | long number
 dec | 0.00,... | big decimal number
 string | string | character array as string
+date | yyyy/MM/dd HH:mm:ss | date time string in the default pattern or custom pattern in a FORMAT calculator and some output configuration. 
 
 ### Conversion File
 
@@ -70,7 +73,7 @@ exit.code.error | int | 1 | customizable exit code for error
 exit.code.warning | int | 2 | customizable exit code for warning 
 
 
-#### DataSource Properties 
+#### DataSource Properties for Database
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -128,11 +131,23 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 source.index | int | 0 | Some converters contain a lot of sources, this property make all sources are sorted by this index.
-source.datasource | string | empty string | Name of data provider for this source.
+source.datasource | string | empty string | Name of data provider for this source, for possible values please see Datasource and Query.
 source.query | string | empty string | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled)
 source.id | string | id | Name of column that contains a key value for a data table of this source.
 source.output | List |  | see [Output Properties](#Output_Properties)
 source.transform | List |  | see [Transform Properties](#Transform_Properties)
+
+
+#### Datasource and Query
+
+| Data Provider | datasource | query (Dynamic Value Enabled) |
+|---------------|--------------------------|------------------------|
+| Database | <datasource name> | SQL String |
+| SQL(Insert) File | SQL | file-name |
+| Markdown(Table) File | MARKDOWN | file-name |
+| Email | EMAIL | Search String |
+| Fixed Length File | TXT | file-name |
+| CSV File | CSV | file-name |
 
 
 #### Target Properties
@@ -141,7 +156,6 @@ Before define the target properties, you need to enable the target property grou
 
 ```properties
 target=target_name
-target.target_name.property=value
 ```
 
 You can see full example in 'sample-converter.conf' file. However, the possible properties of the target are described in this table only. 
@@ -149,7 +163,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 target.index | int | 0 | Some converters contain a lot of sources, this property make all sources are sorted by this index.
-target.source | string | empty string | Name of source or comma separated names for this target.
+target.source | string | empty string | Name of source or comma separated names, you can put prefix tag 'TAR:' and 'MAP:' to use target and mapping as a source.
 target.mapping | string | target name | Name of mapping table, mapping table store ID of source and target  
 target.mapping.output | List |  | see [Output Properties](#Output_Properties)
 target.id | string | id | name of primary key column, this is used by mapping table and used as default value of Output.DBUpdate.ID.
