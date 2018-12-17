@@ -386,9 +386,11 @@ public class Target extends AppBase {
                 error("Invalid source-column({}) for target-column({})", sourceColumnName, targetColumnName);
                 return null;
 
-            default: // constants
+            default: // constant for STR, INT, DTE, DTT, DEC
                 if (sourceColumnTypeArg.compareToIgnoreCase("NULL") == 0) {
                     sourceColumnTypeArg = null;
+                } else if (sourceColumnTypeArg.contains("$[")) {
+                    sourceColumnTypeArg = converter.compileDynamicValues(sourceColumnTypeArg);
                 }
 
                 targetColumn = application.createDataColumn(targetColumnName, sourceColumnType.getDataType(), sourceColumnTypeArg);
