@@ -46,7 +46,11 @@ public class DataRow extends AppBase {
     }
 
     public DataColumn getColumn(int columnIndex) {
-        return columnList.get(columnIndex);
+        try {
+            return columnList.get(columnIndex);
+        } catch (IndexOutOfBoundsException ex) {
+            return null;
+        }
     }
 
     public Map<String, DataColumn> getColumnMap() {

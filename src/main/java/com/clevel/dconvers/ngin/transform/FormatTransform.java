@@ -16,7 +16,7 @@ public class FormatTransform extends Transform {
     @Override
     public boolean transform(DataTable dataTable) {
 
-        // format([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [rowIndex]],[columnIndex])
+        // format([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [rowIndex]],[columnIndex or columnName])
         String arguments = getArgument(Property.ARGUMENTS.key());
 
         String columnIdentifier = getFirstValue(arguments);

@@ -22,7 +22,7 @@ public class FormatCalc extends Calc {
     public boolean prepare() {
         value = "";
 
-        // format([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex],[formatPattern])
+        // format([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex or columnName],[formatPattern])
         String[] arguments = getArguments().split(",");
         if (arguments.length < 4) {
             error("CAL:FORMAT need 4 arguments!, default value(\"{}\") is used.", value);

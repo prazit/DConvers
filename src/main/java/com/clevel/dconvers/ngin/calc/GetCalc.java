@@ -25,7 +25,7 @@ public class GetCalc extends Calc {
         // get([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex])
         String[] arguments = getArguments().split(",");
         if (arguments.length < 3) {
-            error("CAL:GET need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex]). default value({}) is returned.", value);
+            error("CAL:GET need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex or columnName]). default value({}) is returned.", value);
             return false;
         }
 

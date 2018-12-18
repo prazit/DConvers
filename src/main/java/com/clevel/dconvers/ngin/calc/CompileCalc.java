@@ -22,7 +22,7 @@ public class CompileCalc extends Calc {
     protected boolean prepare() {
         value = "";
 
-        // compile([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex])
+        // compile([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex or columnName])
         String[] arguments = getArguments().split(",");
         if (arguments.length < 3) {
             error("CAL:COMPILE need 3 arguments([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex]). default value(\"\") is returned.");

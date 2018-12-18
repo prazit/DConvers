@@ -8,6 +8,7 @@ import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.sql.Types;
 
@@ -83,6 +84,13 @@ public abstract class Calc extends UtilBase {
             return null;
         }
 
-        return dataRow.getColumn(Integer.parseInt(columnIndex) - 1);
+        DataColumn dataColumn;
+        if (NumberUtils.isCreatable(columnIndex)) {
+            dataColumn = dataRow.getColumn(NumberUtils.createInteger(columnIndex) - 1);
+        } else {
+            dataColumn = dataRow.getColumn(columnIndex);
+        }
+        
+        return dataColumn;
     }
 }
