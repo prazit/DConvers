@@ -58,10 +58,11 @@ public class DataSourceConfig extends Config {
         pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), "");
         post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
 
-        generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
-
+        if (properties != null) {
+            generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
+            ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
+        }
         host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
-        ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
 
         valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
         nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))),"\"");

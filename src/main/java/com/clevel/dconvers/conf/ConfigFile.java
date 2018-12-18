@@ -5,7 +5,6 @@ import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -26,6 +25,8 @@ public abstract class ConfigFile extends Config {
             log.trace("load properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
             error("Load properties '{}' is failed!", configFile);
+            properties = new PropertiesConfiguration();
+            valid = false;
 
             if (log.isDebugEnabled()) {
                 StringWriter errors = new StringWriter();

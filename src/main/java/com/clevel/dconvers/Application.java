@@ -134,29 +134,34 @@ public class Application extends AppBase {
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()));
-        mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()));
-        sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()));
-        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber()));
+        targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()) - 1);
+        mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()) - 1);
+        sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()) - 1);
+        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber()) - 1);
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();
         DataSource dataSource;
         String dataSourceName;
-        for (DataSourceConfig dataSourceConfig : dataConversionConfigFile.getDataSourceConfigMap().values()) {
-            dataSourceName = dataSourceConfig.getName();
-            if (dataSourceConfig.isEmailDataSource()) {
-                dataSource = new EmailDataSource(this, dataSourceName, dataSourceConfig);
-            } else {
-                dataSource = new DataSource(this, dataSourceName, dataSourceConfig);
-            }
+        Map<String, DataSourceConfig> dataSourceConfigMap = dataConversionConfigFile.getDataSourceConfigMap();
+        if (dataSourceConfigMap != null) {
+            for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
+                dataSourceName = dataSourceConfig.getName();
+                if (dataSourceConfig.isEmailDataSource()) {
+                    dataSource = new EmailDataSource(this, dataSourceName, dataSourceConfig);
+                } else {
+                    dataSource = new DataSource(this, dataSourceName, dataSourceConfig);
+                }
 
-            if (!dataSource.isValid()) {
-                performInvalidDataSource(dataSource);
-            }
-            dataSourceMap.put(dataSourceName, dataSource);
+                if (!dataSource.isValid()) {
+                    performInvalidDataSource(dataSource);
+                }
+                dataSourceMap.put(dataSourceName, dataSource);
 
-            dataSource.runPre();
+                dataSource.runPre();
+            }
+        } else if (exitOnError) {
+            stopWithError();
         }
 
         dataSourceName = Property.SQL.key();

@@ -12,7 +12,8 @@ public enum Defaults {
     PROGRESS_UPDATE_INTERVAL_MILLISEC(100),
 
     DATE_FORMAT("yyyy/MM/dd HH:mm:ss"),
-    NUMBER_FORMAT("#,##0.00"),
+    NUMBER_FORMAT("#,##0"),
+    DECIMAL_FORMAT("#,##0.00"),
 
     EXIT_CODE_SUCCESS(0),
     EXIT_CODE_ERROR(1),

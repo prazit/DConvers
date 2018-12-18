@@ -69,32 +69,36 @@ public class Converter extends AppBase {
         Source source;
         sourceMap = new HashMap<>();
         sortedSource = new ArrayList<>();
-        for (SourceConfig sourceConfig : sourceConfigMap.values()) {
-            name = sourceConfig.getName();
-            source = new Source(application, name, this, sourceConfig);
-            valid = source.isValid();
-            if (!valid && exitOnError) {
-                return false;
+        if (sourceConfigMap != null) {
+            for (SourceConfig sourceConfig : sourceConfigMap.values()) {
+                name = sourceConfig.getName();
+                source = new Source(application, name, this, sourceConfig);
+                valid = source.isValid();
+                if (!valid && exitOnError) {
+                    return false;
+                }
+                sourceMap.put(name, source);
+                sortedSource.add(source);
             }
-            sourceMap.put(name, source);
-            sortedSource.add(source);
+            sortedSource.sort((o1, o2) -> o1.getSourceConfig().getIndex() > o2.getSourceConfig().getIndex() ? 1 : -1);
         }
-        sortedSource.sort((o1, o2) -> o1.getSourceConfig().getIndex() > o2.getSourceConfig().getIndex() ? 1 : -1);
 
         Target target;
         targetMap = new HashMap<>();
         sortedTarget = new ArrayList<>();
-        for (TargetConfig targetConfig : targetConfigMap.values()) {
-            name = targetConfig.getName();
-            target = new Target(application, name, this, targetConfig);
-            valid = target.isValid();
-            if (!valid && exitOnError) {
-                return false;
+        if (targetConfigMap != null) {
+            for (TargetConfig targetConfig : targetConfigMap.values()) {
+                name = targetConfig.getName();
+                target = new Target(application, name, this, targetConfig);
+                valid = target.isValid();
+                if (!valid && exitOnError) {
+                    return false;
+                }
+                targetMap.put(name, target);
+                sortedTarget.add(target);
             }
-            targetMap.put(name, target);
-            sortedTarget.add(target);
+            sortedTarget.sort((o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
         }
-        sortedTarget.sort((o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
 
         mappingTableMap = new HashMap<>();
 
@@ -300,7 +304,7 @@ public class Converter extends AppBase {
                 return target.getDataTable();
 
             case MAP:
-                dataTable = mappingTableMap.get(mappingTablePrefix + mappings[1]);
+                dataTable = mappingTableMap.get(mappings[1]);
                 break;
 
             default:
@@ -356,8 +360,11 @@ public class Converter extends AppBase {
         switch (dataColumn.getType()) {
             case Types.INTEGER:
             case Types.BIGINT:
+                replacement = dataColumn.getFormattedValue(Defaults.NUMBER_FORMAT.getStringValue().replaceAll("[,]", ""));
+                break;
+
             case Types.DECIMAL:
-                replacement = dataColumn.getFormattedValue(Defaults.NUMBER_FORMAT.getStringValue());
+                replacement = dataColumn.getFormattedValue(Defaults.DECIMAL_FORMAT.getStringValue().replaceAll("[,]", ""));
                 break;
 
             case Types.DATE:

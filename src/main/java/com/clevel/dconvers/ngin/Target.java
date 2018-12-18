@@ -110,7 +110,6 @@ public class Target extends AppBase {
 
             mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, name);
             mappingTable = new DataTable(application, mappingTableName, mappingTargetIdColumnName);
-            mappingTable.setOwner(dataTable);
             mappingTableList.add(mappingTable);
 
             if (sourceName.indexOf(":") > 0) {
@@ -130,6 +129,7 @@ public class Target extends AppBase {
                 valid = false;
                 return false;
             }
+            mappingTable.setOwner(new Pair<>(sourceDataTable, dataTable));
 
             sourceIdColumnName = sourceDataTable.getIdColumnName();
             sourceRowList = sourceDataTable.getAllRow();
