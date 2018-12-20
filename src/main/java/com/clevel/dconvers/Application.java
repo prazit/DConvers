@@ -99,6 +99,7 @@ public class Application extends AppBase {
         }
 
         String dataConversionConfigFilename = switches.getSource();
+        log.debug("Working directory is '{}'", System.getProperty("user.dir"));
         log.info("DConvers configuration file is '{}'.", dataConversionConfigFilename);
 
         log.trace("Application. Load DataConversionConfigFile.");
@@ -211,6 +212,8 @@ public class Application extends AppBase {
 
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
+                log.info("Converter configuration file is '{}'", convert.getName());
+
                 currentConverter = convert;
                 success = convert.convert() && success;
                 success = convert.print() && success;
@@ -452,6 +455,7 @@ public class Application extends AppBase {
                 dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
         }
 
+        log.debug("createDataColumn(columnName:{}, valueAsString:{}) = {}", columnName, value == null ? "null" : "\"" + value + "\"", dataColumn);
         return dataColumn;
     }
 

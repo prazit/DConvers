@@ -1,5 +1,7 @@
 package com.clevel.dconvers.ngin.transform;
 
+import org.slf4j.LoggerFactory;
+
 public enum TransformTypes {
 
     COMPILE(CompileTransform.class),
@@ -19,6 +21,20 @@ public enum TransformTypes {
 
     public Class getTransformClass() {
         return transformClass;
+    }
+
+    public static TransformTypes parse(String name) {
+        TransformTypes transformTypes;
+
+        try {
+            name = name.toUpperCase();
+            transformTypes = TransformTypes.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            transformTypes = null;
+            LoggerFactory.getLogger(TransformTypes.class).error("TransformTypes.parse(name:{}) is failed!", name, ex);
+        }
+
+        return transformTypes;
     }
 
 }

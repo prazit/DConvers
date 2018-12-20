@@ -1,5 +1,7 @@
 package com.clevel.dconvers.conf;
 
+import org.slf4j.LoggerFactory;
+
 public enum DBMS {
     AS400,
     DB2,
@@ -12,9 +14,11 @@ public enum DBMS {
         DBMS dbms;
 
         try {
-            dbms = DBMS.valueOf(name.toUpperCase());
+            name = name.toUpperCase();
+            dbms = DBMS.valueOf(name);
         } catch (IllegalArgumentException ex) {
             dbms = null;
+            LoggerFactory.getLogger(DBMS.class).error("DBMS.parse(name:{}) is failed!", name, ex);
         }
 
         return dbms;

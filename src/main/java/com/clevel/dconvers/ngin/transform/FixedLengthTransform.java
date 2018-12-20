@@ -31,12 +31,13 @@ public class FixedLengthTransform extends Transform {
         int newColumnIndex = Integer.valueOf(newColumnArgs[1]) - 1;
 
         String separator = getArgument(Property.SEPARATOR.key());
+        String charset = getArgument(Property.OUTPUT_CHARSET.key(), "UTF-8");
         String dateFormat = getArgument(Property.FORMAT_DATE.key(), "yyyyMMdd");
         String datetimeFormat = getArgument(Property.FORMAT_DATETIME.key(), "yyyyMMddHHmmss");
         String fillString = getArgument(Property.FILL_STRING.key(), " ");
         String fillNumber = getArgument(Property.FILL_NUMBER.key(), "0");
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");
-        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", "", dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
+        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();

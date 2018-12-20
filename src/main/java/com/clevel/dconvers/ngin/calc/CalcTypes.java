@@ -25,7 +25,8 @@ public enum CalcTypes {
         CalcTypes calcType;
 
         try {
-            calcType = CalcTypes.valueOf(name.toUpperCase());
+            name = name.toUpperCase();
+            calcType = CalcTypes.valueOf(name);
         } catch (IllegalArgumentException ex) {
             calcType = null;
             LoggerFactory.getLogger(CalcTypes.class).error("CalcTypes.parse(name:{}) is failed! {}", name, ex.getMessage());

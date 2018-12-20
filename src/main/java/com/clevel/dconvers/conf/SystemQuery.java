@@ -1,5 +1,7 @@
 package com.clevel.dconvers.conf;
 
+import org.slf4j.LoggerFactory;
+
 public enum SystemQuery {
 
     ARG,
@@ -10,9 +12,11 @@ public enum SystemQuery {
         SystemQuery systemQuery;
 
         try {
-            systemQuery = SystemQuery.valueOf(name.toUpperCase());
+            name = name.toUpperCase();
+            systemQuery = SystemQuery.valueOf(name);
         } catch (IllegalArgumentException ex) {
             systemQuery = null;
+            LoggerFactory.getLogger(SystemQuery.class).error("SystemQuery.parse(name:{}) is failed!", name, ex);
         }
 
         return systemQuery;

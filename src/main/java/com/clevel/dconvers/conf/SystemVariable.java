@@ -1,5 +1,7 @@
 package com.clevel.dconvers.conf;
 
+import org.slf4j.LoggerFactory;
+
 import java.sql.Types;
 
 public enum SystemVariable {
@@ -35,9 +37,11 @@ public enum SystemVariable {
         SystemVariable systemVariable;
 
         try {
-            systemVariable = SystemVariable.valueOf(name.toUpperCase());
+            name = name.toUpperCase();
+            systemVariable = SystemVariable.valueOf(name);
         } catch (IllegalArgumentException ex) {
             systemVariable = null;
+            LoggerFactory.getLogger(SystemVariable.class).error("SystemVariable.parse(name:{}) is failed!", name, ex);
         }
 
         return systemVariable;

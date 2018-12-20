@@ -45,7 +45,8 @@ public enum DynamicValueType {
         DynamicValueType dynamicValueType;
 
         try {
-            dynamicValueType = DynamicValueType.valueOf(name.toUpperCase());
+            name = name.toUpperCase();
+            dynamicValueType = DynamicValueType.valueOf(name);
         } catch (Exception ex) {
             dynamicValueType = null;
             LoggerFactory.getLogger(DynamicValueType.class).error("DynamicValueType.parse(name:{}) is failed!", name, ex);

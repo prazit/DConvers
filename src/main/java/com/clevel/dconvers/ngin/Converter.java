@@ -31,8 +31,6 @@ public class Converter extends AppBase {
     private List<Target> sortedTarget;
     private List<Source> sortedSource;
 
-    private String mappingTablePrefix;
-
     private DataTable currentTable;
     private int currentRowIndex;
     private boolean exitOnError;
@@ -41,8 +39,6 @@ public class Converter extends AppBase {
         super(application, name);
         this.converterConfigFile = converterConfigFile;
 
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
-        mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
         exitOnError = application.exitOnError;
 
         valid = prepare();
@@ -173,13 +169,13 @@ public class Converter extends AppBase {
 
         List<OutputTypes> outputTypeList;
         for (Source source : sortedSource) {
-            setCurrentTable(source.getDataTable());
             sourceFileNumber.increaseValueBy(1);
 
             dataTable = source.getDataTable();
             if (dataTable == null) {
                 dataTable = new DataTable(application, source.getName(), "id", Collections.EMPTY_LIST, source);
             }
+            setCurrentTable(dataTable);
 
             outputConfig = source.getSourceConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
@@ -203,7 +199,6 @@ public class Converter extends AppBase {
         // -- Outputs for Target Table and Mapping Table
 
         for (Target target : sortedTarget) {
-            setCurrentTable(target.getDataTable());
             targetFileNumber.increaseValueBy(1);
             mappingFileNumber.increaseValueBy(1);
 
@@ -213,6 +208,7 @@ public class Converter extends AppBase {
             if (dataTable == null) {
                 dataTable = new DataTable(application, target.getName(), "id", Collections.EMPTY_LIST, target);
             }
+            setCurrentTable(target.getDataTable());
 
             outputConfig = target.getTargetConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
@@ -264,7 +260,7 @@ public class Converter extends AppBase {
 
     public Source getSource(String name) {
         if (name == null) {
-            log.debug("getSource({}) return null", name);
+            log.debug("getSource(null) then return null");
             return null;
         }
 
@@ -286,8 +282,11 @@ public class Converter extends AppBase {
     public DataTable getDataTable(String dataTableMapping) {
         DataTable dataTable;
         String[] mappings = dataTableMapping.split("[:]");
-        DynamicValueType tableType = DynamicValueType.valueOf(mappings[0]);
+        if (mappings.length == 1) {
+            mappings = new String[]{Property.SRC.name(), dataTableMapping};
+        }
 
+        DynamicValueType tableType = DynamicValueType.parse(mappings[0]);
         switch (tableType) {
             case SRC:
                 Source source = getSource(mappings[1]);
@@ -376,8 +375,7 @@ public class Converter extends AppBase {
                 replacement = dataColumn.getValue();
         }
 
-        String replaced = sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
-        return replaced;
+        return sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
     }
 
     public String valuesFromDataTable(String dataTableMapping, String columnName) {
@@ -547,6 +545,11 @@ public class Converter extends AppBase {
 
     public void setCurrentTable(DataTable currentTable) {
         this.currentTable = currentTable;
+        if (currentTable == null) {
+            log.debug("Converter({}).currentTable is null", name);
+        } else {
+            log.debug("Converter({}).currentTable is {}", name, currentTable.getName());
+        }
     }
 
     public void setCurrentRowIndex(int currentRowIndex) {
@@ -555,10 +558,6 @@ public class Converter extends AppBase {
 
     public List<Source> getSourceList() {
         return sortedSource;
-    }
-
-    public List<Target> getTargetList() {
-        return sortedTarget;
     }
 
 }

@@ -49,12 +49,24 @@ public abstract class Calc extends UtilBase {
 
     protected DataTable getDataTable(String tableIdentifier) {
         Converter currentConverter = application.currentConverter;
+        DataTable dataTable;
 
         if (Property.CURRENT.key().equalsIgnoreCase(tableIdentifier)) {
-            return currentConverter.getCurrentTable();
+            dataTable = currentConverter.getCurrentTable();
+            if (dataTable == null) {
+                log.debug("getDataTable({}). current table is null! in converter({})", tableIdentifier, currentConverter.getName());
+                return null;
+            }
+        } else {
+            dataTable = currentConverter.getDataTable(tableIdentifier);
+            if (dataTable == null) {
+                log.debug("getDataTable({}). table({}) is null in converter({})", tableIdentifier, tableIdentifier, currentConverter.getName());
+                return null;
+            }
         }
 
-        return currentConverter.getDataTable(tableIdentifier);
+        log.debug("getDataTable({}). table({}) is in converter({})", tableIdentifier, dataTable.getName(), currentConverter.getName());
+        return dataTable;
     }
 
     protected DataRow getDataRow(String rowIdentifier, DataTable dataTable) {
@@ -90,7 +102,7 @@ public abstract class Calc extends UtilBase {
         } else {
             dataColumn = dataRow.getColumn(columnIndex);
         }
-        
+
         return dataColumn;
     }
 }

@@ -246,7 +246,7 @@ public class Target extends AppBase {
         String keyWord = sourceColumnName.substring(0, 3).toUpperCase();
         DynamicValueType dynamicValueType;
         try {
-            dynamicValueType = DynamicValueType.valueOf(keyWord);
+            dynamicValueType = DynamicValueType.parse(keyWord);
         } catch (IllegalArgumentException e) {
             return DynamicValueType.INV;
         }

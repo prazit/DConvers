@@ -5,12 +5,13 @@ import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.DynamicValueType;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.data.DataColumn;
-import com.clevel.dconvers.ngin.data.DataDate;
 import com.clevel.dconvers.ngin.data.DataRow;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -30,8 +31,9 @@ public class FixedLengthFormatter extends DataFormatter {
     private String fillString;
     private String fillNumber;
     private String fillDate;
+    private String charset;
 
-    public FixedLengthFormatter(Application application, String name, String format, String separator, String eol, String eof, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
+    public FixedLengthFormatter(Application application, String name, String format, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
         super(application, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
@@ -40,6 +42,7 @@ public class FixedLengthFormatter extends DataFormatter {
         this.separator = notNull(separator, "");
         this.eol = notNull(eol, "");
         this.eof = notNull(eof, "");
+        this.charset = notNull(charset, "UTF-8");
         this.dateFormat = notNull(dateFormat, Defaults.DATE_FORMAT.getStringValue());
         this.datetimeFormat = notNull(datetimeFormat, this.dateFormat);
         this.fillString = notNull(fillString, " ");
@@ -57,6 +60,7 @@ public class FixedLengthFormatter extends DataFormatter {
         separator = notNull(outputConfig.getTxtSeparator(), "");
         eol = notNull(outputConfig.getTxtOutputEOL(), "");
         eof = notNull(outputConfig.getTxtOutputEOF(), "");
+        charset = notNull(outputConfig.getTxtOutputCharset(), "UTF-8");
         dateFormat = notNull(outputConfig.getTxtFormatDate(), Defaults.DATE_FORMAT.getStringValue());
         datetimeFormat = notNull(outputConfig.getTxtFormatDatetime(), this.dateFormat);
         fillString = notNull(outputConfig.getTxtFillString(), " ");
@@ -126,7 +130,7 @@ public class FixedLengthFormatter extends DataFormatter {
             return "";
         }
 
-        DynamicValueType txtType = DynamicValueType.valueOf(txtTypeList.get(columnIndex));
+        DynamicValueType txtType = DynamicValueType.parse(txtTypeList.get(columnIndex));
         String formatted;
         String value;
 
@@ -174,40 +178,12 @@ public class FixedLengthFormatter extends DataFormatter {
                 break;
 
             default: // case STR:
-                dataColumn.setNullString(fillString);
                 value = dataColumn.getValue();
+                if (value.equalsIgnoreCase("null")) {
+                    value = fillString;
+                }
                 formatted = fixedLengthString(value, txtLength.intValue(), columnName);
         }
-
-        /*switch (dataColumn.getType()) {
-            case Types.DATE:
-            case Types.TIMESTAMP:
-                dataColumn.setNullString(fillDate);
-                if (DynamicValueType.DTE.equals(txtType)) {
-                    value = dataColumn.getFormattedValue(dateFormat);
-                } else {
-                    value = dataColumn.getFormattedValue(datetimeFormat);
-                }
-                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
-                break;
-
-            case Types.DECIMAL:
-            case Types.INTEGER:
-            case Types.BIGINT:
-                dataColumn.setNullString(fillNumber);
-                value = dataColumn.getValue();
-                if (DynamicValueType.DEC.equals(txtType)) {
-                    formatted = fixedLengthDecimal(value, txtLength, columnName);
-                } else {
-                    formatted = fixedLengthInteger(value, txtLength.intValue(), columnName);
-                }
-                break;
-
-            default: *//*case Types.VARCHAR:*//*
-                dataColumn.setNullString(fillString);
-                value = dataColumn.getValue();
-                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
-        }*/
 
         log.debug("format(type:{},value:{}) = {}({})", dataColumn.getType(), value, txtType, formatted);
         return formatted;
@@ -217,14 +193,24 @@ public class FixedLengthFormatter extends DataFormatter {
      * Use for string and date.
      */
     private String fixedLengthString(String stringValue, int targetLength, String columnName) {
+        log.debug("fixedLengthString(value:{}, length:{}, name:{})", stringValue == null ? "null" : "\"" + stringValue + "\"", targetLength, columnName);
+
+        byte[] byteArray;
+        try {
+            byteArray = stringValue.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            log.warn("String value of column({}) report about Unsupported Encoding for charset={}", columnName, charset);
+            byteArray = stringValue.getBytes();
+        }
+
         String formatted;
-        int already = stringValue.length();
+        int already = byteArray.length;
 
         if (targetLength > already) {
             int count = targetLength - already;
             formatted = fillRight(stringValue, fillString, count);
         } else if (already > targetLength) {
-            formatted = stringValue.substring(0, targetLength);
+            formatted = new String(ArrayUtils.subarray(byteArray, 0, targetLength));
         } else {
             formatted = stringValue;
         }

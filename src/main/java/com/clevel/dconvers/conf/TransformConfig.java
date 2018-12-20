@@ -73,7 +73,7 @@ public class TransformConfig extends Config {
             log.debug("transformValues = {}", Arrays.asList(transformValues));
             for (int index = 0; index < transformValues.length; index += 2) {
                 transformTypeName = transformValues[index];
-                transformType = TransformTypes.valueOf(transformTypeName.toUpperCase());
+                transformType = TransformTypes.parse(transformTypeName);
 
                 argumentList = new HashMap<>();
                 argumentName = "arguments";
