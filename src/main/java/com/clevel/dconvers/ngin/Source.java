@@ -1,18 +1,11 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.DynamicValueType;
 import com.clevel.dconvers.conf.SourceConfig;
-import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.input.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class Source extends AppBase {
 

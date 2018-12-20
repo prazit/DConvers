@@ -51,7 +51,7 @@ public class DataSourceConfig extends Config {
 
         url = getPropertyString(properties, dataSource.connectKey(name, Property.URL));
         driver = getPropertyString(properties, dataSource.connectKey(name, Property.DRIVER));
-        schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA),"");
+        schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "");
         user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
         password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
 
@@ -64,8 +64,8 @@ public class DataSourceConfig extends Config {
         }
         host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
 
-        valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
-        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))),"\"");
+        valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), "\"");
+        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), "\"");
 
         return true;
     }

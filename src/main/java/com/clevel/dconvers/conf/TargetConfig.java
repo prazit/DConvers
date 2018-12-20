@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class TargetConfig extends Config {
 
@@ -27,7 +26,7 @@ public class TargetConfig extends Config {
     private String id;
     private long rowNumberStartAt;
 
-    private List<Pair<String,String>> columnList;
+    private List<Pair<String, String>> columnList;
 
     TargetConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
@@ -87,7 +86,7 @@ public class TargetConfig extends Config {
         columnList = new ArrayList<>();
         for (Iterator<String> it = columnKeyList; it.hasNext(); ) {
             String key = it.next();
-            columnList.add(new Pair<>(key,getPropertyString(columnProperties, key)));
+            columnList.add(new Pair<>(key, getPropertyString(columnProperties, key)));
         }
         log.debug("columnList = {}", columnList);
 

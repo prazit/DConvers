@@ -200,7 +200,7 @@ public class FixedLengthFormatter extends DataFormatter {
                 }
                 if (lengthInBytes) {
                     formatted = fixedLengthStringInBytes(value, txtLength.intValue(), columnName);
-                }else {
+                } else {
                     formatted = fixedLengthStringInCharacters(value, txtLength.intValue(), columnName);
                 }
         }

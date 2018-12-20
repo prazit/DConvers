@@ -54,7 +54,7 @@ public abstract class Transform extends UtilBase {
         int rowIndex = -1;
 
         for (DataRow row : destRowList) {
-            rowIndex ++;
+            rowIndex++;
             currentConverter.setCurrentRowIndex(rowIndex);
 
             value = calculator.calc();

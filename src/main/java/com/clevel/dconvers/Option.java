@@ -10,8 +10,7 @@ public enum Option {
 
     HELP(false, "h", "help", false, "print help message to console"),
 
-    ARG(false,"r","arg", true, "values in CSV format for the CAL:ARG()")
-    ;
+    ARG(false, "r", "arg", true, "values in CSV format for the CAL:ARG()");
 
     private String shortOpt;
     private String longOpt;

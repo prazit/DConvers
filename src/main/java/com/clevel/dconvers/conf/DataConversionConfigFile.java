@@ -56,23 +56,23 @@ public class DataConversionConfigFile extends ConfigFile {
         application.dataConversionConfigFile = this;
 
         Property converterProperty = Property.CONVERTER_FILE;
-        outputReportPath = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_PATH),"");
-        outputSourcePath = getPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH),"");
-        outputTargetPath = getPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH),"");
-        outputMappingPath = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PATH),"");
+        outputReportPath = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_PATH), "");
+        outputSourcePath = getPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH), "");
+        outputTargetPath = getPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH), "");
+        outputMappingPath = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PATH), "");
 
         reportFileNumber = properties.getInt(converterProperty.connectKey(Property.REPORT_PATH.connectKey(Property.FILE_NUMBER)), 1);
         sourceFileNumber = properties.getInt(converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1);
         targetFileNumber = properties.getInt(converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1);
         mappingFileNumber = properties.getInt(converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1);
 
-        mappingTablePrefix = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PREFIX),"");
-        reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE),"");
+        mappingTablePrefix = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PREFIX), "");
+        reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE), "");
 
         exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
         successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), Defaults.EXIT_CODE_SUCCESS.getIntValue());
-        errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()),  Defaults.EXIT_CODE_ERROR.getIntValue());
-        warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()),  Defaults.EXIT_CODE_WARNING.getIntValue());
+        errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), Defaults.EXIT_CODE_ERROR.getIntValue());
+        warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), Defaults.EXIT_CODE_WARNING.getIntValue());
 
         List<Object> dataSourceNameList;
         try {
@@ -215,10 +215,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public String getMappingTablePrefix() {
         return mappingTablePrefix;
-    }
-
-    public String getReportTableName() {
-        return reportTableName;
     }
 
 }

@@ -15,8 +15,7 @@ public enum OutputTypes {
     INSERT_DB(DBInsertOutput.class),
     UPDATE_DB(DBUpdateOutput.class),
     CONVERTER_SOURCE_FILE(SRCOutput.class),
-    CONVERTER_TARGET_FILE(TAROutput.class)
-    ;
+    CONVERTER_TARGET_FILE(TAROutput.class);
 
     private Class outputClass;
 

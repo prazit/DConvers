@@ -39,14 +39,14 @@ public class SourceConfig extends Config {
     @Override
     protected boolean loadProperties() {
         log.trace("SourceConfig({}).loadProperties.", name);
-        
+
         Property source = Property.SOURCE;
 
         dataSource = getPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE));
         query = getPropertyString(properties, source.connectKey(name, Property.QUERY));
-        id = getPropertyString(properties, source.connectKey(name, Property.ID),"id");
+        id = getPropertyString(properties, source.connectKey(name, Property.ID), "id");
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
-        
+
         return true;
     }
 

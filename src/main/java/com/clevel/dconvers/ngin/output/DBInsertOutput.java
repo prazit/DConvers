@@ -2,10 +2,10 @@ package com.clevel.dconvers.ngin.output;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.OutputConfig;
-import com.clevel.dconvers.ngin.input.DataSource;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.DataFormatter;
 import com.clevel.dconvers.ngin.format.SQLInsertFormatter;
+import com.clevel.dconvers.ngin.input.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

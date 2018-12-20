@@ -19,8 +19,7 @@ public enum Defaults {
 
     EXIT_CODE_SUCCESS(0),
     EXIT_CODE_ERROR(1),
-    EXIT_CODE_WARNING(2)
-    ;
+    EXIT_CODE_WARNING(2);
 
     private int type;
 
@@ -61,7 +60,7 @@ public enum Defaults {
         return (int) longValue;
     }
 
-    public boolean getBooleanValue(){
+    public boolean getBooleanValue() {
         return longValue == 1L;
     }
 }

@@ -1,7 +1,6 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
-import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ public class SFTPConfig extends Config {
     private int port;
     private String user;
     private String password;
-    
+
     public SFTPConfig(Application application, String name) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
