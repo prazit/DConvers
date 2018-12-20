@@ -103,7 +103,7 @@ public class DataTable extends AppBase implements JRDataSource {
         if (idValue == null) {
             return null;
         }
-        return dataRowMap.get(idValue);
+        return dataRowMap.get(idValue.toUpperCase());
     }
 
     public DataRow getRow(String sourceColumnName, String value) {
@@ -135,7 +135,7 @@ public class DataTable extends AppBase implements JRDataSource {
         } else {
             key = idColumn.getValue();
         }
-        dataRowMap.put(key, dataRow);
+        dataRowMap.put(key.toUpperCase(), dataRow);
     }
 
     public int getRowCount() {

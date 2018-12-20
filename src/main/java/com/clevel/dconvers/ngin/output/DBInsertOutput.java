@@ -39,7 +39,7 @@ public class DBInsertOutput extends Output {
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
 
         String dataSourceName = outputConfig.getDbInsertDataSource();
-        dataSource = application.dataSourceMap.get(dataSourceName);
+        dataSource = application.dataSourceMap.get(dataSourceName.toUpperCase());
         if (dataSource == null) {
             return null;
         }

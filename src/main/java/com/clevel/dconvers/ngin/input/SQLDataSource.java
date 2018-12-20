@@ -53,11 +53,11 @@ public class SQLDataSource extends DataSource {
             }
 
         } catch (FileNotFoundException fx) {
-            error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
+            error("SQLDataSource.getDataTable. file not found: {}", fx.getMessage());
             dataTable = null;
 
         } catch (Exception ex) {
-            error("SQLSource.getDataTable. has exception: {}", ex);
+            error("SQLDataSource.getDataTable. has exception: {}", ex);
             dataTable = null;
 
         } finally {

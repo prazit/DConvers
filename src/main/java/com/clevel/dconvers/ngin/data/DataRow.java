@@ -41,7 +41,7 @@ public class DataRow extends AppBase {
             return null;
         }
 
-        DataColumn dataColumn = dataColumnMap.get(columnName);
+        DataColumn dataColumn = dataColumnMap.get(columnName.toUpperCase());
         return dataColumn;
     }
 
@@ -68,9 +68,9 @@ public class DataRow extends AppBase {
     public void putColumn(String columnName, DataColumn dataColumn) {
         try {
             columnList.add(dataColumn);
-            dataColumnMap.put(columnName, dataColumn);
+            dataColumnMap.put(columnName.toUpperCase(), dataColumn);
         } catch (Exception e) {
-            dataColumnMap.put(columnName, new DataString(application, 0, 0, null, null));
+            dataColumnMap.put(columnName.toUpperCase(), new DataString(application, 0, 0, null, null));
         }
     }
 
@@ -81,7 +81,7 @@ public class DataRow extends AppBase {
         dataColumnMap = new HashMap<>();
 
         for (DataColumn column : columnList) {
-            dataColumnMap.put(column.getName(), column);
+            dataColumnMap.put(column.getName().toUpperCase(), column);
         }
     }
 

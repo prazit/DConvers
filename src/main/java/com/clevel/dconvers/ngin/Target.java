@@ -58,13 +58,13 @@ public class Target extends AppBase {
         return true;
     }
 
-    private String getMappingTableName(String prefix, String sourceTableName, String targetTableName) {
+    private String getMappingTableName(String sourceTableName, String targetTableName) {
         if (sourceTableName.indexOf(":") > 0) {
             sourceTableName = sourceTableName.replaceAll("[:]", "_");
         } else {
             sourceTableName = "SRC_" + sourceTableName;
         }
-        String name = prefix + sourceTableName + "_TO_TAR_" + targetTableName;
+        String name = sourceTableName + "_TO_" + targetTableName;
         return name.toUpperCase();
     }
 
@@ -73,10 +73,8 @@ public class Target extends AppBase {
 
         List<Pair<String, String>> columnList = targetConfig.getColumnList();
 
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
         String targetIdColumnName = targetConfig.getId();
 
-        String mappingTablePrefix = dataConversionConfigFile.getMappingTablePrefix();
         String mappingTableName;
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
@@ -108,7 +106,7 @@ public class Target extends AppBase {
         for (String sourceName : sourceList) {
             log.debug("Target({}).buildDataTable from sourceName({})", name, sourceName);
 
-            mappingTableName = getMappingTableName(mappingTablePrefix, sourceName, name);
+            mappingTableName = getMappingTableName(sourceName, name);
             mappingTable = new DataTable(application, mappingTableName, mappingTargetIdColumnName);
             mappingTableList.add(mappingTable);
 

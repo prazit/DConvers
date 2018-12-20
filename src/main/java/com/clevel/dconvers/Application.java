@@ -157,7 +157,7 @@ public class Application extends AppBase {
                 if (!dataSource.isValid()) {
                     performInvalidDataSource(dataSource);
                 }
-                dataSourceMap.put(dataSourceName, dataSource);
+                dataSourceMap.put(dataSourceName.toUpperCase(), dataSource);
 
                 dataSource.runPre();
             }
@@ -166,13 +166,13 @@ public class Application extends AppBase {
         }
 
         dataSourceName = Property.SQL.key();
-        dataSourceMap.put(dataSourceName, new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+        dataSourceMap.put(dataSourceName.toUpperCase(), new SQLDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         dataSourceName = Property.MARKDOWN.key();
-        dataSourceMap.put(dataSourceName, new MarkdownDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+        dataSourceMap.put(dataSourceName.toUpperCase(), new MarkdownDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         dataSourceName = Property.SYSTEM.key();
-        dataSourceMap.put(dataSourceName, new SystemDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+        dataSourceMap.put(dataSourceName.toUpperCase(), new SystemDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();
@@ -185,7 +185,7 @@ public class Application extends AppBase {
             if (!sftp.isValid()) {
                 performInvalidSFTP(sftp);
             }
-            sftpMap.put(sftpName, sftp);
+            sftpMap.put(sftpName.toUpperCase(), sftp);
         }
 
         log.trace("Application. Load Converters.");

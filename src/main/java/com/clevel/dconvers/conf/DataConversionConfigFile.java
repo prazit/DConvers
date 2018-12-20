@@ -24,9 +24,6 @@ public class DataConversionConfigFile extends ConfigFile {
     private String outputTargetPath;
     private String outputMappingPath;
 
-    private String mappingTablePrefix;
-    private String reportTableName;
-
     private int reportFileNumber;
     private int sourceFileNumber;
     private int targetFileNumber;
@@ -66,9 +63,6 @@ public class DataConversionConfigFile extends ConfigFile {
         targetFileNumber = properties.getInt(converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1);
         mappingFileNumber = properties.getInt(converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1);
 
-        mappingTablePrefix = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PREFIX), "");
-        reportTableName = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_TABLE), "");
-
         exitOnError = properties.getBoolean(Property.EXIT_ON_ERROR.key(), true);
         successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), Defaults.EXIT_CODE_SUCCESS.getIntValue());
         errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), Defaults.EXIT_CODE_ERROR.getIntValue());
@@ -85,7 +79,7 @@ public class DataConversionConfigFile extends ConfigFile {
         String name;
         for (Object object : dataSourceNameList) {
             name = object.toString();
-            dataSourceConfigMap.put(name, new DataSourceConfig(application, name));
+            dataSourceConfigMap.put(name.toUpperCase(), new DataSourceConfig(application, name));
         }
 
 
@@ -99,7 +93,7 @@ public class DataConversionConfigFile extends ConfigFile {
         sftpConfigMap = new HashMap<>();
         for (Object object : sftpNameList) {
             name = object.toString();
-            sftpConfigMap.put(name, new SFTPConfig(application, name));
+            sftpConfigMap.put(name.toUpperCase(), new SFTPConfig(application, name));
         }
 
 
@@ -116,7 +110,7 @@ public class DataConversionConfigFile extends ConfigFile {
             if (name.lastIndexOf(".") < 0) {
                 name = name + Defaults.CONFIG_FILE_EXT.getStringValue();
             }
-            converterConfigMap.put(name, new ConverterConfigFile(application, name));
+            converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(application, name));
         }
 
 
@@ -211,10 +205,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public boolean isChildValid() {
         return childValid;
-    }
-
-    public String getMappingTablePrefix() {
-        return mappingTablePrefix;
     }
 
 }

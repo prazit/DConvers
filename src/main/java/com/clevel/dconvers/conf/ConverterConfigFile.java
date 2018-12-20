@@ -52,7 +52,7 @@ public class ConverterConfigFile extends ConfigFile {
             if (!sourceConfig.isValid()) {
                 return false;
             }
-            sourceConfigMap.put(name, sourceConfig);
+            sourceConfigMap.put(name.toUpperCase(), sourceConfig);
         }
 
         List<Object> targetNameList;
@@ -71,7 +71,7 @@ public class ConverterConfigFile extends ConfigFile {
             if (!targetConfig.isValid()) {
                 return false;
             }
-            targetConfigMap.put(name, targetConfig);
+            targetConfigMap.put(name.toUpperCase(), targetConfig);
         }
 
         return true;

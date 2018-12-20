@@ -84,11 +84,11 @@ public class MarkdownDataSource extends DataSource {
 
             }
         } catch (FileNotFoundException fx) {
-            error("SQLSource.getDataTable. file not found: {}", fx.getMessage());
+            error("MarkdownDataSource.getDataTable. file not found: {}", fx.getMessage());
             dataTable = null;
 
         } catch (Exception ex) {
-            error("SQLSource.getDataTable. has exception: {}", ex);
+            error("MarkdownDataSource.getDataTable. has exception: {}", ex);
             dataTable = null;
 
         } finally {

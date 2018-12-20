@@ -292,7 +292,7 @@ public class OutputConfig extends Config {
         pdf = false;
         pdfSftp = null;
         pdfSftpOutput = null;
-        pdfOutput = "$[CAL:NAME(current)].md";
+        pdfOutput = "$[CAL:NAME(current)].pdf";
         pdfOutputAutoCreateDir = true;
         pdfJRXML = "";
 

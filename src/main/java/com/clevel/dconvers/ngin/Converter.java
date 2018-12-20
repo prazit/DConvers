@@ -73,7 +73,7 @@ public class Converter extends AppBase {
                 if (!valid && exitOnError) {
                     return false;
                 }
-                sourceMap.put(name, source);
+                sourceMap.put(name.toUpperCase(), source);
                 sortedSource.add(source);
             }
             sortedSource.sort((o1, o2) -> o1.getSourceConfig().getIndex() > o2.getSourceConfig().getIndex() ? 1 : -1);
@@ -90,7 +90,7 @@ public class Converter extends AppBase {
                 if (!valid && exitOnError) {
                     return false;
                 }
-                targetMap.put(name, target);
+                targetMap.put(name.toUpperCase(), target);
                 sortedTarget.add(target);
             }
             sortedTarget.sort((o1, o2) -> o1.getTargetConfig().getIndex() > o2.getTargetConfig().getIndex() ? 1 : -1);
@@ -145,7 +145,7 @@ public class Converter extends AppBase {
             }
 
             for (DataTable mappingTable : target.getMappingTableList()) {
-                mappingTableMap.put(mappingTable.getName(), mappingTable);
+                mappingTableMap.put(mappingTable.getName().toUpperCase(), mappingTable);
             }
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
@@ -264,7 +264,7 @@ public class Converter extends AppBase {
             return null;
         }
 
-        return sourceMap.get(name);
+        return sourceMap.get(name.toUpperCase());
     }
 
     public Target getTarget(String name) {
@@ -272,7 +272,7 @@ public class Converter extends AppBase {
             return null;
         }
 
-        return targetMap.get(name);
+        return targetMap.get(name.toUpperCase());
     }
 
     /**
@@ -303,7 +303,7 @@ public class Converter extends AppBase {
                 return target.getDataTable();
 
             case MAP:
-                dataTable = mappingTableMap.get(mappings[1]);
+                dataTable = mappingTableMap.get(mappings[1].toUpperCase());
                 break;
 
             default:
