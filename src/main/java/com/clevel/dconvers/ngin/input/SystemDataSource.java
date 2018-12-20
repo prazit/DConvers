@@ -2,7 +2,6 @@ package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.conf.SystemQuery;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.ngin.data.*;
 import org.slf4j.Logger;

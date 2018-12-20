@@ -231,7 +231,7 @@ pdf.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 pdf.create.dir | bool | true | auto create directory for non-existing path. 
 pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
 
-##### TXT Output Properties
+##### TXT Output (Fixed Length) Properties
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
@@ -245,6 +245,7 @@ txt.charset | string | UTF-8 | name of character set
 txt.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
 txt.eof | string | \n | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled)
 txt.separator | string | empty | separator character or words use to separate values 
+txt.length.mode | string | CHAR | BYTE or CHAR
 txt.format | string | STR:1024 | see Fixed Length Format
 txt.format.date | string | yyyyMMdd | date format (pattern)
 txt.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
@@ -356,6 +357,7 @@ transform | <td colspan="2">fixedlength([[insertAsNewColumn] or [replace:[Column
 [ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
 [columnIndex] and [anotherColumnIndex] and [insertColumnIndex] | int | 1 | index of any column, start at 1
 [format] | string | STR:1024 | see [Fixed Length Format](#Fixed Length Format)
+fixedlength.length.mode | string | CHAR | BYTE or CHAR
 fixedlength.format.date | string | yyyyMMdd | date format (pattern)
 fixedlength.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 fixedlength.fill.string | char(1) | blank:right | the character to fill the string column 

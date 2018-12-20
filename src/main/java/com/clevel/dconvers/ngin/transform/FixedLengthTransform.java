@@ -6,6 +6,7 @@ import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
 import com.clevel.dconvers.ngin.format.FixedLengthFormatter;
+import com.clevel.dconvers.ngin.output.LengthMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,9 @@ public class FixedLengthTransform extends Transform {
         String fillString = getArgument(Property.FILL_STRING.key(), " ");
         String fillNumber = getArgument(Property.FILL_NUMBER.key(), "0");
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");
-        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
+        String lengthMode = getArgument(Property.LENGTH_MODE.key(), LengthMode.CHAR.name());
+
+        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, lengthMode, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getAllRow();

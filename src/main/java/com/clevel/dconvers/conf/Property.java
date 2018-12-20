@@ -68,6 +68,7 @@ public enum Property {
     POST_SQL("post"),
     PRE_SQL("pre"),
     SEPARATOR("separator"),
+    LENGTH_MODE("length.mode"),
     NULL("null"),
     FORMAT("format"),
     FORMAT_INTEGER("format.integer"),

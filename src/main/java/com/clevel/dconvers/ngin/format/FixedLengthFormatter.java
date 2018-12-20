@@ -6,6 +6,7 @@ import com.clevel.dconvers.conf.DynamicValueType;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import com.clevel.dconvers.ngin.output.LengthMode;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,13 +33,15 @@ public class FixedLengthFormatter extends DataFormatter {
     private String fillNumber;
     private String fillDate;
     private String charset;
+    private boolean lengthInBytes;
 
-    public FixedLengthFormatter(Application application, String name, String format, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
+    public FixedLengthFormatter(Application application, String name, String format, String lengthMode, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
         super(application, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
         extractTxtFormat(format, txtTypeList, txtLengthList);
 
+        this.lengthInBytes = isLengthInBytes(lengthMode);
         this.separator = notNull(separator, "");
         this.eol = notNull(eol, "");
         this.eof = notNull(eof, "");
@@ -49,6 +52,8 @@ public class FixedLengthFormatter extends DataFormatter {
         this.fillNumber = notNull(fillNumber, "0");
         this.fillDate = notNull(fillDate, " ");
         outputType = "Fixed Length";
+
+        log.debug("FixedLengthFormatter is created with LengthMode({})", lengthMode);
     }
 
     public FixedLengthFormatter(Application application, String name, OutputConfig outputConfig) {
@@ -57,6 +62,8 @@ public class FixedLengthFormatter extends DataFormatter {
         txtLengthList = new ArrayList<>();
         extractTxtFormat(outputConfig.getTxtFormat(), txtTypeList, txtLengthList);
 
+        String txtLengthMode = outputConfig.getTxtLengthMode();
+        lengthInBytes = isLengthInBytes(txtLengthMode);
         separator = notNull(outputConfig.getTxtSeparator(), "");
         eol = notNull(outputConfig.getTxtOutputEOL(), "");
         eof = notNull(outputConfig.getTxtOutputEOF(), "");
@@ -67,6 +74,16 @@ public class FixedLengthFormatter extends DataFormatter {
         fillNumber = notNull(outputConfig.getTxtFillNumber(), "0");
         fillDate = notNull(outputConfig.getTxtFillDate(), " ");
         outputType = "Fixed Length";
+
+        log.debug("FixedLengthFormatter is created with LengthMode({})", txtLengthMode);
+    }
+
+    private boolean isLengthInBytes(String txtLengthMode) {
+        LengthMode lengthMode = LengthMode.parse(txtLengthMode);
+        if (lengthMode == null) {
+            return Defaults.TXT_LENGTH_IN_BYTES.getBooleanValue();
+        }
+        return lengthMode.equals(LengthMode.BYTE);
     }
 
     private String notNull(String value, String replaceNull) {
@@ -117,7 +134,6 @@ public class FixedLengthFormatter extends DataFormatter {
 
         txtLine = txtLine.substring(0, txtLine.length() - separator.length() - separator.length());
         return txtLine + eol;
-
     }
 
     private String format(DataColumn dataColumn) {
@@ -142,7 +158,7 @@ public class FixedLengthFormatter extends DataFormatter {
                 } else {
                     value = dataColumn.getValue();
                 }
-                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+                formatted = fixedLengthStringInCharacters(value, txtLength.intValue(), columnName);
                 break;
 
             case DTT:
@@ -152,7 +168,7 @@ public class FixedLengthFormatter extends DataFormatter {
                 } else {
                     value = dataColumn.getValue();
                 }
-                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+                formatted = fixedLengthStringInCharacters(value, txtLength.intValue(), columnName);
                 break;
 
             case DEC:
@@ -182,7 +198,11 @@ public class FixedLengthFormatter extends DataFormatter {
                 if (value.equalsIgnoreCase("null")) {
                     value = fillString;
                 }
-                formatted = fixedLengthString(value, txtLength.intValue(), columnName);
+                if (lengthInBytes) {
+                    formatted = fixedLengthStringInBytes(value, txtLength.intValue(), columnName);
+                }else {
+                    formatted = fixedLengthStringInCharacters(value, txtLength.intValue(), columnName);
+                }
         }
 
         log.debug("format(type:{},value:{}) = {}({})", dataColumn.getType(), value, txtType, formatted);
@@ -192,7 +212,7 @@ public class FixedLengthFormatter extends DataFormatter {
     /**
      * Use for string and date.
      */
-    private String fixedLengthString(String stringValue, int targetLength, String columnName) {
+    private String fixedLengthStringInBytes(String stringValue, int targetLength, String columnName) {
         log.debug("fixedLengthString(value:{}, length:{}, name:{})", stringValue == null ? "null" : "\"" + stringValue + "\"", targetLength, columnName);
 
         byte[] byteArray;
@@ -211,6 +231,26 @@ public class FixedLengthFormatter extends DataFormatter {
             formatted = fillRight(stringValue, fillString, count);
         } else if (already > targetLength) {
             formatted = new String(ArrayUtils.subarray(byteArray, 0, targetLength));
+        } else {
+            formatted = stringValue;
+        }
+
+        return formatted;
+    }
+
+
+    /**
+     * Use for string and date.
+     */
+    private String fixedLengthStringInCharacters(String stringValue, int targetLength, String columnName) {
+        String formatted;
+        int already = stringValue.length();
+
+        if (targetLength > already) {
+            int count = targetLength - already;
+            formatted = fillRight(stringValue, fillString, count);
+        } else if (already > targetLength) {
+            formatted = stringValue.substring(0, targetLength);
         } else {
             formatted = stringValue;
         }

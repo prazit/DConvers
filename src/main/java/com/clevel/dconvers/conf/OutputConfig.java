@@ -92,6 +92,7 @@ public class OutputConfig extends Config {
     private String txtOutputEOL;
     private String txtOutputEOF;
     private String txtSeparator;
+    private String txtLengthMode;
     private String txtFormat;
     private String txtFormatDate;
     private String txtFormatDatetime;
@@ -323,6 +324,7 @@ public class OutputConfig extends Config {
         txtOutputCharset = "UTF-8";
         txtOutputEOL = "\n";
         txtOutputEOF = "\n";
+        txtLengthMode = "char"; // char or byte
         txtSeparator = "";
         txtFormat = "STR:80";
         txtFormatDate = "yyyyMMdd";
@@ -345,6 +347,7 @@ public class OutputConfig extends Config {
             txtOutputCharset = getPropertyString(txtProperties, Property.OUTPUT_CHARSET.key(), txtOutputCharset);
             txtOutputEOL = getPropertyString(txtProperties, Property.OUTPUT_EOL.key(), txtOutputEOL);
             txtOutputEOF = getPropertyString(txtProperties, Property.OUTPUT_EOF.key(), txtOutputEOF);
+            txtLengthMode = getPropertyString(txtProperties, Property.LENGTH_MODE.key(), txtLengthMode);
             txtSeparator = getPropertyString(txtProperties, Property.SEPARATOR.key(), txtSeparator);
             txtFormat = getPropertyString(txtProperties, Property.FORMAT.key(), txtFormat);
             txtFormatDate = getPropertyString(txtProperties, Property.FORMAT_DATE.key(), txtFormatDate);
@@ -736,6 +739,10 @@ public class OutputConfig extends Config {
 
     public String getTxtOutputEOF() {
         return application.currentConverter.compileDynamicValues(txtOutputEOF);
+    }
+
+    public String getTxtLengthMode() {
+        return txtLengthMode;
     }
 
     public String getTxtSeparator() {

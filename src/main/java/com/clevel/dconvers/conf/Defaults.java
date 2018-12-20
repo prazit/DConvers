@@ -15,6 +15,8 @@ public enum Defaults {
     NUMBER_FORMAT("#,##0"),
     DECIMAL_FORMAT("#,##0.00"),
 
+    TXT_LENGTH_IN_BYTES(0),
+
     EXIT_CODE_SUCCESS(0),
     EXIT_CODE_ERROR(1),
     EXIT_CODE_WARNING(2)
@@ -57,5 +59,9 @@ public enum Defaults {
         }
 
         return (int) longValue;
+    }
+
+    public boolean getBooleanValue(){
+        return longValue == 1L;
     }
 }
