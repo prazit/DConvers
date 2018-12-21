@@ -84,6 +84,7 @@ public enum Property {
     REPLACE("replace"),
     CURRENT("current"),
     SYSTEM("system"),
+    RESULT_SET_META_DATA("ResultSetMetaData"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),

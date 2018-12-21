@@ -398,7 +398,7 @@ public class Converter extends AppBase {
         }
 
         List<String> valueList = new ArrayList<>();
-        for (DataRow row : dataTable.getAllRow()) {
+        for (DataRow row : dataTable.getRowList()) {
             valueList.add(row.getColumn(columnName).getQuotedValue());
         }
         valueList = valueList.stream()

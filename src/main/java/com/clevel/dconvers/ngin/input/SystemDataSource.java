@@ -62,10 +62,9 @@ public class SystemDataSource extends DataSource {
         }
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ARG.name());
         DataRow dataRow;
-        DataLong columnIndex;
-        DataString columnArg;
         String columnName;
 
         String[] args = arg.split("[,]");
@@ -91,6 +90,7 @@ public class SystemDataSource extends DataSource {
         Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.VARIABLE.name());
         DataRow dataRow;
         String columnName;
@@ -124,6 +124,7 @@ public class SystemDataSource extends DataSource {
     private DataTable systemProperties(String tableName, String idColumnName) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ENVIRONMENT.name());
         DataRow dataRow;
         String columnName;

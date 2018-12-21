@@ -17,6 +17,7 @@ import java.util.Arrays;
 public class MarkdownDataSource extends DataSource {
 
     private boolean skipFirstColumn;
+    private boolean updateColumnTypes;
 
     public MarkdownDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
         super(application, name, dataSourceConfig);
@@ -38,6 +39,7 @@ public class MarkdownDataSource extends DataSource {
         log.trace("MarkdownDataSource.getDataTable.");
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(markdownFileName);
 
         DataRow dataRow;
@@ -48,6 +50,7 @@ public class MarkdownDataSource extends DataSource {
         BufferedReader br = null;
 
         skipFirstColumn = false;
+        updateColumnTypes = false;
         try {
             br = new BufferedReader(new FileReader(markdownFileName));
             for (String line; (line = br.readLine()) != null; ) {
@@ -147,6 +150,7 @@ public class MarkdownDataSource extends DataSource {
                 if (column.endsWith(":")) {
                     // ----:
                     types[index] = Types.INTEGER; // this type need to detect for Types.DECIMAL again at the detail record.
+                    updateColumnTypes = true;
                 } else {
                     // ----
                     types[index] = Types.VARCHAR;
@@ -187,13 +191,27 @@ public class MarkdownDataSource extends DataSource {
             column = column.trim();
             if (columnType == Types.VARCHAR && "NULL".equalsIgnoreCase(column)) {
                 column = null;
+            } else if (updateColumnTypes && columnType == Types.INTEGER && isDecimal(column)) {
+                columnType = Types.DECIMAL;
+                columnTypes[index] = columnType;
             }
 
             dataRow.putColumn(columnName, application.createDataColumn(columnName.trim(), columnType, column));
             log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
         }
 
+        // stop update
+        updateColumnTypes = false;
+
         return dataRow;
+    }
+
+    private boolean isDecimal(String column) {
+        if (column.indexOf(".") > 0) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

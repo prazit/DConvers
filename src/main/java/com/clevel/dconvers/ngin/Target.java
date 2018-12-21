@@ -130,7 +130,7 @@ public class Target extends AppBase {
             mappingTable.setOwner(new Pair<>(sourceDataTable, dataTable));
 
             sourceIdColumnName = sourceDataTable.getIdColumnName();
-            sourceRowList = sourceDataTable.getAllRow();
+            sourceRowList = sourceDataTable.getRowList();
             rowCount = sourceRowList.size();
 
             if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {

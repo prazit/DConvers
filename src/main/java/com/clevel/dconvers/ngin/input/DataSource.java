@@ -116,6 +116,7 @@ public class DataSource extends AppBase {
 
             log.trace("Creating DataTable...");
             dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
+            dataTable.setDataSource(name);
             dataTable.setQuery(query);
             log.debug("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
 
@@ -146,14 +147,20 @@ public class DataSource extends AppBase {
     private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String idColumnName) throws Exception {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         application.currentConverter.setCurrentTable(dataTable);
-        dataTable.setMetaData(metaData);
+
+        DataTable metaDataTable = new DataTable(application, tableName+"_meta_data", "columnName");
+        dataTable.setMetaData(metaDataTable);
 
         int columnCount = metaData.getColumnCount();
         log.debug("source({}) has {} columns", tableName, columnCount);
 
+        DataRow metaDataRow;
+        String metaDataColumnName;
+        boolean needMetaData = true;
+
         DataRow dataRow;
         DataColumn dataColumn;
-        String columnName;
+        String columnLabel;
         int columnType;
         java.util.Date dateValue;
         Date date;
@@ -174,14 +181,14 @@ public class DataSource extends AppBase {
             dataRow = new DataRow(application, dataTable);
 
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                columnName = metaData.getColumnName(columnIndex);
+                columnLabel = metaData.getColumnLabel(columnIndex);
                 columnType = metaData.getColumnType(columnIndex);
 
                 switch (columnType) {
                     case Types.BIGINT:
                     case Types.NUMERIC:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(application, columnIndex, Types.BIGINT, columnName, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(application, columnIndex, Types.BIGINT, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.INTEGER:
@@ -189,7 +196,7 @@ public class DataSource extends AppBase {
                     case Types.BOOLEAN:
                     case Types.BIT:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(application, columnIndex, Types.INTEGER, columnName, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(application, columnIndex, Types.INTEGER, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.CHAR:
@@ -198,14 +205,14 @@ public class DataSource extends AppBase {
                     case Types.NCHAR:
                     case Types.LONGNVARCHAR:
                     case Types.LONGVARCHAR:
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnName, resultSet.getString(columnIndex));
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, resultSet.getString(columnIndex));
                         break;
 
                     case Types.DECIMAL:
                     case Types.DOUBLE:
                     case Types.FLOAT:
                     case Types.REAL:
-                        dataColumn = new DataBigDecimal(application, columnIndex, Types.DECIMAL, columnName, resultSet.getBigDecimal(columnIndex));
+                        dataColumn = new DataBigDecimal(application, columnIndex, Types.DECIMAL, columnLabel, resultSet.getBigDecimal(columnIndex));
                         break;
 
                     case Types.DATE:
@@ -215,7 +222,7 @@ public class DataSource extends AppBase {
                         } else {
                             dateValue = new Date(date.getTime());
                         }
-                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnName, dateValue);
+                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnLabel, dateValue);
                         break;
 
                     case Types.TIMESTAMP:
@@ -225,17 +232,56 @@ public class DataSource extends AppBase {
                         } else {
                             dateValue = new Date(timestamp.getTime());
                         }
-                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnName, dateValue);
+                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnLabel, dateValue);
                         break;
 
                     default:
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnName, resultSet.getObject(columnIndex).toString());
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, resultSet.getObject(columnIndex).toString());
                 }
+                dataRow.putColumn(columnLabel, dataColumn);
 
-                dataRow.putColumn(columnName, dataColumn);
+                if (needMetaData) {
+                    metaDataRow = new DataRow(application, dataTable);
+
+                    metaDataColumnName = "ColumnName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnName(columnIndex)));
+
+                    metaDataColumnName = "ColumnLabel";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, columnLabel));
+
+                    metaDataColumnName = "ColumnClassName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnClassName(columnIndex)));
+
+                    metaDataColumnName = "ColumnType";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(columnType)));
+
+                    metaDataColumnName = "ColumnTypeName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnTypeName(columnIndex)));
+
+                    metaDataColumnName = "Precision";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getPrecision(columnIndex))));
+
+                    metaDataColumnName = "Scale";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
+
+                    metaDataColumnName = "SchemaName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
+
+                    metaDataColumnName = "CatalogName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getCatalogName(columnIndex)));
+
+                    metaDataColumnName = "TableName";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
+
+                    metaDataColumnName = "ColumnDisplaySize";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
+
+                    metaDataTable.addRow(metaDataRow);
+                }
             } // end of for
 
             dataTable.addRow(dataRow);
+            needMetaData = false;
         } // end of while
 
         progressBar.close();

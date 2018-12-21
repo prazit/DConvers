@@ -30,7 +30,7 @@ public class ConcatTransform extends Transform {
         int newColumnIndex = Integer.parseInt(firstArg[1]) - 1;
 
         List<DataRow> newRowList = new ArrayList<>();
-        List<DataRow> rowList = dataTable.getAllRow();
+        List<DataRow> rowList = dataTable.getRowList();
 
         List<Integer> indexList = createIndexList(arguments, 2, 0, rowList.get(0).getColumnList().size() - 1);
 

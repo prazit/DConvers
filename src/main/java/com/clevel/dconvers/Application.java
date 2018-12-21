@@ -174,6 +174,10 @@ public class Application extends AppBase {
         dataSourceName = Property.SYSTEM.key();
         dataSourceMap.put(dataSourceName.toUpperCase(), new SystemDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
+        dataSourceName = Property.RESULT_SET_META_DATA.key();
+        dataSourceMap.put(dataSourceName.toUpperCase(), new ResultSetMetaDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
+
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();
         SFTP sftp;

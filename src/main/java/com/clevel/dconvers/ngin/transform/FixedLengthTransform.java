@@ -43,7 +43,7 @@ public class FixedLengthTransform extends Transform {
         FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, lengthMode, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
 
         List<DataRow> newRowList = new ArrayList<>();
-        List<DataRow> rowList = dataTable.getAllRow();
+        List<DataRow> rowList = dataTable.getRowList();
 
         String formatted;
         DataRow newRow;

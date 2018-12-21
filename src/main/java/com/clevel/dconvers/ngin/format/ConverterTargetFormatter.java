@@ -104,6 +104,8 @@ public class ConverterTargetFormatter extends DataFormatter {
             type = column.getType();
             if (forName) {
                 value = name;
+            } else if (id.equals(name)) {
+                value = "VAR:ROW_NUMBER";
             } else {
                 value = getDefaultValue(type);
             }
@@ -111,7 +113,7 @@ public class ConverterTargetFormatter extends DataFormatter {
         }
 
         targets += eol + targetKey + "." + Property.MARKDOWN.key() + "=true" + eol
-                + targetKey + "." + Property.MARKDOWN.connectKey(Property.OUTPUT_FILE) + "=output/$[VAR:SOURCE_FILE_NUMBER]_$[CAL:NAME(CURRENT)].md" + eol;
+                + targetKey + "." + Property.MARKDOWN.connectKey(Property.OUTPUT_FILE) + "=output/$[VAR:TARGET_FILE_NUMBER]_$[CAL:NAME(CURRENT)].md" + eol;
 
         sqlCount += "# SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
         sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";" + eol;

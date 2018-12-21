@@ -38,7 +38,7 @@ public abstract class DataFormatter extends AppBase {
 
         List<DataRow> rows;
         if (allRow) {
-            rows = dataTable.getAllRow();
+            rows = dataTable.getRowList();
         } else {
             rows = new ArrayList<>();
             rows.add(dataTable.getRow(0));

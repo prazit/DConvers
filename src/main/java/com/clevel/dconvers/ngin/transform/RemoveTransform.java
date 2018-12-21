@@ -25,7 +25,7 @@ public class RemoveTransform extends Transform {
         String[] arguments = argument.split("[,]");
 
         List<DataRow> newRowList = new ArrayList<>();
-        List<DataRow> rowList = dataTable.getAllRow();
+        List<DataRow> rowList = dataTable.getRowList();
         List<DataColumn> newColumnList;
         DataRow newRow;
 

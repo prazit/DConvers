@@ -34,6 +34,7 @@ public class SQLDataSource extends DataSource {
     public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(sqlFileName);
 
         DataRow dataRow;

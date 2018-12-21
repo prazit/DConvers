@@ -37,7 +37,7 @@ public class MarkdownFormatter extends DataFormatter {
         rowIndex = 0;
         rowIndexWidth = 5;
 
-        List<DataRow> rowList = dataTable.getAllRow();
+        List<DataRow> rowList = dataTable.getRowList();
         if (rowList.size() == 0) {
             return null;
         }

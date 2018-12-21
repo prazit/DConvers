@@ -22,10 +22,12 @@ public class DataTable extends AppBase implements JRDataSource {
 
     private List<DataRow> dataRowList;
     private Map<String, DataRow> dataRowMap;
-    private ResultSetMetaData metaData;
     private String idColumnName;
-    private String query;
     private List<String> postUpdate;
+
+    private DataTable metaData;
+    private String dataSource;
+    private String query;
 
     public DataTable(Application application, String tableName, String idColumnName) {
         super(application, tableName);
@@ -35,6 +37,7 @@ public class DataTable extends AppBase implements JRDataSource {
         dataRowList = new ArrayList<>();
         dataRowMap = new HashMap<>();
         valid = true;
+        dataSource = "";
         query = "";
         postUpdate = new ArrayList<>();
         currentRow = -1;
@@ -50,6 +53,7 @@ public class DataTable extends AppBase implements JRDataSource {
         dataRowList = new ArrayList<>();
         dataRowMap = new HashMap<>();
         valid = true;
+        dataSource = "";
         query = "";
         currentRow = -1;
         needHeader = true;
@@ -80,16 +84,29 @@ public class DataTable extends AppBase implements JRDataSource {
         this.idColumnName = idColumnName;
     }
 
-    public ResultSetMetaData getMetaData() {
+    public DataTable getMetaData() {
         return metaData;
     }
 
-    public void setMetaData(ResultSetMetaData metaData) {
+    public void setMetaData(DataTable metaData) {
         this.metaData = metaData;
     }
 
-    public List<DataRow> getAllRow() {
+    public List<DataRow> getRowList() {
         return dataRowList;
+    }
+
+    public void setRowList(List<DataRow> rowList) {
+        this.dataRowList = rowList;
+
+        dataRowMap.clear();
+        if (rowList == null || rowList.size() == 0) {
+            return;
+        }
+
+        for (DataRow row : dataRowList) {
+            addRowToMap(row);
+        }
     }
 
     public DataRow getRow(int row) {
@@ -127,7 +144,10 @@ public class DataTable extends AppBase implements JRDataSource {
 
     public void addRow(DataRow dataRow) {
         dataRowList.add(dataRow);
+        addRowToMap(dataRow);
+    }
 
+    private void addRowToMap(DataRow dataRow) {
         String key;
         DataColumn idColumn = dataRow.getColumn(idColumnName);
         if (idColumn == null) {
@@ -140,6 +160,14 @@ public class DataTable extends AppBase implements JRDataSource {
 
     public int getRowCount() {
         return dataRowList.size();
+    }
+
+    public String getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
     }
 
     public String getQuery() {
@@ -163,11 +191,12 @@ public class DataTable extends AppBase implements JRDataSource {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("dataRowList", dataRowList)
                 .append("dataRowMap", dataRowMap)
-                .append("metaData", metaData)
                 .append("name", name)
                 .append("idColumnName", idColumnName)
+                .append("dataSource", dataSource)
                 .append("query", query)
                 .append("postUpdate", postUpdate)
+                .append("metaData", metaData)
                 .toString()
                 .replace('=', ':');
     }

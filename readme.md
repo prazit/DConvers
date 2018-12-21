@@ -143,6 +143,7 @@ source.transform | List |  | see [Transform Properties](#Transform_Properties)
 | Data Provider | datasource | query (Dynamic Value Enabled) |
 |---------------|--------------------------|------------------------|
 | Database | <datasource name> | SQL String |
+| ResultSet MetaData | ResultSetMetaData | table name like this => SRC:name |
 | SQL(Insert) File | SQL | file-name |
 | Markdown(Table) File | MARKDOWN | file-name |
 | Email | EMAIL | Search String |
