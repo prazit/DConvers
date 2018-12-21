@@ -20,8 +20,6 @@ public class DataSourceConfig extends Config {
     private String pre;
     private String post;
 
-    private boolean generateConverterFile;
-
     private String host;
     private boolean ssl;
 
@@ -59,7 +57,6 @@ public class DataSourceConfig extends Config {
         post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
 
         if (properties != null) {
-            generateConverterFile = properties.getBoolean(dataSource.connectKey(name, Property.GENERATE_TARGET), false);
             ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
         }
         host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
@@ -119,10 +116,6 @@ public class DataSourceConfig extends Config {
         return password;
     }
 
-    public boolean isGenerateConverterFile() {
-        return generateConverterFile;
-    }
-
     public String getPre() {
         return pre;
     }
@@ -162,7 +155,6 @@ public class DataSourceConfig extends Config {
                 .append("password", password)
                 .append("pre", pre)
                 .append("post", post)
-                .append("generateConverterFile", generateConverterFile)
                 .append("host", host)
                 .append("ssl", ssl)
                 .append("valueQuotes", valueQuotes)

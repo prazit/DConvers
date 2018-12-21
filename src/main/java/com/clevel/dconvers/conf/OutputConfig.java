@@ -33,6 +33,8 @@ public class OutputConfig extends Config {
 
 
     private boolean tar;
+    private boolean tarForSource;
+    private boolean tarForName;
     private String tarSftp;
     private String tarSftpOutput;
     private String tarOutput;
@@ -157,6 +159,8 @@ public class OutputConfig extends Config {
 
         // Default Properties for Source
         src = false;
+        srcSftp = null;
+        srcSftpOutput = null;
         srcOwner = "OWNER";                // name of owner to use as owner/schema name
         srcTable = "TABLE_NAME";           // name of table to use as table name
         srcId = "COLUMN_NAME";             // name of column to use as column name
@@ -192,6 +196,10 @@ public class OutputConfig extends Config {
 
         // Default Properties for Target
         tar = false;
+        tarForSource = false;
+        tarForName = false;
+        tarSftp = null;
+        tarSftpOutput = null;
         tarOutputs = "sql,md";
         tarOutput = "$[CAL:NAME(current)].conf";
         tarOutputAppend = false;
@@ -207,6 +215,8 @@ public class OutputConfig extends Config {
 
             Configuration tarProperties = properties.subset(key);
             tarOutputs = getPropertyString(tarProperties, Property.OUTPUT_TYPES.key(), tarOutputs);
+            tarForSource = tarProperties.getBoolean(Property.FOR.connectKey(Property.SOURCE), tarForSource);
+            tarForName = tarProperties.getBoolean(Property.FOR.connectKey(Property.NAME), tarForName);
             tarSftp = getPropertyString(tarProperties, Property.SFTP.key(), tarSftp);
             tarSftpOutput = getPropertyString(tarProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
             tarOutputs = getPropertyString(tarProperties, Property.TABLE.key(), tarOutputs);
@@ -539,6 +549,14 @@ public class OutputConfig extends Config {
 
     public boolean isTar() {
         return tar;
+    }
+
+    public boolean isTarForSource() {
+        return tarForSource;
+    }
+
+    public boolean isTarForName() {
+        return tarForName;
     }
 
     public String getTarSftp() {
@@ -931,7 +949,8 @@ public class OutputConfig extends Config {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append(super.toString())
                 .append("src", src)
                 .append("srcSftp", srcSftp)
                 .append("srcSftpOutput", srcSftpOutput)
@@ -947,6 +966,8 @@ public class OutputConfig extends Config {
                 .append("srcDataSource", srcDataSource)
                 .append("srcOutputs", srcOutputs)
                 .append("tar", tar)
+                .append("tarForSource", tarForSource)
+                .append("tarForName", tarForName)
                 .append("tarSftp", tarSftp)
                 .append("tarSftpOutput", tarSftpOutput)
                 .append("tarOutput", tarOutput)
@@ -998,6 +1019,7 @@ public class OutputConfig extends Config {
                 .append("txtOutputEOL", txtOutputEOL)
                 .append("txtOutputEOF", txtOutputEOF)
                 .append("txtSeparator", txtSeparator)
+                .append("txtLengthMode", txtLengthMode)
                 .append("txtFormat", txtFormat)
                 .append("txtFormatDate", txtFormatDate)
                 .append("txtFormatDatetime", txtFormatDatetime)
@@ -1036,7 +1058,6 @@ public class OutputConfig extends Config {
                 .append("dbUpdatePostSQL", dbUpdatePostSQL)
                 .append("dbUpdatePreSQL", dbUpdatePreSQL)
                 .append("outputTypeList", outputTypeList)
-                .toString()
-                .replace('=', ':');
+                .toString();
     }
 }

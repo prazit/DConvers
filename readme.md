@@ -320,13 +320,15 @@ src.outputs | string | sql,md | comma separated output-type-name
 
 ##### Configuration Generator for Target Properties
 
-Generate target configuration for each sources in the current converter file.(one target for one source)
+Generate target configuration for current table (can be source and target) each sources in the current converter file.(one target for one source)
 
 > Recommended: include only for all sources that already have data.
 
 Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
-tar | bool | false | create configuration file and generate source for all table name 
+tar | bool | false | create configuration file and generate source for all table name
+tar.for.source | bool | false | true = create target for each sources in the current converter, false = create target for current table 
+tar.for.name | bool | false | true = use default value depending on data type for column value, false = use column name  for column value
 tar.sftp | string | null | name of sftp.
 tar.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
 tar.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)

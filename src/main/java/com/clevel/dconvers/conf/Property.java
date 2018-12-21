@@ -32,7 +32,7 @@ public enum Property {
     EMAIL("email"),
     QUERY("query"),
     ID("id"),
-    GENERATE_TARGET("gen"),
+    FOR("for"),
 
     TARGET("target"),
     MAPPING("mapping"),
