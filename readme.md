@@ -423,10 +423,14 @@ transform | <td colspan=3>REMOVE([columnRange] or [columnIndex,anotherColumnInde
 [columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
 
 
-
 #### Dynamic Value Expression for Source.Query
 
+```
 $[[Type]:[Value-Identifier])
+
+example:
+source.name.query=$[TXT:../sql/select.sql]
+```
 
 When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
 
@@ -440,10 +444,14 @@ TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of va
 MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
 
 
-
 #### Dynamic Value Expression for Target.Column.Value
 
+```
 [Type]:[Value-Identifier]
+
+example:
+target.name.column.cname=CAL:../sql/select.sql
+```
 
 When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
 
@@ -455,7 +463,6 @@ SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of va
 TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
 MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
 MORE | | | |
-
 
 
 #### System Variables

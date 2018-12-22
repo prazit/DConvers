@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//TODO need to fix null string "null", need null for SQLOutput
 public class DataString extends DataColumn {
 
     private String value;
@@ -38,6 +39,10 @@ public class DataString extends DataColumn {
     @Override
     public String getQuotedValue() {
         if (value == null) {
+            return nullString;
+        }
+
+        if (value.equals(nullString)) {
             return nullString;
         }
 

@@ -66,7 +66,7 @@ public class DataDate extends DataColumn {
         }
 
         String formatted = format(value, Defaults.DATE_FORMAT.getStringValue());
-        if (nullString.equals(formatted)) {
+        if (formatted == null || formatted.equals(nullString)) {
             return nullString;
         }
 
