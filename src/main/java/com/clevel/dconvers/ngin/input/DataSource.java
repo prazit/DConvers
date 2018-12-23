@@ -8,6 +8,8 @@ import com.clevel.dconvers.ngin.data.*;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import oracle.jdbc.OracleTypes;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,6 +266,9 @@ public class DataSource extends AppBase {
                     metaDataColumnName = "Scale";
                     metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
 
+                    metaDataColumnName = "ColumnDisplaySize";
+                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
+
                     metaDataColumnName = "SchemaName";
                     metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
 
@@ -272,9 +277,6 @@ public class DataSource extends AppBase {
 
                     metaDataColumnName = "TableName";
                     metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
-
-                    metaDataColumnName = "ColumnDisplaySize";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
 
                     metaDataTable.addRow(metaDataRow);
                 }
@@ -342,11 +344,6 @@ public class DataSource extends AppBase {
 
     public DataSourceConfig getDataSourceConfig() {
         return dataSourceConfig;
-    }
-
-    @Override
-    public String toString() {
-        return dataSourceConfig.toString();
     }
 
     public void runPre() {
@@ -423,5 +420,18 @@ public class DataSource extends AppBase {
         }
 
         return success;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("name", name)
+                .append("dbms", dataSourceConfig.getDbms())
+                .append("driver", dataSourceConfig.getDriver())
+                .append("url", dataSourceConfig.getUrl())
+                .append("schema", dataSourceConfig.getSchema())
+                .append("user", dataSourceConfig.getUser())
+                .toString()
+                .replace('=', ':');
     }
 }

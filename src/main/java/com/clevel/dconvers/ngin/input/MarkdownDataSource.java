@@ -4,6 +4,8 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,4 +221,10 @@ public class MarkdownDataSource extends DataSource {
         // nothing here, close file is in getDataTable function.
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("name", name)
+                .toString();
+    }
 }

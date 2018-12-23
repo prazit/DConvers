@@ -30,7 +30,6 @@ public class Application extends AppBase {
 
     public DataConversionConfigFile dataConversionConfigFile;
 
-    public Map<String, DataSource> dataSourceMap;
     public Map<String, SFTP> sftpMap;
     public Map<SystemVariable, DataColumn> systemVariableMap;
 
@@ -46,6 +45,7 @@ public class Application extends AppBase {
     public long warningCode;
     public long successCode;
 
+    private Map<String, DataSource> dataSourceMap;
     private Date appStartDate;
 
     public Application(String[] args) {
@@ -407,6 +407,14 @@ public class Application extends AppBase {
         }
 
         return dataColumn.getValue();
+    }
+
+    public DataSource getDataSource(String dataSourceName) {
+        if (dataSourceName == null) {
+            return null;
+        }
+
+        return dataSourceMap.get(dataSourceName.toUpperCase());
     }
 
     /**

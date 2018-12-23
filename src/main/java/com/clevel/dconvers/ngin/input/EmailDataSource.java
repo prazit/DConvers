@@ -3,6 +3,8 @@ package com.clevel.dconvers.ngin.input;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.ngin.data.*;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -459,4 +461,12 @@ public class EmailDataSource extends DataSource {
         // nothing here, close file is in getDataTable function.
     }
 
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("host", dataSourceConfig.getHost())
+                .append("name", name)
+                .toString()
+                .replace('=', ':');
+    }
 }

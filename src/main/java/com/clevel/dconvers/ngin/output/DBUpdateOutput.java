@@ -39,7 +39,7 @@ public class DBUpdateOutput extends Output {
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
 
         String dataSourceName = outputConfig.getDbUpdateDataSource();
-        dataSource = application.dataSourceMap.get(dataSourceName.toUpperCase());
+        dataSource = application.getDataSource(dataSourceName.toUpperCase());
         if (dataSource == null) {
             return null;
         }

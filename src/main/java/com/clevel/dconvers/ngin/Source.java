@@ -29,7 +29,7 @@ public class Source extends AppBase {
     private boolean prepare() {
         log.trace("Source({}).prepare.", name);
         String dataSourceName = sourceConfig.getDataSource();
-        dataSource = application.dataSourceMap.get(dataSourceName.toUpperCase());
+        dataSource = application.getDataSource(dataSourceName.toUpperCase());
         return true;
     }
 
