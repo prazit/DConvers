@@ -126,7 +126,7 @@ public class DataSource extends AppBase {
             resultSet.close();
 
         } catch (SQLException se) {
-            error("SQLException: ", se);
+            error("SQLException: {}", se.getMessage());
             return null;
 
         } catch (Exception e) {

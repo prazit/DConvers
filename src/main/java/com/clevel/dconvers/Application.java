@@ -134,11 +134,9 @@ public class Application extends AppBase {
         DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        DataLong reportFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()) - 1);
         mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()) - 1);
         sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()) - 1);
-        reportFileNumber.setValue((long) (dataConversionConfigFile.getReportFileNumber()) - 1);
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();

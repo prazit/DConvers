@@ -16,12 +16,10 @@ public enum Property {
     SSL("ssl"),
 
     CONVERTER_FILE("converter"),
-    REPORT_PATH("report.output"),
     SOURCE_PATH("source.output"),
     TARGET_PATH("target.output"),
     MAPPING_PATH("mapping.output"),
 
-    PROGRESS_OUTPUT("progress.output"),
     EXIT_ON_ERROR("exit.on.error"),
     EXIT_CODE_ERROR("exit.code.error"),
     EXIT_CODE_WARNING("exit.code.warning"),

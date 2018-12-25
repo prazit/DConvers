@@ -56,7 +56,13 @@ public abstract class Output extends AppBase {
             return false;
         }
 
-        Writer writer = openWriter(outputConfig, dataTable);
+        Writer writer;
+        try {
+            writer = openWriter(outputConfig, dataTable);
+        } catch (Exception ex) {
+            error("Print failed: {}", ex.getMessage(), ex);
+            return false;
+        }
         if (writer == null) {
             return false;
         }

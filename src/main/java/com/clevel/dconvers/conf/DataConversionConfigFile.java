@@ -19,12 +19,10 @@ public class DataConversionConfigFile extends ConfigFile {
     private Map<String, SFTPConfig> sftpConfigMap;
     private Map<String, ConverterConfigFile> converterConfigMap;
 
-    private String outputReportPath;
     private String outputSourcePath;
     private String outputTargetPath;
     private String outputMappingPath;
 
-    private int reportFileNumber;
     private int sourceFileNumber;
     private int targetFileNumber;
     private int mappingFileNumber;
@@ -53,12 +51,10 @@ public class DataConversionConfigFile extends ConfigFile {
         application.dataConversionConfigFile = this;
 
         Property converterProperty = Property.CONVERTER_FILE;
-        outputReportPath = getPropertyString(properties, converterProperty.connectKey(Property.REPORT_PATH), "");
         outputSourcePath = getPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH), "");
         outputTargetPath = getPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH), "");
         outputMappingPath = getPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PATH), "");
 
-        reportFileNumber = properties.getInt(converterProperty.connectKey(Property.REPORT_PATH.connectKey(Property.FILE_NUMBER)), 1);
         sourceFileNumber = properties.getInt(converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1);
         targetFileNumber = properties.getInt(converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1);
         mappingFileNumber = properties.getInt(converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1);
@@ -143,10 +139,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     // access read only properties
 
-    public String getOutputReportPath() {
-        return outputReportPath;
-    }
-
     public String getOutputSourcePath() {
         return outputSourcePath;
     }
@@ -173,10 +165,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public int getSuccessCode() {
         return successCode;
-    }
-
-    public int getReportFileNumber() {
-        return reportFileNumber;
     }
 
     public int getSourceFileNumber() {
