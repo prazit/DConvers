@@ -178,7 +178,7 @@ public class MarkdownDataSource extends DataSource {
 
     private DataRow getDataRow(String line, String[] columnNames, int[] columnTypes, DataTable dataTable) {
         String[] columns = splitColumns(line);
-        log.debug("separator columns = {}", (Object[]) columns);
+        //log.debug("separator columns = {}", (Object[]) columns);
 
         DataRow dataRow = new DataRow(application, dataTable);
         int index = -1;
@@ -199,7 +199,7 @@ public class MarkdownDataSource extends DataSource {
             }
 
             dataRow.putColumn(columnName, application.createDataColumn(columnName.trim(), columnType, column));
-            log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
+            //log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
         }
 
         // stop update

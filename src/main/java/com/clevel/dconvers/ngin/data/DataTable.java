@@ -124,8 +124,11 @@ public class DataTable extends AppBase implements JRDataSource {
     }
 
     public DataRow getRow(String sourceColumnName, String value) {
-        DataColumn dataColumn;
+        if (sourceColumnName.equalsIgnoreCase(idColumnName)) {
+            return getRow(value);
+        }
 
+        DataColumn dataColumn;
         for (DataRow dataRow : dataRowList) {
             dataColumn = dataRow.getColumn(sourceColumnName);
             if (dataColumn == null) {

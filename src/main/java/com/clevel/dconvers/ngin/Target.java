@@ -274,6 +274,9 @@ public class Target extends AppBase {
                     return null;
                 }
 
+                if (sourceColumnNames.length == 1) {
+                    return targetColumn;
+                }
                 String[] mappings = sourceColumnNames[1].split("[.]");
 
                 DataTable asSourceTable = converter.getDataTable(mappings[0]);

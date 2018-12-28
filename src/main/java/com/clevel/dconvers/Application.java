@@ -465,7 +465,7 @@ public class Application extends AppBase {
                 dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
         }
 
-        log.debug("createDataColumn(columnName:{}, valueAsString:{}) = {}", columnName, value == null ? "null" : "\"" + value + "\"", dataColumn);
+        //log.debug("createDataColumn(columnName:{}, valueAsString:{}) = {}", columnName, value == null ? "null" : "\"" + value + "\"", dataColumn);
         return dataColumn;
     }
 
