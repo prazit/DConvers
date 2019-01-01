@@ -4,9 +4,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.conf.*;
-import com.clevel.dconvers.ngin.AppBase;
-import com.clevel.dconvers.ngin.Converter;
-import com.clevel.dconvers.ngin.SFTP;
+import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.ngin.data.*;
 import com.clevel.dconvers.ngin.input.*;
 import org.apache.commons.cli.HelpFormatter;
@@ -44,6 +42,8 @@ public class Application extends AppBase {
     public long errorCode;
     public long warningCode;
     public long successCode;
+
+    public TimeTracker timeTracker;
 
     private Map<String, DataSource> dataSourceMap;
     private Date appStartDate;
@@ -83,6 +83,7 @@ public class Application extends AppBase {
     }
 
     public void start() {
+        timeTracker.start(TimeTrackerKey.APPLICATION,"start to stop");
         appStartDate = new Date();
         this.application = this;
 
@@ -259,11 +260,17 @@ public class Application extends AppBase {
         currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
     }
 
+    private void performTimeTracker() {
+        timeTracker.stop(TimeTrackerKey.APPLICATION);
+        log.debug(timeTracker.toString());
+    }
+
     public void stop() {
         log.trace("Application.stop.");
 
         closeAllSFTP();
         closeAllDataSource();
+        performTimeTracker();
 
         log.info("SUCCESS\n\n");
         System.exit(dataConversionConfigFile.getSuccessCode());
@@ -274,6 +281,7 @@ public class Application extends AppBase {
 
         closeAllSFTP();
         closeAllDataSource();
+        performTimeTracker();
 
         log.info("EXIT WITH SOME ERROR\n\n");
         System.exit(dataConversionConfigFile.getErrorCode());
@@ -284,6 +292,7 @@ public class Application extends AppBase {
 
         closeAllSFTP();
         closeAllDataSource();
+        performTimeTracker();
 
         log.info("SUCCESSFUL WITH WARNING\n\n");
         System.exit(dataConversionConfigFile.getWarningCode());

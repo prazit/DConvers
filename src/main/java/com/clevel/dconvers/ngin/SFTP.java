@@ -55,6 +55,10 @@ public class SFTP extends AppBase implements UserInfo {
     }
 
     public void close() {
+        if (!valid) {
+            return;
+        }
+
         valid = false;
         sftpChannel.exit();
         log.info("Disconnected from sftp({}).", name);

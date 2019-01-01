@@ -9,6 +9,7 @@ import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import com.clevel.dconvers.ngin.output.OutputFactory;
 import com.clevel.dconvers.ngin.output.OutputTypes;
 import org.slf4j.Logger;
@@ -118,11 +119,14 @@ public class Converter extends AppBase {
 
     public boolean convert() {
         log.trace("Converter({}).convert", name);
+        TimeTracker timeTracker = application.timeTracker;
         boolean success = true;
 
         DataTable sourceDataTable;
         for (Source source : sortedSource) {
+            timeTracker.start(TimeTrackerKey.SOURCE, "buildDataTable for source(" + source.getName() + ")");
             sourceDataTable = source.getDataTable();
+            timeTracker.stop(TimeTrackerKey.SOURCE);
             if (sourceDataTable == null) {
                 success = false;
                 if (exitOnError) {
@@ -136,7 +140,9 @@ public class Converter extends AppBase {
         log.info("Retrieved, {} source(s).", sortedSource.size());
 
         for (Target target : sortedTarget) {
+            timeTracker.start(TimeTrackerKey.TARGET, "buildDataTable for target(" + target.getName() + ")");
             valid = target.buildDataTable();
+            timeTracker.stop(TimeTrackerKey.TARGET);
             if (!valid) {
                 success = false;
                 if (exitOnError) {
@@ -208,7 +214,7 @@ public class Converter extends AppBase {
             if (dataTable == null) {
                 dataTable = new DataTable(application, target.getName(), "id", Collections.EMPTY_LIST, target);
             }
-            setCurrentTable(target.getDataTable());
+            setCurrentTable(dataTable);
 
             outputConfig = target.getTargetConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
@@ -314,7 +320,6 @@ public class Converter extends AppBase {
     }
 
     public String compileDynamicValues(String sourceString) {
-        log.trace("Converter.compileDynamicValues.");
         if (sourceString == null) {
             return null;
         }
@@ -348,7 +353,7 @@ public class Converter extends AppBase {
         }
 
         String dynamicValue = sourceString.substring(start + 2, end);
-        log.debug("Converter.compileFirstDynamicValue: dynamicValue({})", dynamicValue);
+        //log.debug("Converter.compileFirstDynamicValue: dynamicValue({})", dynamicValue);
 
         DataColumn dataColumn = getDynamicValue(dynamicValue);
         if (dataColumn == null) {
@@ -451,7 +456,7 @@ public class Converter extends AppBase {
         // $[VAR:SOURCE_FILE_NUMBER]
         // $[TXT:FILE_NAME.txt]
         // $[CAL:function(argument1,argument2)]
-        log.trace("Converter.getDynamicValue.");
+        //log.trace("Converter.getDynamicValue.");
 
         if (dynamicValue.length() < 5) {
             error("Invalid syntax for DynamicValue({})", dynamicValue);
@@ -460,7 +465,7 @@ public class Converter extends AppBase {
 
         String valueType = dynamicValue.substring(0, 3);
         String valueIdentifier = dynamicValue.substring(4);
-        log.debug("valueType({}) valueIdentifier({})", valueType, valueIdentifier);
+        //log.debug("valueType({}) valueIdentifier({})", valueType, valueIdentifier);
 
         DynamicValueType dynamicValueType = DynamicValueType.parse(valueType);
         if (dynamicValueType == null) {

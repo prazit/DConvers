@@ -2,8 +2,6 @@ package com.clevel.dconvers.ngin.transform;
 
 import com.clevel.dconvers.Application;
 import com.sun.istack.internal.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -15,8 +13,6 @@ public class TransformFactory {
     private static Map<TransformTypes, Transform> transformMap = new HashMap<>();
 
     public static Transform getTransform(@NotNull Application application, @NotNull TransformTypes transformType) {
-        Logger log = LoggerFactory.getLogger(TransformFactory.class);
-
         Transform transform = transformMap.get(transformType);
         if (transform == null) {
 

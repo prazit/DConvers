@@ -79,7 +79,7 @@ public class SystemDataSource extends DataSource {
             columnName = "INDEX";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(index)));
 
-            columnName = "ARG";
+            columnName = "VALUE";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, argument));
 
             dataTable.addRow(dataRow);
@@ -97,16 +97,11 @@ public class SystemDataSource extends DataSource {
         DataRow dataRow;
         String columnName;
 
-        int index = 0;
-        List<DataColumn> variables = (List<DataColumn>) systemVariableMap.values();
+        List<DataColumn> variables = new ArrayList<>(systemVariableMap.values());
         variables.sort(Comparator.comparing(DataColumn::getName));
         for (DataColumn variable : variables) {
-            index++;
 
             dataRow = new DataRow(application, dataTable);
-
-            columnName = "INDEX";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(index)));
 
             columnName = "VAR";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, variable.getName()));

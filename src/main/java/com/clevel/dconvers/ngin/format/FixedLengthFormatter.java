@@ -2,7 +2,7 @@ package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Defaults;
-import com.clevel.dconvers.conf.DynamicValueType;
+import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;

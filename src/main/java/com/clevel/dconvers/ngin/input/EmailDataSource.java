@@ -159,7 +159,7 @@ public class EmailDataSource extends DataSource {
             Folder folder = store.getFolder(query);
             if (folder == null || !folder.exists()) {
                 error("Email: Invalid folder({})", query);
-                System.exit(1);
+                application.stopWithError();
             }
             log.info("Email: folder({}) is exists", query);
 
