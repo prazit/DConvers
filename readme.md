@@ -267,6 +267,7 @@ csv.append | bool | false | append or always replace
 csv.charset | string | UTF-8 | name of character set
 csv.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
 csv.eof | string | \n | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled)
+csv.header | bool | true | first line is header 
 csv.separator | string | , | separator character or words use to separate values 
 csv.format.string | string | null | string format still in the future plan
 csv.format.integer | string | #,##0 | integer number format (pattern)

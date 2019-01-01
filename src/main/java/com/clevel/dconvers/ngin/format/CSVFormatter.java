@@ -75,7 +75,7 @@ public class CSVFormatter extends DataFormatter {
             csvLine += separator;
         }
 
-        csvLine = csvLine.substring(0, csvLine.length() - separator.length() - 1);
+        csvLine = csvLine.substring(0, csvLine.length() - separator.length());
         return csvLine + eol;
 
     }

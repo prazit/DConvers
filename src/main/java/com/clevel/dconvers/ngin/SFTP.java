@@ -34,7 +34,7 @@ public class SFTP extends AppBase implements UserInfo {
 
             //log.info("sftp({}) session is connected", name);
         } catch (Exception ex) {
-            error("sftp({}) session connection is failed! {}", name, ex);
+            error("sftp({}) session connection is failed! {}", name, ex.getMessage());
             return false;
         }
 

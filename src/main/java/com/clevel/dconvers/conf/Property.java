@@ -83,6 +83,7 @@ public enum Property {
     CURRENT("current"),
     SYSTEM("system"),
     RESULT_SET_META_DATA("ResultSetMetaData"),
+    DIR("dir"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),
