@@ -83,7 +83,7 @@ public class Application extends AppBase {
     }
 
     public void start() {
-        timeTracker.start(TimeTrackerKey.APPLICATION,"start to stop");
+        timeTracker.start(TimeTrackerKey.APPLICATION, "start to stop");
         appStartDate = new Date();
         this.application = this;
 
@@ -184,45 +184,56 @@ public class Application extends AppBase {
         sftpMap = new HashMap<>();
         SFTP sftp;
         String sftpName;
-        for (SFTPConfig sftpConfig : dataConversionConfigFile.getSftpConfigMap().values()) {
-            sftpName = sftpConfig.getName();
+        Map<String, SFTPConfig> sftpConfigMap = dataConversionConfigFile.getSftpConfigMap();
+        if (sftpConfigMap != null) {
+            for (SFTPConfig sftpConfig : sftpConfigMap.values()) {
+                sftpName = sftpConfig.getName();
 
-            sftp = new SFTP(this, sftpName, sftpConfig);
-            if (!sftp.isValid()) {
-                performInvalidSFTP(sftp);
+                sftp = new SFTP(this, sftpName, sftpConfig);
+                if (!sftp.isValid()) {
+                    performInvalidSFTP(sftp);
+                }
+                sftpMap.put(sftpName.toUpperCase(), sftp);
             }
-            sftpMap.put(sftpName.toUpperCase(), sftp);
+        } else if (exitOnError) {
+            stopWithError();
         }
 
         log.trace("Application. Load Converters.");
         converterList = new ArrayList<>();
         Converter converter;
         String converterName;
-        for (ConverterConfigFile converterConfigFile : dataConversionConfigFile.getConverterConfigMap().values()) {
-            converterName = converterConfigFile.getName();
-            converter = new Converter(this, converterName, converterConfigFile);
+        Map<String, ConverterConfigFile> converterConfigMap = dataConversionConfigFile.getConverterConfigMap();
+        if (converterConfigMap != null) {
+            for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
+                converterName = converterConfigFile.getName();
+                converter = new Converter(this, converterName, converterConfigFile);
 
-            if (!converter.isValid()) {
-                if (exitOnError) {
-                    performInvalidConverter(converter);
+                if (!converter.isValid()) {
+                    if (exitOnError) {
+                        performInvalidConverter(converter);
+                    }
+                    success = false;
                 }
-                success = false;
-            }
 
-            converterList.add(converter);
+                converterList.add(converter);
+            }
+            log.info("Has {} converter(s)", converterList.size());
+        } else if (exitOnError) {
+            stopWithError();
         }
-        log.info("Has {} converter(s)", converterList.size());
 
         log.trace("Application. Launch Converters to transfer, transform and create output.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
         if (converterList.size() > 0) {
             for (Converter convert : converterList) {
-                log.info("Converter configuration file is '{}'", convert.getName());
+                log.info("Converter({}) configuration file is '{}'", convert.getConverterConfigFile().getIndex(), convert.getName());
 
                 currentConverter = convert;
                 success = convert.convert() && success;
                 success = convert.print() && success;
+                convert.close();
             }
         }
         currentConverter = null;
@@ -275,7 +286,7 @@ public class Application extends AppBase {
         closeAllDataSource();
         performTimeTracker();
 
-        log.info("SUCCESS\n\n");
+        log.info("SUCCESS");
         System.exit(dataConversionConfigFile.getSuccessCode());
     }
 
@@ -286,7 +297,7 @@ public class Application extends AppBase {
         closeAllDataSource();
         performTimeTracker();
 
-        log.info("EXIT WITH SOME ERROR\n\n");
+        log.info("EXIT WITH SOME ERROR");
         System.exit(dataConversionConfigFile.getErrorCode());
     }
 
@@ -297,7 +308,7 @@ public class Application extends AppBase {
         closeAllDataSource();
         performTimeTracker();
 
-        log.info("SUCCESSFUL WITH WARNING\n\n");
+        log.info("SUCCESSFUL WITH WARNING");
         System.exit(dataConversionConfigFile.getWarningCode());
     }
 

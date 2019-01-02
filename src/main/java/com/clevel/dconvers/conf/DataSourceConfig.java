@@ -44,6 +44,9 @@ public class DataSourceConfig extends Config {
     @Override
     protected boolean loadProperties() {
         log.trace("DataSourceConfig.loadProperties.");
+        if (properties == null) {
+            return false;
+        }
 
         Property dataSource = Property.DATA_SOURCE;
 

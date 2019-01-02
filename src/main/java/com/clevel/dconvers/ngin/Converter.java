@@ -565,4 +565,19 @@ public class Converter extends AppBase {
         return sortedSource;
     }
 
+    public void close() {
+        valid = false;
+        log = null;
+        application = null;
+        converterConfigFile = null;
+        sourceMap = null;
+        targetMap = null;
+        mappingTableMap = null;
+        sortedSource = null;
+        sortedTarget = null;
+        currentTable = null;
+        currentRowIndex = 0;
+        System.gc();
+    }
+
 }
