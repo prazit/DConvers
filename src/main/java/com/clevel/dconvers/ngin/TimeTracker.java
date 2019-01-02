@@ -81,16 +81,16 @@ public class TimeTracker implements Serializable {
         for (Timer timer : stopped) {
             text.append("Timer", timer);
         }
-        toString = "Stopped Timers:\n" + text.toString();
+        toString = "{Stopped_Timers:" + text.toString();
 
         if (timers.size() > 0) {
             text = new ToStringBuilder(this, ToStringStyle.JSON_STYLE);
             for (Timer timer : timers.values()) {
                 text.append("Timer", timer);
             }
-            toString += "\nNon-Stop Timers:\n" + text.toString();
+            toString += ",Non_Stop_Timers:" + text.toString();
         }
 
-        return toString;
+        return toString + "}";
     }
 }

@@ -10,18 +10,20 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DataTable extends AppBase implements JRDataSource {
 
     private Object owner;
 
+    /* dataRowMap is Map<ColumnName,Map<ValueString,DataRow>>
+     * ValueString is DataColumn.getValue()
+     **/
+    private HashMap<String, HashMap<String, DataRow>> dataRowMap;
+
     private List<DataRow> dataRowList;
-    private Map<String, DataRow> dataRowMap;
     private String idColumnName;
     private List<String> postUpdate;
 
@@ -103,10 +105,34 @@ public class DataTable extends AppBase implements JRDataSource {
         if (rowList == null || rowList.size() == 0) {
             return;
         }
+        dataRowMap.put(idColumnName, createMap(idColumnName));
+    }
+
+    private HashMap<String, DataRow> createMap(String columnName) {
+        HashMap<String, DataRow> hashMap = new HashMap<>();
+        if (dataRowList.size() == 0) {
+            return hashMap;
+        }
+
+        String key;
+        DataColumn dataColumn;
+        DataRow dataRow = dataRowList.get(0);
+        dataColumn = dataRow.getColumn(columnName);
+        if (dataColumn == null) {
+            error("DataTable({}).createMap. column {} not found!", name, columnName);
+            return hashMap;
+        }
 
         for (DataRow row : dataRowList) {
-            addRowToMap(row);
+            dataColumn = row.getColumn(columnName);
+            key = dataColumn.getValue();
+            if (key == null) {
+                key = "NULL";
+            }
+            hashMap.put(key.toUpperCase(), row);
         }
+
+        return hashMap;
     }
 
     public DataRow getRow(int row) {
@@ -118,47 +144,37 @@ public class DataTable extends AppBase implements JRDataSource {
 
     public DataRow getRow(String idValue) {
         if (idValue == null) {
-            return null;
+            idValue = "NULL";
+        }else{
+            idValue = idValue.toUpperCase();
         }
-        return dataRowMap.get(idValue.toUpperCase());
+        return getHashMap(idColumnName.toUpperCase()).get(idValue);
+    }
+
+    private HashMap<String, DataRow> getHashMap(String columnName) {
+        HashMap<String, DataRow> hashMap = dataRowMap.get(columnName.toUpperCase());
+        if (hashMap == null) {
+            hashMap = createMap(columnName);
+            dataRowMap.put(columnName.toUpperCase(), hashMap);
+        }
+        return hashMap;
     }
 
     public DataRow getRow(String sourceColumnName, String value) {
-        if (sourceColumnName.equalsIgnoreCase(idColumnName)) {
-            return getRow(value);
+        if (value == null) {
+            value = "NULL";
+        }else{
+            value = value.toUpperCase();
         }
-
-        DataColumn dataColumn;
-        for (DataRow dataRow : dataRowList) {
-            dataColumn = dataRow.getColumn(sourceColumnName);
-            if (dataColumn == null) {
-                log.debug("DataTable({}).getRow({},{}). dataColumn({}) is null then return null", name, sourceColumnName, value, sourceColumnName);
-                return null;
-            }
-
-            if (value.compareTo(dataColumn.getValue()) == 0) {
-                return dataRow;
-            }
-        }
-
-        log.debug("DataTable({}).getRow({},{}). return null", name, sourceColumnName, value);
-        return null;
+        return getHashMap(sourceColumnName.toUpperCase()).get(value);
     }
 
     public void addRow(DataRow dataRow) {
         dataRowList.add(dataRow);
-        addRowToMap(dataRow);
-    }
 
-    private void addRowToMap(DataRow dataRow) {
-        String key;
-        DataColumn idColumn = dataRow.getColumn(idColumnName);
-        if (idColumn == null) {
-            key = String.valueOf(dataRowList.size());
-        } else {
-            key = idColumn.getValue();
-        }
-        dataRowMap.put(key.toUpperCase(), dataRow);
+        HashMap<String, DataRow> hashMap = getHashMap(idColumnName);
+        String key = dataRow.getColumn(idColumnName).getValue();
+        hashMap.put(key.toUpperCase(), dataRow);
     }
 
     public int getRowCount() {

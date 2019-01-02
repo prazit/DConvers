@@ -10,12 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class DataRow extends AppBase {
 
     private DataTable dataTable;
-    private Map<String, DataColumn> dataColumnMap;
+    private HashMap<String, DataColumn> dataColumnMap;
     private List<DataColumn> columnList;
 
     public DataRow(Application application, DataTable dataTable) {
@@ -53,7 +52,7 @@ public class DataRow extends AppBase {
         }
     }
 
-    public Map<String, DataColumn> getColumnMap() {
+    public HashMap<String, DataColumn> getColumnMap() {
         return dataColumnMap;
     }
 
