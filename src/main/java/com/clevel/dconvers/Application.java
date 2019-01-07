@@ -228,14 +228,20 @@ public class Application extends AppBase {
         log.trace("Application. Launch Converters to transfer, transform and create output.");
         converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
+        Converter lastConverter = null;
         if (converterList.size() > 0) {
+            lastConverter = converterList.get(converterList.size() - 1);
+
             for (Converter convert : converterList) {
                 log.info("Converter({}) configuration file is '{}'", convert.getConverterConfigFile().getIndex(), convert.getName());
 
                 currentConverter = convert;
                 success = convert.convert() && success;
                 success = convert.print() && success;
-                convert.close();
+
+                if (!lastConverter.equals(convert)) {
+                    convert.close();
+                }
             }
         }
 
@@ -251,7 +257,11 @@ public class Application extends AppBase {
         log.trace("Application. print summary table.");
         summaryTable.sort();
         summaryTable.print(dataConversionConfigFile.getSummaryOutputConfig());
+
         currentConverter = null;
+        if (lastConverter != null) {
+            lastConverter.close();
+        }
 
         // Have some errors
         if (currentState.getLongValue() == dataConversionConfigFile.getErrorCode()) {
