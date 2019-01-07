@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +89,7 @@ public class Target extends AppBase {
         dataTable = new DataTable(application, name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
         converter.setCurrentTable(dataTable);
 
-        Map<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROW_NUMBER);
         varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
 
@@ -229,11 +230,11 @@ public class Target extends AppBase {
         // TODO: create reportRow and add into the application.reportTable
 
         // -- start transformation
-        List<Pair<TransformTypes, Map<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
-        Map<String, String> argumentList;
+        List<Pair<TransformTypes,HashMap<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
+        HashMap<String, String> argumentList;
         TransformTypes transformType;
         Transform transform;
-        for (Pair<TransformTypes, Map<String, String>> transformPair : transformList) {
+        for (Pair<TransformTypes, HashMap<String, String>> transformPair : transformList) {
             transformType = transformPair.getKey();
             argumentList = transformPair.getValue();
             log.trace("transforming Target({}) by Transform({})", name, transformType.name());

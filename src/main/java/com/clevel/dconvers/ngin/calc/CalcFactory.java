@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class CalcFactory {
 
-    private static Map<CalcTypes, Calc> calcMap = new HashMap<>();
+    private static HashMap<CalcTypes, Calc> calcMap = new HashMap<>();
 
     public static Calc getCalc(@NotNull Application application, @NotNull CalcTypes calcType) {
         Calc calc = calcMap.get(calcType);

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class TransformFactory {
 
-    private static Map<TransformTypes, Transform> transformMap = new HashMap<>();
+    private static HashMap<TransformTypes, Transform> transformMap = new HashMap<>();
 
     public static Transform getTransform(@NotNull Application application, @NotNull TransformTypes transformType) {
         Transform transform = transformMap.get(transformType);

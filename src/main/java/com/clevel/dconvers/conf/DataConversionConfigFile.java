@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public class DataConversionConfigFile extends ConfigFile {
 
-    private Map<String, DataSourceConfig> dataSourceConfigMap;
-    private Map<String, SFTPConfig> sftpConfigMap;
-    private Map<String, ConverterConfigFile> converterConfigMap;
+    private HashMap<String, DataSourceConfig> dataSourceConfigMap;
+    private HashMap<String, SFTPConfig> sftpConfigMap;
+    private HashMap<String, ConverterConfigFile> converterConfigMap;
 
     private String outputSourcePath;
     private String outputTargetPath;
@@ -179,15 +179,15 @@ public class DataConversionConfigFile extends ConfigFile {
         return mappingFileNumber;
     }
 
-    public Map<String, ConverterConfigFile> getConverterConfigMap() {
+    public HashMap<String, ConverterConfigFile> getConverterConfigMap() {
         return converterConfigMap;
     }
 
-    public Map<String, DataSourceConfig> getDataSourceConfigMap() {
+    public HashMap<String, DataSourceConfig> getDataSourceConfigMap() {
         return dataSourceConfigMap;
     }
 
-    public Map<String, SFTPConfig> getSftpConfigMap() {
+    public HashMap<String, SFTPConfig> getSftpConfigMap() {
         return sftpConfigMap;
     }
 

@@ -85,6 +85,11 @@ public class DataSource extends AppBase {
             return null;
         }
 
+        if (query == null || query.trim().isEmpty()) {
+            error("Empty query is not allowed for tableName({}) idColumnName({}) in converter({})", tableName, idColumnName, application.currentConverter.getName());
+            return null;
+        }
+
         log.trace("DataSource.getDataTable.");
         DataTable dataTable;
         Statement statement = null;

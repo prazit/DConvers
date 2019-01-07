@@ -11,14 +11,15 @@ import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class Transform extends UtilBase {
 
-    protected Map<String, String> argumentList;
+    protected HashMap<String, String> argumentList;
 
-    public void setArgumentList(Map<String, String> argumentList) {
+    public void setArgumentList(HashMap<String, String> argumentList) {
         this.argumentList = argumentList;
     }
 

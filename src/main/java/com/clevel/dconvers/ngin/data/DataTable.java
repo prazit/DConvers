@@ -18,7 +18,7 @@ public class DataTable extends AppBase implements JRDataSource {
 
     private Object owner;
 
-    /* dataRowMap is Map<ColumnName,Map<ValueString,DataRow>>
+    /* dataRowMap is HashMap<ColumnName,HashMap<ValueString,DataRow>>
      * ValueString is DataColumn.getValue()
      **/
     private HashMap<String, HashMap<String, DataRow>> dataRowMap;
@@ -173,7 +173,15 @@ public class DataTable extends AppBase implements JRDataSource {
         dataRowList.add(dataRow);
 
         HashMap<String, DataRow> hashMap = getHashMap(idColumnName);
-        String key = dataRow.getColumn(idColumnName).getValue();
+
+        String key;
+        DataColumn dataColumn = dataRow.getColumn(idColumnName);
+        if (dataColumn == null) {
+            key = "NULL";
+        }else {
+            key = dataColumn.getValue();
+        }
+
         hashMap.put(key.toUpperCase(), dataRow);
     }
 

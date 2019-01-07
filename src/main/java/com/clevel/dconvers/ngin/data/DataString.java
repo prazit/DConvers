@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//TODO need to fix null string "null", need null for SQLOutput
 public class DataString extends DataColumn {
 
     private String value;
@@ -46,7 +45,13 @@ public class DataString extends DataColumn {
             return nullString;
         }
 
-        return quotes + value + quotes;
+        return quotes + escape(value, quotes) + quotes;
+    }
+
+    private String escape(String quotedValue, String quoteSymbol) {
+        String value = quotedValue.replaceAll("\r\n|\n\r|\n", "\\\\n");
+        value = value.replaceAll("[" + quoteSymbol + "]", "\\\\" + quoteSymbol);
+        return value;
     }
 
     @Override

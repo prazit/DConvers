@@ -87,7 +87,7 @@ public class COLValue extends DynamicValue {
 
         DataRow lookupResultRow = lookupTable.getRow(lookupColumnName, lookupData.getValue());
         if (lookupResultRow == null) {
-            error("No row contains column({}) with value({}) in a table({}) in converter({})", lookupColumnName, lookupData.getValue(), lookupTable.getName(), converter.getName());
+            error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({})", lookupColumnName, lookupData.getValue(), lookupTable.getName(), converter.getName(), targetName);
             log.debug("lookupTable = {}", lookupTable);
             return null;
         }

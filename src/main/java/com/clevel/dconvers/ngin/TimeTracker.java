@@ -52,7 +52,7 @@ public class TimeTracker implements Serializable {
     private SimpleDateFormat sharedDateFormat;
     private SimpleDateFormat sharedTimeFormat;
 
-    private Map<TimeTrackerKey, Timer> timers;
+    private HashMap<TimeTrackerKey, Timer> timers;
     private List<Timer> stopped;
 
     public TimeTracker() {

@@ -74,6 +74,9 @@ public class OutputConfig extends Config {
     private String markdownOutputCharset;
     private String markdownOutputEOL;
     private String markdownOutputEOF;
+    private boolean markdownComment;
+    private boolean markdownCommentDataSource;
+    private boolean markdownCommentQuery;
 
 
     private boolean pdf;
@@ -281,6 +284,9 @@ public class OutputConfig extends Config {
         markdownOutputCharset = "UTF-8";
         markdownOutputEOL = "\n";
         markdownOutputEOF = "\n";
+        markdownComment = true;
+        markdownCommentDataSource = true;
+        markdownCommentQuery = true;
 
         key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
@@ -296,6 +302,10 @@ public class OutputConfig extends Config {
             markdownOutputCharset = getPropertyString(markdownProperties, Property.OUTPUT_CHARSET.key(), markdownOutputCharset);
             markdownOutputEOL = getPropertyString(markdownProperties, Property.OUTPUT_EOL.key(), markdownOutputEOL);
             markdownOutputEOF = getPropertyString(markdownProperties, Property.OUTPUT_EOF.key(), markdownOutputEOF);
+
+            markdownComment = markdownProperties.getBoolean(Property.COMMENT.key(), markdownComment);
+            markdownCommentDataSource = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.DATA_SOURCE), markdownCommentDataSource);
+            markdownCommentQuery = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.QUERY), markdownCommentQuery);
         }
 
         // Default Properties for PDF
@@ -697,6 +707,18 @@ public class OutputConfig extends Config {
 
     public String getMarkdownOutputEOF() {
         return application.currentConverter.compileDynamicValues(markdownOutputEOF);
+    }
+
+    public boolean isMarkdownComment() {
+        return markdownComment;
+    }
+
+    public boolean isMarkdownCommentDataSource() {
+        return markdownCommentDataSource;
+    }
+
+    public boolean isMarkdownCommentQuery() {
+        return markdownCommentQuery;
     }
 
     public boolean isPdf() {

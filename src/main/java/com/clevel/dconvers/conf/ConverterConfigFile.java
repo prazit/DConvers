@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class ConverterConfigFile extends ConfigFile {
 
-    private Map<String, SourceConfig> sourceConfigMap;
-    private Map<String, TargetConfig> targetConfigMap;
+    private HashMap<String, SourceConfig> sourceConfigMap;
+    private HashMap<String, TargetConfig> targetConfigMap;
     private int index;
 
     public ConverterConfigFile(Application application, String name) {
@@ -92,11 +92,11 @@ public class ConverterConfigFile extends ConfigFile {
         return index;
     }
 
-    public Map<String, SourceConfig> getSourceConfigMap() {
+    public HashMap<String, SourceConfig> getSourceConfigMap() {
         return sourceConfigMap;
     }
 
-    public Map<String, TargetConfig> getTargetConfigMap() {
+    public HashMap<String, TargetConfig> getTargetConfigMap() {
         return targetConfigMap;
     }
 

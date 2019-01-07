@@ -56,6 +56,7 @@ public enum Property {
     OUTPUT_CHARSET("charset"),
     OUTPUT_EOL("eol"),
     OUTPUT_EOF("eof"),
+    COMMENT("comment"),
     HEADER("header"),
     OWNER("owner"),
     TABLE("table"),

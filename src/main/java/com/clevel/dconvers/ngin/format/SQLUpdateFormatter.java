@@ -7,6 +7,8 @@ import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
+
 public class SQLUpdateFormatter extends DataFormatter {
 
     private String tableName;
@@ -39,9 +41,9 @@ public class SQLUpdateFormatter extends DataFormatter {
                 continue;
             }
 
-            column.setQuotes(valueQuotes);
             values += nameQuotes + column.getName() + nameQuotes + " = ";
-            values += column.getQuotedValue().replaceAll("\r\n|\n\r|\n", "\\\\n") + ", ";
+            column.setQuotes(valueQuotes);
+            values += column.getQuotedValue() + ", ";
         }
         values = values.substring(0, values.length() - 2);
 
@@ -49,7 +51,6 @@ public class SQLUpdateFormatter extends DataFormatter {
 
         String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";" + eol;
         return sqlUpdate;
-
     }
 
     @Override

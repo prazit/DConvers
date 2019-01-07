@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 public class Converter extends AppBase {
 
     private ConverterConfigFile converterConfigFile;
-    private Map<String, Source> sourceMap;
-    private Map<String, Target> targetMap;
-    private Map<String, DataTable> mappingTableMap;
+    private HashMap<String, Source> sourceMap;
+    private HashMap<String, Target> targetMap;
+    private HashMap<String, DataTable> mappingTableMap;
     private List<Target> sortedTarget;
     private List<Source> sortedSource;
 
@@ -58,8 +58,8 @@ public class Converter extends AppBase {
     private boolean prepare() {
         log.trace("Converter({}).prepare", name);
 
-        Map<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
-        Map<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
+        HashMap<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
+        HashMap<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
 
         boolean valid;
         String name;
@@ -163,7 +163,7 @@ public class Converter extends AppBase {
         log.trace("Converter({}).print", name);
         boolean success = true;
 
-        Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
         DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);

@@ -45,7 +45,7 @@ public class PDFTableFormatter extends DataFormatter {
                 jasperReport = JasperCompileManager.compileReport(jrxmlInputStream);
             }
 
-            Map<String, Object> parameters = new HashMap<String, Object>();
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
             parameters.put("TITLE", "Table: " + dataTable.getName());
             parameters.put("QUERY", "Query: " + dataTable.getQuery());
 

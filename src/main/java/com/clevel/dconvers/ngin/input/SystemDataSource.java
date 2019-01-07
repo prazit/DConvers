@@ -89,7 +89,7 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable systemVariables(String tableName, String idColumnName) {
-        Map<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);

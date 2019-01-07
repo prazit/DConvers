@@ -220,6 +220,9 @@ markdown.append | bool | false | append or always replace
 markdown.charset | string | UTF-8 | name of character set
 markdown.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
 markdown.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
+markdown.comment | bool | true | print comment as first block of content
+markdown.comment.datasource | bool | true | print datasource information in a comment block
+markdown.comment.query | bool | true | print query string in a comment block
 
 ##### PDF Output Properties
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class OutputFactory {
 
-    private static Map<OutputTypes, Output> outputMap = new HashMap<>();
+    private static HashMap<OutputTypes, Output> outputMap = new HashMap<>();
 
     public static Output getOutput(@NotNull Application application, @NotNull OutputTypes outputType) {
         Output output = outputMap.get(outputType);

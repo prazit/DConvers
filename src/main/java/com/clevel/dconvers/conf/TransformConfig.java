@@ -16,9 +16,9 @@ public class TransformConfig extends Config {
 
     // ArgumentValue = String
     // ArgumentName = String
-    // ArgumentList = Map<ArgumentName,ArgumentValue>>
+    // ArgumentList = HashMap<ArgumentName,ArgumentValue>>
     // TransformList = List<Pair<TransformTypes,ArgumentList>>
-    private List<Pair<TransformTypes, Map<String, String>>> transformList;
+    private List<Pair<TransformTypes,HashMap<String, String>>> transformList;
 
     public TransformConfig(Application application, String baseProperty, Configuration baseProperties) {
         super(application, baseProperty);
@@ -33,7 +33,7 @@ public class TransformConfig extends Config {
     @Override
     protected boolean loadProperties() {
 
-        Map<String, String> argumentList;
+        HashMap<String, String> argumentList;
         Configuration transProperties;
         Iterator<String> transKeyList;
         TransformTypes transformType;
@@ -113,7 +113,7 @@ public class TransformConfig extends Config {
         return transform;
     }
 
-    public List<Pair<TransformTypes, Map<String, String>>> getTransformList() {
+    public List<Pair<TransformTypes,HashMap<String, String>>> getTransformList() {
         return transformList;
     }
 }

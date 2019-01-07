@@ -28,8 +28,8 @@ public class Application extends AppBase {
 
     public DataConversionConfigFile dataConversionConfigFile;
 
-    public Map<String, SFTP> sftpMap;
-    public Map<SystemVariable, DataColumn> systemVariableMap;
+    public HashMap<String, SFTP> sftpMap;
+    public HashMap<SystemVariable, DataColumn> systemVariableMap;
 
     public List<Converter> converterList;
     public Converter currentConverter;
@@ -45,7 +45,7 @@ public class Application extends AppBase {
 
     public TimeTracker timeTracker;
 
-    private Map<String, DataSource> dataSourceMap;
+    private HashMap<String, DataSource> dataSourceMap;
     private Date appStartDate;
 
     public Application(String[] args) {
@@ -143,7 +143,7 @@ public class Application extends AppBase {
         dataSourceMap = new HashMap<>();
         DataSource dataSource;
         String dataSourceName;
-        Map<String, DataSourceConfig> dataSourceConfigMap = dataConversionConfigFile.getDataSourceConfigMap();
+        HashMap<String, DataSourceConfig> dataSourceConfigMap = dataConversionConfigFile.getDataSourceConfigMap();
         if (dataSourceConfigMap != null) {
             for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
                 dataSourceName = dataSourceConfig.getName();
@@ -184,7 +184,7 @@ public class Application extends AppBase {
         sftpMap = new HashMap<>();
         SFTP sftp;
         String sftpName;
-        Map<String, SFTPConfig> sftpConfigMap = dataConversionConfigFile.getSftpConfigMap();
+        HashMap<String, SFTPConfig> sftpConfigMap = dataConversionConfigFile.getSftpConfigMap();
         if (sftpConfigMap != null) {
             for (SFTPConfig sftpConfig : sftpConfigMap.values()) {
                 sftpName = sftpConfig.getName();
@@ -203,7 +203,7 @@ public class Application extends AppBase {
         converterList = new ArrayList<>();
         Converter converter;
         String converterName;
-        Map<String, ConverterConfigFile> converterConfigMap = dataConversionConfigFile.getConverterConfigMap();
+        HashMap<String, ConverterConfigFile> converterConfigMap = dataConversionConfigFile.getConverterConfigMap();
         if (converterConfigMap != null) {
             for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
                 converterName = converterConfigFile.getName();
@@ -408,9 +408,9 @@ public class Application extends AppBase {
 
     //======= Utilities =======
 
-    private Map<SystemVariable, DataColumn> createSystemVariableMap() {
+    private HashMap<SystemVariable, DataColumn> createSystemVariableMap() {
         List<SystemVariable> systemVariableList = Arrays.asList(SystemVariable.values());
-        Map<SystemVariable, DataColumn> variables = new HashMap<>();
+        HashMap<SystemVariable, DataColumn> variables = new HashMap<>();
         DataColumn dataColumn;
 
         for (SystemVariable systemVariable : systemVariableList) {
@@ -456,19 +456,19 @@ public class Application extends AppBase {
             case Types.SMALLINT:
             case Types.BOOLEAN:
             case Types.BIT:
-                dataColumn = new DataLong(this, 0, Types.INTEGER, columnName, value == null ? null : Long.valueOf(value));
+                dataColumn = new DataLong(this, 0, Types.INTEGER, columnName, value == null ? null : toLong(value));
                 break;
 
             case Types.BIGINT:
             case Types.NUMERIC:
-                dataColumn = new DataLong(this, 0, Types.BIGINT, columnName, value == null ? null : Long.valueOf(value));
+                dataColumn = new DataLong(this, 0, Types.BIGINT, columnName, value == null ? null : toLong(value));
                 break;
 
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(Double.valueOf(value)));
+                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(toDouble(value)));
                 break;
 
             case Types.DATE:
@@ -490,6 +490,28 @@ public class Application extends AppBase {
 
         //log.debug("createDataColumn(columnName:{}, valueAsString:{}) = {}", columnName, value == null ? "null" : "\"" + value + "\"", dataColumn);
         return dataColumn;
+    }
+
+    private Long toLong(String value) {
+        Long longValue;
+        try {
+            longValue = Long.valueOf(value);
+        } catch (NumberFormatException ex) {
+            error("Invalid value of integer, {}", value, ex.getMessage());
+            return null;
+        }
+        return longValue;
+    }
+
+    private Double toDouble(String value) {
+        Double doubleValue;
+        try {
+            doubleValue = Double.valueOf(value);
+        } catch (NumberFormatException ex) {
+            error("Invalid value of decimal, {}", value, ex.getMessage());
+            return null;
+        }
+        return doubleValue;
     }
 
 }
