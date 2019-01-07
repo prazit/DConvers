@@ -1,7 +1,13 @@
 package com.clevel.dconvers.ngin.data;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.ngin.AppBase;
+import com.clevel.dconvers.ngin.Source;
+import com.clevel.dconvers.ngin.Target;
+import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
+import com.clevel.dconvers.ngin.output.OutputFactory;
+import com.clevel.dconvers.ngin.output.OutputTypes;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
@@ -11,25 +17,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 public class DataTable extends AppBase implements JRDataSource {
 
-    private Object owner;
+    protected Object owner;
 
     /* dataRowMap is HashMap<ColumnName,HashMap<ValueString,DataRow>>
      * ValueString is DataColumn.getValue()
      **/
-    private HashMap<String, HashMap<String, DataRow>> dataRowMap;
+    protected HashMap<String, HashMap<String, DataRow>> dataRowMap;
+    protected List<DataRow> dataRowList;
+    protected String idColumnName;
 
-    private List<DataRow> dataRowList;
-    private String idColumnName;
-    private List<String> postUpdate;
+    protected List<String> postUpdate;
 
-    private DataTable metaData;
-    private String dataSource;
-    private String query;
+    protected DataTable metaData;
+    protected String dataSource;
+    protected String query;
 
     public DataTable(Application application, String tableName, String idColumnName) {
         super(application, tableName);
@@ -213,6 +220,26 @@ public class DataTable extends AppBase implements JRDataSource {
         this.postUpdate = postUpdate;
     }
 
+    public DynamicValueType getTableType() {
+        if (!isValid() || owner == null) {
+            return DynamicValueType.INV;
+        }
+
+        if (owner instanceof Source) {
+            return DynamicValueType.SRC;
+        }
+
+        if (owner instanceof Target) {
+            return DynamicValueType.TAR;
+        }
+
+        if (owner instanceof Application) {
+            return DynamicValueType.VAR;
+        }
+
+        return DynamicValueType.MAP;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -226,6 +253,30 @@ public class DataTable extends AppBase implements JRDataSource {
                 .append("metaData", metaData)
                 .toString()
                 .replace('=', ':');
+    }
+
+    public boolean print(OutputConfig outputConfig) {
+        DynamicValueType tableType = getTableType();
+
+        List<OutputTypes> outputTypeList = outputConfig.getOutputTypeList();
+        if (outputTypeList.size() == 0) {
+            log.debug("no output config for {}:{}", tableType.name(), name);
+            return false;
+        }
+
+        boolean success = true;
+        boolean exitOnError = application.exitOnError;
+        for (OutputTypes outputType : outputTypeList) {
+            log.trace("printing {}:{} to Output({})", tableType.name(), name, outputType.name());
+            if (!OutputFactory.getOutput(application, outputType).print(outputConfig, this)) {
+                success = false;
+                if (exitOnError) {
+                    return false;
+                }
+            }
+        }
+
+        return success;
     }
 
     private boolean needHeader;

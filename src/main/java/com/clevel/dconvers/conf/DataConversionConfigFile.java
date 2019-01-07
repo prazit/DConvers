@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Source is a source file (target header file) that contains all the specified target.
@@ -18,6 +17,8 @@ public class DataConversionConfigFile extends ConfigFile {
     private HashMap<String, DataSourceConfig> dataSourceConfigMap;
     private HashMap<String, SFTPConfig> sftpConfigMap;
     private HashMap<String, ConverterConfigFile> converterConfigMap;
+
+    private OutputConfig summaryOutputConfig;
 
     private String outputSourcePath;
     private String outputTargetPath;
@@ -36,6 +37,12 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public DataConversionConfigFile(Application application, String name) {
         super(application, name);
+
+        if (valid) {
+            summaryOutputConfig = new OutputConfig(application, Property.SUMMARY.key(), properties);
+            valid = summaryOutputConfig.isValid();
+        }
+
         log.debug("DataConversionConfigFile({}) = {}", name, this);
         log.trace("DataConversionConfigFile({}) is created.", name);
     }
@@ -108,7 +115,6 @@ public class DataConversionConfigFile extends ConfigFile {
             }
             converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(application, name));
         }
-
 
         childValid = true;
         return true;
@@ -195,4 +201,7 @@ public class DataConversionConfigFile extends ConfigFile {
         return childValid;
     }
 
+    public OutputConfig getSummaryOutputConfig() {
+        return summaryOutputConfig;
+    }
 }

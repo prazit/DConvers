@@ -67,6 +67,10 @@ public class DirDataSource extends DataSource {
             files = directory.listFiles();
         }
 
+        if (files == null) {
+            return dataTable;
+        }
+
         List<File> fileList = Arrays.asList(files);
         fileList.sort((o1, o2) -> {
             int dir1 = o1.isDirectory() ? 0 : 1;

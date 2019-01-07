@@ -34,6 +34,7 @@ public enum Property {
 
     TARGET("target"),
     MAPPING("mapping"),
+    SUMMARY("summary"),
     CREATE("create"),
     INSERT("insert"),
     UPDATE("update"),

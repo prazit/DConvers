@@ -7,6 +7,7 @@ import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import com.clevel.dconvers.ngin.format.DataFormatter;
 import com.clevel.dconvers.ngin.format.SQLCreateFormatter;
 import com.clevel.dconvers.ngin.format.SQLInsertFormatter;
@@ -57,12 +58,13 @@ public class SQLOutput extends Output {
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
         String converterName = application.currentConverter.getName();
         DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
-        String outputPath;
-        String headPrint = null;
+        DynamicValueType tableType = dataTable.getTableType();
         Object owner = dataTable.getOwner();
         String eol = outputConfig.getSqlOutputEOL();
 
-        if (owner instanceof Source) {
+        String outputPath;
+        String headPrint;
+        if (DynamicValueType.SRC.equals(tableType)) {
             Source source = (Source) owner;
             outputPath = dataConversionConfigFile.getOutputSourcePath();
             String dataSourceName = dataTable.getDataSource();
@@ -73,7 +75,8 @@ public class SQLOutput extends Output {
                     + "-- DataSource : " + (dataSource == null ? "null" : dataSource.toString()) + eol
                     + "-- Query : " + dataTable.getQuery() + eol
                     + "--" + eol;
-        } else if (owner instanceof Target) {
+
+        } else if (DynamicValueType.TAR.equals(tableType)) {
             Target target = (Target) owner;
             outputPath = dataConversionConfigFile.getOutputTargetPath();
             headPrint = "--" + eol
@@ -81,7 +84,8 @@ public class SQLOutput extends Output {
                     + "-- This sql file contains " + dataTable.getRowCount() + " rows from target(" + target.getName() + ") in converter(" + converterName + ")" + eol
                     + "-- Data from : source(" + target.getTargetConfig().getSource() + ")" + eol
                     + "--" + eol;
-        } else {
+
+        } else if (DynamicValueType.MAP.equals(tableType)) {
             Pair<DataTable, DataTable> sourceToTarget = (Pair<DataTable, DataTable>) owner;
             outputPath = dataConversionConfigFile.getOutputMappingPath();
             if (sourceToTarget == null) {
@@ -107,6 +111,10 @@ public class SQLOutput extends Output {
                         + "-- Data from : Target(" + target.getName() + ").id(" + targetTable.getIdColumnName() + "), " + sourceName + ".id(" + sourceTable.getIdColumnName() + ")" + eol
                         + "--" + eol;
             }
+
+        } else {
+            headPrint = null;
+            outputPath = "";
         }
 
         String sqlOutputFilename = outputPath + outputConfig.getSqlOutput();

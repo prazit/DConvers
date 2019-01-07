@@ -9,6 +9,7 @@ import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
+import com.clevel.dconvers.ngin.dynvalue.DynamicValue;
 import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import com.clevel.dconvers.ngin.output.OutputFactory;
 import com.clevel.dconvers.ngin.output.OutputTypes;
@@ -135,10 +136,11 @@ public class Converter extends AppBase {
                 continue;
             }
 
-            log.info("SRC:{} has {} row(s)", source.getName(), sourceDataTable.getRowCount());
+            application.summaryTable.addRow(name, sourceDataTable.getName(), DynamicValueType.SRC, sourceDataTable.getRowCount());
         }
         log.info("Retrieved, {} source(s).", sortedSource.size());
 
+        DataTable targetDataTable;
         for (Target target : sortedTarget) {
             timeTracker.start(TimeTrackerKey.TARGET, "buildDataTable for target(" + target.getName() + ")");
             valid = target.buildDataTable();
@@ -150,8 +152,12 @@ public class Converter extends AppBase {
                 }
             }
 
+            targetDataTable = target.getDataTable();
+            application.summaryTable.addRow(name, targetDataTable.getName(), DynamicValueType.TAR, targetDataTable.getRowCount());
+
             for (DataTable mappingTable : target.getMappingTableList()) {
                 mappingTableMap.put(mappingTable.getName().toUpperCase(), mappingTable);
+                application.summaryTable.addRow(name, mappingTable.getName(), DynamicValueType.MAP, mappingTable.getRowCount());
             }
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
@@ -185,12 +191,11 @@ public class Converter extends AppBase {
 
             outputConfig = source.getSourceConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
+            if (outputTypeList.size() == 0) {
+                log.debug("no output config for source({})", dataTable.getName());
+                continue;
+            }
             for (OutputTypes outputType : outputTypeList) {
-                if (outputTypeList.size() == 0) {
-                    log.debug("no output config for source({})", dataTable.getName());
-                    continue;
-                }
-
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
                     success = false;
@@ -218,12 +223,11 @@ public class Converter extends AppBase {
 
             outputConfig = target.getTargetConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
+            if (outputTypeList.size() == 0) {
+                log.debug("no output config for target({})", dataTable.getName());
+                continue;
+            }
             for (OutputTypes outputType : outputTypeList) {
-                if (outputTypeList.size() == 0) {
-                    log.debug("no output config for target({})", dataTable.getName());
-                    continue;
-                }
-
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
                     success = false;

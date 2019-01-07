@@ -35,7 +35,7 @@ public class Application extends AppBase {
     public Converter currentConverter;
     public DataLong currentState;
 
-    public DataTable reportTable;
+    public SummaryTable summaryTable;
 
     public boolean hasWarning;
     public boolean exitOnError;
@@ -53,7 +53,6 @@ public class Application extends AppBase {
         this.args = args;
         loadLogger();
 
-        reportTable = new DataTable(this, "Report", "id");
         hasWarning = false;
         exitOnError = false;
 
@@ -138,6 +137,9 @@ public class Application extends AppBase {
         targetFileNumber.setValue((long) (dataConversionConfigFile.getTargetFileNumber()) - 1);
         mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()) - 1);
         sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()) - 1);
+
+        summaryTable = new SummaryTable(this);
+        summaryTable.setOwner(this);
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();
@@ -236,18 +238,20 @@ public class Application extends AppBase {
                 convert.close();
             }
         }
-        currentConverter = null;
 
         if (!success && exitOnError) {
             stopWithError();
         }
 
-        // TODO Print Summary Report Table
-
         log.trace("Application. Run post process of each datasource.");
         for (DataSource dataSourceItem : dataSourceMap.values()) {
             dataSourceItem.runPost();
         }
+
+        log.trace("Application. print summary table.");
+        summaryTable.sort();
+        summaryTable.print(dataConversionConfigFile.getSummaryOutputConfig());
+        currentConverter = null;
 
         // Have some errors
         if (currentState.getLongValue() == dataConversionConfigFile.getErrorCode()) {

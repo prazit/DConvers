@@ -28,7 +28,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Target extends AppBase {
 
@@ -220,14 +219,9 @@ public class Target extends AppBase {
             progressBar.close();
 
             log.info("transferred from source({})", sourceName);
-            log.info("TAR:{} has {} row(s)", name, dataTable.getRowCount());
-            log.info("MAP:{} has {} row(s)", mappingTableName, dataTable.getRowCount());
+            log.debug("TAR:{} has {} row(s) before transform", name, dataTable.getRowCount());
 
         } // end of for sourceList
-
-        // -- start report table
-
-        // TODO: create reportRow and add into the application.reportTable
 
         // -- start transformation
         List<Pair<TransformTypes,HashMap<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
@@ -246,7 +240,7 @@ public class Target extends AppBase {
                 valid = false;
                 return false;
             }
-            log.info("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount() == 0) ? 0 : dataTable.getRow(0).getColumnCount());
+            log.debug("TAR:{} is transformed by {}({}), remain {} row(s) {} column(s)", name, transformType.name(), argumentList, dataTable.getRowCount(), (dataTable.getRowCount() == 0) ? 0 : dataTable.getRow(0).getColumnCount());
         }
 
         return true;
