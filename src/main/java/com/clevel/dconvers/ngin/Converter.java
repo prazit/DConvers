@@ -279,10 +279,20 @@ public class Converter extends AppBase {
 
     public Target getTarget(String name) {
         if (name == null) {
+            log.debug("getTarget(null) then return null");
             return null;
         }
 
         return targetMap.get(name.toUpperCase());
+    }
+
+    public DataTable getMapping(String name) {
+        if (name == null) {
+            log.debug("getMapping(null) then return null");
+            return null;
+        }
+
+        return mappingTableMap.get(name.toUpperCase());
     }
 
     /**
@@ -313,7 +323,7 @@ public class Converter extends AppBase {
                 return target.getDataTable();
 
             case MAP:
-                dataTable = mappingTableMap.get(mappings[1].toUpperCase());
+                dataTable = getMapping(mappings[1]);
                 break;
 
             default:

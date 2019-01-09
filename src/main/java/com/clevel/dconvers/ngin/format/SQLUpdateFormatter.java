@@ -7,18 +7,22 @@ import com.clevel.dconvers.ngin.data.DataTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Types;
+import java.util.List;
 
 public class SQLUpdateFormatter extends DataFormatter {
 
+    private List<String> columnList;
+    private boolean useColumnList;
     private String tableName;
     private String idColumnName;
     private String nameQuotes;
     private String valueQuotes;
     private String eol;
 
-    public SQLUpdateFormatter(Application application, String name, String nameQuotes, String valueQuotes, String eol) {
+    public SQLUpdateFormatter(Application application, String name, List<String> columnList, String nameQuotes, String valueQuotes, String eol) {
         super(application, name, true);
+        this.columnList = columnList;
+        useColumnList = columnList != null && columnList.size() > 0;
         tableName = name;
         this.nameQuotes = nameQuotes;
         this.valueQuotes = valueQuotes;
@@ -34,6 +38,13 @@ public class SQLUpdateFormatter extends DataFormatter {
 
     @Override
     public String format(DataRow row) {
+        if (useColumnList) {
+            return formatByColumnList(row);
+        }
+        return formatByOriginal(row);
+    }
+
+    private String formatByOriginal(DataRow row) {
         DataColumn idColumn = row.getColumn(idColumnName);
         String values = "";
         for (DataColumn column : row.getColumnList()) {
@@ -47,6 +58,32 @@ public class SQLUpdateFormatter extends DataFormatter {
         }
         values = values.substring(0, values.length() - 2);
 
+        String where = nameQuotes + idColumnName + nameQuotes + " = " + idColumn.getQuotedValue();
+
+        String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";" + eol;
+        return sqlUpdate;
+    }
+
+    private String formatByColumnList(DataRow row) {
+        String values = "";
+        DataColumn column;
+
+        for (String columnName : columnList) {
+            if (idColumnName.equals(columnName)) {
+                continue;
+            }
+            column = row.getColumn(columnName);
+            if (column == null) {
+                error("Column({}) is not found in Table({})", columnName, row.getDataTable().getName());
+                return null;
+            }
+            values += nameQuotes + columnName + nameQuotes + " = ";
+            column.setQuotes(valueQuotes);
+            values += column.getQuotedValue() + ", ";
+        }
+        values = values.substring(0, values.length() - 2);
+
+        DataColumn idColumn = row.getColumn(idColumnName);
         String where = nameQuotes + idColumnName + nameQuotes + " = " + idColumn.getQuotedValue();
 
         String sqlUpdate = "UPDATE " + nameQuotes + tableName + nameQuotes + " SET " + values + " WHERE " + where + ";" + eol;

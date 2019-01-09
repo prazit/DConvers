@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OutputConfig extends Config {
@@ -56,6 +57,7 @@ public class OutputConfig extends Config {
     private String sqlOutputEOL;
     private String sqlOutputEOF;
     private String sqlTable;
+    private List<String> sqlColumn;
     private String sqlNameQuotes;
     private String sqlValueQuotes;
     private boolean sqlCreate;
@@ -126,6 +128,7 @@ public class OutputConfig extends Config {
 
     private boolean dbInsert;
     private String dbInsertDataSource;
+    private List<String> dbInsertColumnList;
     private String dbInsertTable;
     private String dbInsertNameQuotes;
     private String dbInsertValueQuotes;
@@ -135,6 +138,7 @@ public class OutputConfig extends Config {
 
     private boolean dbUpdate;
     private String dbUpdateDataSource;
+    private List<String> dbUpdateColumnList;
     private String dbUpdateTable;
     private String dbUpdateId;
     private String dbUpdateNameQuotes;
@@ -242,6 +246,7 @@ public class OutputConfig extends Config {
         sqlOutputEOL = "\n";
         sqlOutputEOF = "\n";
         sqlTable = name;
+        sqlColumn = new ArrayList<>();
         sqlNameQuotes = "";
         sqlValueQuotes = "\"";
         sqlCreate = false;
@@ -265,6 +270,7 @@ public class OutputConfig extends Config {
             sqlOutputEOL = getPropertyString(sqlProperties, Property.OUTPUT_EOL.key(), sqlOutputEOL);
             sqlOutputEOF = getPropertyString(sqlProperties, Property.OUTPUT_EOF.key(), sqlOutputEOF);
             sqlTable = getPropertyString(sqlProperties, Property.TABLE.key(), sqlTable);
+            sqlColumn = getStringList(sqlProperties, Property.COLUMN.key());
             sqlNameQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
             sqlValueQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
             sqlCreate = sqlProperties.getBoolean(Property.CREATE.key(), sqlCreate);
@@ -421,6 +427,7 @@ public class OutputConfig extends Config {
         // DBInsert Output Properties
         dbInsert = false;
         dbInsertDataSource = "";
+        dbInsertColumnList = new ArrayList<>();
         dbInsertTable = name;
         dbInsertNameQuotes = "";
         dbInsertValueQuotes = "\"";
@@ -434,6 +441,7 @@ public class OutputConfig extends Config {
 
             Configuration dbInsertProperties = properties.subset(key);
             dbInsertDataSource = getPropertyString(dbInsertProperties, Property.DATA_SOURCE.key(), dbInsertDataSource);
+            dbInsertColumnList = getStringList(dbInsertProperties, Property.TABLE.key());
             dbInsertTable = getPropertyString(dbInsertProperties, Property.TABLE.key(), dbInsertTable);
             dbInsertNameQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
             dbInsertValueQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
@@ -444,6 +452,7 @@ public class OutputConfig extends Config {
         // DBUpdate Output Properties
         dbUpdate = false;
         dbUpdateDataSource = "";
+        dbUpdateColumnList = new ArrayList<>();
         dbUpdateTable = name;
         dbUpdateNameQuotes = "";
         dbUpdateValueQuotes = "\"";
@@ -458,6 +467,7 @@ public class OutputConfig extends Config {
 
             Configuration dbUpdateProperties = properties.subset(key);
             dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
+            dbUpdateColumnList = getStringList(dbUpdateProperties, Property.TABLE.key());
             dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
@@ -477,9 +487,15 @@ public class OutputConfig extends Config {
             objectList = new ArrayList<>();
         }
 
+        String value;
         List<String> stringList = new ArrayList<>();
         for (Object obj : objectList) {
-            stringList.add(obj.toString());
+            value = obj.toString();
+            if (value.contains(",")) {
+                stringList.addAll(Arrays.asList(value.split(",")));
+            } else {
+                stringList.add(value);
+            }
         }
         return stringList;
     }
@@ -643,6 +659,10 @@ public class OutputConfig extends Config {
 
     public String getSqlTable() {
         return sqlTable;
+    }
+
+    public List<String> getSqlColumn() {
+        return sqlColumn;
     }
 
     public String getSqlNameQuotes() {
@@ -885,6 +905,10 @@ public class OutputConfig extends Config {
         return dbInsertDataSource;
     }
 
+    public List<String> getDbInsertColumnList() {
+        return dbInsertColumnList;
+    }
+
     public String getDbInsertTable() {
         return dbInsertTable;
     }
@@ -925,6 +949,10 @@ public class OutputConfig extends Config {
 
     public String getDbUpdateDataSource() {
         return dbUpdateDataSource;
+    }
+
+    public List<String> getDbUpdateColumnList() {
+        return dbUpdateColumnList;
     }
 
     public String getDbUpdateTable() {

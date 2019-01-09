@@ -26,11 +26,12 @@ public class DBUpdateOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
+        List<String> columnList = outputConfig.getDbUpdateColumnList();
         String tableName = outputConfig.getDbUpdateTable();
         String nameQuotes = outputConfig.getDbUpdateNameQuotes();
         String valueQuotes = outputConfig.getDbUpdateValueQuotes();
 
-        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, nameQuotes, valueQuotes, "\n"));
+        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, columnList, nameQuotes, valueQuotes, "\n"));
 
         return dataFormatterList;
     }

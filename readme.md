@@ -199,6 +199,7 @@ sql.eof | string | \n | characters put at the end of file, this characters will 
 sql.quotes.name | string | empty | one character for quotes of table-name and column-name
 sql.quotes.value | string | empty | one character for quotes of string-value and date-value
 sql.table | string | target name | name of table to generate sql for
+sql.column | list of string | empty | apply for custom order of column name or use as column filter, empty then use original column list
 sql.create | bool | false | generate sql create statement or not
 sql.insert | bool | false | generate sql insert statement or not
 sql.update | bool | false | generate sql update statement or not
@@ -284,6 +285,7 @@ Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 dbinsert | bool | false | execute sql insert or not 
 dbinsert.datasource | string | datasource | datasource name. 
+dbinsert.column | list of string | empty | apply for custom order of column name or use as column filter, empty then use original column list
 dbinsert.table | string | table | name of table to insert.
 dbinsert.quotes.name | string | empty | one character for quotes of table-name and column-name
 dbinsert.quotes.value | string | empty | one character for quotes of string-value and date-value
@@ -296,6 +298,7 @@ Property | Data Type | Default Value | Description
 ---------|-----------|---------------|------------
 dbupdate | bool | false | execute sql insert or not.
 dbupdate.datasource | string | datasource | datasource name. 
+dbupdate.column | list of string | empty | apply for custom order of column name or use as column filter, empty then use original column list
 dbupdate.table | string | table | name of table to update.
 dbupdate.id | string | [target.id] | name of primary key column of the table
 dbupdate.quotes.name | string | empty | one character for quotes of table-name and column-name

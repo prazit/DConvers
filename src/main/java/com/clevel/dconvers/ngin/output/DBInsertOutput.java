@@ -26,11 +26,12 @@ public class DBInsertOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
+        List<String> columnList = outputConfig.getDbInsertColumnList();
         String tableName = outputConfig.getDbInsertTable();
         String nameQuotes = outputConfig.getDbInsertNameQuotes();
         String valueQuotes = outputConfig.getDbInsertValueQuotes();
 
-        dataFormatterList.add(new SQLInsertFormatter(application, tableName, nameQuotes, valueQuotes, "\n"));
+        dataFormatterList.add(new SQLInsertFormatter(application, tableName, columnList, nameQuotes, valueQuotes, "\n"));
 
         return dataFormatterList;
     }

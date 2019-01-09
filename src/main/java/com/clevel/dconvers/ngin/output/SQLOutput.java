@@ -31,6 +31,7 @@ public class SQLOutput extends Output {
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
+        List<String> columnList = outputConfig.getSqlColumn();
         String tableName = outputConfig.getSqlTable();
         String nameQuotes = outputConfig.getSqlNameQuotes();
         String valueQuotes = outputConfig.getSqlValueQuotes();
@@ -44,10 +45,10 @@ public class SQLOutput extends Output {
             dataFormatterList.add(new SQLCreateFormatter(application, tableName, nameQuotes, eol, generateInsertStatement && generateUpdateStatement));
         }
         if (generateInsertStatement) {
-            dataFormatterList.add(new SQLInsertFormatter(application, tableName, nameQuotes, valueQuotes, eol));
+            dataFormatterList.add(new SQLInsertFormatter(application, tableName, columnList, nameQuotes, valueQuotes, eol));
         }
         if (generateUpdateStatement) {
-            dataFormatterList.add(new SQLUpdateFormatter(application, tableName, nameQuotes, valueQuotes, eol));
+            dataFormatterList.add(new SQLUpdateFormatter(application, tableName, columnList, nameQuotes, valueQuotes, eol));
         }
 
         log.debug("SQLOutput.formatterEnabled(create:{}, insert:{}, update:{})", generateCreateStatement, generateInsertStatement, generateUpdateStatement);
