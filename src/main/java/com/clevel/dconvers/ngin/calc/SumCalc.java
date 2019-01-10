@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.calc;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.data.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ public class SumCalc extends Calc {
         super(application, name);
     }
 
+    private Converter converter;
     private String rowIdentifier;
     private DataTable srcTable;
     private DataColumn defaultValue;
@@ -32,7 +34,8 @@ public class SumCalc extends Calc {
             return false;
         }
 
-        srcTable = getDataTable(arguments[0]);
+        converter = application.currentConverter;
+        srcTable = converter.getDataTable(arguments[0]);
         if (srcTable == null || srcTable.getRowCount() == 0) {
             error("CAL:CONCAT. invalid identifier, please check CAL:SUM({})!, default value(\"{}\") is returned.", getArguments(), defaultValue);
             return false;
@@ -49,7 +52,7 @@ public class SumCalc extends Calc {
 
     @Override
     protected DataColumn calculate() {
-        DataRow currentRow = getDataRow(rowIdentifier, srcTable);
+        DataRow currentRow = converter.getDataRow(rowIdentifier, srcTable);
         if (currentRow == null) {
             return defaultValue;
         }

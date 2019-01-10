@@ -11,6 +11,7 @@ public enum TransformTypes {
     GET(GetTransform.class),
     REMOVE(RemoveTransform.class),
     ROWCOUNT(RowCountTransform.class),
+    ROWSPLIT(RowSplitTransform.class),
     SUM(SumTransform.class);
 
     private Class transformClass;

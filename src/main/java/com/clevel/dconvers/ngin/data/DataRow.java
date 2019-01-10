@@ -65,11 +65,19 @@ public class DataRow extends AppBase {
     }
 
     public void putColumn(String columnName, DataColumn dataColumn) {
+        columnName = columnName.toUpperCase();
+        DataColumn existing = dataColumnMap.get(columnName);
         try {
-            columnList.add(dataColumn);
-            dataColumnMap.put(columnName.toUpperCase(), dataColumn);
+            if (existing != null) {
+                int index = columnList.indexOf(existing);
+                columnList.remove(index);
+                columnList.add(index, dataColumn);
+            } else {
+                columnList.add(dataColumn);
+            }
+            dataColumnMap.put(columnName, dataColumn);
         } catch (Exception e) {
-            dataColumnMap.put(columnName.toUpperCase(), new DataString(application, 0, 0, null, null));
+            dataColumnMap.put(columnName, new DataString(application, 0, 0, null, null));
         }
     }
 
@@ -82,6 +90,20 @@ public class DataRow extends AppBase {
         for (DataColumn column : columnList) {
             dataColumnMap.put(column.getName().toUpperCase(), column);
         }
+    }
+
+    public DataRow clone() {
+        DataRow newRow = new DataRow(application, dataTable);
+
+        DataColumn newColumn;
+        String columnName;
+        for (DataColumn dataColumn : columnList) {
+            columnName = dataColumn.getName();
+            newColumn = dataColumn.clone(dataColumn.getIndex(), columnName);
+            newRow.putColumn(newColumn.getName(), newColumn);
+        }
+
+        return newRow;
     }
 
     @Override

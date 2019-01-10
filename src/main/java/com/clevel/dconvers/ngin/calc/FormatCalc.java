@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.calc;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataString;
@@ -29,9 +30,10 @@ public class FormatCalc extends Calc {
             return false;
         }
 
-        DataTable datatable = getDataTable(arguments[0]);
-        DataRow row = getDataRow(arguments[1], datatable);
-        DataColumn column = getDataColumn(arguments[2], row);
+        Converter converter = application.currentConverter;
+        DataTable datatable = converter.getDataTable(arguments[0]);
+        DataRow row = converter.getDataRow(arguments[1], datatable);
+        DataColumn column = converter.getDataColumn(arguments[2], row);
         if (column == null) {
             error("CAL:FORMAT. invalid value identifiers, please check FORMAT({})!, default value(\"{}\") is used.", getArguments(), value);
             return false;

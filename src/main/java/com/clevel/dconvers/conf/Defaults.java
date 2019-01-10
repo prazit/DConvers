@@ -17,6 +17,9 @@ public enum Defaults {
 
     TXT_LENGTH_IN_BYTES(0),
 
+    ROW_SPLIT_COLUMN_IDENTIFIER("1"),
+    ROW_SPLIT_REGEX("[,]"),
+
     EXIT_CODE_SUCCESS(0),
     EXIT_CODE_ERROR(1),
     EXIT_CODE_WARNING(2);

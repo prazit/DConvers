@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.calc;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataString;
 import com.clevel.dconvers.ngin.data.DataTable;
@@ -25,7 +26,8 @@ public class NameCalc extends Calc {
         // name([current or [[TableType]:[TableName]]])
         String[] arguments = getArguments().split(",");
 
-        srcTable = getDataTable(arguments[0]);
+        Converter converter = application.currentConverter;
+        srcTable = converter.getDataTable(arguments[0]);
         if (srcTable == null) {
             error("CAL:NAME. invalid identifier, please check CAL:NAME({})!, default value({}) is returned.", getArguments(), defaultValue);
             return false;

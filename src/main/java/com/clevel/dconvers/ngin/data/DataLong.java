@@ -3,6 +3,7 @@ package com.clevel.dconvers.ngin.data;
 import com.clevel.dconvers.Application;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,12 @@ public class DataLong extends DataColumn {
 
     @Override
     public void setValue(String value) {
-        this.value = Long.parseLong(value);
+        if (NumberUtils.isCreatable(value)) {
+            this.value = NumberUtils.createLong(value);
+        } else {
+            this.value = null;
+            error("Integer value is required for setValue() instead of '{}'", value);
+        }
     }
 
     public void setValue(Long value) {

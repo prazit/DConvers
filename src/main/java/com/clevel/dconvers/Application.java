@@ -465,24 +465,40 @@ public class Application extends AppBase {
             value = null;
         }
 
+        boolean isBigInteger = false;
         switch (columnType) {
+            case Types.BIGINT:
+            case Types.NUMERIC:
+                isBigInteger = true;
+                /* remember: don't put break; here*/
+
             case Types.INTEGER:
             case Types.SMALLINT:
             case Types.BOOLEAN:
             case Types.BIT:
-                dataColumn = new DataLong(this, 0, Types.INTEGER, columnName, value == null ? null : toLong(value));
-                break;
-
-            case Types.BIGINT:
-            case Types.NUMERIC:
-                dataColumn = new DataLong(this, 0, Types.BIGINT, columnName, value == null ? null : toLong(value));
+                int type = isBigInteger ? Types.BIGINT : Types.INTEGER;
+                Long longValue = null;
+                if (value != null) {
+                    longValue = toLong(value);
+                    if (longValue == null) {
+                        error("Invalid value({}) for integer column({})", value, columnName);
+                    }
+                }
+                dataColumn = new DataLong(this, 0, type, columnName, longValue);
                 break;
 
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, value == null ? null : BigDecimal.valueOf(toDouble(value)));
+                Double doubleValue = null;
+                if (value != null) {
+                    doubleValue = toDouble(value);
+                    if (doubleValue == null) {
+                        error("Invalid value({}) for decimal column({})", value, columnName);
+                    }
+                }
+                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, BigDecimal.valueOf(doubleValue));
                 break;
 
             case Types.DATE:
@@ -511,7 +527,6 @@ public class Application extends AppBase {
         try {
             longValue = Long.valueOf(value);
         } catch (NumberFormatException ex) {
-            error("Invalid value of integer, {}", value, ex.getMessage());
             return null;
         }
         return longValue;
@@ -522,7 +537,6 @@ public class Application extends AppBase {
         try {
             doubleValue = Double.valueOf(value);
         } catch (NumberFormatException ex) {
-            error("Invalid value of decimal, {}", value, ex.getMessage());
             return null;
         }
         return doubleValue;

@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin.calc;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataString;
@@ -17,6 +18,7 @@ public class ConcatCalc extends Calc {
         super(application, name);
     }
 
+    private Converter converter;
     private DataColumn defaultValue;
     private String rowIndex;
     private DataTable srcTable;
@@ -29,7 +31,8 @@ public class ConcatCalc extends Calc {
         // concat([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
 
-        srcTable = getDataTable(arguments[0]);
+        converter = application.currentConverter;
+        srcTable = converter.getDataTable(arguments[0]);
         if (srcTable == null) {
             error("CAL:CONCAT. invalid identifier, please check CAL:CONCAT({})!, default value(\"{}\") is returned.", defaultValue);
             return false;
@@ -46,7 +49,7 @@ public class ConcatCalc extends Calc {
     @Override
     protected DataColumn calculate() {
 
-        DataRow currentRow = getDataRow(rowIndex, srcTable);
+        DataRow currentRow = converter.getDataRow(rowIndex, srcTable);
         if (currentRow == null) {
             log.debug("ConcatCalculator.currentRow is null!, default value(\"{}\") is returned.", defaultValue);
             return defaultValue;

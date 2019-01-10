@@ -13,6 +13,7 @@ import com.clevel.dconvers.ngin.dynvalue.DynamicValue;
 import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import com.clevel.dconvers.ngin.output.OutputFactory;
 import com.clevel.dconvers.ngin.output.OutputTypes;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -296,14 +297,28 @@ public class Converter extends AppBase {
     }
 
     /**
-     * @param dataTableMapping example: "SRC:MyTableName"
+     * @param tableIdentifier example: "SRC:MyTableName"
      * @return Source DataTable which has the specified name, otherwise return null
      */
-    public DataTable getDataTable(String dataTableMapping) {
+    public DataTable getDataTable(String tableIdentifier) {
+        if (tableIdentifier == null) {
+            return null;
+        }
+
         DataTable dataTable;
-        String[] mappings = dataTableMapping.split("[:]");
+
+        if (Property.CURRENT.key().equalsIgnoreCase(tableIdentifier)) {
+            dataTable = currentTable;
+            if (dataTable == null) {
+                log.debug("getDataTable({}). current table is null! in converter({})", tableIdentifier, name);
+                return null;
+            }
+            return dataTable;
+        }
+
+        String[] mappings = tableIdentifier.split("[:]");
         if (mappings.length == 1) {
-            mappings = new String[]{Property.SRC.name(), dataTableMapping};
+            mappings = new String[]{Property.SRC.name(), tableIdentifier};
         }
 
         DynamicValueType tableType = DynamicValueType.parse(mappings[0]);
@@ -331,6 +346,42 @@ public class Converter extends AppBase {
         }
 
         return dataTable;
+    }
+
+    public DataRow getDataRow(String rowIdentifier, DataTable dataTable) {
+        if (dataTable == null || rowIdentifier == null) {
+            return null;
+        }
+
+        if (Property.CURRENT.key().equalsIgnoreCase(rowIdentifier)) {
+            DataRow row = dataTable.getRow(currentRowIndex);
+            if (row.getColumnCount() == 0) {
+                return null;
+            }
+            return row;
+        }
+
+        DataRow row = dataTable.getRow(Integer.parseInt(rowIdentifier) - 1);
+        if (row.getColumnCount() == 0) {
+            return null;
+        }
+
+        return row;
+    }
+
+    public DataColumn getDataColumn(String columnIdentifier, DataRow dataRow) {
+        if (dataRow == null || columnIdentifier == null) {
+            return null;
+        }
+
+        DataColumn dataColumn;
+        if (NumberUtils.isCreatable(columnIdentifier)) {
+            dataColumn = dataRow.getColumn(NumberUtils.createInteger(columnIdentifier) - 1);
+        } else {
+            dataColumn = dataRow.getColumn(columnIdentifier);
+        }
+
+        return dataColumn;
     }
 
     public String compileDynamicValues(String sourceString) {
