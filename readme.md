@@ -6,17 +6,18 @@ But, now has many features that help to transform data in a target table before 
 
 ### Supported Datasource and Output
 
-| Data Provider | Input / Data Source Name | Output / Property Name |
-|---------------|--------------------------|------------------------|
-| Database | <user's datasource name> | DBInsert, DBUpdate |
-| SQL(Insert) File | SQL | SQL |
-| Markdown Table | MARKDOWN | MARKDOWN |
-| Email | EMAIL | - |
-| PDF | PDF | - |
-| Fixed Length | - | TXT |
-| CSV | - | CSV |
-| Configuration Generator for source | - | SRC | 
-| Configuration Generator for target | - | TAR | 
+| Data Provider                      | Input / Data Source Name | Output / Property Name |
+|------------------------------------|--------------------------|------------------------|
+| Database                           | <datasource name>        | DBInsert, DBUpdate     |
+| ResultSetMetaData                  | ResultSetMetaData        | -                      |
+| SQL(Insert) File                   | SQL                      | SQL                    |
+| Markdown Table                     | MARKDOWN                 | MARKDOWN               |
+| Email                              | EMAIL                    | -                      |
+| PDF                                | PDF                      | -                      |
+| Fixed Length                       | -                        | TXT                    |
+| CSV                                | -                        | CSV                    |
+| Configuration Generator for source | -                        | SRC                    |
+| Configuration Generator for target | -                        | TAR                    |
 
 ### Prerequisites
 
@@ -135,7 +136,6 @@ source.datasource | string | empty string | Name of data provider for this sourc
 source.query | string | empty string | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled)
 source.id | string | id | Name of column that contains a key value for a data table of this source.
 source.output | List |  | see [Output Properties](#Output_Properties)
-source.transform | List |  | see [Transform Properties](#Transform_Properties)
 
 
 #### Datasource and Query
@@ -171,6 +171,7 @@ target.id | string | id | name of primary key column, this is used by mapping ta
 target.output | List |  | see [Output Properties](#Output_Properties)
 target.transform | List |  | see [Transform Properties](#Transform_Properties)
 
+
 #### Output Properties
 
 The DConvers program has 7 optional output types with different set of property, they are listed below
@@ -182,6 +183,7 @@ The DConvers program has 7 optional output types with different set of property,
 - DBInsert Output (execute sql insert)
 - DBUpdate Output (execute sql update)
 - Configuration File Output (create converter configuration that can use to backup data from database)
+
 
 ##### SQL Output Properties
 
@@ -208,6 +210,7 @@ sql.post | string | null | your sql statements to put at the end of file
 
 > Remark: SQL Output for MySQL may be need property sql.post=SET FOREIGN_KEY_CHECKS = 0;
 
+
 ##### Markdown Output Properties
 
 Property | Data Type | Default Value | Description
@@ -225,6 +228,7 @@ markdown.comment | bool | true | print comment as first block of content
 markdown.comment.datasource | bool | true | print datasource information in a comment block
 markdown.comment.query | bool | true | print query string in a comment block
 
+
 ##### PDF Output Properties
 
 Property | Data Type | Default Value | Description
@@ -235,6 +239,7 @@ pdf.sftp.output | string | null | custom output file name to put on the sftp ser
 pdf.output | string | table-name.md | custom file name. (Dynamic Value Enabled)
 pdf.create.dir | bool | true | auto create directory for non-existing path. 
 pdf.jrxml | string | empty | custom jrxml file for the layout of PDF.
+
 
 ##### TXT Output (Fixed Length) Properties
 
@@ -258,6 +263,7 @@ txt.fill.string | char(1) | blank:right | the character to fill the string colum
 txt.fill.number | char(1) | 0:left | the character to fill the number column 
 txt.fill.date | char(1) | blank:right | the character to fill the date column 
 
+
 ##### CSV Output Properties
 
 Property | Data Type | Default Value | Description
@@ -279,6 +285,7 @@ csv.format.decimal | string | #,##0.00 | decimal format (pattern)
 csv.format.date | string | yyyyMMdd | date format (pattern)
 csv.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
 
+
 ##### DBInsert Output Properties
 
 Property | Data Type | Default Value | Description
@@ -291,6 +298,7 @@ dbinsert.quotes.name | string | empty | one character for quotes of table-name a
 dbinsert.quotes.value | string | empty | one character for quotes of string-value and date-value
 dbinsert.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbinsert.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
+
 
 ##### DBUpdate Output Properties
 
@@ -306,27 +314,30 @@ dbupdate.quotes.value | string | empty | one character for quotes of string-valu
 dbupdate.pre | string | null | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)
 dbupdate.post | string | null | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)
 
-##### Configuration Generator for Source Properties
+
+##### Source Output Properties
 
 Generate source configuration for each table-name in the DataTable.
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-src | bool | false | create configuration file and generate source for all table name 
-src.sftp | string | null | name of sftp.
-src.sftp.output | string | null | custom output file name to put on the sftp server. (Dynamic Value Enabled)
-src.output | string | table-name.csv | custom file name. (Dynamic Value Enabled)
-src.create.dir | bool | true | auto create directory for non-existing path. 
-src.append | bool | false | append or always replace
-src.charset | string | UTF-8 | name of character set
-src.eol | string | \n | characters put at the end of line. (Dynamic Value Enabled)
-src.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
-src.table | string | table_name | column name in current table that store Table Name.
-src.id | string | id_name | column name in current table that store Column Name of Primary Key.
-src.datasource | string | datasource-name | datasource name for all sources
-src.outputs | string | sql,md | comma separated output-type-name
+| Property        | Data Type | Default Value   | Description                                                                                                |
+|-----------------|-----------|-----------------|------------------------------------------------------------------------------------------------------------|
+| src             | bool      | false           | create configuration file and generate source for all table name                                           |
+| src.sftp        | string    | null            | name of sftp.                                                                                              |
+| src.sftp.output | string    | null            | custom output file name to put on the sftp server. (Dynamic Value Enabled)                                 |
+| src.output      | string    | table-name.csv  | custom file name. (Dynamic Value Enabled)                                                                  |
+| src.create.dir  | bool      | true            | auto create directory for non-existing path.                                                               |
+| src.append      | bool      | false           | append or always replace                                                                                   |
+| src.charset     | string    | UTF-8           | name of character set                                                                                      |
+| src.eol         | string    | \n              | characters put at the end of line. (Dynamic Value Enabled)                                                 |
+| src.eof         | string    | \n              | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled) |
+| src.table       | string    | table_name      | column name in current table that store Table Name.                                                        |
+| src.id          | string    | id_name         | column name in current table that store Column Name of Primary Key.                                        |
+| src.owner       | string    | empty           | name of schema/owner                                                                                       |
+| src.datasource  | string    | datasource-name | datasource name for all sources                                                                            |
+| src.outputs     | string    | sql,md          | comma separated output-type-name                                                                           |
 
-##### Configuration Generator for Target Properties
+
+##### Target Output Properties
 
 Generate target configuration for current table (can be source and target) each sources in the current converter file.(one target for one source)
 
@@ -347,87 +358,133 @@ tar.eol | string | \n | characters put at the end of line. (Dynamic Value Enable
 tar.eof | string | \n | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)
 tar.outputs | string | sql,md | comma separated output-type-name
 
+
 #### Transform Properties
 
 ```properties
-Systax> TRANSFORMATION(argument1,argument2,..),TRANSFORMATION(argument1,argument2,..),..
+Syntax> TRANSFORMATION(argument1,argument2,..),TRANSFORMATION(argument1,argument2,..),..
 ```
 
 The transform function for a target is a calculator which insert/replace result as a column into current datatable.
 And now have many transform functions that are listed below
 
+
 ##### FixedLength Transformer Function Properties
 
 This transformation use the same formatter of TXT Output but this transform take effect to column value only, possible properties are described below
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-transform | <td colspan="2">fixedlength([[insertAsNewColumn] or [replace:[ColumnIndex]]],[format])</td> 
-[insertAsNewColumn] | string | unnamed:1 | syntax is [[ColumnName]:[insertColumnIndex]
-[ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
-[columnIndex] and [anotherColumnIndex] and [insertColumnIndex] | int | 1 | index of any column, start at 1
-[format] | string | STR:1024 | see [Fixed Length Format](#Fixed Length Format)
-fixedlength.length.mode | string | CHAR | BYTE or CHAR
-fixedlength.format.date | string | yyyyMMdd | date format (pattern)
-fixedlength.format.datetime | string | yyyyMMddHHmmss | datetime format (pattern)
-fixedlength.fill.string | char(1) | blank:right | the character to fill the string column 
-fixedlength.fill.number | char(1) | 0:left | the character to fill the number column 
-fixedlength.fill.date | char(1) | blank:right | the character to fill the date column 
+```batch
+Syntax> fixedlength([[insertAsNewColumn] or [replace:[ColumnIndex]]],[format])
+```
 
-##### Fixed Length Format
+###### Parameters
 
-```properties
-Syntax> [ColumnType:ColumnLength](,[ColumnType:ColumnLength])..
-Example> INT:3,DEC:19.4,DTE:8,DTT:16,STR:80
-``` 
+| Parameters                                                     | Data Type | Default Value | Description                                                                                                  |
+|----------------------------------------------------------------|-----------|---------------|--------------------------------------------------------------------------------------------------------------|
+| [insertAsNewColumn]                                            | string    | unnamed:1     | syntax is [[ColumnName]:[insertColumnIndex]                                                                  |
+| [ColumnName]                                                   | string    | [required]    | the word "replace" to replace existing column by index or the name of new column to insert.                  |
+| [ColumnIdentifier] and [anotherColumnIndex] and [insertColumnIndex] | int       | 1             | index of any column, start at 1                                                                              |
+| [format]                                                       | string    | STR:1024      | Syntax> [ColumnType:ColumnLength](,[ColumnType:ColumnLength])..\nExample> INT:3,DEC:19.4,DTE:8,DTT:16,STR:80 |
+
+###### Optional Properties
+
+| Property                    | Data Type | Default Value  | Description                             |
+|-----------------------------|-----------|----------------|-----------------------------------------|
+| fixedlength.length.mode     | string    | CHAR           | BYTE or CHAR                            |
+| fixedlength.format.date     | string    | yyyyMMdd       | date format (pattern)                   |
+| fixedlength.format.datetime | string    | yyyyMMddHHmmss | datetime format (pattern)               |
+| fixedlength.fill.string     | char(1)   | blank:right    | the character to fill the string column |
+| fixedlength.fill.number     | char(1)   | 0:left         | the character to fill the number column |
+| fixedlength.fill.date       | char(1)   | blank:right    | the character to fill the date column   | 
+
 
 ##### Concat Transformer Function Properties
 
 This transformation used for column concatenation. After transformed by CONCAT, the type of all columns will changed to String. possible properties are described below
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-transform | <td colspan=3>CONCAT([insertAsNewColumn],[[columnRange] or [columnIndex]],..)</td>
-[insertAsNewColumn] | string | unnamed:1 | syntax is [ColumnName]:[insertColumnIndex] 
-[ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
-[columnIndex] and [insertColumnIndex] | int | 1 | index of any column, start at 1
-[columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
+```batch
+Syntax> concat([insertAsNewColumn],[[columnRange] or [columnIndex]],..)
+```
+
+###### Parameters
+
+| Parameters                            | Data Type | Default Value | Description                                                                                 |
+|---------------------------------------|-----------|---------------|---------------------------------------------------------------------------------------------|
+| [insertAsNewColumn]                   | string    | unnamed:1     | syntax is [ColumnName]:[insertColumnIndex]                                                  |
+| [ColumnName]                          | string    | [required]    | the word "replace" to replace existing column by index or the name of new column to insert. |
+| [ColumnIdentifier] and [insertColumnIndex] | int       | 1             | index of any column, start at 1                                                             |
+| [columnRange]                         | string    | 1-2           | range of column, syntax is columnIndex-anotherColumnIndex                                   |
+
 
 ##### RowCount Transformer Function Properties
 
 This transformation is simple get the size of specific table. possible properties are described as below
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-transform | <td colspan=3>ROWCOUNT([insertAsNewColumn],[current or [dataTableIdentifier]])</td>
-[insertAsNewColumn] | string | unnamed:1 | syntax is [ColumnName]:[insertColumnIndex] 
-[ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
-[insertColumnIndex] | int | 1 | index of column to insert, start at 1
-[dataTableIdentifier] | string | empty | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget
-[columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
+```batch
+Syntax> rowcount([insertAsNewColumn],[current or [dataTableIdentifier]])
+```
+
+###### Parameters
+
+| Property              | Data Type | Default Value | Description                                                                                             |
+|-----------------------|-----------|---------------|---------------------------------------------------------------------------------------------------------|
+| [insertAsNewColumn]   | string    | unnamed:1     | syntax is [ColumnName]:[insertColumnIndex]                                                              |
+| [ColumnName]          | string    | [required]    | the word "replace" to replace existing column by index or the name of new column to insert.             |
+| [insertColumnIndex]   | int       | 1             | index of column to insert, start at 1                                                                   |
+| [dataTableIdentifier] | string    | empty         | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget |
+| [columnRange]         | string    | 1-2           | range of column, syntax is columnIndex-anotherColumnIndex                                               |
+
 
 ##### Sum Transformer Function Properties
 
 This transformation is simple get the size of specific table. possible properties are described as below
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-transform | <td colspan=3>SUM([insertAsNewColumn],[current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)</td>
-[insertAsNewColumn] | string | unnamed:1 | syntax is [ColumnName]:[insertColumnIndex] 
-[ColumnName] | string | [required] | the word "replace" to replace existing column by index or the name of new column to insert.
-[insertColumnIndex] | int | 1 | index of column to insert, start at 1
-[dataTableIdentifier] | string | empty | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget
-[columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
+```batch
+Syntax> sum([insertAsNewColumn],[current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
+```
+
+###### Parameters
+
+| Property              | Data Type | Default Value | Description                                                                                             |
+|-----------------------|-----------|---------------|---------------------------------------------------------------------------------------------------------|
+| [insertAsNewColumn]   | string    | unnamed:1     | syntax is [ColumnName]:[insertColumnIndex]                                                              |
+| [ColumnName]          | string    | [required]    | the word "replace" to replace existing column by index or the name of new column to insert.             |
+| [insertColumnIndex]   | int       | 1             | index of column to insert, start at 1                                                                   |
+| [dataTableIdentifier] | string    | empty         | syntax is [TableType]:[Name] such as SRC:secondsource, TAR:firsttarget, MAP:secondsource_to_firsttarget |
+| [columnRange]         | string    | 1-2           | range of column, syntax is columnIndex-anotherColumnIndex                                               |
+
 
 ##### Remove Transformer Function Properties
 
 This transformation used for column deletion. After transformed by REMOVE, recommended to remove from the last column to avoid index out of bound exception. possible properties are described below
 
-Property | Data Type | Default Value | Description
----------|-----------|---------------|------------
-transform | <td colspan=3>REMOVE([columnRange] or [columnIndex,anotherColumnIndex,..],..)</td>
-[columnIndex] | int | 1 | index of any column, start at 1
-[columnRange] | string | 1-2 | range of column, syntax is columnIndex-anotherColumnIndex
+```batch
+Syntax> remove([columnRange] or [columnIndex,anotherColumnIndex,..],..)
+```
+
+###### Parameters
+
+| Property      | Data Type | Default Value | Description                                               |
+|---------------|-----------|---------------|-----------------------------------------------------------|
+| [ColumnIdentifier] | int       | 1             | index of any column, start at 1                           |
+| [columnRange] | string    | 1-2           | range of column, syntax is columnIndex-anotherColumnIndex |
+
+
+##### Row Split Transformer Function Properties
+
+This transformation used for a column contains CSV like value. After transform by this function, rows of datatable will be multiply by split-value-list. possible properties are described below
+
+```batch
+Syntax> rowsplit([ColumnIdentifier],[regex])
+```
+
+###### Parameters
+
+| Property      | Data Type | Default Value | Description                                               |
+|---------------|-----------|---------------|-----------------------------------------------------------|
+| [ColumnIdentifier] | int       | 1             | index of any column, start at 1                           |
+| [regex] | string       | [,]             | regex will be pass to the String.split(regex) function |
+| [DataType] | string       | STR             | STR for string, INT for long integer, DEC for decimal, DTE for date and time |
 
 
 #### Dynamic Value Expression for Source.Query
@@ -449,7 +506,7 @@ TXT | Full path name of a text file | $[TXT:C:\path\file.ext] | Insert content f
 SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
 TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
 MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
-
+CAL  | | | .
 
 #### Dynamic Value Expression for Target.Column.Value
 

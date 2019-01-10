@@ -17,8 +17,6 @@ import java.sql.Types;
 public class ConverterTargetFormatter extends DataFormatter {
 
     private String targets;
-    private String sqlCount;
-    private String truncateTables;
 
     private String eol;
     private String doubleEOL;
@@ -44,8 +42,6 @@ public class ConverterTargetFormatter extends DataFormatter {
 
         nowString = application.systemVariableMap.get(SystemVariable.NOW).getValue();
 
-        sqlCount = doubleEOL + "#------- SQL -------" + doubleEOL + "#-- Count row for all tables" + eol;
-        truncateTables = doubleEOL + "#-- Truncate for all tables" + eol;
         targets = eol;
     }
 
@@ -62,7 +58,7 @@ public class ConverterTargetFormatter extends DataFormatter {
             generateTargetFor(dataTable);
         }
 
-        return sqlCount + truncateTables + targets + eof;
+        return targets + eof;
     }
 
     @Override
@@ -114,11 +110,6 @@ public class ConverterTargetFormatter extends DataFormatter {
 
         targets += eol + targetKey + "." + Property.MARKDOWN.key() + "=true" + eol
                 + targetKey + "." + Property.MARKDOWN.connectKey(Property.OUTPUT_FILE) + "=output/$[VAR:TARGET_FILE_NUMBER]_$[CAL:NAME(CURRENT)].md" + eol;
-
-        sqlCount += "# SELECT '" + tableName + "' as TABLE_NAME, COUNT(" + tableName + "." + id + ") as ROWCOUNT FROM " + tableName + " UNION ";
-        sqlCount = sqlCount.substring(0, sqlCount.length() - 7) + ";" + eol;
-
-        truncateTables += "# TRUNCATE TABLE " + tableName + ";" + eol;
 
         return true;
     }
