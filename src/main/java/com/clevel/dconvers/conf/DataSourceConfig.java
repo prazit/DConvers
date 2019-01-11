@@ -1,11 +1,17 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class DataSourceConfig extends Config {
 
@@ -16,6 +22,8 @@ public class DataSourceConfig extends Config {
     private String schema;
     private String user;
     private String password;
+
+    private List<Pair<String, String>> propList;
 
     private String pre;
     private String post;
@@ -55,6 +63,15 @@ public class DataSourceConfig extends Config {
         schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "");
         user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
         password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
+
+        Configuration propProperties = properties.subset(dataSource.connectKey(name, Property.PROPERTIES));
+        Iterator<String> propKeyList = propProperties.getKeys();
+        propList = new ArrayList<>();
+        for (Iterator<String> it = propKeyList; it.hasNext(); ) {
+            String key = it.next();
+            propList.add(new Pair<>(key, getPropertyString(propProperties, key)));
+        }
+        log.debug("propList = {}", propList);
 
         pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), "");
         post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
@@ -117,6 +134,10 @@ public class DataSourceConfig extends Config {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<Pair<String, String>> getPropList() {
+        return propList;
     }
 
     public String getPre() {

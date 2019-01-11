@@ -5,6 +5,7 @@ import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.ngin.AppBase;
 import com.clevel.dconvers.ngin.data.*;
+import javafx.util.Pair;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import oracle.jdbc.OracleTypes;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.List;
+import java.util.Properties;
 
 public class DataSource extends AppBase {
 
@@ -49,8 +52,20 @@ public class DataSource extends AppBase {
             Class.forName(dataSourceConfig.getDriver());
             log.trace("Load driver is successful");
 
+            Properties properties = new Properties();
+            List<Pair<String, String>> propList = dataSourceConfig.getPropList();
+            if (propList.size() > 0) {
+                for (Pair<String, String> propertyPair : propList) {
+                    properties.put(propertyPair.getKey(), propertyPair.getValue());
+                }
+                log.debug("Connection properties = {}", propList);
+            }
+
+            properties.put("user", dataSourceConfig.getUser());
+            properties.put("password", dataSourceConfig.getPassword());
+
             log.trace("Connecting to database({}) ...", name);
-            connection = DriverManager.getConnection(url, dataSourceConfig.getUser(), dataSourceConfig.getPassword());
+            connection = DriverManager.getConnection(url, properties);
             log.info("Connected to database({})", name);
 
             return true;
@@ -155,7 +170,7 @@ public class DataSource extends AppBase {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         application.currentConverter.setCurrentTable(dataTable);
 
-        DataTable metaDataTable = new DataTable(application, tableName+"_meta_data", "columnName");
+        DataTable metaDataTable = new DataTable(application, tableName + "_meta_data", "columnName");
         dataTable.setMetaData(metaDataTable);
 
         int columnCount = metaData.getColumnCount();

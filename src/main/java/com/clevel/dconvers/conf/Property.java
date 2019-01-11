@@ -9,6 +9,7 @@ public enum Property {
     SCHEMA("schema"),
     USER("user"),
     PASSWORD("password"),
+    PROPERTIES("prop"),
     PRE("pre"),
     POST("post"),
     HOST("host"),

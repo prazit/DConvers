@@ -84,6 +84,7 @@ datasource.user | string | null | user name to connect to DBMS
 datasource.password | string | null | password to connect to DBMS
 datasource.quotes.name | string | ` | one character for quotes of string-value and date-value
 datasource.quotes.value | string | " | one character for quotes of string-value and date-value
+datasource.prop.* | pair<property_name,value> | empty | list of property sent to DBMS when make a connection.
 
 
 #### SFTP Properties 
