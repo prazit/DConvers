@@ -32,6 +32,7 @@ public class SQLOutput extends Output {
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
         List<String> columnList = outputConfig.getSqlColumn();
+        String dbms = outputConfig.getSqlDBMS();
         String tableName = outputConfig.getSqlTable();
         String nameQuotes = outputConfig.getSqlNameQuotes();
         String valueQuotes = outputConfig.getSqlValueQuotes();
@@ -42,7 +43,7 @@ public class SQLOutput extends Output {
         boolean generateCreateStatement = outputConfig.isSqlCreate();
 
         if (generateCreateStatement) {
-            dataFormatterList.add(new SQLCreateFormatter(application, tableName, nameQuotes, eol, generateInsertStatement && generateUpdateStatement));
+            dataFormatterList.add(new SQLCreateFormatter(application, tableName, dbms, nameQuotes, eol, generateInsertStatement && generateUpdateStatement));
         }
         if (generateInsertStatement) {
             dataFormatterList.add(new SQLInsertFormatter(application, tableName, columnList, nameQuotes, valueQuotes, eol));

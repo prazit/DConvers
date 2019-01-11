@@ -78,6 +78,9 @@ public class ConverterSourceFormatter extends DataFormatter {
             } else {
                 generated += doubleEOL + sourceKey + "." + outputType + "=true"
                         + eol + sourceKey + "." + outputType + outputKey + "=" + outputType + "/V$[VAR:SOURCE_FILE_NUMBER]__$[CAL:NAME(CURRENT)]." + getFileExtension(outputType);
+                if (outputType.equalsIgnoreCase("SQL")) {
+                    generated += eol + sourceKey + "." + outputType + ".table=" + tableName;
+                }
             }
         }
         generated += eol;

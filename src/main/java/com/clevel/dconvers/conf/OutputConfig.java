@@ -60,6 +60,7 @@ public class OutputConfig extends Config {
     private List<String> sqlColumn;
     private String sqlNameQuotes;
     private String sqlValueQuotes;
+    private String sqlDBMS;
     private boolean sqlCreate;
     private boolean sqlInsert;
     private boolean sqlUpdate;
@@ -249,6 +250,7 @@ public class OutputConfig extends Config {
         sqlColumn = new ArrayList<>();
         sqlNameQuotes = "";
         sqlValueQuotes = "\"";
+        sqlDBMS = "";
         sqlCreate = false;
         sqlInsert = false;
         sqlUpdate = false;
@@ -270,6 +272,7 @@ public class OutputConfig extends Config {
             sqlOutputEOL = getPropertyString(sqlProperties, Property.OUTPUT_EOL.key(), sqlOutputEOL);
             sqlOutputEOF = getPropertyString(sqlProperties, Property.OUTPUT_EOF.key(), sqlOutputEOF);
             sqlTable = getPropertyString(sqlProperties, Property.TABLE.key(), sqlTable);
+            sqlDBMS = getPropertyString(sqlProperties, Property.DBMS.key(), sqlDBMS);
             sqlColumn = getStringList(sqlProperties, Property.COLUMN.key());
             sqlNameQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.NAME), sqlNameQuotes);
             sqlValueQuotes = getPropertyString(sqlProperties, Property.QUOTES.connectKey(Property.VALUE), sqlValueQuotes);
@@ -683,6 +686,10 @@ public class OutputConfig extends Config {
 
     public boolean isSqlUpdate() {
         return sqlUpdate;
+    }
+
+    public String getSqlDBMS() {
+        return sqlDBMS;
     }
 
     public List<String> getSqlPostSQL() {
@@ -1110,4 +1117,5 @@ public class OutputConfig extends Config {
                 .append("outputTypeList", outputTypeList)
                 .toString();
     }
+
 }

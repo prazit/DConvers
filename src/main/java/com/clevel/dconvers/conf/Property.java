@@ -62,6 +62,7 @@ public enum Property {
     HEADER("header"),
     OWNER("owner"),
     TABLE("table"),
+    DBMS("dbms"),
     COLUMN("column"),
     TYPE("type"),
     IS_KEY("iskey"),
