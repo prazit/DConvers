@@ -64,16 +64,23 @@ public class ConverterSourceFormatter extends DataFormatter {
         String sourceName = tableName;
         String sourceKey = Property.SOURCE.connectKey(sourceName);
 
-        String generated = eol + "#------- SRC:" + sourceName + "-------" + doubleEOL
+        String generated = eol + "#------- SRC:" + sourceName + " -------" + doubleEOL
                 + Property.SOURCE.key() + "=" + sourceName + eol
                 + sourceKey + "." + Property.INDEX.key() + "=" + String.valueOf(sourceIndex) + eol
                 + sourceKey + "." + Property.DATA_SOURCE.key() + "=" + dataSource + eol
                 + sourceKey + "." + Property.QUERY.key() + "=" + query + eol
-                + sourceKey + "." + Property.ID.key() + "=" + idColumnName + doubleEOL;
+                + sourceKey + "." + Property.ID.key() + "=" + idColumnName;
 
+        String outputKey = "." + Property.OUTPUT_FILE.key();
         for (String outputType : outputTypes) {
-            generated += sourceKey + "." + outputType + "=true" + eol;
+            if (outputType.contains(".")) {
+                generated += eol + sourceKey + "." + outputType + "=true";
+            } else {
+                generated += doubleEOL + sourceKey + "." + outputType + "=true"
+                        + eol + sourceKey + "." + outputType + outputKey + "=" + outputType + "/V$[VAR:SOURCE_FILE_NUMBER]__$[CAL:NAME(CURRENT)]." + getFileExtension(outputType);
+            }
         }
+        generated += eol;
 
         /*if (isFirstRow) {
             sourceKey += ".tar";
@@ -89,6 +96,20 @@ public class ConverterSourceFormatter extends DataFormatter {
         truncateTables += "TRUNCATE TABLE " + tableName + ";" + eol;
 
         return generated;
+    }
+
+    private String getFileExtension(String outputType) {
+        outputType = outputType.toUpperCase();
+
+        if (outputType.equals("MARKDOWN")) {
+            return "md";
+        }
+
+        if (outputType.equals("SRC") || outputType.equals("TAR")) {
+            return "conf";
+        }
+
+        return outputType.toLowerCase();
     }
 
     private String getColumnString(DataRow row, String columnName) {

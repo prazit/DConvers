@@ -99,24 +99,22 @@ public class SQLCreateFormatter extends DataFormatter {
             case Types.BIT:
                 return " int default '0' null";
 
-            case Types.CHAR:
-            case Types.VARCHAR:
-            case Types.NVARCHAR:
-            case Types.NCHAR:
-            case Types.LONGNVARCHAR:
-            case Types.LONGVARCHAR:
-                return " varchar(255) default 'NULL' null";
-
             case Types.DECIMAL:
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.REAL:
-                return " decimal(19,2) default 'NULL' null";
+                return " decimal(19,2) null";
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                return " datetime default 'NULL' null";
+                return " datetime null";
 
+            /*case Types.CHAR:
+            case Types.VARCHAR:
+            case Types.NVARCHAR:
+            case Types.NCHAR:
+            case Types.LONGNVARCHAR:
+            case Types.LONGVARCHAR:*/
             default:
                 return " varchar(255) default 'NULL' null";
         }
