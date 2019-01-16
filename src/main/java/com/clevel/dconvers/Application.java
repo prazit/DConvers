@@ -234,10 +234,12 @@ public class Application extends AppBase {
 
             for (Converter convert : converterList) {
                 log.info("Converter({}) configuration file is '{}'", convert.getConverterConfigFile().getIndex(), convert.getName());
-
                 currentConverter = convert;
-                success = convert.convert() && success;
-                success = convert.print() && success;
+
+                success = convert.printSources() && success;
+
+                success = convert.buildTargets() && success;
+                success = convert.printTarget() && success;
 
                 if (!lastConverter.equals(convert)) {
                     convert.close();

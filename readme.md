@@ -140,6 +140,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | source.query      | string    | empty string  | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled)                 |
 | source.id         | string    | id            | Name of column that contains a key value for a data table of this source.                          |
 | source.output     | List      |               | see [Output Properties](#Output_Properties)                                                        |
+| source.target     | bool      | true          | when false this source will be destroyed immediately after all outputs are printed (free up memory)|
 
 
 #### Datasource and Query

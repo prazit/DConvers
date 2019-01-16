@@ -119,27 +119,10 @@ public class Converter extends AppBase {
         return true;
     }
 
-    public boolean convert() {
-        log.trace("Converter({}).convert", name);
+    public boolean buildTargets() {
+        log.trace("Converter({}).buildTargets", name);
         TimeTracker timeTracker = application.timeTracker;
         boolean success = true;
-
-        DataTable sourceDataTable;
-        for (Source source : sortedSource) {
-            timeTracker.start(TimeTrackerKey.SOURCE, "buildDataTable for source(" + source.getName() + ")");
-            sourceDataTable = source.getDataTable();
-            timeTracker.stop(TimeTrackerKey.SOURCE);
-            if (sourceDataTable == null) {
-                success = false;
-                if (exitOnError) {
-                    return false;
-                }
-                continue;
-            }
-
-            application.summaryTable.addRow(name, sourceDataTable.getName(), DynamicValueType.SRC, sourceDataTable.getRowCount());
-        }
-        log.info("Retrieved, {} source(s).", sortedSource.size());
 
         DataTable targetDataTable;
         for (Target target : sortedTarget) {
@@ -166,36 +149,48 @@ public class Converter extends AppBase {
         return success;
     }
 
-    public boolean print() {
-        log.trace("Converter({}).print", name);
+    public boolean printSources() {
+        log.trace("Converter({}).printSources", name);
         boolean success = true;
 
         HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
-        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
+        TimeTracker timeTracker = application.timeTracker;
 
+        List<OutputTypes> outputTypeList;
         OutputConfig outputConfig;
         DataTable dataTable;
 
-        // -- Outputs for Source Table
-
-        List<OutputTypes> outputTypeList;
         for (Source source : sortedSource) {
             sourceFileNumber.increaseValueBy(1);
 
+            timeTracker.start(TimeTrackerKey.SOURCE, "build table for source(" + source.getName() + ")");
+            log.info("Loading data for source({})", source.getName());
             dataTable = source.getDataTable();
+            timeTracker.stop(TimeTrackerKey.SOURCE);
+
             if (dataTable == null) {
-                dataTable = new DataTable(application, source.getName(), "id", Collections.EMPTY_LIST, source);
+                success = false;
+                if (exitOnError) {
+                    return false;
+                }
+                dataTable = new DataTable(application, source.getName(), "source_id", Collections.EMPTY_LIST, source);
             }
+
+            application.summaryTable.addRow(name, dataTable.getName(), DynamicValueType.SRC, dataTable.getRowCount());
+
+            //------- print source -------
+
             setCurrentTable(dataTable);
 
             outputConfig = source.getSourceConfig().getOutputConfig();
             outputTypeList = outputConfig.getOutputTypeList();
             if (outputTypeList.size() == 0) {
                 log.debug("no output config for source({})", dataTable.getName());
+                source.printed();
                 continue;
             }
+
             for (OutputTypes outputType : outputTypeList) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
                 if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
@@ -205,10 +200,23 @@ public class Converter extends AppBase {
                     }
                 }
             }
-
+            source.printed();
         }
 
-        // -- Outputs for Target Table and Mapping Table
+        return success;
+    }
+
+    public boolean printTarget() {
+        log.trace("Converter({}).printTarget", name);
+        boolean success = true;
+
+        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
+        DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
+
+        List<OutputTypes> outputTypeList;
+        OutputConfig outputConfig;
+        DataTable dataTable;
 
         for (Target target : sortedTarget) {
             targetFileNumber.increaseValueBy(1);
@@ -218,7 +226,7 @@ public class Converter extends AppBase {
 
             dataTable = target.getDataTable();
             if (dataTable == null) {
-                dataTable = new DataTable(application, target.getName(), "id", Collections.EMPTY_LIST, target);
+                dataTable = new DataTable(application, target.getName(), "target_id", Collections.EMPTY_LIST, target);
             }
             setCurrentTable(dataTable);
 
