@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -126,7 +125,7 @@ public class DataTable extends AppBase implements JRDataSource {
         DataRow dataRow = dataRowList.get(0);
         dataColumn = dataRow.getColumn(columnName);
         if (dataColumn == null) {
-            error("DataTable({}).createMap. column {} not found!", name, columnName);
+            error("DataTable({}).createMap. column({}) not found!", name, columnName);
             return hashMap;
         }
 

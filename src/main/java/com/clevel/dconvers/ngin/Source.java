@@ -79,14 +79,19 @@ public class Source extends AppBase {
         return dataTable;
     }
 
+    /**
+     * After print all outputs.
+     */
     public void printed() {
+
         // destroy/release-memory
-        if (sourceConfig.hasTarget()) {
+        if (!sourceConfig.hasTarget()) {
             valid = false;
             converter = null;
             sourceConfig = null;
             dataSource = null;
             dataTable = null;
         }
+
     }
 }

@@ -2,12 +2,10 @@ package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.clevel.dconvers.conf.Defaults;
-import com.clevel.dconvers.ngin.AppBase;
+import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.data.*;
 import javafx.util.Pair;
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarStyle;
 import oracle.jdbc.OracleTypes;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -18,7 +16,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.Properties;
 
-public class DataSource extends AppBase {
+public class DataSource extends UtilBase {
 
     protected DataSourceConfig dataSourceConfig;
     private Connection connection;
@@ -189,13 +187,7 @@ public class DataSource extends AppBase {
         Timestamp timestamp;
 
         int rowCount = getRowCount(resultSet);
-        ProgressBar progressBar;
-        if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
-            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
-        } else {
-            progressBar = new ProgressBar("Build source(" + tableName + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
-        }
-        progressBar.maxHint(rowCount);
+        ProgressBar progressBar = getProgressBar("Build source(" + tableName + ")", rowCount);
 
         Object object;
         while (resultSet.next()) {

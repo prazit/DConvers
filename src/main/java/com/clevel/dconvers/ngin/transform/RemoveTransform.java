@@ -29,7 +29,7 @@ public class RemoveTransform extends Transform {
         List<DataColumn> newColumnList;
         DataRow newRow;
 
-        List<Integer> indexList = createIndexList(arguments, 0, 0, rowList.get(0).getColumnList().size() - 1);
+        List<Integer> indexList = createIndexList(rowList.get(0), arguments, 0);
         Collections.sort(indexList, Collections.reverseOrder());
         log.debug("RemoveTransform.reverseOrderIndex => {}", indexList);
 

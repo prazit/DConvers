@@ -35,6 +35,15 @@ public class DataRow extends AppBase {
         return dataTable;
     }
 
+    public int getColumnIndex(String columnName) {
+        DataColumn dataColumn = getColumn(columnName);
+        if (dataColumn == null) {
+            return -2;
+        }
+
+        return columnList.indexOf(dataColumn);
+    }
+
     public DataColumn getColumn(String columnName) {
         if (columnName == null) {
             return null;

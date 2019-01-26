@@ -1,11 +1,16 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarStyle;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class UtilBase extends AppBase {
@@ -14,38 +19,61 @@ public abstract class UtilBase extends AppBase {
         super(application, name);
     }
 
-    /**
-     * all index in parameters start at 0.
-     */
-    protected List<Integer> createIndexList(String[] arguments, int firstArgument, int minIndex, int maxIndex) {
+    protected List<Integer> createIndexList(DataRow rowPrototype, String columnIdentifier) {
         List<Integer> indexList = new ArrayList<>();
-        String argument;
         int index;
         int last;
 
-        for (int argIndex = firstArgument; argIndex < arguments.length; argIndex++) {
-            argument = arguments[argIndex];
-            if (argument.indexOf("-") > 0) {
-                String[] range = argument.split("[-]");
-                index = Integer.valueOf(range[0]) - 1;
-                last = Integer.valueOf(range[1]) - 1;
-                if (last > maxIndex) {
-                    last = maxIndex;
-                }
+        int minIndex = 0;
+        int maxIndex = rowPrototype.getColumnCount() - 1;
 
-                while (index <= last) {
-                    indexList.add(index);
-                    index = index + 1;
-                }
-            } else {
-                index = Integer.valueOf(argument) - 1;
-                if (index < minIndex) {
-                    continue;
-                } else if (index > maxIndex) {
-                    break;
-                }
-                indexList.add(index);
+        if (columnIdentifier.indexOf("-") > 0) {
+            /* case: columnIdentifier is range */
+            String[] range = columnIdentifier.split("[-]");
+            index = Integer.valueOf(range[0]) - 1;
+            last = Integer.valueOf(range[1]) - 1;
+            if (last > maxIndex) {
+                last = maxIndex;
             }
+
+            while (index <= last) {
+                indexList.add(index);
+                index = index + 1;
+            }
+
+        } else if (!NumberUtils.isCreatable(columnIdentifier)) {
+            /* case: columnIdentifier is column-name */
+            index = rowPrototype.getColumnIndex(columnIdentifier);
+            if (index < 0) {
+                error("Invalid columnName({}) for table({})", columnIdentifier, rowPrototype.getDataTable().getName());
+                return Collections.EMPTY_LIST;
+            }
+            indexList.add(index);
+
+        } else {
+            /* case: columnIdentifier is index number */
+            index = Integer.valueOf(columnIdentifier) - 1;
+            if (index < minIndex) {
+                return Collections.EMPTY_LIST;
+            } else if (index > maxIndex) {
+                return Collections.EMPTY_LIST;
+            }
+            indexList.add(index);
+        }
+
+        return indexList;
+    }
+
+    /**
+     * all index in parameters start at 0.
+     */
+    protected List<Integer> createIndexList(DataRow rowPrototype, String[] arguments, int firstArgument) {
+        int minIndex = 0;
+        int maxIndex = rowPrototype.getColumnCount() - 1;
+        List<Integer> indexList = new ArrayList<>();
+
+        for (int argIndex = firstArgument; argIndex < arguments.length; argIndex++) {
+            indexList.addAll(createIndexList(rowPrototype, arguments[argIndex]));
         }
 
         log.debug("UtilBase.createIndexList(args:{}, firstArg:{}, minIndex:{}, maxIndex:{}) => {}", arguments, firstArgument, minIndex, maxIndex, indexList);
@@ -85,6 +113,17 @@ public abstract class UtilBase extends AppBase {
         newRow.updateColumnMap();
         return newRow;
 
+    }
+
+    protected ProgressBar getProgressBar(String caption, long maxValue) {
+        ProgressBar progressBar;
+        if (maxValue > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+            progressBar = new me.tongfei.progressbar.ProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
+        } else {
+            progressBar = new ProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
+        }
+        progressBar.maxHint(maxValue);
+        return progressBar;
     }
 
 }

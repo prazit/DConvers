@@ -1,19 +1,17 @@
 package com.clevel.dconvers.ngin.format;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.Defaults;
-import com.clevel.dconvers.ngin.AppBase;
+import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarStyle;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DataFormatter extends AppBase {
+public abstract class DataFormatter extends UtilBase {
 
     protected boolean allRow;
     protected String outputType;
@@ -48,12 +46,7 @@ public abstract class DataFormatter extends AppBase {
         int rowCount = rows.size();
         ProgressBar progressBar = null;
         if (allRow) {
-            if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
-                progressBar = new ProgressBar("Print table(" + tableName + ") to " + outputType, rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
-            } else {
-                progressBar = new ProgressBar("Print table(" + tableName + ") to " + outputType, rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
-            }
-            progressBar.maxHint(rowCount);
+            progressBar = getProgressBar("Print table(" + tableName + ") to " + outputType, rowCount);
         }
 
         StringBuffer stringBuffer = new StringBuffer();

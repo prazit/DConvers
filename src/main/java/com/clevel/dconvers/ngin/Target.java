@@ -1,7 +1,6 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
@@ -20,7 +19,6 @@ import com.clevel.dconvers.ngin.transform.TransformFactory;
 import com.clevel.dconvers.ngin.transform.TransformTypes;
 import javafx.util.Pair;
 import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Target extends AppBase {
+public class Target extends UtilBase {
 
     private Converter converter;
     private TargetConfig targetConfig;
@@ -143,12 +141,7 @@ public class Target extends AppBase {
                 continue;
             }
 
-            if (rowCount > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
-                progressBar = new ProgressBar("Build target(" + name + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
-            } else {
-                progressBar = new ProgressBar("Build target(" + name + ")", rowCount, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
-            }
-            progressBar.maxHint(rowCount);
+            progressBar = getProgressBar("Build target(" + name + ")", rowCount);
 
             List<DynamicValue> targetDynamicValue = new ArrayList<>();
             DynamicValue dynamicValue;

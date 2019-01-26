@@ -47,7 +47,7 @@ public class SourceConfig extends Config {
         query = getPropertyString(properties, source.connectKey(name, Property.QUERY));
         id = getPropertyString(properties, source.connectKey(name, Property.ID), "id");
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
-        target = properties.getBoolean(source.connectKey(name, Property.TARGET), false);
+        target = properties.getBoolean(source.connectKey(name, Property.TARGET), true);
 
         return true;
     }

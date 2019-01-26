@@ -40,8 +40,7 @@ public class ConcatCalc extends Calc {
 
         rowIndex = arguments[1];
         DataRow firstRow = srcTable.getRow(0);
-        int maxIndex = firstRow.getColumnCount() - 1;
-        columnIndexList = createIndexList(arguments, 2, 0, maxIndex);
+        columnIndexList = createIndexList(firstRow, arguments, 2);
 
         return true;
     }

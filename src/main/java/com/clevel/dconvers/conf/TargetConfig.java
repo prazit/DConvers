@@ -24,7 +24,7 @@ public class TargetConfig extends Config {
     private String source;
     private List<String> sourceList;
     private String id;
-    private long rowNumberStartAt;
+    private String rowNumberStartAt;
 
     private List<Pair<String, String>> columnList;
 
@@ -68,7 +68,7 @@ public class TargetConfig extends Config {
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         source = getPropertyString(targetProperties, Property.SOURCE.key());
         id = getPropertyString(targetProperties, Property.ID.key(), "id");
-        rowNumberStartAt = targetProperties.getLong(Property.ROW_NUMBER.key(), 1);
+        rowNumberStartAt = getPropertyString(targetProperties, Property.ROW_NUMBER.key(), "1");
         index = targetProperties.getInt(Property.INDEX.key(), 1);
 
         sourceList = new ArrayList<>();
@@ -115,7 +115,11 @@ public class TargetConfig extends Config {
     }
 
     public long getRowNumberStartAt() {
-        return rowNumberStartAt;
+        String value = application.currentConverter.compileDynamicValues(rowNumberStartAt);
+        if (value == null) {
+            return 1;
+        }
+        return Long.valueOf(value);
     }
 
     public List<Pair<String, String>> getColumnList() {

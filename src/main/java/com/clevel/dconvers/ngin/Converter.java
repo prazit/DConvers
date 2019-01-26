@@ -9,10 +9,15 @@ import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataLong;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
-import com.clevel.dconvers.ngin.dynvalue.DynamicValue;
 import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
+import com.clevel.dconvers.ngin.dynvalue.Operator;
+import com.clevel.dconvers.ngin.dynvalue.OperatorFactory;
+import com.clevel.dconvers.ngin.dynvalue.OperatorType;
 import com.clevel.dconvers.ngin.output.OutputFactory;
 import com.clevel.dconvers.ngin.output.OutputTypes;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Converter extends AppBase {
@@ -392,6 +399,74 @@ public class Converter extends AppBase {
         return dataColumn;
     }
 
+    private String[] parseExpression(char[] operators, String expression) {
+        List<String> tokenList = new ArrayList<>();
+        char[] chars = expression.toCharArray();
+        int length = chars.length;
+        int tokenStart = 0;
+        char aChar;
+
+        for (int index = 0; index < length; index++) {
+            aChar = chars[index];
+            if (ArrayUtils.indexOf(operators, aChar) < 0) {
+                continue;
+            }
+
+            tokenList.add(expression.substring(tokenStart, index));
+            tokenList.add(String.valueOf(aChar));
+            tokenStart = index + 1;
+        }
+        tokenList.add(expression.substring(tokenStart));
+
+        String[] tokens = new String[tokenList.size()];
+        tokens = tokenList.toArray(tokens);
+        return tokens;
+    }
+
+    private String computeExpression(String[] tokens) {
+        int tokenLastIndex = tokens.length - 1;
+        if (tokenLastIndex < 0) {
+            return null;
+        }
+        if (tokenLastIndex == 0) {
+            return tokens[0];
+        }
+
+        int tokenIndex = 0;
+        String lastOperand = tokens[0];
+        String leftOperand;
+        String operator;
+        String rightOperand;
+
+        while (tokenIndex < tokenLastIndex) {
+            if (tokenIndex + 2 > tokenLastIndex) {
+                error("Invalid expression({})", (Object[]) tokens);
+                return null;
+            }
+
+            leftOperand = lastOperand;
+            operator = tokens[tokenIndex + 1];
+            rightOperand = tokens[tokenIndex + 2];
+
+            OperatorType operatorType = OperatorType.parse(operator.charAt(0));
+            if (operatorType == null) {
+                error("Invalid operator({}) in expression({})", operator, tokens);
+                return null;
+            }
+
+            Operator computer = OperatorFactory.getOperator(application, operatorType);
+            if (computer == null) {
+                return null;
+            }
+
+            lastOperand = computer.compute(leftOperand, rightOperand);
+            tokenIndex += 2;
+        }
+
+        return lastOperand;
+
+    }
+
     public String compileDynamicValues(String sourceString) {
         if (sourceString == null) {
             return null;
@@ -411,7 +486,6 @@ public class Converter extends AppBase {
             error("Converter.compileDynamicValues({}) has unexpected exception, {}", sourceString, ex);
             return null;
         }
-
     }
 
     private String compileFirstDynamicValue(String sourceString) {
@@ -425,103 +499,60 @@ public class Converter extends AppBase {
             end = sourceString.length() - 1;
         }
 
-        String dynamicValue = sourceString.substring(start + 2, end);
-        //log.debug("Converter.compileFirstDynamicValue: dynamicValue({})", dynamicValue);
+        String dynamicValueExpression = sourceString.substring(start + 2, end);
+        String[] dynamicValues = parseExpression(OperatorType.getOperators(), dynamicValueExpression);
+        if (dynamicValues == null) {
+            log.debug("Converter.compileFirstDynamicValue.parseExpression: dynamicValueExpression({}) return null", dynamicValueExpression);
+            return null;
+        }
+        log.debug("Converter.compileFirstDynamicValue: dynamicValueExpression({}) return dynamicValues({})", dynamicValueExpression, ArrayUtils.toString(dynamicValues));
 
+        // turn dynamicValue-array to token-array for computeExpression method.
+        String dynamicValue;
+        for (int index = 0; index < dynamicValues.length; index++) {
+            dynamicValue = dynamicValues[index];
+            if (dynamicValue.length() == 1) {
+                continue;
+            }
+
+            dynamicValue = getDynamicString(dynamicValue);
+            if (dynamicValue == null) {
+                return null;
+            }
+            dynamicValues[index] = dynamicValue;
+        }
+
+        String replacement = computeExpression(dynamicValues);
+        return sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
+    }
+
+    public String getDynamicString(String dynamicValue) {
         DataColumn dataColumn = getDynamicValue(dynamicValue);
         if (dataColumn == null) {
             return null;
         }
 
-        String replacement;
+        String string;
         switch (dataColumn.getType()) {
             case Types.INTEGER:
             case Types.BIGINT:
-                replacement = dataColumn.getFormattedValue(Defaults.NUMBER_FORMAT.getStringValue().replaceAll("[,]", ""));
+                string = dataColumn.getFormattedValue(Defaults.NUMBER_FORMAT.getStringValue().replaceAll("[,]", ""));
                 break;
 
             case Types.DECIMAL:
-                replacement = dataColumn.getFormattedValue(Defaults.DECIMAL_FORMAT.getStringValue().replaceAll("[,]", ""));
+                string = dataColumn.getFormattedValue(Defaults.DECIMAL_FORMAT.getStringValue().replaceAll("[,]", ""));
                 break;
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                replacement = dataColumn.getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
+                string = dataColumn.getFormattedValue(Defaults.DATE_FORMAT.getStringValue());
                 break;
 
             default:
-                replacement = dataColumn.getValue();
+                string = dataColumn.getValue();
         }
 
-        return sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
-    }
-
-    public String valuesFromDataTable(String dataTableMapping, String columnName) {
-        log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
-
-        DataTable dataTable = getDataTable(dataTableMapping);
-        if (dataTable == null) {
-            log.warn("Source.valuesFromDataTable. The specified dataTable({}) is not found.", dataTableMapping);
-            return "";
-        }
-
-        if (dataTable == null || dataTable.getRowCount() == 0) {
-            log.warn("Source.valuesFromDataTable. dataTable({}) is empty.", dataTableMapping);
-            return "";
-        }
-
-        if (dataTable.getRow(0).getColumn(columnName) == null) {
-            log.warn("Source.valuesFromDataTable. The specified column({}) is not found in dataTable({}).", columnName, dataTableMapping);
-            return "";
-        }
-
-        List<String> valueList = new ArrayList<>();
-        for (DataRow row : dataTable.getRowList()) {
-            valueList.add(row.getColumn(columnName).getQuotedValue());
-        }
-        valueList = valueList.stream()
-                .distinct()
-                .collect(Collectors.toList());
-        Collections.sort(valueList);
-        String values = String.join(",", valueList);
-
-        /*String values = "";
-        for (String value : valueList) {
-            values += value + ",";
-        }
-        values = values.substring(0, values.length() - 1);*/
-
-        log.debug("Source.valuesFromDataTable. return-value={}", values);
-        return values;
-    }
-
-    public String valueFromFile(String fileName) {
-
-        BufferedReader br = null;
-        String content = "";
-        try {
-            br = new BufferedReader(new FileReader(fileName));
-            for (String line; (line = br.readLine()) != null; ) {
-                content += line + "\n";
-            }
-
-        } catch (FileNotFoundException fx) {
-            error("Converter.valueFromFile({}). file not found: {}", fileName, fx.getMessage());
-
-        } catch (Exception ex) {
-            error("Converter.valueFromFile({}). has exception: {}", fileName, ex);
-
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    log.warn("close file {} is failed, {}", fileName, e);
-                }
-            }
-        }
-
-        return content;
+        return string;
     }
 
     public DataColumn getDynamicValue(String dynamicValue) {
@@ -605,12 +636,104 @@ public class Converter extends AppBase {
                 dataColumn = application.createDataColumn("argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
                 break;
 
+            case STR: // constant for STR, INT, DTE, DTT, DEC
+            case INT:
+            case DEC:
+            case DTE:
+            case DTT:
+                if (valueIdentifier.compareToIgnoreCase("NULL") == 0) {
+                    valueIdentifier = null;
+                } else if (valueIdentifier.contains("$[")) {
+                    valueIdentifier = compileDynamicValues(valueIdentifier);
+                }
+
+                dataColumn = application.createDataColumn(valueType, dynamicValueType.getDataType(), valueIdentifier);
+                if (dataColumn == null) {
+                    error("Invalid constant({}) for {} ", valueIdentifier, valueType);
+                    return null;
+                }
+
+                if (dataColumn.getType() == Types.VARCHAR) {
+                    value = dataColumn.getValue();
+                    value = compileDynamicValues(value);
+                    dataColumn.setValue(value);
+                }
+                break;
+
             default:
                 error("Invalid type({}) for DynamicValue({}), see 'Dynamic Value Types' for detailed", valueType, dynamicValue);
         }
 
         log.debug("Converter.getDynamicValue. dynamicValue({}) = dataColumn({})", dynamicValue, dataColumn);
         return dataColumn;
+    }
+
+    public String valuesFromDataTable(String dataTableMapping, String columnName) {
+        log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
+
+        DataTable dataTable = getDataTable(dataTableMapping);
+        if (dataTable == null) {
+            log.warn("Source.valuesFromDataTable. The specified dataTable({}) is not found.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable == null || dataTable.getRowCount() == 0) {
+            log.warn("Source.valuesFromDataTable. dataTable({}) is empty.", dataTableMapping);
+            return "";
+        }
+
+        if (dataTable.getRow(0).getColumn(columnName) == null) {
+            log.warn("Source.valuesFromDataTable. The specified column({}) is not found in dataTable({}).", columnName, dataTableMapping);
+            return "";
+        }
+
+        List<String> valueList = new ArrayList<>();
+        for (DataRow row : dataTable.getRowList()) {
+            valueList.add(row.getColumn(columnName).getQuotedValue());
+        }
+        valueList = valueList.stream()
+                .distinct()
+                .collect(Collectors.toList());
+        Collections.sort(valueList);
+        String values = String.join(",", valueList);
+
+        /*String values = "";
+        for (String value : valueList) {
+            values += value + ",";
+        }
+        values = values.substring(0, values.length() - 1);*/
+
+        log.debug("Source.valuesFromDataTable. return-value={}", values);
+        return values;
+    }
+
+    public String valueFromFile(String fileName) {
+
+        BufferedReader br = null;
+        String content = "";
+        try {
+            br = new BufferedReader(new FileReader(fileName));
+            for (String line; (line = br.readLine()) != null; ) {
+                content += line + "\n";
+            }
+
+        } catch (FileNotFoundException fx) {
+            error("Converter.valueFromFile({}). file not found: {}", fileName, fx.getMessage());
+
+        } catch (Exception ex) {
+            error("Converter.valueFromFile({}). has exception: {}", fileName, ex);
+
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.warn("close file {} is failed, {}", fileName, e);
+                }
+            }
+        }
+
+        return content;
     }
 
     public DataTable getCurrentTable() {

@@ -166,6 +166,8 @@ target=target_name
 
 You can see full example in 'sample-converter.conf' file. However, the possible properties of the target are described in this table only. 
 
+rownumber=CAL:ROWCOUNT(cash_deposit_withdraw)+1
+
 | Property              | Data Type | Default Value | Description                                                                                                              |
 |-----------------------|-----------|---------------|--------------------------------------------------------------------------------------------------------------------------|
 | target.index          | int       | 0             | Some converters contain a lot of sources, this property make all sources are sorted by this index.                       |
@@ -173,6 +175,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | target.mapping        | string    | target name   | Name of mapping table, mapping table store ID of source and target                                                       |
 | target.mapping.output | List      |               | see [Output Properties](#Output_Properties)                                                                              |
 | target.id             | string    | id            | name of primary key column, this is used by mapping table and used as default value of Output.DBUpdate.ID.               |
+| target.rownumber      | int       | 1             | start number of VAR:ROW_NUMBER for this target (Dynamic Value Enabled)                                                   |
 | target.output         | List      |               | see [Output Properties](#Output_Properties)                                                                              |
 | target.transform      | List      |               | see [Transform Properties](#Transform_Properties)                                                                        |
 
