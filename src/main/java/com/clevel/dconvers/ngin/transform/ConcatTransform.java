@@ -23,12 +23,12 @@ public class ConcatTransform extends Transform {
     @Override
     public boolean transform(DataTable dataTable) {
 
-        // CONCAT([replace or [ColumnNameToInsert]]:[ColumnIndexToInsert],[current or [[TableType]:[TableName]]],[[ColumnRange] or [ColumnIndex]],..)
+        // CONCAT([replace or [ColumnNameToInsert]]:[ColumnIndexToInsert],[[ColumnRange] or [ColumnIndex]],..)
         String argument = getArgument(Property.ARGUMENTS.key());
         String[] arguments = argument.split("[,]");
         List<DataRow> rowList = dataTable.getRowList();
         List<DataRow> newRowList = new ArrayList<>();
-        List<Integer> indexList = createIndexList(rowList.get(0), arguments, 2);
+        List<Integer> indexList = createIndexList(rowList.get(0), arguments, 1);
 
         long rowCount = rowList.size();
         String tableName = dataTable.getName();
@@ -49,6 +49,8 @@ public class ConcatTransform extends Transform {
         ProgressBar progressBar = getProgressBar("Transform table(" + tableName + ") by CONCAT", rowCount);
         for (DataRow row : rowList) {
             columnList = row.getColumnList();
+
+            value = "";
             for (Integer index : indexList) {
                 column = columnList.get(index);
                 value += column.getValue();

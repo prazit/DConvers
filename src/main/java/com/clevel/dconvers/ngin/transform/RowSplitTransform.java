@@ -7,7 +7,6 @@ import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.data.DataColumn;
 import com.clevel.dconvers.ngin.data.DataRow;
 import com.clevel.dconvers.ngin.data.DataTable;
-import com.clevel.dconvers.ngin.dynvalue.DynamicValue;
 import com.clevel.dconvers.ngin.dynvalue.DynamicValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

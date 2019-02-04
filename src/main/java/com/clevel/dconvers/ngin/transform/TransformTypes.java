@@ -12,6 +12,7 @@ public enum TransformTypes {
     REMOVE(RemoveTransform.class),
     ROWCOUNT(RowCountTransform.class),
     ROWSPLIT(RowSplitTransform.class),
+    ROWFILTER(RowFilterTransform.class),
     SUM(SumTransform.class);
 
     private Class transformClass;

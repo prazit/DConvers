@@ -496,6 +496,23 @@ Syntax> rowsplit([ColumnIdentifier],[regex])
 | [DataType]         | string    | STR           | STR for string, INT for long integer, DEC for decimal, DTE for date and time |
 
 
+##### Row Filter Transformer Function Properties
+
+This transformation used to remove some row before go into the Output phase. After transform by this function, rows of datatable will be reduced. possible properties are described below
+
+```batch
+Syntax> rowfilter([FilterType],[columnIdentifier]=value)
+```
+
+###### Parameters
+
+| Property           | Data Type | Default Value | Description                                               |
+|--------------------|-----------|---------------|-----------------------------------------------------------|
+| [ColumnIdentifier] | int       | 1             | index of any column, start at 1                           |
+| [FilterType]       | string    | Exclude       | Include or Exclude                                        |
+
+
+
 #### Dynamic Value Expression for Source.Query
 
 ```

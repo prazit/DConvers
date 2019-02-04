@@ -85,7 +85,7 @@ public abstract class DataFormatter extends UtilBase {
             try {
                 writer.write(stringBuffer.toString());
             } catch (IOException e) {
-                e.printStackTrace();
+                error("Write buffer to file is failed: {}", e.getMessage());
                 return false;
             }
 
