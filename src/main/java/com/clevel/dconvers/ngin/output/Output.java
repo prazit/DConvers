@@ -67,14 +67,17 @@ public abstract class Output extends AppBase {
             return false;
         }
 
+        boolean printSuccess = true;
         for (DataFormatter formatter : dataFormatterList) {
-            if (!formatter.print(dataTable, writer)) {
-                closeWriter(outputConfig, dataTable, writer, false);
-                return false;
+            printSuccess = formatter.print(dataTable, writer);
+            formatter.reset();
+
+            if (!printSuccess) {
+                break;
             }
         }
 
-        if (!closeWriter(outputConfig, dataTable, writer, true)) {
+        if (!closeWriter(outputConfig, dataTable, writer, printSuccess) || !printSuccess) {
             return false;
         }
         return true;
@@ -118,7 +121,10 @@ public abstract class Output extends AppBase {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
                 error("Output.createFile is failed! please check parameters(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
-                application.hasWarning = true;
+                if (application.exitOnError) {
+                    return null;
+                }
+
                 try {
                     writer = new PrintWriter(new OutputStreamWriter(System.out, charset));
                 } catch (UnsupportedEncodingException e1) {

@@ -50,6 +50,7 @@ public class OutputConfig extends Config {
     private boolean sql;
     private String sqlSftp;
     private String sqlSftpOutput;
+    private String sqlCombineOutput;
     private String sqlOutput;
     private boolean sqlOutputAppend;
     private boolean sqlOutputAutoCreateDir;
@@ -240,6 +241,7 @@ public class OutputConfig extends Config {
         sql = false;
         sqlSftp = null;
         sqlSftpOutput = null;
+        sqlCombineOutput = null;
         sqlOutput = "$[CAL:NAME(current)].sql";
         sqlOutputAppend = false;
         sqlOutputAutoCreateDir = true;
@@ -265,6 +267,7 @@ public class OutputConfig extends Config {
             Configuration sqlProperties = properties.subset(key);
             sqlSftp = getPropertyString(sqlProperties, Property.SFTP.key(), sqlSftp);
             sqlSftpOutput = getPropertyString(sqlProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), sqlSftpOutput);
+            sqlCombineOutput = getPropertyString(sqlProperties, Property.COMBINE.connectKey(Property.OUTPUT_FILE), sqlCombineOutput);
             sqlOutput = getPropertyString(sqlProperties, Property.OUTPUT_FILE.key(), sqlOutput);
             sqlOutputAppend = sqlProperties.getBoolean(Property.OUTPUT_APPEND.key(), sqlOutputAppend);
             sqlOutputAutoCreateDir = sqlProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), sqlOutputAutoCreateDir);
@@ -279,8 +282,8 @@ public class OutputConfig extends Config {
             sqlCreate = sqlProperties.getBoolean(Property.CREATE.key(), sqlCreate);
             sqlInsert = sqlProperties.getBoolean(Property.INSERT.key(), sqlInsert);
             sqlUpdate = sqlProperties.getBoolean(Property.UPDATE.key(), sqlUpdate);
-            sqlPreSQL = getStringList(sqlProperties, Property.PRE_SQL.key());
-            sqlPostSQL = getStringList(sqlProperties, Property.POST_SQL.key());
+            sqlPreSQL = getSQLStringList(sqlProperties, Property.PRE_SQL.key());
+            sqlPostSQL = getSQLStringList(sqlProperties, Property.POST_SQL.key());
         }
 
         // Default Properties for Markdown
@@ -448,8 +451,8 @@ public class OutputConfig extends Config {
             dbInsertTable = getPropertyString(dbInsertProperties, Property.TABLE.key(), dbInsertTable);
             dbInsertNameQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
             dbInsertValueQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
-            dbInsertPreSQL = getStringList(dbInsertProperties, Property.PRE_SQL.key());
-            dbInsertPostSQL = getStringList(dbInsertProperties, Property.POST_SQL.key());
+            dbInsertPreSQL = getSQLStringList(dbInsertProperties, Property.PRE_SQL.key());
+            dbInsertPostSQL = getSQLStringList(dbInsertProperties, Property.POST_SQL.key());
         }
 
         // DBUpdate Output Properties
@@ -475,8 +478,8 @@ public class OutputConfig extends Config {
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
             dbUpdateValueQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbUpdateValueQuotes);
-            dbUpdatePreSQL = getStringList(dbUpdateProperties, Property.PRE_SQL.key());
-            dbUpdatePostSQL = getStringList(dbUpdateProperties, Property.POST_SQL.key());
+            dbUpdatePreSQL = getSQLStringList(dbUpdateProperties, Property.PRE_SQL.key());
+            dbUpdatePostSQL = getSQLStringList(dbUpdateProperties, Property.POST_SQL.key());
         }
 
         return true;
@@ -500,6 +503,25 @@ public class OutputConfig extends Config {
                 stringList.add(value);
             }
         }
+
+        return stringList;
+    }
+
+    private List<String> getSQLStringList(Configuration properties, String key) {
+        List<Object> objectList;
+        try {
+            objectList = properties.getList(key);
+        } catch (ConversionException ex) {
+            objectList = new ArrayList<>();
+        }
+
+        String value;
+        List<String> stringList = new ArrayList<>();
+        for (Object obj : objectList) {
+            value = obj.toString();
+            stringList.add(value);
+        }
+
         return stringList;
     }
 
@@ -638,6 +660,10 @@ public class OutputConfig extends Config {
 
     public String getSqlOutput() {
         return application.currentConverter.compileDynamicValues(sqlOutput);
+    }
+
+    public String getSqlCombineOutput() {
+        return application.currentConverter.compileDynamicValues(sqlCombineOutput);
     }
 
     public boolean isSqlOutputAppend() {

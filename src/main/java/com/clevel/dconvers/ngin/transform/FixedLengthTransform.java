@@ -57,8 +57,7 @@ public class FixedLengthTransform extends Transform {
             newRowList.add(newRow);
         }
 
-        rowList.clear();
-        rowList.addAll(newRowList);
+        dataTable.setRowList(newRowList);
 
         return true;
     }

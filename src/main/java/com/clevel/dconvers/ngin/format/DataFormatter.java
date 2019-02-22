@@ -16,11 +16,23 @@ public abstract class DataFormatter extends UtilBase {
     protected boolean allRow;
     protected String outputType;
     protected Writer writer;
+    protected List<Writer> moreWriter;
 
     public DataFormatter(Application application, String name, boolean allRow) {
         super(application, name);
         this.allRow = allRow;
         outputType = "file";
+        moreWriter = new ArrayList<>();
+    }
+
+    /**
+     * same data will be writen into all writers in this list, please call addMoreWriter() before print.
+     */
+    public void addMoreWriter(Writer writer) {
+        if (writer == null) {
+            return;
+        }
+        moreWriter.add(writer);
     }
 
     /**
@@ -89,9 +101,28 @@ public abstract class DataFormatter extends UtilBase {
                 return false;
             }
 
+            try {
+                if(moreWriter.size() > 0){
+                    for (Writer more : moreWriter) {
+                        more.write(stringBuffer.toString());
+                    }
+                }
+            } catch (IOException e) {
+                error("Write buffer to more-file is failed: {}", e.getMessage());
+                return false;
+            }
+
         }
 
         return true;
+    }
+
+    /**
+     * release all writers.
+     */
+    public void reset() {
+        writer = null;
+        moreWriter = new ArrayList<>();
     }
 
     protected String preFormat(DataTable dataTable) {

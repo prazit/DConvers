@@ -20,7 +20,7 @@ public class VARValue extends DynamicValue {
         SystemVariable systemVariable = SystemVariable.parse(sourceColumnArg);
         if (systemVariable == null) {
             valid = false;
-            error("Invalid name({}) for system variable of target column({})", sourceColumnName, name);
+            error("Invalid name({}) for system variable, required by target({}.{})", sourceColumnName, targetName, name);
             dataColumn = null;
             return;
         }
@@ -28,7 +28,7 @@ public class VARValue extends DynamicValue {
         dataColumn = application.systemVariableMap.get(systemVariable);
         if (dataColumn == null) {
             valid = false;
-            error("Invalid systemVariable({}) for target column({})", systemVariable, name);
+            error("Invalid systemVariable({}), required by target({}.{})", systemVariable, targetName, name);
             dataColumn = null;
         }
     }

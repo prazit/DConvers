@@ -2,6 +2,7 @@ package com.clevel.dconvers.ngin.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.ngin.TimeTrackerKey;
 import com.clevel.dconvers.ngin.UtilBase;
 import com.clevel.dconvers.ngin.data.*;
 import javafx.util.Pair;
@@ -122,15 +123,19 @@ public class DataSource extends UtilBase {
                 } else {
                     callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
                     log.debug("Querying by callableStatement(OUT): {}", query);
+                    application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                     callableStatement.execute();
                     resultSet = (ResultSet) callableStatement.getObject(1);
+                    application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
                 }
             } else {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 query = query.replaceAll("[\"]", dataSourceConfig.getValueQuotes());
                 log.debug("Querying: {}", query);
+                application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                 resultSet = statement.executeQuery(query);
+                application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
             }
             ResultSetMetaData metaData = resultSet.getMetaData();
 
@@ -222,6 +227,11 @@ public class DataSource extends UtilBase {
                         dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, resultSet.getString(columnIndex));
                         break;
 
+                    case Types.CLOB:
+                    case Types.NCLOB:
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, clobToString(resultSet.getClob(columnIndex)));
+                        break;
+
                     case Types.DECIMAL:
                     case Types.DOUBLE:
                     case Types.FLOAT:
@@ -305,6 +315,16 @@ public class DataSource extends UtilBase {
         }
 
         return dataTable;
+    }
+
+    private String clobToString(Clob clob) {
+        try {
+            return clob.getSubString(1L, (int) clob.length());
+        } catch (Exception ex) {
+            String errMessage = ex.getMessage();
+            error("clobToString is failed, {}", errMessage);
+            return "CLOB-ERROR(" + errMessage + ")";
+        }
     }
 
     public void close() {

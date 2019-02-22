@@ -26,7 +26,7 @@ public class RowFilterTransform extends Transform {
 
         // rowfilter([FilterType],[ColumnIdentifier]=value)
         String argumentString = getArgument(Property.ARGUMENTS.key());
-        String[] arguments = argumentString.split(",");
+        String[] arguments = argumentString.split("[,]");
         if (arguments.length < 2) {
             error("Invalid arguments for transform=ROWFILTER({})", argumentString);
             return false;
@@ -40,7 +40,7 @@ public class RowFilterTransform extends Transform {
             return false;
         }
 
-        String[] columnAndValue = arguments[1].split("=");
+        String[] columnAndValue = arguments[1].split("[=]");
         String columnName = columnAndValue[0];
         String value = columnAndValue[1];
         log.debug("ROWFILTER(filterType:{},columnName:{},value:{})", filterType, columnName, value);

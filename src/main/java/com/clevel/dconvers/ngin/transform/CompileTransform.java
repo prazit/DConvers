@@ -25,7 +25,7 @@ public class CompileTransform extends Transform {
         int newColumnIndex = Integer.parseInt(columnIdentifiers[1]) - 1;
 
         arguments = arguments.substring(columnIdentifier.length() + 1);
-        return calcToRowList(dataTable.getRowList(), CalcTypes.COMPILE, arguments, dataTable, newColumnName, newColumnIndex);
+        return calcToRowList(dataTable, CalcTypes.COMPILE, arguments, dataTable, newColumnName, newColumnIndex);
 
     }
 

@@ -28,7 +28,7 @@ public class INTValue extends DynamicValue {
 
         dataLong = (DataLong) application.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
         if (dataLong == null) {
-            error("Invalid constant({}) for {} that required by target column({})", sourceColumnArg, sourceColumnType.name(), name);
+            error("Invalid constant({}) for columnType({}) that required by target({}.{})", sourceColumnArg, sourceColumnType.name(), targetName, name);
             dataLong = null;
             return;
         }

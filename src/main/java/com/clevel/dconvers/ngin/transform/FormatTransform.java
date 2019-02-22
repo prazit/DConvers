@@ -25,7 +25,7 @@ public class FormatTransform extends Transform {
         int newColumnIndex = Integer.parseInt(columnIdentifiers[1]) - 1;
 
         arguments = arguments.substring(columnIdentifier.length() + 1);
-        return calcToRowList(dataTable.getRowList(), CalcTypes.FORMAT, arguments, dataTable, newColumnName, newColumnIndex);
+        return calcToRowList(dataTable, CalcTypes.FORMAT, arguments, dataTable, newColumnName, newColumnIndex);
 
     }
 

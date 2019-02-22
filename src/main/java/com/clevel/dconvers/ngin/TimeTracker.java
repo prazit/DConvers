@@ -56,8 +56,8 @@ public class TimeTracker implements Serializable {
     private List<Timer> stopped;
 
     public TimeTracker() {
-        sharedDateFormat = new SimpleDateFormat("HH:mm:ss:SSS");
-        sharedTimeFormat = new SimpleDateFormat("mm:ss:SSS");
+        sharedDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS");
+        sharedTimeFormat = new SimpleDateFormat("HH:mm:ss:SSS");
         timers = new HashMap<>();
         stopped = new ArrayList<>();
     }

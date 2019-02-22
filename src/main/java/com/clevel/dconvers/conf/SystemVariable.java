@@ -41,7 +41,7 @@ public enum SystemVariable {
             systemVariable = SystemVariable.valueOf(name);
         } catch (IllegalArgumentException ex) {
             systemVariable = null;
-            LoggerFactory.getLogger(SystemVariable.class).error("SystemVariable.parse(name:{}) is failed!", name, ex);
+            LoggerFactory.getLogger(SystemVariable.class).error("SystemVariable.parse(name:{}) is failed! {}", name, ex.getMessage());
         }
 
         return systemVariable;

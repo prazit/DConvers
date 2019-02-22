@@ -15,7 +15,7 @@ public class INVValue extends DynamicValue {
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
         valid = false;
-        error("Invalid source-column({}) for target-column({})", sourceColumnName, name);
+        error("Invalid source-column({}) for target({}.{})", sourceColumnName, targetName, name);
     }
 
     @Override

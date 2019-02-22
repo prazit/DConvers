@@ -111,7 +111,6 @@ public class DataTable extends AppBase implements JRDataSource {
         if (rowList == null || rowList.size() == 0) {
             return;
         }
-        dataRowMap.put(idColumnName, createMap(idColumnName));
     }
 
     private HashMap<String, DataRow> createMap(String columnName) {
@@ -256,6 +255,10 @@ public class DataTable extends AppBase implements JRDataSource {
 
     public boolean print(OutputConfig outputConfig) {
         DynamicValueType tableType = getTableType();
+        if (outputConfig == null) {
+            log.debug("no output config for {}:{}", tableType.name(), name);
+            return false;
+        }
 
         List<OutputTypes> outputTypeList = outputConfig.getOutputTypeList();
         if (outputTypeList.size() == 0) {

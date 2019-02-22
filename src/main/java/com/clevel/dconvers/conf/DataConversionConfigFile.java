@@ -57,6 +57,7 @@ public class DataConversionConfigFile extends ConfigFile {
         log.trace("DataConversionConfigFile.loadProperties.");
         application.dataConversionConfigFile = this;
 
+
         Property converterProperty = Property.CONVERTER_FILE;
         outputSourcePath = getPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH), "");
         outputTargetPath = getPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH), "");
@@ -70,6 +71,7 @@ public class DataConversionConfigFile extends ConfigFile {
         successCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), Defaults.EXIT_CODE_SUCCESS.getIntValue());
         errorCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), Defaults.EXIT_CODE_ERROR.getIntValue());
         warningCode = properties.getInt(converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), Defaults.EXIT_CODE_WARNING.getIntValue());
+
 
         List<Object> dataSourceNameList;
         try {
@@ -115,6 +117,7 @@ public class DataConversionConfigFile extends ConfigFile {
             }
             converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(application, name));
         }
+
 
         childValid = true;
         return true;

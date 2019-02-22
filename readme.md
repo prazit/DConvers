@@ -512,6 +512,22 @@ Syntax> rowfilter([FilterType],[columnIdentifier]=value)
 | [FilterType]       | string    | Exclude       | Include or Exclude                                        |
 
 
+##### Get Transformer Function Properties
+
+Get a column-value from any where.
+
+```batch
+Syntax> get([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [rowIndex]],[columnIndex])
+```
+
+##### Compile Transformer Function Properties
+
+Like the Get Transformer Function above, get a column-value from any where and then compile it as dynamic value expression.
+
+```batch
+Syntax> compile([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [rowIndex]],[columnIndex])
+```
+
 
 #### Dynamic Value Expression for Source.Query
 

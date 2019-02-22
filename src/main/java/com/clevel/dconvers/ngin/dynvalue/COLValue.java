@@ -17,6 +17,7 @@ public class COLValue extends DynamicValue {
     private String valueColumnName;
     private DynamicValue lookupValue;
     private DataTable lookupTable;
+    private DynamicValue notfoundValue;
 
     public COLValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
         super(application, targetName, targetColumnName, targetColumnIndex);
@@ -27,8 +28,9 @@ public class COLValue extends DynamicValue {
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
         converter = application.currentConverter;
 
-        // sourceColumnName contains 'lookupValueDef>>lookupTable.lookupColumnName>>valueColumnName'
+        // sourceColumnName contains 'lookupValueDef>>lookupTable.lookupColumnName>>valueColumnName,notFoundValueDef'
         // example: column.target_column_name=STR:OK>>SRC:OK_OR_NOT.state>>description
+        // when notFoundValue is not defined, error will be created when the lookupValue is not found in a lookupTable.
         String[] sourceColumnNames = sourceColumnName.split(">>");
         if (sourceColumnNames.length < 3) {
             valid = false;
@@ -61,13 +63,28 @@ public class COLValue extends DynamicValue {
             lookupTable = converter.getDataTable(mappings[0]);
             if (lookupTable == null) {
                 valid = false;
-                error("No table({}) in converter({})", mappings[0], converter.getName());
+                error("No table({}) in converter({}) that required by target({}.{})", mappings[0], converter.getName(), targetName, name);
                 return;
             }
         }
 
+        String[] values = sourceColumnNames[2].split("[,]");
+        String notFoundValueDef = (values.length > 1) ? values[1] : null;
+        if (notFoundValueDef == null) {
+            notfoundValue = null;
+        } else {
+            if (notFoundValueDef.indexOf(":") > 0) {
+                DynamicValueType sourceColumnType2 = DynamicValueType.parseTargetColumn(notFoundValueDef);
+                String sourceColumnTypeArg2 = notFoundValueDef.length() > 4 ? notFoundValueDef.substring(4) : "";
+                notfoundValue = DynamicValueFactory.getDynamicValue(sourceColumnType2, application, targetName, name, targetColumnIndex);
+                notfoundValue.prepare(sourceName, notFoundValueDef, sourceColumnType2, sourceColumnTypeArg2);
+            } else {
+                notfoundValue = null;
+            }
+        }
+
         lookupColumnName = mappings[1];
-        valueColumnName = sourceColumnNames[2];
+        valueColumnName = values[0];
     }
 
     @Override
@@ -87,14 +104,17 @@ public class COLValue extends DynamicValue {
 
         DataRow lookupResultRow = lookupTable.getRow(lookupColumnName, lookupData.getValue());
         if (lookupResultRow == null) {
-            error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({})", lookupColumnName, lookupData.getValue(), lookupTable.getName(), converter.getName(), targetName);
-            log.debug("lookupTable = {}", lookupTable);
-            return null;
+            if (notfoundValue == null) {
+                error("No row contains column({}) with value({}) in a table({}) in converter({}) that required by target({}.{})", lookupColumnName, lookupData.getValue(), lookupTable.getName(), converter.getName(), targetName, name);
+                log.debug("lookupTable = {}", lookupTable);
+                return null;
+            }
+            return notfoundValue.getValue(sourceRow);
         }
 
         lookupData = lookupResultRow.getColumn(valueColumnName);
         if (lookupData == null) {
-            error("No column({}) in data-table({}) in converter({})", valueColumnName, lookupTable.getName(), name, converter.getName());
+            error("No column({}) in data-table({}) in converter({}) that required by target({}.{})", valueColumnName, lookupTable.getName(), name, converter.getName(), targetName, name);
             return null;
         }
 

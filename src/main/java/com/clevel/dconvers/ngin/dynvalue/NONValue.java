@@ -28,7 +28,7 @@ public class NONValue extends DynamicValue {
     public DataColumn getValue(DataRow sourceRow) {
         DataColumn dataColumn = sourceRow.getColumn(sourceColumnName);
         if (dataColumn == null) {
-            error("No column({}) in source({}) in converter({})", sourceColumnName, sourceName, converter.getName());
+            error("No column({}) in source({}) in converter({}) that required by target({},{})", sourceColumnName, sourceName, converter.getName(), targetName, name);
             return null;
         }
 

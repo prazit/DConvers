@@ -24,13 +24,17 @@ import java.util.List;
 
 public class SQLOutput extends Output {
 
+    private List<DataFormatter> dataFormatterList;
+    private Writer combineWriter;
+
     public SQLOutput(Application application, String name) {
         super(application, name);
+        combineWriter = null;
     }
 
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
-        List<DataFormatter> dataFormatterList = new ArrayList<>();
+        dataFormatterList = new ArrayList<>();
         List<String> columnList = outputConfig.getSqlColumn();
         String dbms = outputConfig.getSqlDBMS();
         String tableName = outputConfig.getSqlTable();
@@ -131,11 +135,34 @@ public class SQLOutput extends Output {
         }
         registerPostSFTP(sqlOutputFilename, outputConfig.getSqlSftpOutput(), outputConfig.getSqlSftp());
 
+        String sqlCombineFilename = outputConfig.getSqlCombineOutput();
+        if (sqlCombineFilename != null) {
+            sqlCombineFilename = outputPath + sqlCombineFilename;
+            combineWriter = createFile(sqlCombineFilename, outputConfig.isSqlOutputAutoCreateDir(), true, outputConfig.getSqlOutputCharset());
+            if (combineWriter != null) {
+                for (DataFormatter dataFormatter : dataFormatterList) {
+                    dataFormatter.addMoreWriter(combineWriter);
+                }
+
+                if (headPrint != null) {
+                    try {
+                        combineWriter.write(headPrint);
+                    } catch (IOException e) {
+                        error("SQLOutput: write the head print to combine-file is failed, {}", e.getMessage());
+                        return null;
+                    }
+                }
+            }
+        }
+
         List<String> preSQL = outputConfig.getSqlPreSQL();
         if (preSQL.size() > 0) {
             try {
                 for (String sql : preSQL) {
                     writer.write(sql + eol);
+                    if (combineWriter != null) {
+                        combineWriter.write(sql + eol);
+                    }
                 }
             } catch (IOException e) {
                 error("SQLOutput: write the pre-sql failed, {}", e.getMessage());
@@ -149,41 +176,51 @@ public class SQLOutput extends Output {
     @Override
     protected boolean closeWriter(OutputConfig outputConfig, DataTable dataTable, Writer writer, boolean success) {
 
-        if (!success) {
-            return false;
-        }
+        if (success) {
 
-        String eol = outputConfig.getSqlOutputEOL();
-        String eof = outputConfig.getSqlOutputEOF();
-        List<String> postSQL = outputConfig.getSqlPostSQL();
-        if (postSQL.size() > 0) {
-            try {
-                for (String sql : postSQL) {
-                    writer.write(sql + eol);
+            String eol = outputConfig.getSqlOutputEOL();
+            String eof = outputConfig.getSqlOutputEOF();
+            List<String> postSQL = outputConfig.getSqlPostSQL();
+            if (postSQL.size() > 0) {
+                try {
+                    for (String sql : postSQL) {
+                        writer.write(sql + eol);
+                        if (combineWriter != null) {
+                            combineWriter.write(sql + eol);
+                        }
+                    }
+                } catch (IOException e) {
+                    error("SQLOutput: write the post-sql failed, {}", e.getMessage());
+                    success = false;
                 }
-            } catch (IOException e) {
-                error("SQLOutput: write the post-sql failed, {}", e.getMessage());
-                success = false;
             }
-        }
 
-        if (!eof.isEmpty()) {
-            try {
-                writer.write(eof);
-            } catch (IOException e) {
-                error("SQLOutput: write EOF({}) is failed, {}", eof, e);
-                success = false;
+            if (!eof.isEmpty()) {
+                try {
+                    writer.write(eof);
+                    if (combineWriter != null) {
+                        combineWriter.write(eof);
+                    }
+                } catch (IOException e) {
+                    error("SQLOutput: write EOF({}) is failed, {}", eof, e);
+                    success = false;
+                }
             }
-        }
+
+        } // end of if (success)
 
         try {
             writer.close();
+            if (combineWriter != null) {
+                combineWriter.close();
+            }
         } catch (IOException e) {
             // do nothing
+        } finally {
+            combineWriter = null;
         }
 
         return success;
-
     }
 
     @Override

@@ -1,9 +1,12 @@
 package com.clevel.dconvers.conf;
 
+import org.slf4j.LoggerFactory;
+
 public enum Property {
 
     DATA_SOURCE("datasource"),
     SFTP("sftp"),
+    COMBINE("combine"),
     URL("url"),
     DRIVER("driver"),
     SCHEMA("schema"),
@@ -102,6 +105,20 @@ public enum Property {
 
     Property(String key) {
         this.key = key;
+    }
+
+    public static Property parse(String name) {
+        Property property;
+
+        try {
+            name = name.toUpperCase();
+            property = Property.valueOf(name);
+        } catch (IllegalArgumentException ex) {
+            property = null;
+            LoggerFactory.getLogger(Property.class).error("Property.parse(name:{}) is failed!", name, ex);
+        }
+
+        return property;
     }
 
     public String key() {

@@ -9,7 +9,7 @@ import com.clevel.dconvers.ngin.data.DataRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CALValue extends DynamicValue{
+public class CALValue extends DynamicValue {
 
     private Calc calculator;
     private String calcName;
@@ -28,7 +28,7 @@ public class CALValue extends DynamicValue{
         CalcTypes calcType = CalcTypes.parse(calcName);
         if (calcType == null) {
             valid = false;
-            error("Invalid Calculator({}) for target column({})", sourceColumnArg, name);
+            error("Invalid Calculator({}) that required by target({}.{})", sourceColumnArg, targetName, name);
             calculator = null;
             return;
         }

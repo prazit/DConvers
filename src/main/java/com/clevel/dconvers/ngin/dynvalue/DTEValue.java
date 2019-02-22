@@ -28,7 +28,7 @@ public class DTEValue extends DynamicValue {
 
         dataDate = (DataDate) application.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
         if (dataDate == null) {
-            error("Invalid constant({}) for {} that required by target column({})", sourceColumnArg, sourceColumnType.name(), name);
+            error("Invalid constant({}) for columnType({}) that required by target({}.{})", sourceColumnArg, sourceColumnType.name(), targetName, name);
             dataDate = null;
             return;
         }

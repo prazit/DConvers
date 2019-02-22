@@ -40,7 +40,8 @@ public abstract class Transform extends UtilBase {
 
     public abstract boolean transform(DataTable dataTable);
 
-    protected boolean calcToRowList(List<DataRow> destRowList, CalcTypes calcType, String arguments, DataTable currentTable, String newColumnName, int newColumnIndex) {
+    protected boolean calcToRowList(DataTable dataTable, CalcTypes calcType, String arguments, DataTable currentTable, String newColumnName, int newColumnIndex) {
+        List<DataRow> oldRowList = dataTable.getRowList();
         List<DataRow> newRowList = new ArrayList<>();
 
         Calc calculator = CalcFactory.getCalc(application, calcType);
@@ -53,7 +54,7 @@ public abstract class Transform extends UtilBase {
         DataRow newRow;
         int rowIndex = -1;
 
-        for (DataRow row : destRowList) {
+        for (DataRow row : oldRowList) {
             rowIndex++;
             currentConverter.setCurrentRowIndex(rowIndex);
 
@@ -67,8 +68,7 @@ public abstract class Transform extends UtilBase {
             newRowList.add(newRow);
         }
 
-        destRowList.clear();
-        destRowList.addAll(newRowList);
+        dataTable.setRowList(newRowList);
 
         return true;
     }

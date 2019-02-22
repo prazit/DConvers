@@ -25,7 +25,7 @@ public class SumTransform extends Transform {
         int newColumnIndex = Integer.parseInt(columnIdentifiers[1]) - 1;
 
         arguments = arguments.substring(columnIdentifier.length() + 1);
-        return calcToRowList(dataTable.getRowList(), CalcTypes.SUM, arguments, dataTable, newColumnName, newColumnIndex);
+        return calcToRowList(dataTable, CalcTypes.SUM, arguments, dataTable, newColumnName, newColumnIndex);
 
     }
 

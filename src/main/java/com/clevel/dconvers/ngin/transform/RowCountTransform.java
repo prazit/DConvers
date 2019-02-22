@@ -26,7 +26,7 @@ public class RowCountTransform extends Transform {
 
         arguments = arguments.substring(columnIdentifier.length() + 1);
         String tableIdentifier = getFirstValue(arguments);
-        return calcToRowList(dataTable.getRowList(), CalcTypes.ROWCOUNT, tableIdentifier, dataTable, newColumnName, newColumnIndex);
+        return calcToRowList(dataTable, CalcTypes.ROWCOUNT, tableIdentifier, dataTable, newColumnName, newColumnIndex);
 
     }
 
