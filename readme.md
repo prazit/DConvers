@@ -145,17 +145,28 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | source.target     | bool      | true          | when false this source will be destroyed immediately after all outputs are printed (free up memory)|
 
 
-#### Datasource and Query
+#### Datasource and compatible query
 
 | Data Provider        | datasource        | query (Dynamic Value Enabled)    |
 |----------------------|-------------------|----------------------------------|
 | Database             | User Defined Name | SQL String                       |
-| ResultSet MetaData   | ResultSetMetaData | table name like this => SRC:name |
-| SQL(Insert) File     | SQL               | file-name                        |
+| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name         |
+| SQL(Create,Insert,Update) File | SQL     | file-name                        |
 | Markdown(Table) File | MARKDOWN          | file-name                        |
 | Email                | EMAIL             | Search String                    |
 | Fixed Length File    | TXT               | file-name                        |
 | CSV File             | CSV               | file-name                        |
+| DConvers             | SYSTEM            | see 'System Query' for detailed  |
+
+
+#### System Query
+
+| query        | description                                                     |
+|--------------|-----------------------------------------------------------------|
+| ARG          | arguments from app-switch --arg                                 |
+| VARIABLE     | system variable table contains all variable for value-type(VAR) |
+| ENVIRONMENT  | application environment properties sorted by PROPERTY           |
+| SUMMARY      | the summary table contains all tables from all converters       |
 
 
 #### Target Properties

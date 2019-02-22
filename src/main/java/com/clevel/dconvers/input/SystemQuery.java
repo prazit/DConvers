@@ -6,7 +6,10 @@ public enum SystemQuery {
 
     ARG,
     VARIABLE,
-    ENVIRONMENT;
+    ENVIRONMENT,
+
+    SUMMARY
+    ;
 
     public static SystemQuery parse(String name) {
         SystemQuery systemQuery;

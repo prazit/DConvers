@@ -54,6 +54,9 @@ public class SystemDataSource extends DataSource {
 
             case ENVIRONMENT:
                 return systemProperties(tableName, idColumnName);
+
+            case SUMMARY:
+                return application.summaryTable;
         }
 
         return super.getDataTable(tableName, idColumnName, query);
