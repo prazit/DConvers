@@ -9,14 +9,16 @@ But, now has many features that help to transform data in a target table before 
 
 | Data Provider                      | Input / Data Source Name | Output / Property Name |
 |------------------------------------|--------------------------|------------------------|
-| Database                           | <datasource name>        | DBInsert, DBUpdate     |
+| Database                           | User-Defined             | DBInsert, DBUpdate     |
 | ResultSetMetaData                  | ResultSetMetaData        | -                      |
+| SQL(Create) File                   | -                        | SQL                    |
 | SQL(Insert) File                   | SQL                      | SQL                    |
+| SQL(Update) File                   | -                        | SQL                    |
 | Markdown Table                     | MARKDOWN                 | MARKDOWN               |
 | Email                              | EMAIL                    | -                      |
-| PDF                                | PDF                      | -                      |
+| PDF                                | -                        | PDF                    |
 | Fixed Length                       | -                        | TXT                    |
-| CSV                                | -                        | CSV                    |
+| CSV                                | CSV(future)              | CSV                    |
 | Configuration Generator for source | -                        | SRC                    |
 | Configuration Generator for target | -                        | TAR                    |
 
@@ -28,7 +30,7 @@ To run this program as well, you always need to write some configuration (dataso
 Define list of datasource and list of converter file in a [conversion file](#ConversionFile).
 Define list of source and list of target must be defined in one or more [converter file](#ConverterFile).  
 
-> Library of database driver are required for user's datasource.   
+> Library of database driver are required for user's defined datasource.   
 
 In a terminal, type this command to run sample-conversion.conf 
 
@@ -46,7 +48,7 @@ And type this command to show help.
 ## Configuring
 
 Explain how to write the configuration files before run the DConvers application.  
-All configuration files in DConvers project are in standard properties file format.
+All configuration files in DConvers project are in standard properties file format.  
 The possible values for any property is depends on the DataType of the property as described below
 
 | Data Type | Possible Values     | Remark                                                                                                          |
@@ -59,15 +61,15 @@ The possible values for any property is depends on the DataType of the property 
 
 ### Conversion File
 
-> All directory path must use '/' instead of '\' on all operating systems.
+> All directory path must use '/' instead of '\\' on all operating systems.
 
 Conversion file is a properties file which contains 4 groups of property as follow
-1 Conversion Properties
-2 List of DataSource Properties 
-3 List of SFTP Properties 
-4 List of Converter File 
+1. Conversion Properties
+2. List of DataSource Properties 
+3. List of SFTP Properties 
+4. List of Converter File 
 
-#### Conversion Properties
+#### 1. Conversion Properties
 
 | Property          | Data Type | Default Value | Description                        |
 |-------------------|-----------|---------------|------------------------------------|
@@ -77,7 +79,7 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | exit.code.warning | int       | 2             | customizable exit code for warning | 
 
 
-#### DataSource Properties for Database
+#### 2. DataSource Properties (Database Connection)
 
 | Property                | Data Type                 | Default Value | Description                                             |
 |-------------------------|---------------------------|---------------|---------------------------------------------------------|
@@ -90,7 +92,7 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | datasource.prop.*       | pair<property_name,value> | empty         | list of property sent to DBMS when make a connection.   |
 
 
-#### SFTP Properties 
+#### 3. SFTP Properties (SFTP Connection) 
 
 | Property      | Data Type | Default Value | Description                                  |
 |---------------|-----------|---------------|----------------------------------------------|
@@ -100,7 +102,7 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | sftp.password | string    | null          | password to connect to SFTP server           |
 
 
-#### Converter File Property 
+#### 4. Converter File Property 
 
 | Property  | Data Type | Default Value | Description                 |
 |-----------|-----------|---------------|-----------------------------|
@@ -147,7 +149,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 | Data Provider        | datasource        | query (Dynamic Value Enabled)    |
 |----------------------|-------------------|----------------------------------|
-| Database             | <datasource name> | SQL String                       |
+| Database             | User Defined Name | SQL String                       |
 | ResultSet MetaData   | ResultSetMetaData | table name like this => SRC:name |
 | SQL(Insert) File     | SQL               | file-name                        |
 | Markdown(Table) File | MARKDOWN          | file-name                        |

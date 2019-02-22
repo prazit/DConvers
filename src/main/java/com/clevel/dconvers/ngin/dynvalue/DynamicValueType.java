@@ -31,10 +31,6 @@ public enum DynamicValueType {
     private int dataType;
     private Class dynamicValueClass;
 
-    DynamicValueType(int dataType) {
-        this.dataType = dataType;
-    }
-
     DynamicValueType(int dataType, Class dynamicValueClass) {
         this.dataType = dataType;
         this.dynamicValueClass = dynamicValueClass;
@@ -46,10 +42,6 @@ public enum DynamicValueType {
 
     public Class getDynamicValueClass() {
         return dynamicValueClass;
-    }
-
-    public String getValuePrefix() {
-        return name() + ":";
     }
 
     public static DynamicValueType parse(String name) {
