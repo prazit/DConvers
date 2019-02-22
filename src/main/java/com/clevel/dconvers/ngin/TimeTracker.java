@@ -2,11 +2,13 @@ package com.clevel.dconvers.ngin;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Copied from SELOS DROP 1.6 SOAPHANDLER.

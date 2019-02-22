@@ -3,7 +3,6 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.Application;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;

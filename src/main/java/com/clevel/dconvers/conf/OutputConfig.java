@@ -2,7 +2,7 @@ package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.ngin.Converter;
-import com.clevel.dconvers.ngin.output.OutputTypes;
+import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
