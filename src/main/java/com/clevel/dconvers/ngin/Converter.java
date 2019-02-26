@@ -710,11 +710,14 @@ public class Converter extends AppBase {
 
         BufferedReader br = null;
         String content = "";
+        String newLine = "\n";
+        int newLineLength = newLine.length();
         try {
             br = new BufferedReader(new FileReader(fileName));
             for (String line; (line = br.readLine()) != null; ) {
                 content += line + "\n";
             }
+            content = content.substring(0, content.length() - newLineLength);
 
         } catch (FileNotFoundException fx) {
             error("Converter.valueFromFile({}). file not found: {}", fileName, fx.getMessage());
