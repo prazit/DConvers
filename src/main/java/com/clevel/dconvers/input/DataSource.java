@@ -137,16 +137,24 @@ public class DataSource extends UtilBase {
                 resultSet = statement.executeQuery(query);
                 application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
             }
-            ResultSetMetaData metaData = resultSet.getMetaData();
 
-            log.trace("Creating DataTable...");
-            dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
-            dataTable.setDataSource(name);
-            dataTable.setQuery(query);
-            log.debug("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
+            if (resultSet != null) {
+                ResultSetMetaData metaData = resultSet.getMetaData();
 
-            log.trace("Close statement...");
-            resultSet.close();
+                log.trace("Creating DataTable...");
+                dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
+                dataTable.setDataSource(name);
+                dataTable.setQuery(query);
+                log.debug("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
+
+                log.trace("Close statement...");
+                resultSet.close();
+            } else {
+                dataTable = new DataTable(application, tableName, idColumnName);
+                dataTable.setDataSource(name);
+                dataTable.setQuery(query);
+                log.debug("DataTable({}) has 0 row", tableName);
+            }
 
         } catch (SQLException se) {
             error("SQLException: {}", se.getMessage());
