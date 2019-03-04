@@ -42,6 +42,12 @@ public class DataSource extends UtilBase {
     public boolean open() {
         log.trace("DataSource({}).open.", name);
 
+        connection = getExistingConnection();
+        if (connection != null) {
+            log.info("Use shared connection for datasource({})", name);
+            return true;
+        }
+
         String schema = (useInformationSchema ? "information_schema" : dataSourceConfig.getSchema());
         String url = dataSourceConfig.getUrl();
         url = schema.isEmpty() ? url : url + "/" + schema;
@@ -63,9 +69,9 @@ public class DataSource extends UtilBase {
             properties.put("user", dataSourceConfig.getUser());
             properties.put("password", dataSourceConfig.getPassword());
 
-            log.trace("Connecting to database({}) ...", name);
+            log.trace("Connecting to datasource({}) ...", name);
             connection = DriverManager.getConnection(url, properties);
-            log.info("Connected to database({})", name);
+            log.info("Connected to datasource({})", name);
 
             return true;
 
@@ -78,6 +84,15 @@ public class DataSource extends UtilBase {
         }
 
         return false;
+    }
+
+    private Connection getExistingConnection() {
+        DataSource dataSource = application.getDataSource(dataSourceConfig);
+        if (dataSource == null) {
+            return null;
+        }
+        log.debug("getExistingConnection found existing datasource");
+        return dataSource.connection;
     }
 
     private int getRowCount(ResultSet resultSet) {
@@ -345,7 +360,7 @@ public class DataSource extends UtilBase {
         try {
             connection.close();
             connection = null;
-            log.info("Disconnected from database({})", name);
+            log.info("Disconnected from datasource({})", name);
         } catch (SQLException se) {
             error("disconnect is failed");
             log.debug("SQLException = {}", se);

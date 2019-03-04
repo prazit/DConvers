@@ -40,7 +40,7 @@ public class DataSourceConfig extends Config {
         valid = loadProperties();
         if (valid) valid = validate();
 
-        log.trace("DataSourceConfig({}) is created", name);
+        log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
     }
 
     @Override
@@ -165,6 +165,37 @@ public class DataSourceConfig extends Config {
 
     public boolean isEmailDataSource() {
         return !host.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+
+        if (!(object instanceof DataSourceConfig)) {
+            return false;
+        }
+
+        DataSourceConfig dataSourceConfig = (DataSourceConfig) object;
+        if (!dataSourceConfig.getUrl().equalsIgnoreCase(url)) {
+            return false;
+        }
+
+        if (!dataSourceConfig.getDriver().equalsIgnoreCase(driver)) {
+            return false;
+        }
+
+        if (!dataSourceConfig.getSchema().equalsIgnoreCase(schema)) {
+            return false;
+        }
+
+        if (!dataSourceConfig.getUser().equalsIgnoreCase(user)) {
+            return false;
+        }
+
+        if (!dataSourceConfig.getPassword().equalsIgnoreCase(password)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

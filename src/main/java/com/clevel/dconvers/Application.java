@@ -454,6 +454,17 @@ public class Application extends AppBase {
         return dataSourceMap.get(dataSourceName.toUpperCase());
     }
 
+    public DataSource getDataSource(DataSourceConfig dataSourceConfig) {
+        DataSourceConfig config;
+        for (DataSource dataSource : dataSourceMap.values()) {
+            config = dataSource.getDataSourceConfig();
+            if (config.equals(dataSourceConfig)) {
+                return dataSource;
+            }
+        }
+        return null;
+    }
+
     /**
      * Create DataColumn by Type
      *
