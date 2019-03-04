@@ -5,10 +5,7 @@ import com.clevel.dconvers.calc.Calc;
 import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
-import com.clevel.dconvers.data.DataColumn;
-import com.clevel.dconvers.data.DataLong;
-import com.clevel.dconvers.data.DataRow;
-import com.clevel.dconvers.data.DataTable;
+import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.dynvalue.Operator;
 import com.clevel.dconvers.dynvalue.OperatorFactory;
@@ -131,6 +128,7 @@ public class Converter extends AppBase {
         boolean success = true;
 
         DataTable targetDataTable;
+        SummaryTable tableSummary = application.tableSummary;
         for (Target target : sortedTarget) {
             timeTracker.start(TimeTrackerKey.TARGET, "buildDataTable for target(" + target.getName() + ")");
             valid = target.buildDataTable();
