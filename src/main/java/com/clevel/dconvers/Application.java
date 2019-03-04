@@ -35,7 +35,8 @@ public class Application extends AppBase {
     public Converter currentConverter;
     public DataLong currentState;
 
-    public SummaryTable summaryTable;
+    public SummaryTable tableSummary;
+    public SummaryTable outputSummary;
 
     public boolean hasWarning;
     public boolean exitOnError;
@@ -138,8 +139,13 @@ public class Application extends AppBase {
         mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()) - 1);
         sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()) - 1);
 
-        summaryTable = new SummaryTable(this);
-        summaryTable.setOwner(this);
+        tableSummary = new SummaryTable(this);
+        tableSummary.setOwner(this);
+        tableSummary.setQuery(SystemQuery.TABLE_SUMMARY.name());
+
+        outputSummary = new SummaryTable(this);
+        outputSummary.setOwner(this);
+        outputSummary.setQuery(SystemQuery.OUTPUT_SUMMARY.name());
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();
@@ -255,10 +261,6 @@ public class Application extends AppBase {
         for (DataSource dataSourceItem : dataSourceMap.values()) {
             dataSourceItem.runPost();
         }
-
-        log.trace("Application. print summary table.");
-        summaryTable.sort();
-        summaryTable.print(dataConversionConfigFile.getSummaryOutputConfig());
 
         currentConverter = null;
         if (lastConverter != null) {

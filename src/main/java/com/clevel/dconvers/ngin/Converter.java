@@ -143,11 +143,11 @@ public class Converter extends AppBase {
             }
 
             targetDataTable = target.getDataTable();
-            application.summaryTable.addRow(name, targetDataTable.getName(), DynamicValueType.TAR, targetDataTable.getRowCount());
+            tableSummary.addRow(name, targetDataTable.getName(), DynamicValueType.TAR, targetDataTable.getRowCount());
 
             for (DataTable mappingTable : target.getMappingTableList()) {
                 mappingTableMap.put(mappingTable.getName().toUpperCase(), mappingTable);
-                application.summaryTable.addRow(name, mappingTable.getName(), DynamicValueType.MAP, mappingTable.getRowCount());
+                tableSummary.addRow(name, mappingTable.getName(), DynamicValueType.MAP, mappingTable.getRowCount());
             }
         }
         log.info("{} target-table(s) are built.", sortedTarget.size());
@@ -166,6 +166,10 @@ public class Converter extends AppBase {
         List<OutputTypes> outputTypeList;
         OutputConfig outputConfig;
         DataTable dataTable;
+        String outputName;
+
+        SummaryTable tableSummary = application.tableSummary;
+        SummaryTable outputSummary = application.outputSummary;
 
         for (Source source : sortedSource) {
             sourceFileNumber.increaseValueBy(1);
@@ -183,7 +187,7 @@ public class Converter extends AppBase {
                 dataTable = new DataTable(application, source.getName(), "source_id", Collections.EMPTY_LIST, source);
             }
 
-            application.summaryTable.addRow(name, dataTable.getName(), DynamicValueType.SRC, dataTable.getRowCount());
+            tableSummary.addRow(name, dataTable.getName(), DynamicValueType.SRC, dataTable.getRowCount());
 
             //------- print source -------
 
@@ -199,12 +203,14 @@ public class Converter extends AppBase {
 
             for (OutputTypes outputType : outputTypeList) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
-                if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
+                outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                if (outputName == null) {
                     success = false;
                     if (exitOnError) {
                         return false;
                     }
                 }
+                outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
             }
             source.printed();
         }
@@ -223,6 +229,9 @@ public class Converter extends AppBase {
         List<OutputTypes> outputTypeList;
         OutputConfig outputConfig;
         DataTable dataTable;
+        String outputName;
+
+        SummaryTable outputSummary = application.outputSummary;
 
         for (Target target : sortedTarget) {
             targetFileNumber.increaseValueBy(1);
@@ -244,12 +253,14 @@ public class Converter extends AppBase {
             }
             for (OutputTypes outputType : outputTypeList) {
                 log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
-                if (!OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable)) {
+                outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                if (outputName == null) {
                     success = false;
                     if (exitOnError) {
                         return false;
                     }
                 }
+                outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
             }
 
             // -- Outputs for Mapping Table
@@ -265,12 +276,14 @@ public class Converter extends AppBase {
 
                 for (OutputTypes outputType : outputTypeList) {
                     log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
-                    if (!OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable)) {
+                    outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable);
+                    if (outputName == null) {
                         success = false;
                         if (exitOnError) {
                             return false;
                         }
                     }
+                    outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
                 }
             }
 

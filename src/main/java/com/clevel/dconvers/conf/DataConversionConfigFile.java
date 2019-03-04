@@ -18,8 +18,6 @@ public class DataConversionConfigFile extends ConfigFile {
     private HashMap<String, SFTPConfig> sftpConfigMap;
     private HashMap<String, ConverterConfigFile> converterConfigMap;
 
-    private OutputConfig summaryOutputConfig;
-
     private String outputSourcePath;
     private String outputTargetPath;
     private String outputMappingPath;
@@ -37,11 +35,6 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public DataConversionConfigFile(Application application, String name) {
         super(application, name);
-
-        if (valid) {
-            summaryOutputConfig = new OutputConfig(application, Property.SUMMARY.key(), properties);
-            valid = summaryOutputConfig.isValid();
-        }
 
         log.debug("DataConversionConfigFile({}) = {}", name, this);
         log.trace("DataConversionConfigFile({}) is created.", name);
@@ -204,7 +197,4 @@ public class DataConversionConfigFile extends ConfigFile {
         return childValid;
     }
 
-    public OutputConfig getSummaryOutputConfig() {
-        return summaryOutputConfig;
-    }
 }

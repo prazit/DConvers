@@ -2,6 +2,7 @@ package com.clevel.dconvers.data;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
+import com.clevel.dconvers.output.OutputTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,9 @@ public class SummaryTable extends DataTable {
         error("Deprecated function SummaryTable.addRow is invoked!");
     }
 
+    /**
+     * for Application.tableSummary
+     */
     public void addRow(String converterName, String tableName, DynamicValueType tableType, long rowCount) {
         log.info("{}:{} has {} row(s)", tableType.name(), tableName, rowCount);
 
@@ -32,8 +36,39 @@ public class SummaryTable extends DataTable {
         columnName = "ID";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
 
-        columnName = "Table Type";
+        columnName = "Type";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
+
+        columnName = "Table Name";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableName));
+
+        columnName = "Row Count";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(rowCount)));
+
+        columnName = "Converter";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, converterName));
+
+        super.addRow(newRow);
+    }
+
+    /**
+     * for Application.outputSummary
+     */
+    public void addRow(String converterName, String tableName, OutputTypes outputType, String outputName, long rowCount) {
+        log.info("{}:{} has {} row(s)", outputType.name(), outputName, tableName, rowCount);
+
+        DataRow newRow = new DataRow(application, this);
+        String columnName;
+        lastID++;
+
+        columnName = "ID";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
+
+        columnName = "Type";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputType.name()));
+
+        columnName = "Output Name";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputName));
 
         columnName = "Table Name";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableName));
@@ -54,8 +89,8 @@ public class SummaryTable extends DataTable {
 
         /*sort by Table Type, Table Name */
         dataRowList.sort((o1, o2) -> {
-            String type1 = o1.getColumn("Table Type").getValue();
-            String type2 = o2.getColumn("Table Type").getValue();
+            String type1 = o1.getColumn("Type").getValue();
+            String type2 = o2.getColumn("Type").getValue();
             int type = type1.compareTo(type2);
             if (type == 0) {
 
@@ -72,4 +107,5 @@ public class SummaryTable extends DataTable {
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(SummaryTable.class);
     }
+
 }

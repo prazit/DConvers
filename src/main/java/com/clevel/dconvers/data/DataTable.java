@@ -268,14 +268,17 @@ public class DataTable extends AppBase implements JRDataSource {
 
         boolean success = true;
         boolean exitOnError = application.exitOnError;
+        String outputName;
         for (OutputTypes outputType : outputTypeList) {
             log.trace("printing {}:{} to Output({})", tableType.name(), name, outputType.name());
-            if (!OutputFactory.getOutput(application, outputType).print(outputConfig, this)) {
+            outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, this);
+            if (outputName == null) {
                 success = false;
                 if (exitOnError) {
                     return false;
                 }
             }
+            application.outputSummary.addRow(application.currentConverter.getName(), name, outputType, outputName, getRowCount());
         }
 
         return success;

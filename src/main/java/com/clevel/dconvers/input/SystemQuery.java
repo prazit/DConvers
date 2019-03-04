@@ -8,7 +8,8 @@ public enum SystemQuery {
     VARIABLE,
     ENVIRONMENT,
 
-    SUMMARY
+    TABLE_SUMMARY,
+    OUTPUT_SUMMARY
     ;
 
     public static SystemQuery parse(String name) {

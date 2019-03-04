@@ -43,17 +43,19 @@ public abstract class Output extends AppBase {
     }
 
     private PostSFTP postSFTP;
+    private String outputName;
 
     public Output(Application application, String name) {
         super(application, name);
 
         postSFTP = null;
+        outputName = "";
     }
 
-    public boolean print(OutputConfig outputConfig, DataTable dataTable) {
+    public String print(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = getFormatterList(outputConfig, dataTable);
         if (dataFormatterList == null) {
-            return false;
+            return null;
         }
 
         Writer writer;
@@ -61,10 +63,10 @@ public abstract class Output extends AppBase {
             writer = openWriter(outputConfig, dataTable);
         } catch (Exception ex) {
             error("Print failed: {}", ex.getMessage(), ex);
-            return false;
+            return null;
         }
         if (writer == null) {
-            return false;
+            return null;
         }
 
         boolean printSuccess = true;
@@ -78,9 +80,9 @@ public abstract class Output extends AppBase {
         }
 
         if (!closeWriter(outputConfig, dataTable, writer, printSuccess) || !printSuccess) {
-            return false;
+            return null;
         }
-        return true;
+        return outputName;
     }
 
     protected abstract List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable);
@@ -135,6 +137,7 @@ public abstract class Output extends AppBase {
 
         if (writer != null) {
             log.info("Output file is created(append:{}), local-file:{}", append, outputFile);
+            outputName = outputFile + (append ? " (append)" : " (create/replace)");
         }
 
         return writer;

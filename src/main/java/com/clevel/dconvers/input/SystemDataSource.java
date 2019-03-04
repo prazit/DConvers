@@ -2,6 +2,7 @@ package com.clevel.dconvers.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -55,8 +56,13 @@ public class SystemDataSource extends DataSource {
             case ENVIRONMENT:
                 return systemProperties(tableName, idColumnName);
 
-            case SUMMARY:
-                return application.summaryTable;
+            case TABLE_SUMMARY:
+                application.tableSummary.sort();
+                return application.tableSummary;
+
+            case OUTPUT_SUMMARY:
+                application.outputSummary.sort();
+                return application.outputSummary;
         }
 
         return super.getDataTable(tableName, idColumnName, query);
@@ -151,8 +157,6 @@ public class SystemDataSource extends DataSource {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("name", name)
-                .toString();
+        return Property.SYSTEM.name();
     }
 }
