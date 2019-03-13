@@ -7,7 +7,7 @@ Class-Path: ../lib/cli-progressbar-0.7.0.jar ../lib/commons-beanutils-
  2.jar ../lib/commons-lang3-3.7.jar ../lib/commons-logging-1.2.jar ../
  lib/javax.mail.jar ../lib/jline-3.6.1.jar ../lib/jsch-0.1.54.jar ../l
  ib/logback-classic-1.2.3.jar ../lib/logback-core-1.2.3.jar ../lib/mys
- ql-connector-java-8.0.11.jar ../lib/ojdbc8.jar ../lib/jt400.jar ../li
+ ql-connector-java-5.1.46.jar ../lib/ojdbc8.jar ../lib/jt400.jar ../li
  b/mssql-jdbc-6.2.2.jre8.jar ../lib/slf4j-api-1.7.25.jar ../lib/jasper
  reports/commons-beanutils-1.9.3.jar ../lib/jasperreports/commons-coll
  ections-3.2.2.jar ../lib/jasperreports/commons-digester-2.1.jar ../li
