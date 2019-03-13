@@ -55,11 +55,9 @@ public class SystemDataSource extends DataSource {
                 return systemProperties(tableName, idColumnName);
 
             case TABLE_SUMMARY:
-                application.tableSummary.sort();
                 return application.tableSummary;
 
             case OUTPUT_SUMMARY:
-                application.outputSummary.sort();
                 return application.outputSummary;
         }
 
