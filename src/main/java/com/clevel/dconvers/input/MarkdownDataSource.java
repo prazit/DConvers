@@ -4,6 +4,7 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
+import com.clevel.dconvers.ngin.Converter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public class MarkdownDataSource extends DataSource {
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName) {
         log.trace("MarkdownDataSource.getDataTable.");
 
+        Converter converter = application.currentConverter;
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);
         dataTable.setQuery(markdownFileName);
@@ -57,6 +59,7 @@ public class MarkdownDataSource extends DataSource {
             br = new BufferedReader(new FileReader(markdownFileName));
             for (String line; (line = br.readLine()) != null; ) {
                 lineCount++;
+                line = converter.compileDynamicValues(line);
 
                 if (!line.startsWith("|")) {
                     if (isStarted) {
