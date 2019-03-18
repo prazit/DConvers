@@ -108,7 +108,7 @@ public class DataSource extends UtilBase {
         return 0;
     }
 
-    public DataTable getDataTable(String tableName, String idColumnName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
         if (!isValid()) {
             log.info("DataSource({}).getDataTable return null for invalid datasource.", name);
             return null;
@@ -151,6 +151,7 @@ public class DataSource extends UtilBase {
                 application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                 resultSet = statement.executeQuery(query);
                 application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
+                log.trace("execute query is successful");
             }
 
             if (resultSet != null) {

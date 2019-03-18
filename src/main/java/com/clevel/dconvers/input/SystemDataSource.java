@@ -36,7 +36,7 @@ public class SystemDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
 
         SystemQuery systemQuery = SystemQuery.parse(query);
         if (systemQuery == null) {
@@ -51,17 +51,16 @@ public class SystemDataSource extends DataSource {
             case VARIABLE:
                 return systemVariables(tableName, idColumnName);
 
-            case ENVIRONMENT:
-                return systemProperties(tableName, idColumnName);
-
             case TABLE_SUMMARY:
                 return application.tableSummary;
 
             case OUTPUT_SUMMARY:
                 return application.outputSummary;
+
+            default: //case ENVIRONMENT:
+                return systemProperties(tableName, idColumnName);
         }
 
-        return super.getDataTable(tableName, idColumnName, query);
     }
 
     private DataTable arg(String tableName, String idColumnName) {

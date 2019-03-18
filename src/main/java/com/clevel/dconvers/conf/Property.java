@@ -70,6 +70,7 @@ public enum Property {
     TYPE("type"),
     IS_KEY("iskey"),
     INDEX("index"),
+    QUERY_SPLIT("query.split"),
     POST_SQL("post"),
     PRE_SQL("pre"),
     SEPARATOR("separator"),

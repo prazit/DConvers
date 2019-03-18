@@ -5,7 +5,7 @@ DConvers is a small program with the basic concept to convert data from source t
 But, now has many features that help to transform data in a target table before send to output formatter.
 
 
-### Supported Datasource and Output
+### Supported Inputs and Outputs
 
 | Data Provider                      | Input / Data Source Name | Output / Property Name |
 |------------------------------------|--------------------------|------------------------|
@@ -21,6 +21,7 @@ But, now has many features that help to transform data in a target table before 
 | CSV                                | CSV(future)              | CSV                    |
 | Configuration Generator for source | -                        | SRC                    |
 | Configuration Generator for target | -                        | TAR                    |
+| Directory List                     | DIR                      |                        |
 
 
 ### Prerequisites
@@ -145,7 +146,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | source.target     | bool      | true          | when false this source will be destroyed immediately after all outputs are printed (free up memory)|
 
 
-#### Datasource and compatible query
+#### Datasource and query
 
 | Data Provider        | datasource        | query (Dynamic Value Enabled)    |
 |----------------------|-------------------|----------------------------------|
@@ -161,12 +162,13 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 #### System Query
 
-| query        | description                                                     |
-|--------------|-----------------------------------------------------------------|
-| ARG          | arguments from app-switch --arg                                 |
-| VARIABLE     | system variable table contains all variable for value-type(VAR) |
-| ENVIRONMENT  | application environment properties sorted by PROPERTY           |
-| SUMMARY      | the summary table contains all tables from all converters       |
+| query          | description                                                     |
+|----------------|-----------------------------------------------------------------|
+| ARG            | arguments from app-switch --arg                                 |
+| VARIABLE       | system variable table contains all variable for value-type(VAR) |
+| ENVIRONMENT    | application environment properties sorted by PROPERTY           |
+| TABLE_SUMMARY  | the summary table contains all tables from all converters       |
+| OUTPUT_SUMMARY | the summary table contains all outputs from all converters      |
 
 
 #### Target Properties
@@ -193,9 +195,10 @@ rownumber=CAL:ROWCOUNT(cash_deposit_withdraw)+1
 | target.transform      | List      |               | see [Transform Properties](#Transform_Properties)                                                                        |
 
 
-#### Output Properties
+#### Output Type
 
 The DConvers program has 7 optional output types with different set of property, they are listed below
+
 - SQL File Output (create,insert,update)
 - Markdown File Output (markdown table)
 - PDF File Output (using jasper report library)
@@ -337,7 +340,7 @@ The DConvers program has 7 optional output types with different set of property,
 | dbupdate.post         | string         | null          | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)                    |
 
 
-##### Source Output Properties
+##### SourceConfig Output Properties
 
 Generate source configuration for each table-name in the DataTable.
 
@@ -359,7 +362,7 @@ Generate source configuration for each table-name in the DataTable.
 | src.outputs     | string    | sql,md          | comma separated output-type-name                                                                           |
 
 
-##### Target Output Properties
+##### TargetConfig Output Properties
 
 Generate target configuration for current table (can be source and target) each sources in the current converter file.(one target for one source)
 

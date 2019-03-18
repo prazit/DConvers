@@ -38,7 +38,7 @@ public class MarkdownDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName) {
+    public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, int split) {
         log.trace("MarkdownDataSource.getDataTable.");
 
         Converter converter = application.currentConverter;

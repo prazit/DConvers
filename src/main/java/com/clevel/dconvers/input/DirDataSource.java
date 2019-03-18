@@ -40,7 +40,7 @@ public class DirDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setQuery(query);

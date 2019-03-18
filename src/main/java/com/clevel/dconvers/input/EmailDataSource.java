@@ -103,7 +103,7 @@ public class EmailDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
         DataTable dataTable = new DataTable(application, query, "id");
 
         // filters

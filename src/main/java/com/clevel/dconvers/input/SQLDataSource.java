@@ -33,7 +33,7 @@ public class SQLDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName) {
+    public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName, int split) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);

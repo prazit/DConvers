@@ -31,7 +31,7 @@ public class ResultSetMetaDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
         DataTable metaDataTable = application.currentConverter.getDataTable(query);
         if (metaDataTable == null) {
             error("Invalid query({}) for ResultSetMetaData, please check source.{}.query", query, tableName);

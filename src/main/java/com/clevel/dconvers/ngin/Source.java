@@ -54,7 +54,7 @@ public class Source extends AppBase {
             return false;
         }
 
-        dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getId(), query);
+        dataTable = dataSource.getDataTable(sourceConfig.getName(), sourceConfig.getId(), query, sourceConfig.getQuerySplit());
         if (dataTable == null) {
             return false;
         }

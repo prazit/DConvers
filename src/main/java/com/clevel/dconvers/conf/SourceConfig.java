@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 public class SourceConfig extends Config {
 
     private int index;
+    private int querySplit;
 
     private String dataSource;
     private String query;
@@ -47,6 +48,7 @@ public class SourceConfig extends Config {
         query = getPropertyString(properties, source.connectKey(name, Property.QUERY));
         id = getPropertyString(properties, source.connectKey(name, Property.ID), "id");
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
+        querySplit = properties.getInt(source.connectKey(name, Property.QUERY_SPLIT), 0);
         target = properties.getBoolean(source.connectKey(name, Property.TARGET), true);
 
         return true;
@@ -83,6 +85,10 @@ public class SourceConfig extends Config {
 
     public int getIndex() {
         return index;
+    }
+
+    public int getQuerySplit() {
+        return querySplit;
     }
 
     public boolean hasTarget() {
