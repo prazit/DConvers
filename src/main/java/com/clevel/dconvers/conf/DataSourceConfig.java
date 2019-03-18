@@ -80,8 +80,8 @@ public class DataSourceConfig extends Config {
         }
         host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
 
+        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), "");
         valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), "\"");
-        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), "\"");
 
         return true;
     }

@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MarkdownDataSource extends DataSource {
 
@@ -38,7 +39,7 @@ public class MarkdownDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, HashMap<String, String> queryParamMap) {
         log.trace("MarkdownDataSource.getDataTable.");
 
         Converter converter = application.currentConverter;
@@ -194,8 +195,13 @@ public class MarkdownDataSource extends DataSource {
             columnType = columnTypes[index];
 
             column = column.trim();
-            if (columnType == Types.VARCHAR && "NULL".equalsIgnoreCase(column)) {
-                column = null;
+            if (columnType == Types.VARCHAR) {
+                if ("NULL".equalsIgnoreCase(column)) {
+                    column = null;
+                } else {
+                    column = column.replaceAll("<br/>", "\n");
+                    column = column.replaceAll("&vert;", "|");
+                }
             } else if (updateColumnTypes && columnType == Types.INTEGER && isDecimal(column)) {
                 columnType = Types.DECIMAL;
                 columnTypes[index] = columnType;

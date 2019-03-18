@@ -88,7 +88,7 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | datasource.driver       | string                    | null          | driver class name with full package location            |
 | datasource.user         | string                    | null          | user name to connect to DBMS                            |
 | datasource.password     | string                    | null          | password to connect to DBMS                             |
-| datasource.quotes.name  | string                    | `             | one character for quotes of string-value and date-value |
+| datasource.quotes.name  | string                    | empty         | one character for quotes of string-value and date-value |
 | datasource.quotes.value | string                    | "             | one character for quotes of string-value and date-value |
 | datasource.prop.*       | pair<property_name,value> | empty         | list of property sent to DBMS when make a connection.   |
 
@@ -148,16 +148,17 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 #### Datasource and query
 
-| Data Provider        | datasource        | query (Dynamic Value Enabled)    |
-|----------------------|-------------------|----------------------------------|
-| Database             | User Defined Name | SQL String                       |
-| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name         |
-| SQL(Create,Insert,Update) File | SQL     | file-name                        |
-| Markdown(Table) File | MARKDOWN          | file-name                        |
-| Email                | EMAIL             | Search String                    |
-| Fixed Length File    | TXT               | file-name                        |
-| CSV File             | CSV               | file-name                        |
-| DConvers             | SYSTEM            | see 'System Query' for detailed  |
+| Data Provider                  | datasource        | query (Dynamic Value Enabled)   | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                             |
+|--------------------------------|-------------------|---------------------------------|------------------------------------------|-----------|---------------|---------------------------------------------------------|
+| Database                       | User Defined Name | SQL String                      | split                                    | integer   | 0             | 0 mean not split, otherwise is number of result         |
+| ResultSet MetaData             | ResultSetMetaData | table name like SRC:name        |                                          |           |               |                                                         |
+| SQL(Insert) File               | SQL               | file-name                       | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value |
+|                                |                   |                                 | quotes.value                             | string    | "             | one character for quotes of string-value and date-value |
+| Markdown(Table) File           | MARKDOWN          | file-name                       |                                          |           |               |                                                         |
+| Email                          | EMAIL             | Search String                   |                                          |           |               |                                                         |
+| Fixed Length File              | TXT               | file-name                       |                                          |           |               |                                                         |
+| CSV File                       | CSV               | file-name                       |                                          |           |               |                                                         |
+| DConvers                       | SYSTEM            | see 'System Query' for detailed |                                          |           |               |                                                         |
 
 
 #### System Query
@@ -223,7 +224,7 @@ The DConvers program has 7 optional output types with different set of property,
 | sql.eol          | string         | \n             | characters put at the end of line. (Dynamic Value Enabled)                                                 |
 | sql.eof          | string         | \n             | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled) |
 | sql.quotes.name  | string         | empty          | one character for quotes of table-name and column-name                                                     |
-| sql.quotes.value | string         | empty          | one character for quotes of string-value and date-value                                                    |
+| sql.quotes.value | string         | "              | one character for quotes of string-value and date-value                                                    |
 | sql.dbms         | string         | dbms name      | name of DBMS to generate sql for                                                                           |
 | sql.table        | string         | target name    | name of table to generate sql for                                                                          |
 | sql.column       | list of string | empty          | apply for custom order of column name or use as column filter, empty then use original column list         |
@@ -320,7 +321,7 @@ The DConvers program has 7 optional output types with different set of property,
 | dbinsert.column       | list of string | empty         | apply for custom order of column name or use as column filter, empty then use original column list |
 | dbinsert.table        | string         | table         | name of table to insert.                                                                           |
 | dbinsert.quotes.name  | string         | empty         | one character for quotes of table-name and column-name                                             |
-| dbinsert.quotes.value | string         | empty         | one character for quotes of string-value and date-value                                            |
+| dbinsert.quotes.value | string         | "             | one character for quotes of string-value and date-value                                            |
 | dbinsert.pre          | string         | null          | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)              |
 | dbinsert.post         | string         | null          | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)                    |
 

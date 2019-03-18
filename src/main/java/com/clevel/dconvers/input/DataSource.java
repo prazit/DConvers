@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -108,7 +109,7 @@ public class DataSource extends UtilBase {
         return 0;
     }
 
-    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
         if (!isValid()) {
             log.info("DataSource({}).getDataTable return null for invalid datasource.", name);
             return null;
@@ -132,7 +133,7 @@ public class DataSource extends UtilBase {
             if (callStoredProcedure) {
                 log.trace("Open statement...");
                 callableStatement = connection.prepareCall(query); // query like this: {call SHOW_SUPPLIERS()}
-                if (query.indexOf("?") < 0) {
+                if (!query.contains("?")) {
                     log.debug("Querying by callableStatement(): {}", query);
                     resultSet = callableStatement.executeQuery();
                 } else {

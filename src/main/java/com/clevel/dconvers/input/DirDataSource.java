@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class DirDataSource extends DataSource {
@@ -40,7 +41,7 @@ public class DirDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setQuery(query);

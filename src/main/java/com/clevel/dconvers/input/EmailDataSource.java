@@ -18,6 +18,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Properties;
 
 public class EmailDataSource extends DataSource {
@@ -103,7 +104,7 @@ public class EmailDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
         DataTable dataTable = new DataTable(application, query, "id");
 
         // filters

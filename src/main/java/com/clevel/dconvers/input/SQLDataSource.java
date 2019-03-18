@@ -2,6 +2,7 @@ package com.clevel.dconvers.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Types;
+import java.util.HashMap;
 
 public class SQLDataSource extends DataSource {
 
@@ -33,7 +35,16 @@ public class SQLDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName, HashMap<String, String> queryParamMap) {
+
+        String nameQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.NAME));
+        String valueQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.VALUE));
+        if (nameQuote == null) {
+            nameQuote = "";
+        }
+        if (valueQuote == null) {
+            valueQuote = "\"";
+        }
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);
@@ -48,7 +59,7 @@ public class SQLDataSource extends DataSource {
                     continue;
                 }
 
-                dataRow = getDataRow(line, dataTable);
+                dataRow = getDataRow(line, dataTable, nameQuote, valueQuote);
                 if (dataRow == null) {
                     return null;
                 }
@@ -76,14 +87,14 @@ public class SQLDataSource extends DataSource {
         return dataTable;
     }
 
-    private DataRow getDataRow(String line, DataTable dataTable) {
+    private DataRow getDataRow(String line, DataTable dataTable, String nameQuote, String valueQuote) {
         int columnStart = line.indexOf('(') + 1;
         int columnEnd = line.indexOf(')', columnStart);
         int valueStart = line.indexOf('(', columnEnd) + 1;
         int valueEnd = line.indexOf(')', valueStart);
 
-        String columnString = line.substring(columnStart, columnEnd).replaceAll("`", "");
-        String valueString = line.substring(valueStart, valueEnd).replaceAll("`", "");
+        String columnString = line.substring(columnStart, columnEnd).replaceAll(nameQuote, "");
+        String valueString = line.substring(valueStart, valueEnd);
 
         String[] columns = columnString.split(",");
         String[] values = valueString.split(",");
@@ -95,16 +106,16 @@ public class SQLDataSource extends DataSource {
         String value;
         for (int i = 0; i < length; i++) {
             value = values[i].trim();
-            columnType = getColumnType(value);
+            columnType = getColumnType(value, valueQuote);
             columnName = columns[i].trim();
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, columnType, value));
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, columnType, value.replaceAll(valueQuote, "")));
         }
 
         return dataRow;
     }
 
-    private int getColumnType(String sqlValue) {
-        if (sqlValue.indexOf('\'') >= 0) {
+    private int getColumnType(String sqlValue, String valueQuote) {
+        if (sqlValue.contains(valueQuote)) {
             // '2018/07/30 21:12:38' or 'string'
             if (sqlValue.indexOf('/') >= 0) {
                 return Types.DATE;

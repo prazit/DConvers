@@ -1,10 +1,14 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class SourceConfig extends Config {
 
@@ -13,6 +17,7 @@ public class SourceConfig extends Config {
 
     private String dataSource;
     private String query;
+    private HashMap<String,String> queryParameterMap;
     private String id;
     private boolean target;
 
@@ -50,6 +55,17 @@ public class SourceConfig extends Config {
         index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
         querySplit = properties.getInt(source.connectKey(name, Property.QUERY_SPLIT), 0);
         target = properties.getBoolean(source.connectKey(name, Property.TARGET), true);
+
+        Configuration paramProperties = properties.subset(source.connectKey(name, Property.QUERY));
+        Iterator<String> paramKeyList = paramProperties.getKeys();
+        queryParameterMap = new HashMap<>();
+        String paramName;
+        String paramValue;
+        for (Iterator<String> it = paramKeyList; it.hasNext(); ) {
+            paramName = it.next();
+            paramValue = getPropertyString(paramProperties, paramName);
+            queryParameterMap.put(paramName, paramValue);
+        }
 
         return true;
     }
@@ -97,6 +113,10 @@ public class SourceConfig extends Config {
 
     public OutputConfig getOutputConfig() {
         return outputConfig;
+    }
+
+    public HashMap<String, String> getQueryParameterMap() {
+        return queryParameterMap;
     }
 
     @Override

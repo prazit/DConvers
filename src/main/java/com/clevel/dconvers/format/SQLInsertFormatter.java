@@ -40,10 +40,14 @@ public class SQLInsertFormatter extends DataFormatter {
         String columns = "";
         String values = "";
 
+        String value;
         for (DataColumn column : row.getColumnList()) {
             columns += nameQuotes + column.getName() + nameQuotes + ", ";
             column.setQuotes(valueQuotes);
-            values += column.getQuotedValue() + ", ";
+
+            value = column.getQuotedValue();
+            //value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
+            values += value + ", ";
         }
         columns = columns.substring(0, columns.length() - 2);
         values = values.substring(0, values.length() - 2);

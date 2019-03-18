@@ -8,6 +8,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+
 public class ResultSetMetaDataSource extends DataSource {
 
     public ResultSetMetaDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
@@ -31,7 +33,7 @@ public class ResultSetMetaDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
         DataTable metaDataTable = application.currentConverter.getDataTable(query);
         if (metaDataTable == null) {
             error("Invalid query({}) for ResultSetMetaData, please check source.{}.query", query, tableName);

@@ -36,7 +36,7 @@ public class SystemDataSource extends DataSource {
     }
 
     @Override
-    public DataTable getDataTable(String tableName, String idColumnName, String query, int split) {
+    public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
 
         SystemQuery systemQuery = SystemQuery.parse(query);
         if (systemQuery == null) {
