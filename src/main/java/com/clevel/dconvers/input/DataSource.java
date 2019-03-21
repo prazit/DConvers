@@ -285,7 +285,8 @@ public class DataSource extends UtilBase {
                         break;
 
                     default:
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, resultSet.getObject(columnIndex).toString());
+                        object = resultSet.getObject(columnIndex);
+                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, object == null ? null : object.toString());
                 }
                 dataRow.putColumn(columnLabel, dataColumn);
 
