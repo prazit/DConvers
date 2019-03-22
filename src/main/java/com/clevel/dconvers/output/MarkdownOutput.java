@@ -47,6 +47,7 @@ public class MarkdownOutput extends Output {
 
         String outputPath;
         String headPrint;
+        log.debug("MarkdownOutput.openWriter. tableType is {}", tableType);
         if (DynamicValueType.SRC.equals(tableType)) {
             Source source = (Source) owner;
             outputPath = dataConversionConfigFile.getOutputSourcePath();

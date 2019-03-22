@@ -66,10 +66,10 @@ public class Target extends UtilBase {
         if (sourceTableName.indexOf(":") > 0) {
             sourceTableName = sourceTableName.replaceAll("[:]", "_");
         } else {
-            sourceTableName = "SRC_" + sourceTableName;
+            sourceTableName = "src_" + sourceTableName;
         }
-        String name = sourceTableName + "_TO_" + targetTableName;
-        return name.toUpperCase();
+        String name = sourceTableName + "_to_" + targetTableName;
+        return name;
     }
 
     public boolean buildDataTable() {
@@ -84,6 +84,7 @@ public class Target extends UtilBase {
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
         dataTable = new DataTable(application, name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
+        dataTable.setOwner(this);
         converter.setCurrentTable(dataTable);
 
         HashMap<SystemVariable, DataColumn> systemVars = application.systemVariableMap;

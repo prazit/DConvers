@@ -10,10 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +54,7 @@ public class MarkdownDataSource extends DataSource {
         skipFirstColumn = false;
         updateColumnTypes = false;
         try {
-            br = new BufferedReader(new FileReader(markdownFileName));
+            br = new BufferedReader(new FileReader(application.getFileForRead(markdownFileName)));
             for (String line; (line = br.readLine()) != null; ) {
                 lineCount++;
                 line = converter.compileDynamicValues(line);

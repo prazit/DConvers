@@ -11,6 +11,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Types;
@@ -555,6 +556,17 @@ public class Application extends AppBase {
             return null;
         }
         return doubleValue;
+    }
+
+    public File getFileForRead(String pathname) {
+        pathname = pathname.trim();
+        File file = new File(pathname);
+        if (file.exists()) {
+            return file;
+        }
+
+        file = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + pathname);
+        return file;
     }
 
 }
