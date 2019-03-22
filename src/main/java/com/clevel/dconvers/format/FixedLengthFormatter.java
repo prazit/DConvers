@@ -34,6 +34,7 @@ public class FixedLengthFormatter extends DataFormatter {
     private String fillDate;
     private String charset;
     private boolean lengthInBytes;
+    private boolean suppressWarning = false;
 
     public FixedLengthFormatter(Application application, String name, String format, String lengthMode, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
         super(application, name, true);
@@ -60,7 +61,7 @@ public class FixedLengthFormatter extends DataFormatter {
         super(application, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
-        extractTxtFormat(outputConfig.getTxtFormat(), txtTypeList, txtLengthList);
+        extractTxtFormat(outputConfig.getTxtFormat().toArray(new String[]{"STR:256"}), txtTypeList, txtLengthList);
 
         String txtLengthMode = outputConfig.getTxtLengthMode();
         lengthInBytes = isLengthInBytes(txtLengthMode);
@@ -91,13 +92,17 @@ public class FixedLengthFormatter extends DataFormatter {
     }
 
     private void extractTxtFormat(String txtFormat, List<String> txtTypeList, List<BigDecimal> txtLengthList) {
+        extractTxtFormat(txtFormat.split("[,]"), txtTypeList, txtLengthList);
+    }
+
+    private void extractTxtFormat(String[] columnFormat, List<String> txtTypeList, List<BigDecimal> txtLengthList) {
         int index = -1;
         txtLengthList.clear();
         txtTypeList.clear();
+        log.debug("extractTxtFormat.columnFormat = String[] = [{}]", columnFormat.toString());
 
-        String[] columns = txtFormat.split("[,]");
         BigDecimal bigDecimal;
-        for (String column : columns) {
+        for (String column : columnFormat) {
             String[] values = column.split("[:]");
             index++;
             txtTypeList.add(index, values[0]);
@@ -120,7 +125,10 @@ public class FixedLengthFormatter extends DataFormatter {
         for (DataColumn dataColumn : row.getColumnList()) {
             columnIndex++;
             if (columnIndex >= columns) {
-                log.warn("FixedLength: might need specified format for column(index:{},name:{}) in '{}'.", columnIndex, dataColumn.getName(), name);
+                if (!suppressWarning) {
+                    log.warn("FixedLength: column(index:{},name:{}) and all columns after this column may be need format property for '{}', all of them will be ignored.", columnIndex + 1, dataColumn.getName(), name);
+                    suppressWarning = true;
+                }
                 application.hasWarning = true;
                 break;
             }
@@ -287,45 +295,43 @@ public class FixedLengthFormatter extends DataFormatter {
 
         boolean warning = false;
 
-        // length = 11.2, targetLength = 11, right = 2 then left = 9
-        int targetLength = decimalLength.intValue();
-        int right = decimalLength.subtract(BigDecimal.valueOf(targetLength)).intValue();
-        int left = targetLength - right;
-
-        String[] decimal = decimalAsStringValue.split(".");
-        String formatted;
-        int usedLeft;
-        int usedRight;
-        if (decimal.length < 2) {
-            usedLeft = decimal[0].length();
-            usedRight = 0;
-        } else {
-            usedLeft = decimal[0].length();
-            usedRight = decimal[1].length();
+        // decimalLength = 11.2, targetLength = 11, right = 2 then left = 9
+        String[] decimalLengthString = decimalLength.toString().split("[.]");
+        int targetLength = decimalLengthString.length == 0 ? 0 : Integer.parseInt(decimalLengthString[0]);
+        int rightLength = decimalLengthString.length < 2 ? 0 : Integer.parseInt(decimalLengthString[1]);
+        if (targetLength <= rightLength) {
+            error("FixedLength: invalid decimal length specified, decimalLength({})!", decimalLength);
+            return "";
         }
+        int leftLength = targetLength - rightLength;
+        log.debug("decimalLength({}) = left({}), right({})", decimalLength, leftLength, rightLength);
+
+        String[] decimal = decimalAsStringValue.split("[.]");
+        String leftDecimal = decimal.length == 0 ? "0" : decimal[0];
+        String rightDecimal = decimal.length < 2 ? "" : decimal[1];
+        int leftUsed = leftDecimal.length();
+        int rightUsed = rightDecimal.length();
+        String formatted;
 
         // left
-        if (left > usedLeft) {
-            int count = left - usedLeft;
-            formatted = fillLeft(decimal[0], fillNumber, count);
-        } else if (usedLeft > left) {
-            formatted = decimal[0].substring(usedLeft - left, usedLeft);
+        if (leftLength > leftUsed) {
+            int count = leftLength - leftUsed;
+            leftDecimal = fillLeft(leftDecimal, fillNumber, count);
+        } else if (leftUsed > leftLength) {
+            leftDecimal = leftDecimal.substring(leftUsed - leftLength, leftUsed);
 
             warning = true;
-        } else {
-            formatted = decimal[0];
         }
 
         // right
-        if (right > usedRight) {
-            int count = right - usedRight;
-            formatted += fillRight(decimal[1], "0", count);     // fraction need to fill by "0" only.
-        } else if (usedRight > right) {
-            formatted += decimal[1].substring(usedRight - right, usedRight);
-        } else {
-            formatted += decimal[1];
+        if (rightLength > rightUsed) {
+            int count = rightLength - rightUsed;
+            rightDecimal = fillRight(rightDecimal, "0", count);     // fraction need to fill by "0" only.
+        } else if (rightUsed > rightLength) {
+            rightDecimal = decimal[1].substring(rightUsed - rightLength, rightUsed);
         }
 
+        formatted = leftDecimal.concat(rightDecimal);
         if (warning) {
             application.hasWarning = true;
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);

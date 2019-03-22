@@ -102,7 +102,7 @@ public class OutputConfig extends Config {
     private String txtOutputEOF;
     private String txtSeparator;
     private String txtLengthMode;
-    private String txtFormat;
+    private List<String> txtFormat;
     private String txtFormatDate;
     private String txtFormatDatetime;
     private String txtFillString;
@@ -358,7 +358,8 @@ public class OutputConfig extends Config {
         txtOutputEOF = "\n";
         txtLengthMode = "char"; // char or byte
         txtSeparator = "";
-        txtFormat = "STR:80";
+        txtFormat = new ArrayList<>();
+        txtFormat.add("STR:256");
         txtFormatDate = "yyyyMMdd";
         txtFormatDatetime = "yyyyMMddHHmmss";
         txtFillString = " ";
@@ -381,7 +382,7 @@ public class OutputConfig extends Config {
             txtOutputEOF = getPropertyString(txtProperties, Property.OUTPUT_EOF.key(), txtOutputEOF);
             txtLengthMode = getPropertyString(txtProperties, Property.LENGTH_MODE.key(), txtLengthMode);
             txtSeparator = getPropertyString(txtProperties, Property.SEPARATOR.key(), txtSeparator);
-            txtFormat = getPropertyString(txtProperties, Property.FORMAT.key(), txtFormat);
+            txtFormat = getStringList(txtProperties, Property.FORMAT.key());
             txtFormatDate = getPropertyString(txtProperties, Property.FORMAT_DATE.key(), txtFormatDate);
             txtFormatDatetime = getPropertyString(txtProperties, Property.FORMAT_DATETIME.key(), txtFormatDatetime);
             txtFillString = getPropertyString(txtProperties, Property.FILL_STRING.key(), txtFillString);
@@ -842,7 +843,7 @@ public class OutputConfig extends Config {
         return txtSeparator;
     }
 
-    public String getTxtFormat() {
+    public List<String> getTxtFormat() {
         return txtFormat;
     }
 
