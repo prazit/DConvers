@@ -116,4 +116,8 @@ public class TransformConfig extends Config {
     public List<Pair<TransformTypes,HashMap<String, String>>> getTransformList() {
         return transformList;
     }
+
+    public boolean needTransform() {
+        return transformList.size() > 0;
+    }
 }

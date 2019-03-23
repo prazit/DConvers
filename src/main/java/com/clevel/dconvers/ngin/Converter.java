@@ -235,6 +235,23 @@ public class Converter extends AppBase {
             targetFileNumber.increaseValueBy(1);
             mappingFileNumber.increaseValueBy(1);
 
+            // -- Outputs for Target Table Before Transformed
+
+            outputConfig = target.getTargetConfig().getTransferOutputConfig();
+            if (outputConfig.needOutput()) {
+                dataTable = target.getDataTableBeforeTransform();
+                setCurrentTable(dataTable);
+                log.debug("Print data before transformed {} row(s)", dataTable.getRowCount());
+
+                if (!dataTable.print(outputConfig)) {
+                    error("Print data before transformed is failed!");
+                    success = false;
+                    if (exitOnError) {
+                        return false;
+                    }
+                }
+            }
+
             // -- Outputs for Target Table
 
             dataTable = target.getDataTable();
@@ -244,37 +261,16 @@ public class Converter extends AppBase {
             setCurrentTable(dataTable);
 
             outputConfig = target.getTargetConfig().getOutputConfig();
-            outputTypeList = outputConfig.getOutputTypeList();
-            if (outputTypeList.size() == 0) {
-                log.debug("no output config for target({})", dataTable.getName());
-                continue;
-            }
-            for (OutputTypes outputType : outputTypeList) {
-                log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
-                outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
-                if (outputName == null) {
-                    success = false;
-                    if (exitOnError) {
-                        return false;
-                    }
-                }
-                outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
-            }
+            if (outputConfig.needOutput()) {
 
-            // -- Outputs for Mapping Table
-
-            outputConfig = target.getTargetConfig().getMappingOutputConfig();
-            outputTypeList = outputConfig.getOutputTypeList();
-            for (DataTable mappingTable : target.getMappingTableList()) {
-                setCurrentTable(mappingTable);
+                outputTypeList = outputConfig.getOutputTypeList();
                 if (outputTypeList.size() == 0) {
-                    log.debug("no output config for mappingTable({})", mappingTable.getName());
+                    log.debug("no output config for target({})", dataTable.getName());
                     continue;
                 }
-
                 for (OutputTypes outputType : outputTypeList) {
-                    log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
-                    outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable);
+                    log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
+                    outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
                     if (outputName == null) {
                         success = false;
                         if (exitOnError) {
@@ -282,6 +278,32 @@ public class Converter extends AppBase {
                         }
                     }
                     outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
+                }
+            }
+
+            // -- Outputs for Mapping Table
+
+            outputConfig = target.getTargetConfig().getMappingOutputConfig();
+            if (outputConfig.needOutput()) {
+                outputTypeList = outputConfig.getOutputTypeList();
+                for (DataTable mappingTable : target.getMappingTableList()) {
+                    setCurrentTable(mappingTable);
+                    if (outputTypeList.size() == 0) {
+                        log.debug("no output config for mappingTable({})", mappingTable.getName());
+                        continue;
+                    }
+
+                    for (OutputTypes outputType : outputTypeList) {
+                        log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
+                        outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable);
+                        if (outputName == null) {
+                            success = false;
+                            if (exitOnError) {
+                                return false;
+                            }
+                        }
+                        outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
+                    }
                 }
             }
 

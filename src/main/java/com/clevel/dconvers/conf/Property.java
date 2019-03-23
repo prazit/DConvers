@@ -38,6 +38,7 @@ public enum Property {
 
     TARGET("target"),
     MAPPING("mapping"),
+    TRANSFER("transfer"),
     SUMMARY("summary"),
     CREATE("create"),
     INSERT("insert"),

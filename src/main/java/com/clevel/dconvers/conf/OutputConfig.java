@@ -1031,6 +1031,10 @@ public class OutputConfig extends Config {
         return outputTypeList;
     }
 
+    public boolean needOutput() {
+        return outputTypeList.size() > 0;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)

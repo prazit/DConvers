@@ -255,15 +255,15 @@ public class DataTable extends AppBase implements JRDataSource {
 
     public boolean print(OutputConfig outputConfig) {
         DynamicValueType tableType = getTableType();
-        if (outputConfig == null) {
+        if (outputConfig == null || !outputConfig.isValid()) {
             log.debug("no output config for {}:{}", tableType.name(), name);
-            return false;
+            return true;
         }
 
         List<OutputTypes> outputTypeList = outputConfig.getOutputTypeList();
         if (outputTypeList.size() == 0) {
             log.debug("no output config for {}:{}", tableType.name(), name);
-            return false;
+            return true;
         }
 
         boolean success = true;
@@ -287,6 +287,16 @@ public class DataTable extends AppBase implements JRDataSource {
     private boolean needHeader;
     private int currentRow;
     private List<DataColumn> columnList;
+
+    public DataTable clone() {
+        DataTable dataTable = new DataTable(application, name, idColumnName);
+        dataTable.setOwner(owner);
+        dataTable.setQuery(query);
+        dataTable.setDataSource(dataSource);
+        dataTable.setMetaData(metaData);
+        dataTable.setRowList(dataRowList);
+        return dataTable;
+    }
 
     @Override
     public boolean next() throws JRException {

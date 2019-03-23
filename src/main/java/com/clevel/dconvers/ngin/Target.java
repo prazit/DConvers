@@ -4,6 +4,7 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.calc.Calc;
 import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
+import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
@@ -32,6 +33,10 @@ public class Target extends UtilBase {
     private Converter converter;
     private TargetConfig targetConfig;
 
+    /* store data before transform */
+    private DataTable dataTableTransfer;
+
+    /* main data set also store data in realtime changes */
     private DataTable dataTable;
 
     private List<String> sourceList;
@@ -86,6 +91,8 @@ public class Target extends UtilBase {
         dataTable = new DataTable(application, name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
         dataTable.setOwner(this);
         converter.setCurrentTable(dataTable);
+
+        dataTableTransfer = dataTable;
 
         HashMap<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROW_NUMBER);
@@ -157,7 +164,7 @@ public class Target extends UtilBase {
 
                 dynamicValue = DynamicValueFactory.getDynamicValue(sourceColumnType, application, name, targetColumnName, targetColumnIndex);
                 if (dynamicValue == null) {
-                    error("DynamicValue Creation is failed." );
+                    error("DynamicValue Creation is failed.");
                     valid = false;
                     return false;
                 }
@@ -217,8 +224,13 @@ public class Target extends UtilBase {
 
         } // end of for sourceList
 
+        // -- keep dataTable before transformed for print
+        if (targetConfig.getTransferOutputConfig().needOutput() && targetConfig.getTransformConfig().needTransform()) {
+            dataTableTransfer = dataTable.clone();
+        }
+
         // -- start transformation
-        List<Pair<TransformTypes,HashMap<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
+        List<Pair<TransformTypes, HashMap<String, String>>> transformList = targetConfig.getTransformConfig().getTransformList();
         HashMap<String, String> argumentList;
         TransformTypes transformType;
         Transform transform;
@@ -403,6 +415,10 @@ public class Target extends UtilBase {
 
     public DataTable getDataTable() {
         return dataTable;
+    }
+
+    public DataTable getDataTableBeforeTransform() {
+        return dataTableTransfer;
     }
 
     public List<DataTable> getMappingTableList() {

@@ -14,10 +14,10 @@ import java.util.List;
 
 public class TargetConfig extends Config {
 
-    private ConverterConfigFile converterConfigFile;
-    private OutputConfig outputConfig;
     private OutputConfig mappingOutputConfig;
+    private OutputConfig transferOutputConfig;
     private TransformConfig transformConfig;
+    private OutputConfig outputConfig;
 
     private int index;
 
@@ -30,8 +30,6 @@ public class TargetConfig extends Config {
 
     TargetConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
-
-        this.converterConfigFile = converterConfigFile;
         properties = converterConfigFile.getProperties();
 
         valid = loadProperties();
@@ -40,6 +38,11 @@ public class TargetConfig extends Config {
         String targetBaseProperty = Property.TARGET.connectKey(name);
         if (valid) {
             outputConfig = new OutputConfig(application, targetBaseProperty, properties);
+            valid = outputConfig.isValid();
+        }
+
+        if (valid) {
+            transferOutputConfig = new OutputConfig(application, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
             valid = outputConfig.isValid();
         }
 
@@ -128,6 +131,10 @@ public class TargetConfig extends Config {
 
     public OutputConfig getOutputConfig() {
         return outputConfig;
+    }
+
+    public OutputConfig getTransferOutputConfig() {
+        return transferOutputConfig;
     }
 
     public OutputConfig getMappingOutputConfig() {
