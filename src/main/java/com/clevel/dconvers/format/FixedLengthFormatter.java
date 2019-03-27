@@ -213,7 +213,7 @@ public class FixedLengthFormatter extends DataFormatter {
                 }
         }
 
-        log.debug("format(type:{},value:{}) = {}({})", dataColumn.getType(), value, txtType, formatted);
+        // log.debug("format(type:{},value:{}) = {}({})", dataColumn.getType(), value, txtType, formatted);
         return formatted;
     }
 
