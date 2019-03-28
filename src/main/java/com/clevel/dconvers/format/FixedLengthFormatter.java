@@ -287,7 +287,7 @@ public class FixedLengthFormatter extends DataFormatter {
     }
 
     private String fixedLengthDecimal(String decimalAsStringValue, BigDecimal decimalLength, String columnName) {
-        log.debug("fixedLengthDecimal(decimalAsStringValue:{}, decimalLength:{}, columnName:{})", decimalAsStringValue, decimalLength, columnName);
+        //log.debug("fixedLengthDecimal(decimalAsStringValue:{}, decimalLength:{}, columnName:{})", decimalAsStringValue, decimalLength, columnName);
 
         if (decimalLength.equals(BigDecimal.ZERO)) {
             return "";
@@ -304,7 +304,7 @@ public class FixedLengthFormatter extends DataFormatter {
             return "";
         }
         int leftLength = targetLength - rightLength;
-        log.debug("decimalLength({}) = left({}), right({})", decimalLength, leftLength, rightLength);
+        //log.debug("decimalLength({}) = left({}), right({})", decimalLength, leftLength, rightLength);
 
         String[] decimal = decimalAsStringValue.split("[.]");
         String leftDecimal = decimal.length == 0 ? "0" : decimal[0];
