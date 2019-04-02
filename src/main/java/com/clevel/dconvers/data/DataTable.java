@@ -16,9 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DataTable extends AppBase implements JRDataSource {
 
@@ -172,6 +170,29 @@ public class DataTable extends AppBase implements JRDataSource {
             value = value.toUpperCase();
         }
         return getHashMap(sourceColumnName.toUpperCase()).get(value);
+    }
+
+    public DataRow getRow(List<String> keyList, List<String> valueList) {
+        DataRow dataRow = getRow(keyList.get(0), valueList.get(0));
+        if (dataRow == null) {
+            return null;
+        }
+
+        DataColumn dataColumn;
+        int size = keyList.size();
+        for (int index = 1; index < size; index++) {
+            dataColumn = dataRow.getColumn(keyList.get(index));
+            if (dataColumn == null) {
+                return null;
+            }
+
+            if (!valueList.get(index).equals(dataColumn.getValue())) {
+                return null;
+            }
+
+        }
+
+        return dataRow;
     }
 
     public void addRow(DataRow dataRow) {
