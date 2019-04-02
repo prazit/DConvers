@@ -3,10 +3,12 @@ package com.clevel.dconvers;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
+import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
+import javafx.util.Pair;
 import org.apache.commons.cli.HelpFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,6 +149,22 @@ public class Application extends AppBase {
         outputSummary = new SummaryTable(this);
         outputSummary.setOwner(this);
         outputSummary.setQuery(SystemQuery.OUTPUT_SUMMARY.name());
+
+        log.trace("Application. Load Plugins for calculator.");
+        boolean loadPluginsSuccess = true;
+        List<Pair<String, String>> pluginsCalcList = dataConversionConfigFile.getPluginsCalcList();
+        for (Pair<String, String> pluginsCalc : pluginsCalcList) {
+            try {
+                CalcTypes.addPlugins(pluginsCalc.getKey(), pluginsCalc.getValue());
+            } catch (ClassNotFoundException e) {
+                error("Load calculator plugins({}) is failed, class({}) not found!", pluginsCalc.getKey(), e.getMessage());
+                loadPluginsSuccess = false;
+            }
+        }
+        if (!loadPluginsSuccess && exitOnError) {
+            stopWithError();
+        }
+
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();

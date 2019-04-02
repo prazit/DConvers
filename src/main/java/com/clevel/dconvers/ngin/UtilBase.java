@@ -22,46 +22,44 @@ public abstract class UtilBase extends AppBase {
     protected List<Integer> createIndexList(DataRow rowPrototype, String columnIdentifier) {
         List<Integer> indexList = new ArrayList<>();
         int index;
-        int last;
-
-        int minIndex = 0;
-        int maxIndex = rowPrototype.getColumnCount() - 1;
 
         if (columnIdentifier.indexOf("-") > 0) {
             /* case: columnIdentifier is range */
             String[] range = columnIdentifier.split("[-]");
-            index = Integer.valueOf(range[0]) - 1;
-            last = Integer.valueOf(range[1]) - 1;
-            if (last > maxIndex) {
-                last = maxIndex;
-            }
-
+            index = indexOf(rowPrototype, range[0]);
+            int last = indexOf(rowPrototype, range[1]);
             while (index <= last) {
                 indexList.add(index);
                 index = index + 1;
             }
-
-        } else if (!NumberUtils.isCreatable(columnIdentifier)) {
-            /* case: columnIdentifier is column-name */
-            index = rowPrototype.getColumnIndex(columnIdentifier);
-            if (index < 0) {
-                error("Invalid columnName({}) for table({})", columnIdentifier, rowPrototype.getDataTable().getName());
-                return Collections.EMPTY_LIST;
-            }
-            indexList.add(index);
-
         } else {
-            /* case: columnIdentifier is index number */
-            index = Integer.valueOf(columnIdentifier) - 1;
-            if (index < minIndex) {
-                return Collections.EMPTY_LIST;
-            } else if (index > maxIndex) {
-                return Collections.EMPTY_LIST;
-            }
+            index = indexOf(rowPrototype, columnIdentifier);
             indexList.add(index);
         }
 
         return indexList;
+    }
+
+    protected int indexOf(DataRow rowPrototype, String columnIdentifier) {
+        int index;
+
+        if (!NumberUtils.isCreatable(columnIdentifier)) {
+            /* case: columnIdentifier is column-name */
+            index = rowPrototype.getColumnIndex(columnIdentifier);
+            if (index < 0) {
+                index = 0;
+            }
+        } else {
+            /* case: columnIdentifier is index number */
+            index = Integer.valueOf(columnIdentifier) - 1;
+            if (index < 0) {
+                index = 0;
+            } else if (index >= rowPrototype.getColumnCount()) {
+                index = rowPrototype.getColumnCount() - 1;
+            }
+        }
+
+        return index;
     }
 
     /**

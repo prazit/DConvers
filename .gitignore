@@ -1,4 +1,14 @@
 .idea
-lib
 *.iml
-*.log
+lib/
+lib-backup/
+out/LHBank ETA/ETL/DConvers/
+out/LHBank ETA/ETL/Query/
+out/LHBank ETA/bin/
+out/mapping/
+out/production/
+out/source/
+out/target/
+out/test/
+out/dconvers.jar
+out/summary.md

@@ -4,6 +4,9 @@ import org.slf4j.LoggerFactory;
 
 public enum Property {
 
+    PLUGINS("plugins"),
+    CALCULATOR("calculator"),
+
     DATA_SOURCE("datasource"),
     SFTP("sftp"),
     COMBINE("combine"),

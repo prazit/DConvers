@@ -21,13 +21,13 @@ public class CalcFactory {
                 constructor.setAccessible(true);
                 calc = (Calc) constructor.newInstance(application, calcType.name());
             } catch (InstantiationException e) {
-                application.error("The calc({}) cannot be instantiated, {}", calcType.name(), e.getMessage());
+                application.error("The calc({}) cannot be instantiated, {}", calcType.getName(), e.getMessage());
             } catch (IllegalAccessException e) {
-                application.error("Create calc({}) is failed, {}", calcType.name(), e.getMessage());
+                application.error("Create calc({}) is failed, {}", calcType.getName(), e.getMessage());
             } catch (InvocationTargetException e) {
-                application.error("InvocationTargetException has occurred when create calc({}), {}", calcType.name(), e.getMessage());
+                application.error("InvocationTargetException has occurred when create calc({}), {}", calcType.getName(), e.getMessage());
             } catch (NoSuchMethodException e) {
-                application.error("No such method/constructor for calc({}), {}", calcType.name(), e.getMessage());
+                application.error("No such method/constructor for calc({}), {}", calcType.getName(), e.getMessage());
             } catch (Exception e) {
                 application.error("Unexpected exception, {}", e);
             }

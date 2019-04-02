@@ -48,7 +48,7 @@ public abstract class AppBase extends ValidatorBase {
 
     private String currentConverterName() {
         if (application.currentConverter == null) {
-            return " (no-current-converter)";
+            return "";
         }
         return " (current-converter:" + application.currentConverter.getName() + ")";
     }

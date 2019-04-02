@@ -1,22 +1,27 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import javafx.util.Pair;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * Source is a source file (target header file) that contains all the specified target.
+ * Source is a source file (target header file) that contains all targets.
  */
 public class DataConversionConfigFile extends ConfigFile {
 
     private HashMap<String, DataSourceConfig> dataSourceConfigMap;
     private HashMap<String, SFTPConfig> sftpConfigMap;
     private HashMap<String, ConverterConfigFile> converterConfigMap;
+
+    private List<Pair<String, String>> pluginsCalcList;
 
     private String outputSourcePath;
     private String outputTargetPath;
@@ -112,6 +117,16 @@ public class DataConversionConfigFile extends ConfigFile {
         }
 
 
+        Configuration pluginsCalcProperties = properties.subset(Property.PLUGINS.connectKey(Property.CALCULATOR));
+        Iterator<String> columnKeyList = pluginsCalcProperties.getKeys();
+        pluginsCalcList = new ArrayList<>();
+        for (Iterator<String> iterator = columnKeyList; iterator.hasNext(); ) {
+            String key = iterator.next();
+            pluginsCalcList.add(new Pair<>(key, getPropertyString(pluginsCalcProperties, key)));
+        }
+        log.debug("pluginsCalcList = {}", pluginsCalcList);
+
+
         childValid = true;
         return true;
     }
@@ -191,6 +206,10 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public HashMap<String, SFTPConfig> getSftpConfigMap() {
         return sftpConfigMap;
+    }
+
+    public List<Pair<String, String>> getPluginsCalcList() {
+        return pluginsCalcList;
     }
 
     public boolean isChildValid() {
