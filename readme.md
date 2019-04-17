@@ -43,7 +43,7 @@ And type this command to show help.
 
 ```batch
 "%JAVA_HOME%\bin\java.exe" -Xms64m -Xmx256m -Dfile.encoding=UTF-8 -classpath "bin\dconvers.jar" com.clevel.dconvers.Main --source=sample-conversion.conf --help
-``` 
+```
 
 
 ## Configuring
@@ -58,7 +58,7 @@ The possible values for any property is depends on the DataType of the property 
 | int       | 0,1,2,3,...         | long number                                                                                                     |
 | dec       | 0.00,...            | big decimal number                                                                                              |
 | string    | string              | character array as string                                                                                       |
-| date      | yyyy/MM/dd HH:mm:ss | date time string in the default pattern or custom pattern in a FORMAT calculator and some output configuration. | 
+| date      | yyyy/MM/dd HH:mm:ss | date time string in the default pattern or custom pattern in a FORMAT calculator and some output configuration. |
 
 ### Conversion File
 
@@ -77,7 +77,7 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | exit.on.error     | boolean   | true          | true or false                      |
 | exit.code.success | int       | 0             | customizable exit code for success |
 | exit.code.error   | int       | 1             | customizable exit code for error   |
-| exit.code.warning | int       | 2             | customizable exit code for warning | 
+| exit.code.warning | int       | 2             | customizable exit code for warning |
 
 
 #### 2. DataSource Properties (Database Connection)
@@ -134,16 +134,17 @@ source=source_name
 source.source_name.property=value
 ```
 
-You can see full example in 'sample-converter.conf' file. However, the possible properties of the data source are described in this table only. 
+You can see full example in 'sample-converter.conf' file. However, the possible properties of the source are completely described in this table. 
 
-| Property          | Data Type | Default Value | Description                                                                                        |
-|-------------------|-----------|---------------|----------------------------------------------------------------------------------------------------|
-| source.index      | int       | 0             | Some converters contain a lot of sources, this property make all sources are sorted by this index. |
-| source.datasource | string    | empty string  | Name of data provider for this source, for possible values please see Datasource and Query.        |
-| source.query      | string    | empty string  | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled)                 |
-| source.id         | string    | id            | Name of column that contains a key value for a data table of this source.                          |
-| source.output     | List      |               | see [Output Properties](#Output_Properties)                                                        |
-| source.target     | bool      | true          | when false this source will be destroyed immediately after all outputs are printed (free up memory)|
+| Property                            | Data Type | Default Value | Description                                                  |
+| ----------------------------------- | --------- | ------------- | ------------------------------------------------------------ |
+| source.index                        | int       | 0             | Some converters contain a lot of sources, this property make all sources are sorted by this index. |
+| source.datasource                   | string    | empty string  | Name of data provider for this source, for possible values please see Datasource and Query. |
+| source.query                        | string    | empty string  | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled) |
+| source.id                           | string    | id            | Name of column that contains a key value for a data table of this source. |
+| source.output                       | List      |               | see [Output Properties](#Output_Properties)                  |
+| source.target                       | bool      | true          | when false this source will be destroyed immediately after all outputs are printed (free up memory) |
+| (deprecated) source.requires.target | string    | empty string  | Empty mean no targets are required before build data-table of this source, otherwise this is name of a target that is required to build data-table of this source. *(**Deprecated**: see "source.requires.target.md/Alternative Way" for detailed)* |
 
 
 #### Datasource and query
@@ -287,7 +288,7 @@ The DConvers program has 7 optional output types with different set of property,
 | txt.format.datetime | string    | yyyyMMddHHmmss | datetime format (pattern)                                                                               |
 | txt.fill.string     | char(1)   | blank:right    | the character to fill the string column                                                                 |
 | txt.fill.number     | char(1)   | 0:left         | the character to fill the number column                                                                 |
-| txt.fill.date       | char(1)   | blank:right    | the character to fill the date column                                                                   | 
+| txt.fill.date       | char(1)   | blank:right    | the character to fill the date column                                                                   |
 
 
 ##### CSV Output Properties
@@ -421,7 +422,7 @@ Syntax> fixedlength([[insertAsNewColumn] or [replace:[ColumnIndex]]],[format])
 | fixedlength.format.datetime | string    | yyyyMMddHHmmss | datetime format (pattern)               |
 | fixedlength.fill.string     | char(1)   | blank:right    | the character to fill the string column |
 | fixedlength.fill.number     | char(1)   | 0:left         | the character to fill the number column |
-| fixedlength.fill.date       | char(1)   | blank:right    | the character to fill the date column   | 
+| fixedlength.fill.date       | char(1)   | blank:right    | the character to fill the date column   |
 
 
 ##### Concat Transformer Function Properties
@@ -608,7 +609,7 @@ System variable can contain 2 groups of value as following
 | WARNING_MESSAGES  | string | log message of all warning                                                        |
 | ERROR_MESSAGES    | string | log message of all error                                                          |
 | ROW_NUMBER        | int    | row number will be reset at the beginning of any datatable processes.             |
-| APPLICATION_STATE | int    | current state of application, find exit.code in this document for possible values | 
+| APPLICATION_STATE | int    | current state of application, find exit.code in this document for possible values |
 
 ##### Constant Values
 
@@ -616,7 +617,7 @@ System variable can contain 2 groups of value as following
 |-------------------|----------|----------------------------------------------------------------------------|
 | NOW               | string   | not for now, in fact this variable contains the time to start application. |
 | EMPTY_STRING      | string   | "" for some configuration that has another default string.                 |
-| APPLICATION_START | datetime | date and time at start of this application                                 |   
+| APPLICATION_START | datetime | date and time at start of this application                                 |
 
 > You can see full list in source code of SystemVariable.java
 
