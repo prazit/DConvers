@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 public enum DBMS {
     AS400,
     DB2,
+    DERBY,
     MYSQL,
     MARIADB,
     ORACLE,

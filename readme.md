@@ -651,5 +651,6 @@ This project is a part of C-Level Company Limited in Thailand and protected by t
 
 ## Acknowledgments
 
-* Inspiration: this application birth in the Data Migration Project for SCT-Gold Version2.x.
+* Inspiration: this application birth in the Data Migration Project for SCT-Gold Version 2.x.
+* Inspiration: but many features are required by the LHBank ETL Project.
 * etc
