@@ -370,20 +370,20 @@ Generate target configuration for current table (can be source and target) each 
 
 > Recommended: include only for all sources that already have data.
 
-| Property        | Data Type | Default Value  | Description                                                                                                 |
-|-----------------|-----------|----------------|-------------------------------------------------------------------------------------------------------------|
-| tar             | bool      | false          | create configuration file and generate source for all table name                                            |
-| tar.for.source  | bool      | false          | true = create target for each sources in the current converter, false = create target for current table     |
-| tar.for.name    | bool      | false          | true = use default value depending on data type for column value, false = use column name  for column value |
-| tar.sftp        | string    | null           | name of sftp.                                                                                               |
-| tar.sftp.output | string    | null           | custom output file name to put on the sftp server. (Dynamic Value Enabled)                                  |
-| tar.output      | string    | table-name.csv | custom file name. (Dynamic Value Enabled)                                                                   |
-| tar.create.dir  | bool      | true           | auto create directory for non-existing path.                                                                |
-| tar.append      | bool      | false          | append or always replace                                                                                    |
-| tar.charset     | string    | UTF-8          | name of character set                                                                                       |
-| tar.eol         | string    | \n             | characters put at the end of line. (Dynamic Value Enabled)                                                  |
-| tar.eof         | string    | \n             | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled)  |
-| tar.outputs     | string    | sql,md         | comma separated output-type-name                                                                            |
+| Property        | Data Type | Default Value  | Description                                                  |
+| --------------- | --------- | -------------- | ------------------------------------------------------------ |
+| tar             | bool      | false          | create configuration file and generate source for all table name |
+| tar.for.source  | bool      | false          | true = create target for each sources in the current converter, false = create target for current table |
+| tar.for.name    | bool      | false          | true = use column name  for column value, false = use default value depending on data type for column value |
+| tar.sftp        | string    | null           | name of sftp.                                                |
+| tar.sftp.output | string    | null           | custom output file name to put on the sftp server. (Dynamic Value Enabled) |
+| tar.output      | string    | table-name.csv | custom file name. (Dynamic Value Enabled)                    |
+| tar.create.dir  | bool      | true           | auto create directory for non-existing path.                 |
+| tar.append      | bool      | false          | append or always replace                                     |
+| tar.charset     | string    | UTF-8          | name of character set                                        |
+| tar.eol         | string    | \n             | characters put at the end of line. (Dynamic Value Enabled)   |
+| tar.eof         | string    | \n             | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled) |
+| tar.outputs     | string    | sql,md         | comma separated output-type-name                             |
 
 
 #### Transform Properties
