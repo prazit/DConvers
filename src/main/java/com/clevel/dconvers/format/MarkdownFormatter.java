@@ -5,13 +5,21 @@ import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
+import com.clevel.dconvers.dynvalue.COLValue;
+import com.clevel.dconvers.dynvalue.DynamicValue;
+import com.clevel.dconvers.dynvalue.DynamicValueType;
+import com.clevel.dconvers.ngin.Source;
+import com.clevel.dconvers.ngin.Target;
+import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MarkdownFormatter extends DataFormatter {
 
@@ -21,13 +29,15 @@ public class MarkdownFormatter extends DataFormatter {
     private int rowIndexWidth;
     private String eol;
     private String eof;
+    private boolean needMermaid;
 
-    public MarkdownFormatter(Application application, String name, String eol, String eof) {
+    public MarkdownFormatter(Application application, String name, String eol, String eof, boolean mermaid) {
         super(application, name, true);
 
         this.eol = eol;
         this.eof = eof;
         outputType = "markdown";
+        this.needMermaid = mermaid;
     }
 
     @Override
@@ -198,7 +208,214 @@ public class MarkdownFormatter extends DataFormatter {
 
     @Override
     protected String postFormat(DataTable dataTable) {
-        return eof;
+        return (needMermaid) ? generateMermaid(dataTable) : eof;
+    }
+
+    private String generateMermaid(DataTable dataTable) {
+
+        /* Prepare */
+
+        String srcPrefix = DynamicValueType.SRC.name() + ":";
+        String tarPrefix = DynamicValueType.TAR.name() + ":";
+        String mapPrefix = DynamicValueType.MAP.name() + ":";
+        String pointer = "-->";
+
+        List<String> dataSourceList = new ArrayList<>();
+        HashMap<String, String> sourceMap = new HashMap<>();
+        HashMap<String, String> targetMap = new HashMap<>();
+        HashMap<String, String> mappingMap = new HashMap<>();
+        List<String> pointerList = new ArrayList<>();
+
+        DynamicValueType tableType = dataTable.getTableType();
+        switch (tableType) {
+            case SRC: {
+                Source source = (Source) dataTable.getOwner();
+                String dataSourceName = source.getSourceConfig().getDataSource();
+                String sourceName = source.getName();
+                if (!sourceName.startsWith(srcPrefix)) {
+                    sourceName = srcPrefix + sourceName;
+                }
+                dataSourceList.add(dataSourceName);
+                sourceMap.put(sourceName, "src" + (sourceMap.size() + 1));
+                pointerList.add(dataSourceName + pointer + "src" + sourceMap.size());
+            }
+            break;
+
+            case TAR: {
+                Target target = (Target) dataTable.getOwner();
+                String targetName = tarPrefix + target.getName();
+                targetMap.put(targetName, "tar" + (targetMap.size() + 1));
+                String targetIdentifier = "tar" + targetMap.size();
+
+                /*source to target*/
+                for (String sourceName : target.getTargetConfig().getSourceList()) {
+                    if (sourceName.startsWith(srcPrefix)) {
+                        sourceMap.put(sourceName, "src" + (sourceMap.size() + 1));
+                        pointerList.add("src" + sourceMap.size() + pointer + targetIdentifier);
+                    } else if (sourceName.startsWith(tarPrefix)) {
+                        targetMap.put(sourceName, "tar" + (targetMap.size() + 1));
+                        pointerList.add("tar" + targetMap.size() + pointer + targetIdentifier);
+                    } else if (sourceName.startsWith(mapPrefix)) {
+                        mappingMap.put(sourceName, "map" + (mappingMap.size() + 1));
+                        pointerList.add("map" + mappingMap.size() + pointer + targetIdentifier);
+                    } else {
+                        sourceMap.put(srcPrefix + sourceName, "src" + (sourceMap.size() + 1));
+                        pointerList.add("src" + sourceMap.size() + pointer + targetIdentifier);
+                    }
+                }
+
+                /*source/target to mapping*/
+                Pair<DataTable, DataTable> dataTablePair;
+                String mappingName;
+                for (DataTable mappingTable : target.getMappingTableList()) {
+                    mappingName = mappingTable.getName();
+                    mappingMap.put(mapPrefix + mappingName, "map" + (mappingMap.size() + 1));
+                    pointerList.add(targetIdentifier + pointer + "map" + mappingMap.size());
+
+                    dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
+                    if (dataTablePair == null) {
+                        log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}) in target({}), owner({})", mappingName, targetIdentifier, mappingTable.getOwner());
+                    } else {
+                        String srcName = srcPrefix + dataTablePair.getKey().getName().toUpperCase();
+                        String srcIdentifier = sourceMap.get(srcName);
+                        if (srcIdentifier == null) {
+                            srcIdentifier = "src" + sourceMap.size() + 1;
+                            sourceMap.put(srcName, srcIdentifier);
+                        }
+                        pointerList.add(srcIdentifier + pointer + "map" + mappingMap.size());
+                    }
+                }
+
+                /*source of columns to target*/
+                List<DynamicValue> dynamicValueList = target.getDynamicValueList();
+                if (dynamicValueList != null) {
+                    COLValue colValue;
+                    DataTable lookupTable;
+                    DynamicValueType lookupTableType;
+                    String lookupTableName;
+                    String lookupTableIdentifier;
+                    for (DynamicValue dynamicValue : dynamicValueList) {
+                        if (DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
+                            colValue = (COLValue) dynamicValue;
+                            lookupTable = colValue.getLookupTable();
+                            lookupTableType = lookupTable.getTableType();
+                            lookupTableName = lookupTable.getName();
+                            switch (lookupTableType) {
+                                case SRC:
+                                    lookupTableName = srcPrefix + lookupTableName;
+                                    lookupTableIdentifier = sourceMap.get(lookupTableName);
+                                    if (lookupTableIdentifier == null) {
+                                        lookupTableIdentifier = "src" + (sourceMap.size() + 1);
+                                        sourceMap.put(lookupTableName, lookupTableIdentifier);
+                                    }
+                                    pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
+                                    break;
+
+                                case TAR:
+                                    lookupTableName = tarPrefix + lookupTableName;
+                                    lookupTableIdentifier = targetMap.get(lookupTableName);
+                                    if (lookupTableIdentifier == null) {
+                                        lookupTableIdentifier = "tar" + (targetMap.size() + 1);
+                                        targetMap.put(lookupTableName, lookupTableIdentifier);
+                                    }
+                                    pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
+                                    break;
+
+                                case MAP:
+                                    lookupTableName = mapPrefix + lookupTableName;
+                                    lookupTableIdentifier = mappingMap.get(lookupTableName);
+                                    if (lookupTableIdentifier == null) {
+                                        lookupTableIdentifier = "map" + (mappingMap.size() + 1);
+                                        mappingMap.put(lookupTableName, lookupTableIdentifier);
+                                    }
+                                    break;
+
+                                default:
+                                    continue;
+                            }
+                            pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
+                        } // end if
+                    } // end for
+                }
+            } // end case TAR:
+            break;
+        }
+
+        /* Generate */
+
+        int number;
+        StringBuilder classes = new StringBuilder();
+        StringBuilder generated = new StringBuilder();
+        generated.append(eol).append("#### Mermaid Graph").append(eol).append(eol).append("```mermaid").append(eol).append("graph TD;").append(eol).append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol).append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol).append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
+
+        if (dataSourceList.size() > 0) {
+            generated.append(eol);
+            number = 0;
+            for (String dataSourceName : dataSourceList) {
+                number++;
+                generated.append("datasource").append(number).append("(DataSource:").append(dataSourceName).append(");").append(eol);
+            }
+        }
+
+        if (sourceMap.size() > 0) {
+            generated.append(eol).append("subgraph SOURCES").append(eol);
+            classes.append(eol).append("class ");
+
+            String sourceName;
+            String sourceIdentifier;
+            for (Map.Entry<String, String> sourceEntry : sourceMap.entrySet()) {
+                sourceName = sourceEntry.getKey();
+                sourceIdentifier = sourceEntry.getValue();
+                generated.append(sourceIdentifier).append("(").append(sourceName).append(");").append(eol);
+                classes.append(sourceIdentifier).append(",");
+            }
+
+            generated.append("end").append(eol);
+            classes.deleteCharAt(classes.length() - 1).append(" source;");
+        }
+
+        if (targetMap.size() > 0) {
+            generated.append(eol).append("subgraph TARGETS").append(eol);
+            classes.append(eol).append("class ");
+
+            String targetName;
+            String targetIdentifier;
+            for (Map.Entry<String, String> targetEntry : targetMap.entrySet()) {
+                targetName = targetEntry.getKey();
+                targetIdentifier = targetEntry.getValue();
+                generated.append(targetIdentifier).append("(").append(targetName).append(");").append(eol);
+                classes.append(targetIdentifier).append(",");
+            }
+
+            generated.append("end").append(eol);
+            classes.deleteCharAt(classes.length() - 1).append(" target;");
+        }
+
+        if (mappingMap.size() > 0) {
+            generated.append(eol);
+            classes.append(eol).append("class ");
+
+            String mapName;
+            String mapIdentifier;
+            for (Map.Entry<String, String> mappingEntry : mappingMap.entrySet()) {
+                mapName = mappingEntry.getKey();
+                mapIdentifier = mappingEntry.getValue();
+                generated.append(mapIdentifier).append("(").append(mapName).append(");").append(eol);
+                classes.append(mapIdentifier).append(",");
+            }
+
+            classes.deleteCharAt(classes.length() - 1).append(" map;");
+        }
+
+        if (pointerList.size() > 0) {
+            generated.append(eol);
+            for (String pair : pointerList) {
+                generated.append(pair).append(";").append(eol);
+            }
+        }
+
+        generated.append(eol).append(classes).append(eol).append("```").append(eol).append(eof);
+        return generated.toString();
     }
 
     @Override

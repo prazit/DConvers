@@ -10,6 +10,8 @@ public abstract class DynamicValue extends AppBase {
     protected String targetName;
     protected int targetColumnIndex;
 
+    private DynamicValueType dynamicValueType;
+
     public DynamicValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
         super(application, targetColumnName);
         this.targetName = targetName;
@@ -21,4 +23,11 @@ public abstract class DynamicValue extends AppBase {
 
     public abstract DataColumn getValue(DataRow sourceRow);
 
+    public DynamicValueType getDynamicValueType() {
+        return dynamicValueType;
+    }
+
+    public void setDynamicValueType(DynamicValueType dynamicValueType) {
+        this.dynamicValueType = dynamicValueType;
+    }
 }

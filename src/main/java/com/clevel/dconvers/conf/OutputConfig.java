@@ -81,6 +81,7 @@ public class OutputConfig extends Config {
     private boolean markdownComment;
     private boolean markdownCommentDataSource;
     private boolean markdownCommentQuery;
+    private boolean markdownMermaid;
 
 
     private boolean pdf;
@@ -299,6 +300,7 @@ public class OutputConfig extends Config {
         markdownComment = true;
         markdownCommentDataSource = true;
         markdownCommentQuery = true;
+        markdownMermaid = false;
 
         key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
@@ -318,6 +320,7 @@ public class OutputConfig extends Config {
             markdownComment = markdownProperties.getBoolean(Property.COMMENT.key(), markdownComment);
             markdownCommentDataSource = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.DATA_SOURCE), markdownCommentDataSource);
             markdownCommentQuery = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.QUERY), markdownCommentQuery);
+            markdownMermaid = markdownProperties.getBoolean(Property.MERMAID.key(), markdownMermaid);
         }
 
         // Default Properties for PDF
@@ -773,6 +776,10 @@ public class OutputConfig extends Config {
 
     public boolean isMarkdownCommentQuery() {
         return markdownCommentQuery;
+    }
+
+    public boolean isMarkdownMermaid() {
+        return markdownMermaid;
     }
 
     public boolean isPdf() {

@@ -240,20 +240,21 @@ The DConvers program has 7 optional output types with different set of property,
 
 ##### Markdown Output Properties
 
-| Property                    | Data Type | Default Value | Description                                                                                                |
-|-----------------------------|-----------|---------------|------------------------------------------------------------------------------------------------------------|
-| markdown                    | bool      | false         | create markdown file or not                                                                                |
-| markdown.sftp               | string    | null          | name of sftp.                                                                                              |
-| markdown.sftp.output        | string    | null          | custom output file name to put on the sftp server. (Dynamic Value Enabled)                                 |
-| markdown.output             | string    | table-name.md | custom file name. (Dynamic Value Enabled)                                                                  |
-| markdown.create.dir         | bool      | true          | auto create directory for non-existing path.                                                               |
-| markdown.append             | bool      | false         | append or always replace                                                                                   |
-| markdown.charset            | string    | UTF-8         | name of character set                                                                                      |
-| markdown.eol                | string    | \n            | characters put at the end of line. (Dynamic Value Enabled)                                                 |
+| Property                    | Data Type | Default Value | Description                                                  |
+| --------------------------- | --------- | ------------- | ------------------------------------------------------------ |
+| markdown                    | bool      | false         | create markdown file or not                                  |
+| markdown.sftp               | string    | null          | name of sftp.                                                |
+| markdown.sftp.output        | string    | null          | custom output file name to put on the sftp server. (Dynamic Value Enabled) |
+| markdown.output             | string    | table-name.md | custom file name. (Dynamic Value Enabled)                    |
+| markdown.create.dir         | bool      | true          | auto create directory for non-existing path.                 |
+| markdown.append             | bool      | false         | append or always replace                                     |
+| markdown.charset            | string    | UTF-8         | name of character set                                        |
+| markdown.eol                | string    | \n            | characters put at the end of line. (Dynamic Value Enabled)   |
 | markdown.eof                | string    | \n            | characters put at the end of file, this characters will appear after the last eol. (Dynamic Value Enabled) |
-| markdown.comment            | bool      | true          | print comment as first block of content                                                                    |
-| markdown.comment.datasource | bool      | true          | print datasource information in a comment block                                                            |
-| markdown.comment.query      | bool      | true          | print query string in a comment block                                                                      |
+| markdown.comment            | bool      | true          | print comment as first block of content                      |
+| markdown.comment.datasource | bool      | true          | print datasource information in a comment block              |
+| markdown.comment.query      | bool      | true          | print query string in a comment block                        |
+| markdown.mermaid            | bool      | false         | true = generate mermaid graph TD and put at the end of markdown file, false = no mermaid in the markdown file. |
 
 
 ##### PDF Output Properties

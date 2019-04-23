@@ -32,8 +32,9 @@ public class MarkdownOutput extends Output {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
         String eol = outputConfig.getMarkdownOutputEOL();
         String eof = outputConfig.getMarkdownOutputEOF();
+        boolean mermaid = outputConfig.isMarkdownMermaid();
 
-        dataFormatterList.add(new MarkdownFormatter(application, name, eol, eof));
+        dataFormatterList.add(new MarkdownFormatter(application, name, eol, eof, mermaid));
         return dataFormatterList;
     }
 

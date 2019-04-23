@@ -1,10 +1,6 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.calc.Calc;
-import com.clevel.dconvers.calc.CalcFactory;
-import com.clevel.dconvers.calc.CalcTypes;
-import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
@@ -23,7 +19,6 @@ import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +36,7 @@ public class Target extends UtilBase {
 
     private List<String> sourceList;
     private List<DataTable> mappingTableList;
+    private List<DynamicValue> dynamicValueList;
 
     public Target(Application application, String name, Converter converter, TargetConfig targetConfig) {
         super(application, name);
@@ -151,7 +147,7 @@ public class Target extends UtilBase {
 
             progressBar = getProgressBar("Build target(" + name + ")", rowCount);
 
-            List<DynamicValue> targetDynamicValue = new ArrayList<>();
+            dynamicValueList = new ArrayList<>();
             DynamicValue dynamicValue;
             targetColumnIndex = 0;
             for (Pair<String, String> columnPair : columnList) {
@@ -168,8 +164,9 @@ public class Target extends UtilBase {
                     valid = false;
                     return false;
                 }
+                dynamicValue.setDynamicValueType(sourceColumnType);
                 dynamicValue.prepare(sourceName, sourceColumnName, sourceColumnType, sourceColumnTypeArg);
-                targetDynamicValue.add(dynamicValue);
+                dynamicValueList.add(dynamicValue);
             }
 
             for (DataRow sourceRow : sourceRowList) {
@@ -179,7 +176,7 @@ public class Target extends UtilBase {
 
                 varRowNumber.increaseValueBy(1);
                 targetRow = new DataRow(application, dataTable);
-                for (DynamicValue columnValue : targetDynamicValue) {
+                for (DynamicValue columnValue : dynamicValueList) {
                     targetColumn = columnValue.getValue(sourceRow);
                     if (targetColumn == null) {
                         progressBar.close();
@@ -273,4 +270,7 @@ public class Target extends UtilBase {
         return mappingTableList;
     }
 
+    public List<DynamicValue> getDynamicValueList() {
+        return dynamicValueList;
+    }
 }

@@ -247,4 +247,8 @@ public class COLValue extends DynamicValue {
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(COLValue.class);
     }
+
+    public DataTable getLookupTable() {
+        return lookupTable;
+    }
 }
