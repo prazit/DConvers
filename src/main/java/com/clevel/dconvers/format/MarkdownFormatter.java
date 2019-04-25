@@ -8,6 +8,7 @@ import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.dynvalue.COLValue;
 import com.clevel.dconvers.dynvalue.DynamicValue;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
+import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
 import javafx.util.Pair;
@@ -261,21 +262,32 @@ public class MarkdownFormatter extends DataFormatter {
                 String targetName = tarPrefix + target.getName();
                 mermaid.targetMap.put(targetName, "tar" + (mermaid.targetMap.size() + 1));
                 String targetIdentifier = "tar" + mermaid.targetMap.size();
+                String remark;
+                DataTable sourceDataTable;
+                Converter converter = application.currentConverter;
 
                 /*source to target*/
                 for (String sourceName : target.getTargetConfig().getSourceList()) {
                     if (sourceName.startsWith(srcPrefix)) {
                         mermaid.sourceMap.put(sourceName, "src" + (mermaid.sourceMap.size() + 1));
-                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + targetIdentifier);
+                        sourceDataTable = converter.getDataTable(sourceName);
+                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + remark + targetIdentifier);
                     } else if (sourceName.startsWith(tarPrefix)) {
                         mermaid.targetMap.put(sourceName, "tar" + (mermaid.targetMap.size() + 1));
-                        mermaid.pointerList.add("tar" + mermaid.targetMap.size() + pointer + targetIdentifier);
+                        sourceDataTable = converter.getDataTable(sourceName);
+                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                        mermaid.pointerList.add("tar" + mermaid.targetMap.size() + pointer + remark + targetIdentifier);
                     } else if (sourceName.startsWith(mapPrefix)) {
                         mermaid.mappingMap.put(sourceName, "map" + (mermaid.mappingMap.size() + 1));
-                        mermaid.pointerList.add("map" + mermaid.mappingMap.size() + pointer + targetIdentifier);
+                        sourceDataTable = converter.getDataTable(sourceName);
+                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                        mermaid.pointerList.add("map" + mermaid.mappingMap.size() + pointer + remark + targetIdentifier);
                     } else {
                         mermaid.sourceMap.put(srcPrefix + sourceName, "src" + (mermaid.sourceMap.size() + 1));
-                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + targetIdentifier);
+                        sourceDataTable = converter.getDataTable(srcPrefix + sourceName);
+                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + remark + targetIdentifier);
                     }
                 }
 

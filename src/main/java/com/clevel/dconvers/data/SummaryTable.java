@@ -1,6 +1,7 @@
 package com.clevel.dconvers.data;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.output.OutputTypes;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ public class SummaryTable extends DataTable {
     public SummaryTable(Application application) {
         super(application, "Summary", "id");
         lastID = 0;
+        this.setDataSource(Property.SYSTEM.name());
     }
 
     @Deprecated
