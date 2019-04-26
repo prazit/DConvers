@@ -212,8 +212,8 @@ public class MarkdownFormatter extends DataFormatter {
     @Override
     protected String postFormat(DataTable dataTable) {
         if (needMermaid) {
-            Mermaid mermaid = new Mermaid();
-            prepareMermaid(dataTable, mermaid, mermaidFullStack);
+            Mermaid mermaid = new Mermaid(mermaidFullStack);
+            prepareMermaid(dataTable, mermaid);
             return generateMermaid(mermaid);
         }
         return eof;
@@ -225,17 +225,19 @@ public class MarkdownFormatter extends DataFormatter {
         HashMap<String, String> targetMap;
         HashMap<String, String> mappingMap;
         List<String> pointerList;
+        boolean fullStack;
 
-        Mermaid() {
+        Mermaid(boolean fullStack) {
             this.dataSourceMap = new HashMap<>();
             this.sourceMap = new HashMap<>();
             this.targetMap = new HashMap<>();
             this.mappingMap = new HashMap<>();
             this.pointerList = new ArrayList<>();
+            this.fullStack = fullStack;
         }
     }
 
-    private void prepareMermaid(DataTable dataTable, Mermaid mermaid, boolean fullStack) {
+    private void prepareMermaid(DataTable dataTable, Mermaid mermaid) {
         String dataSourcePrfix = "DATASOURCE:";
         String srcPrefix = DynamicValueType.SRC.name() + ":";
         String tarPrefix = DynamicValueType.TAR.name() + ":";
@@ -246,14 +248,17 @@ public class MarkdownFormatter extends DataFormatter {
         switch (tableType) {
             case SRC: {
                 Source source = (Source) dataTable.getOwner();
-                String dataSourceName = source.getSourceConfig().getDataSource();
+                String dataSourceName = dataSourcePrfix + source.getSourceConfig().getDataSource();
                 String sourceName = source.getName();
                 if (!sourceName.startsWith(srcPrefix)) {
                     sourceName = srcPrefix + sourceName;
                 }
-                mermaid.dataSourceMap.put(dataSourceName, dataSourcePrfix + (mermaid.dataSourceMap.size() + 1));
-                mermaid.sourceMap.put(sourceName, "src" + (mermaid.sourceMap.size() + 1));
-                mermaid.pointerList.add(dataSourceName + pointer + "src" + mermaid.sourceMap.size());
+                String dataSourceIdentifier = "datasource" + (mermaid.dataSourceMap.size() + 1);
+                String sourceIdentifier = "src" + (mermaid.sourceMap.size() + 1);
+                String remark = "|" + dataTable.getRowCount() + " rows|";
+                mermaid.dataSourceMap.put(dataSourceName, dataSourceIdentifier);
+                mermaid.sourceMap.put(sourceName, sourceIdentifier);
+                mermaid.pointerList.add(dataSourceIdentifier + pointer + remark + sourceIdentifier);
             }
             break;
 
@@ -297,7 +302,8 @@ public class MarkdownFormatter extends DataFormatter {
                 for (DataTable mappingTable : target.getMappingTableList()) {
                     mappingName = mappingTable.getName();
                     mermaid.mappingMap.put(mapPrefix + mappingName, "map" + (mermaid.mappingMap.size() + 1));
-                    mermaid.pointerList.add(targetIdentifier + pointer + "map" + mermaid.mappingMap.size());
+                    remark = "|" + dataTable.getIdColumnName() + "|";
+                    mermaid.pointerList.add(targetIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
 
                     dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
                     if (dataTablePair == null) {
@@ -309,7 +315,8 @@ public class MarkdownFormatter extends DataFormatter {
                             srcIdentifier = "src" + mermaid.sourceMap.size() + 1;
                             mermaid.sourceMap.put(srcName, srcIdentifier);
                         }
-                        mermaid.pointerList.add(srcIdentifier + pointer + "map" + mermaid.mappingMap.size());
+                        remark = "|" + dataTablePair.getValue().getIdColumnName() + "|";
+                        mermaid.pointerList.add(srcIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
                     }
                 }
 
