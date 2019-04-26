@@ -230,7 +230,6 @@ public class DataSource extends UtilBase {
 
                 switch (columnType) {
                     case Types.BIGINT:
-                    case Types.NUMERIC:
                         object = resultSet.getObject(columnIndex);
                         dataColumn = new DataLong(application, columnIndex, Types.BIGINT, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
                         break;
@@ -261,6 +260,7 @@ public class DataSource extends UtilBase {
                     case Types.DOUBLE:
                     case Types.FLOAT:
                     case Types.REAL:
+                    case Types.NUMERIC:
                         dataColumn = new DataBigDecimal(application, columnIndex, Types.DECIMAL, columnLabel, resultSet.getBigDecimal(columnIndex));
                         break;
 
