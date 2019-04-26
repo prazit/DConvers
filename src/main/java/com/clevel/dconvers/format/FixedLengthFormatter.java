@@ -27,7 +27,7 @@ public class FixedLengthFormatter extends DataFormatter {
     private String eof;
     private String dateFormat;
     private String datetimeFormat;
-    private String decimalFormat = "#0.00";
+    private String decimalFormat = "#0.000000000";
     private String integerFormat = "#0";
     private String fillString;
     private String fillNumber;
