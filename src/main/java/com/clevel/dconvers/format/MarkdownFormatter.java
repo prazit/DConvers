@@ -226,6 +226,7 @@ public class MarkdownFormatter extends DataFormatter {
         HashMap<String, String> mappingMap;
         List<String> pointerList;
         boolean fullStack;
+        String name;
 
         Mermaid(boolean fullStack) {
             this.dataSourceMap = new HashMap<>();
@@ -248,11 +249,13 @@ public class MarkdownFormatter extends DataFormatter {
         switch (tableType) {
             case SRC: {
                 Source source = (Source) dataTable.getOwner();
-                String dataSourceName = dataSourcePrfix + source.getSourceConfig().getDataSource();
+                String dataSourceName = dataSourcePrfix + source.getSourceConfig().getDataSource().toUpperCase();
                 String sourceName = source.getName();
                 if (!sourceName.startsWith(srcPrefix)) {
                     sourceName = srcPrefix + sourceName;
                 }
+                sourceName = sourceName.toUpperCase();
+                mermaid.name = sourceName;
                 String dataSourceIdentifier = "datasource" + (mermaid.dataSourceMap.size() + 1);
                 String sourceIdentifier = "src" + (mermaid.sourceMap.size() + 1);
                 String remark = "|" + dataTable.getRowCount() + " rows|";
@@ -264,7 +267,8 @@ public class MarkdownFormatter extends DataFormatter {
 
             case TAR: {
                 Target target = (Target) dataTable.getOwner();
-                String targetName = tarPrefix + target.getName();
+                String targetName = tarPrefix + target.getName().toUpperCase();
+                mermaid.name = targetName;
                 mermaid.targetMap.put(targetName, "tar" + (mermaid.targetMap.size() + 1));
                 String targetIdentifier = "tar" + mermaid.targetMap.size();
                 String remark;
@@ -273,6 +277,7 @@ public class MarkdownFormatter extends DataFormatter {
 
                 /*source to target*/
                 for (String sourceName : target.getTargetConfig().getSourceList()) {
+                    sourceName = sourceName.toUpperCase();
                     if (sourceName.startsWith(srcPrefix)) {
                         mermaid.sourceMap.put(sourceName, "src" + (mermaid.sourceMap.size() + 1));
                         sourceDataTable = converter.getDataTable(sourceName);
@@ -300,78 +305,112 @@ public class MarkdownFormatter extends DataFormatter {
                 Pair<DataTable, DataTable> dataTablePair;
                 String mappingName;
                 for (DataTable mappingTable : target.getMappingTableList()) {
-                    mappingName = mappingTable.getName();
+                    mappingName = mappingTable.getName().toUpperCase();
                     mermaid.mappingMap.put(mapPrefix + mappingName, "map" + (mermaid.mappingMap.size() + 1));
-                    remark = "|" + dataTable.getIdColumnName() + "|";
+                    remark = "|" + dataTable.getIdColumnName() +"<br/><br/><br/>"+ "target_id|";
                     mermaid.pointerList.add(targetIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
 
                     dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
                     if (dataTablePair == null) {
                         log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}) in target({}), owner({})", mappingName, targetIdentifier, mappingTable.getOwner());
-                    } else {
-                        String srcName = srcPrefix + dataTablePair.getKey().getName().toUpperCase();
-                        String srcIdentifier = mermaid.sourceMap.get(srcName);
-                        if (srcIdentifier == null) {
-                            srcIdentifier = "src" + mermaid.sourceMap.size() + 1;
-                            mermaid.sourceMap.put(srcName, srcIdentifier);
-                        }
-                        remark = "|" + dataTablePair.getValue().getIdColumnName() + "|";
-                        mermaid.pointerList.add(srcIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
+                        continue;
                     }
-                }
+
+                    DataTable leftDataTable = dataTablePair.getKey();
+                    String srcName;
+                    String srcIdentifier = "";
+                    switch (leftDataTable.getTableType()) {
+                        case SRC:
+                            srcName = srcPrefix + leftDataTable.getName().toUpperCase();
+                            srcIdentifier = mermaid.sourceMap.get(srcName);
+                            if (srcIdentifier == null) {
+                                srcIdentifier = "src" + mermaid.sourceMap.size() + 1;
+                                mermaid.sourceMap.put(srcName, srcIdentifier);
+                            }
+                            break;
+
+                        case TAR:
+                            srcName = tarPrefix + leftDataTable.getName().toUpperCase();
+                            srcIdentifier = mermaid.targetMap.get(srcName);
+                            if (srcIdentifier == null) {
+                                srcIdentifier = "tar" + mermaid.targetMap.size() + 1;
+                                mermaid.targetMap.put(srcName, srcIdentifier);
+                            }
+                            break;
+
+                        case MAP:
+                            srcName = mapPrefix + leftDataTable.getName().toUpperCase();
+                            srcIdentifier = mermaid.mappingMap.get(srcName);
+                            if (srcIdentifier == null) {
+                                srcIdentifier = "tar" + mermaid.mappingMap.size() + 1;
+                                mermaid.mappingMap.put(srcName, srcIdentifier);
+                            }
+                            break;
+                    }
+                    remark = "|" + dataTablePair.getValue().getIdColumnName() +"<br/><br/><br/>"+ "source_id|";
+                    mermaid.pointerList.add(srcIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
+
+                } // end for
 
                 /*source of columns to target*/
                 List<DynamicValue> dynamicValueList = target.getDynamicValueList();
-                if (dynamicValueList != null) {
-                    COLValue colValue;
-                    DataTable lookupTable;
-                    DynamicValueType lookupTableType;
-                    String lookupTableName;
-                    String lookupTableIdentifier;
-                    for (DynamicValue dynamicValue : dynamicValueList) {
-                        if (DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
-                            colValue = (COLValue) dynamicValue;
-                            lookupTable = colValue.getLookupTable();
-                            lookupTableType = lookupTable.getTableType();
-                            lookupTableName = lookupTable.getName();
-                            switch (lookupTableType) {
-                                case SRC:
-                                    lookupTableName = srcPrefix + lookupTableName;
-                                    lookupTableIdentifier = mermaid.sourceMap.get(lookupTableName);
-                                    if (lookupTableIdentifier == null) {
-                                        lookupTableIdentifier = "src" + (mermaid.sourceMap.size() + 1);
-                                        mermaid.sourceMap.put(lookupTableName, lookupTableIdentifier);
-                                    }
-                                    mermaid.pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
-                                    break;
-
-                                case TAR:
-                                    lookupTableName = tarPrefix + lookupTableName;
-                                    lookupTableIdentifier = mermaid.targetMap.get(lookupTableName);
-                                    if (lookupTableIdentifier == null) {
-                                        lookupTableIdentifier = "tar" + (mermaid.targetMap.size() + 1);
-                                        mermaid.targetMap.put(lookupTableName, lookupTableIdentifier);
-                                    }
-                                    mermaid.pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
-                                    break;
-
-                                case MAP:
-                                    lookupTableName = mapPrefix + lookupTableName;
-                                    lookupTableIdentifier = mermaid.mappingMap.get(lookupTableName);
-                                    if (lookupTableIdentifier == null) {
-                                        lookupTableIdentifier = "map" + (mermaid.mappingMap.size() + 1);
-                                        mermaid.mappingMap.put(lookupTableName, lookupTableIdentifier);
-                                    }
-                                    break;
-
-                                default:
-                                    continue;
-                            }
-                            mermaid.pointerList.add(lookupTableIdentifier + pointer + targetIdentifier);
-                        } // end if
-                    } // end for
+                if (dynamicValueList == null) {
+                    break;
                 }
+                COLValue colValue;
+                DataTable lookupTable;
+                DynamicValueType lookupTableType;
+                String lookupTableName;
+                String lookupTableIdentifier;
+                for (DynamicValue dynamicValue : dynamicValueList) {
+                    if (!DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
+                        continue;
+                    }
+
+                    colValue = (COLValue) dynamicValue;
+                    lookupTable = colValue.getLookupTable();
+                    lookupTableType = lookupTable.getTableType();
+                    lookupTableName = lookupTable.getName().toUpperCase();
+                    remark = "|" + colValue.getValueColumnName() + "<br/><br/><br/>" + colValue.getName() + "|";
+                    switch (lookupTableType) {
+                        case SRC:
+                            lookupTableName = srcPrefix + lookupTableName;
+                            lookupTableIdentifier = mermaid.sourceMap.get(lookupTableName);
+                            if (lookupTableIdentifier == null) {
+                                lookupTableIdentifier = "src" + (mermaid.sourceMap.size() + 1);
+                                mermaid.sourceMap.put(lookupTableName, lookupTableIdentifier);
+                            }
+                            break;
+
+                        case TAR:
+                            lookupTableName = tarPrefix + lookupTableName;
+                            lookupTableIdentifier = mermaid.targetMap.get(lookupTableName);
+                            if (lookupTableIdentifier == null) {
+                                lookupTableIdentifier = "tar" + (mermaid.targetMap.size() + 1);
+                                mermaid.targetMap.put(lookupTableName, lookupTableIdentifier);
+                            }
+                            break;
+
+                        case MAP:
+                            lookupTableName = mapPrefix + lookupTableName;
+                            lookupTableIdentifier = mermaid.mappingMap.get(lookupTableName);
+                            if (lookupTableIdentifier == null) {
+                                lookupTableIdentifier = "map" + (mermaid.mappingMap.size() + 1);
+                                mermaid.mappingMap.put(lookupTableName, lookupTableIdentifier);
+                            }
+                            break;
+
+                        default:
+                            continue;
+                    } // end switch
+                    mermaid.pointerList.add(lookupTableIdentifier + pointer + remark + targetIdentifier);
+                } // end for
             } // end case TAR:
+            break;
+
+            case MAP: {
+
+            }
             break;
         }
     }
@@ -380,7 +419,7 @@ public class MarkdownFormatter extends DataFormatter {
         int number;
         StringBuilder classes = new StringBuilder();
         StringBuilder generated = new StringBuilder();
-        generated.append(eol).append("#### Mermaid Graph").append(eol).append(eol).append("```mermaid").append(eol).append("graph TD;").append(eol).append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol).append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol).append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
+        generated.append(eol).append("#### ").append(mermaid.name).append(eol).append(eol).append("```mermaid").append(eol).append("graph TD;").append(eol).append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol).append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol).append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
 
         if (mermaid.dataSourceMap.size() > 0) {
             generated.append(eol);

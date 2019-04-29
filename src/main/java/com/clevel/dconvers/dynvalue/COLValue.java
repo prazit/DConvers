@@ -251,4 +251,8 @@ public class COLValue extends DynamicValue {
     public DataTable getLookupTable() {
         return lookupTable;
     }
+
+    public String getValueColumnName() {
+        return valueColumnName;
+    }
 }
