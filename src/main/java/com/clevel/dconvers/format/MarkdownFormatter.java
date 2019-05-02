@@ -276,29 +276,33 @@ public class MarkdownFormatter extends DataFormatter {
                 Converter converter = application.currentConverter;
 
                 /*source to target*/
+                String sourceIdentifier;
                 for (String sourceName : target.getTargetConfig().getSourceList()) {
                     sourceName = sourceName.toUpperCase();
                     if (sourceName.startsWith(srcPrefix)) {
-                        mermaid.sourceMap.put(sourceName, "src" + (mermaid.sourceMap.size() + 1));
+                        sourceIdentifier = "src" + (mermaid.sourceMap.size() + 1);
+                        mermaid.sourceMap.put(sourceName, sourceIdentifier);
                         sourceDataTable = converter.getDataTable(sourceName);
-                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
-                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + remark + targetIdentifier);
                     } else if (sourceName.startsWith(tarPrefix)) {
-                        mermaid.targetMap.put(sourceName, "tar" + (mermaid.targetMap.size() + 1));
+                        sourceIdentifier = "tar" + (mermaid.targetMap.size() + 1);
+                        mermaid.targetMap.put(sourceName, sourceIdentifier);
                         sourceDataTable = converter.getDataTable(sourceName);
-                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
-                        mermaid.pointerList.add("tar" + mermaid.targetMap.size() + pointer + remark + targetIdentifier);
                     } else if (sourceName.startsWith(mapPrefix)) {
-                        mermaid.mappingMap.put(sourceName, "map" + (mermaid.mappingMap.size() + 1));
+                        sourceIdentifier = "map" + (mermaid.mappingMap.size() + 1);
+                        mermaid.mappingMap.put(sourceName, sourceIdentifier);
                         sourceDataTable = converter.getDataTable(sourceName);
-                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
-                        mermaid.pointerList.add("map" + mermaid.mappingMap.size() + pointer + remark + targetIdentifier);
                     } else {
-                        mermaid.sourceMap.put(srcPrefix + sourceName, "src" + (mermaid.sourceMap.size() + 1));
-                        sourceDataTable = converter.getDataTable(srcPrefix + sourceName);
-                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
-                        mermaid.pointerList.add("src" + mermaid.sourceMap.size() + pointer + remark + targetIdentifier);
+                        sourceName = srcPrefix + sourceName;
+                        sourceIdentifier = "src" + (mermaid.sourceMap.size() + 1);
+                        mermaid.sourceMap.put(sourceName, sourceIdentifier);
+                        sourceDataTable = converter.getDataTable(sourceName);
                     }
+                    if (sourceDataTable == null) {
+                        log.warn("SourceDataTable({}) is not found!", sourceName);
+                        continue;
+                    }
+                    remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                    mermaid.pointerList.add(sourceIdentifier + pointer + remark + targetIdentifier);
                 }
 
                 /*source/target to mapping*/
@@ -307,7 +311,7 @@ public class MarkdownFormatter extends DataFormatter {
                 for (DataTable mappingTable : target.getMappingTableList()) {
                     mappingName = mappingTable.getName().toUpperCase();
                     mermaid.mappingMap.put(mapPrefix + mappingName, "map" + (mermaid.mappingMap.size() + 1));
-                    remark = "|" + dataTable.getIdColumnName() +"<br/><br/><br/>"+ "target_id|";
+                    remark = "|" + dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
                     mermaid.pointerList.add(targetIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
 
                     dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
@@ -347,7 +351,7 @@ public class MarkdownFormatter extends DataFormatter {
                             }
                             break;
                     }
-                    remark = "|" + dataTablePair.getValue().getIdColumnName() +"<br/><br/><br/>"+ "source_id|";
+                    remark = "|" + dataTablePair.getValue().getIdColumnName() + "<br/><br/><br/>" + "source_id|";
                     mermaid.pointerList.add(srcIdentifier + pointer + remark + "map" + mermaid.mappingMap.size());
 
                 } // end for
