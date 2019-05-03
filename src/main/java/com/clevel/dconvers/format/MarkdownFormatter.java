@@ -2,6 +2,7 @@ package com.clevel.dconvers.format;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.Defaults;
+import com.clevel.dconvers.conf.SourceConfig;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
@@ -220,6 +221,7 @@ public class MarkdownFormatter extends DataFormatter {
     }
 
     private enum Prefix {
+        DATASOURCE("DATASOURCE:", "datasource"),
         SRC("SRC:", "src"),
         TAR("TAR:", "tar"),
         MAP("MAP:", "map");
@@ -261,9 +263,25 @@ public class MarkdownFormatter extends DataFormatter {
             this.fullStack = fullStack;
         }
 
-        Identifier prepareDataTable(DataTable dataTable) {
-            Identifier identifier = new Identifier(dataTable);
+        Identifier prepareDataSource(String dataSourceName, String query) {
+            String dsName = dataSourceName.contains(":") ? dataSourceName : Prefix.DATASOURCE.namePrefix + dataSourceName;
+            if (dsName.contains("MARKDOWN") || dsName.contains("SQL")) {
+                dsName += "<br/>" + query;
+            }
 
+            String dsIdentifier = dataSourceMap.get(dsName);
+            if (dsIdentifier == null) {
+                dsIdentifier = Prefix.DATASOURCE.identifierPrefix + (dataSourceMap.size() + 1);
+                dataSourceMap.put(dsName, dsIdentifier);
+            }
+
+            Identifier identifier = new Identifier(null);
+            identifier.name = dsName;
+            identifier.identifier = dsIdentifier;
+            return identifier;
+        }
+
+        Identifier prepareDataTable(DataTable dataTable) {
             String dataTableName = dataTable.getName().toUpperCase();
             String dataTableIdentifier = "";
             switch (dataTable.getTableType()) {
@@ -271,7 +289,7 @@ public class MarkdownFormatter extends DataFormatter {
                     dataTableName = Prefix.SRC.namePrefix + dataTableName;
                     dataTableIdentifier = sourceMap.get(dataTableName);
                     if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.SRC.identifierPrefix + sourceMap.size() + 1;
+                        dataTableIdentifier = Prefix.SRC.identifierPrefix + (sourceMap.size() + 1);
                         sourceMap.put(dataTableName, dataTableIdentifier);
                     }
                     break;
@@ -280,7 +298,7 @@ public class MarkdownFormatter extends DataFormatter {
                     dataTableName = Prefix.TAR.namePrefix + dataTableName;
                     dataTableIdentifier = targetMap.get(dataTableName);
                     if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.TAR.identifierPrefix + targetMap.size() + 1;
+                        dataTableIdentifier = Prefix.TAR.identifierPrefix + (targetMap.size() + 1);
                         targetMap.put(dataTableName, dataTableIdentifier);
                     }
                     break;
@@ -289,12 +307,13 @@ public class MarkdownFormatter extends DataFormatter {
                     dataTableName = Prefix.MAP.namePrefix + dataTableName;
                     dataTableIdentifier = mappingMap.get(dataTableName);
                     if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.MAP.identifierPrefix + mappingMap.size() + 1;
+                        dataTableIdentifier = Prefix.MAP.identifierPrefix + (mappingMap.size() + 1);
                         mappingMap.put(dataTableName, dataTableIdentifier);
                     }
                     break;
             }
 
+            Identifier identifier = new Identifier(dataTable);
             identifier.name = dataTableName;
             identifier.identifier = dataTableIdentifier;
             return identifier;
@@ -302,7 +321,6 @@ public class MarkdownFormatter extends DataFormatter {
     } // end class Mermaid
 
     private void prepareMermaid(DataTable dataTable, Mermaid mermaid) {
-        String dataSourcePrfix = "DATASOURCE:";
         String srcPrefix = DynamicValueType.SRC.name() + ":";
         String tarPrefix = DynamicValueType.TAR.name() + ":";
         String mapPrefix = DynamicValueType.MAP.name() + ":";
@@ -311,20 +329,15 @@ public class MarkdownFormatter extends DataFormatter {
         DynamicValueType tableType = dataTable.getTableType();
         switch (tableType) {
             case SRC: {
+                Identifier sourceDataTableIdentifier = mermaid.prepareDataTable(dataTable);
+                mermaid.name = sourceDataTableIdentifier.name;
+
                 Source source = (Source) dataTable.getOwner();
-                String dataSourceName = dataSourcePrfix + source.getSourceConfig().getDataSource().toUpperCase();
-                String sourceName = source.getName();
-                if (!sourceName.startsWith(srcPrefix)) {
-                    sourceName = srcPrefix + sourceName;
-                }
-                sourceName = sourceName.toUpperCase();
-                mermaid.name = sourceName;
-                String dataSourceIdentifier = "datasource" + (mermaid.dataSourceMap.size() + 1);
-                String sourceIdentifier = "src" + (mermaid.sourceMap.size() + 1);
+                SourceConfig sourceConfig = source.getSourceConfig();
+                Identifier dataSourceIdentifier = mermaid.prepareDataSource(sourceConfig.getDataSource().toUpperCase(), sourceConfig.getQuery());
+
                 String remark = "|" + dataTable.getRowCount() + " rows|";
-                mermaid.dataSourceMap.put(dataSourceName, dataSourceIdentifier);
-                mermaid.sourceMap.put(sourceName, sourceIdentifier);
-                mermaid.pointerList.add(dataSourceIdentifier + pointer + remark + sourceIdentifier);
+                mermaid.pointerList.add(dataSourceIdentifier.identifier + pointer + remark + sourceDataTableIdentifier.identifier);
             }
             break;
 
@@ -506,10 +519,8 @@ public class MarkdownFormatter extends DataFormatter {
 
         if (mermaid.dataSourceMap.size() > 0) {
             generated.append(eol);
-            number = 0;
-            for (String dataSourceName : mermaid.dataSourceMap.keySet()) {
-                number++;
-                generated.append("datasource").append(number).append("(DataSource:").append(dataSourceName).append(");").append(eol);
+            for (Map.Entry<String, String> datasourceEntry : mermaid.dataSourceMap.entrySet()) {
+                generated.append(datasourceEntry.getValue()).append("(").append(datasourceEntry.getKey()).append(");").append(eol);
             }
         }
 
