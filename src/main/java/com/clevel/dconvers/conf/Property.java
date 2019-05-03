@@ -48,6 +48,7 @@ public enum Property {
     UPDATE("update"),
     MARKDOWN("markdown"),
     MERMAID("mermaid"),
+    FULL("full"),
     PDF_TABLE("pdf"),
     TXT("txt"),
     CSV("csv"),

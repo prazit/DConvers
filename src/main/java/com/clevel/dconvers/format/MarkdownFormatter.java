@@ -214,7 +214,7 @@ public class MarkdownFormatter extends DataFormatter {
     protected String postFormat(DataTable dataTable) {
         if (needMermaid) {
             Mermaid mermaid = new Mermaid(mermaidFullStack);
-            prepareMermaid(dataTable, mermaid);
+            mermaid.registerDataTable(dataTable);
             return generateMermaid(mermaid);
         }
         return eof;
@@ -246,20 +246,23 @@ public class MarkdownFormatter extends DataFormatter {
     }
 
     private class Mermaid {
+        private List<DataTable> registeredDataTableList;
+        List<String> pointerList;
+
         HashMap<String, String> dataSourceMap;
         HashMap<String, String> sourceMap;
         HashMap<String, String> targetMap;
         HashMap<String, String> mappingMap;
-        List<String> pointerList;
         boolean fullStack;
         String name;
 
         Mermaid(boolean fullStack) {
-            this.dataSourceMap = new HashMap<>();
-            this.sourceMap = new HashMap<>();
-            this.targetMap = new HashMap<>();
-            this.mappingMap = new HashMap<>();
-            this.pointerList = new ArrayList<>();
+            registeredDataTableList = new ArrayList<>();
+            dataSourceMap = new HashMap<>();
+            sourceMap = new HashMap<>();
+            targetMap = new HashMap<>();
+            mappingMap = new HashMap<>();
+            pointerList = new ArrayList<>();
             this.fullStack = fullStack;
         }
 
@@ -318,124 +321,155 @@ public class MarkdownFormatter extends DataFormatter {
             identifier.identifier = dataTableIdentifier;
             return identifier;
         }
-    } // end class Mermaid
 
-    private void prepareMermaid(DataTable dataTable, Mermaid mermaid) {
-        String srcPrefix = DynamicValueType.SRC.name() + ":";
-        String tarPrefix = DynamicValueType.TAR.name() + ":";
-        String mapPrefix = DynamicValueType.MAP.name() + ":";
-        String pointer = "-->";
-
-        DynamicValueType tableType = dataTable.getTableType();
-        switch (tableType) {
-            case SRC: {
-                Identifier sourceDataTableIdentifier = mermaid.prepareDataTable(dataTable);
-                mermaid.name = sourceDataTableIdentifier.name;
-
-                Source source = (Source) dataTable.getOwner();
-                SourceConfig sourceConfig = source.getSourceConfig();
-                Identifier dataSourceIdentifier = mermaid.prepareDataSource(sourceConfig.getDataSource().toUpperCase(), sourceConfig.getQuery());
-
-                String remark = "|" + dataTable.getRowCount() + " rows|";
-                mermaid.pointerList.add(dataSourceIdentifier.identifier + pointer + remark + sourceDataTableIdentifier.identifier);
+        void addPointer(String pointerDef) {
+            if (!pointerList.contains(pointerDef)) {
+                pointerList.add(pointerDef);
             }
-            break;
-
-            case TAR: {
-                Identifier targetDataTableIdentifier = mermaid.prepareDataTable(dataTable);
-                mermaid.name = targetDataTableIdentifier.name;
-
-                Target target = (Target) dataTable.getOwner();
-                String remark;
-
-                Converter converter = application.currentConverter;
-                DataTable sourceDataTable;
-                Identifier sourceDataTableIdentifier;
-
-                /*source to target*/
-                for (String sourceName : target.getTargetConfig().getSourceList()) {
-                    sourceName = sourceName.toUpperCase();
-                    if (!sourceName.contains(":")) {
-                        sourceName = Prefix.SRC.namePrefix + sourceName;
-                    }
-
-                    sourceDataTable = converter.getDataTable(sourceName);
-                    if (sourceDataTable == null) {
-                        log.warn("SourceDataTable({}) is not found!", sourceName);
-                        continue;
-                    }
-
-                    sourceDataTableIdentifier = mermaid.prepareDataTable(sourceDataTable);
-                    remark = "|" + sourceDataTable.getRowCount() + " rows|";
-                    mermaid.pointerList.add(sourceDataTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
-                }
-
-                /*source/target to mapping*/
-                Pair<DataTable, DataTable> dataTablePair;
-                Identifier mappingDataTableIdentifier;
-                for (DataTable mappingTable : target.getMappingTableList()) {
-                    mappingDataTableIdentifier = mermaid.prepareDataTable(mappingTable);
-
-                    /*current target to mapping*/
-                    remark = "|" + dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
-                    mermaid.pointerList.add(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
-
-                    /*source to mapping*/
-                    dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
-                    if (dataTablePair == null) {
-                        log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}) in target({}), owner({})", mappingDataTableIdentifier.name, targetDataTableIdentifier.name, mappingTable.getOwner());
-                        continue;
-                    }
-                    sourceDataTableIdentifier = mermaid.prepareDataTable(dataTablePair.getKey());
-                    remark = "|" + dataTablePair.getValue().getIdColumnName() + "<br/><br/><br/>" + "source_id|";
-                    mermaid.pointerList.add(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
-                } // end for
-
-                /*source of columns to target*/
-                List<DynamicValue> dynamicValueList = target.getDynamicValueList();
-                if (dynamicValueList == null) {
-                    break;
-                }
-                COLValue colValue;
-                DataTable lookupTable;
-                Identifier lookupTableIdentifier;
-                for (DynamicValue dynamicValue : dynamicValueList) {
-                    if (!DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
-                        continue;
-                    }
-
-                    colValue = (COLValue) dynamicValue;
-                    lookupTable = colValue.getLookupTable();
-                    lookupTableIdentifier = mermaid.prepareDataTable(lookupTable);
-
-                    remark = "|" + colValue.getValueColumnName() + "<br/><br/><br/>" + colValue.getName() + "|";
-                    mermaid.pointerList.add(lookupTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
-                }
-            } // end case TAR:
-            break;
-
-            case MAP: {
-                Identifier mappingDataTableIdentifier = mermaid.prepareDataTable(dataTable);
-                mermaid.name = mappingDataTableIdentifier.name;
-
-                Pair<DataTable, DataTable> dataTablePair = (Pair<DataTable, DataTable>) dataTable.getOwner();
-                if (dataTablePair == null) {
-                    log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}), owner({})", mermaid.name, dataTable.getOwner());
-                    break;
-                }
-
-                Identifier sourceDataTableIdentifier = mermaid.prepareDataTable(dataTablePair.getKey());
-                Identifier targetDataTableIdentifier = mermaid.prepareDataTable(dataTablePair.getValue());
-
-                String remark = "|" + sourceDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
-                mermaid.pointerList.add(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
-
-                remark = "|" + targetDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
-                mermaid.pointerList.add(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
-            }
-            break;
         }
-    }
+
+        boolean isRegistered(DataTable dataTable) {
+            return registeredDataTableList.contains(dataTable);
+        }
+
+        void registerDataTable(DataTable dataTable) {
+            if (isRegistered(dataTable)) {
+                return;
+            }
+
+            registeredDataTableList.add(dataTable);
+            String pointer = "-->";
+
+            DynamicValueType tableType = dataTable.getTableType();
+            switch (tableType) {
+                case SRC: {
+                    Identifier sourceDataTableIdentifier = prepareDataTable(dataTable);
+                    if (registeredDataTableList.size() == 1) {
+                        name = sourceDataTableIdentifier.name;
+                    }
+
+                    Source source = (Source) dataTable.getOwner();
+                    SourceConfig sourceConfig = source.getSourceConfig();
+                    Identifier dataSourceIdentifier = prepareDataSource(sourceConfig.getDataSource().toUpperCase(), sourceConfig.getQuery());
+
+                    String remark = "|" + dataTable.getRowCount() + " rows|";
+                    addPointer(dataSourceIdentifier.identifier + pointer + remark + sourceDataTableIdentifier.identifier);
+                }
+                break;
+
+                case TAR: {
+                    Identifier targetDataTableIdentifier = prepareDataTable(dataTable);
+                    if (registeredDataTableList.size() == 1) {
+                        name = targetDataTableIdentifier.name;
+                    }
+
+                    Target target = (Target) dataTable.getOwner();
+                    String remark;
+
+                    Converter converter = application.currentConverter;
+                    DataTable sourceDataTable;
+                    Identifier sourceDataTableIdentifier;
+
+                    /*source to target*/
+                    for (String sourceName : target.getTargetConfig().getSourceList()) {
+                        sourceName = sourceName.toUpperCase();
+                        if (!sourceName.contains(":")) {
+                            sourceName = Prefix.SRC.namePrefix + sourceName;
+                        }
+
+                        sourceDataTable = converter.getDataTable(sourceName);
+                        if (sourceDataTable == null) {
+                            log.warn("SourceDataTable({}) is not found!", sourceName);
+                            continue;
+                        }
+
+                        sourceDataTableIdentifier = prepareDataTable(sourceDataTable);
+                        remark = "|" + sourceDataTable.getRowCount() + " rows|";
+                        addPointer(sourceDataTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
+
+                        if (fullStack) {
+                            registerDataTable(sourceDataTable);
+                        }
+                    }
+
+                    /*both source and target to mapping*/
+                    Pair<DataTable, DataTable> dataTablePair;
+                    Identifier mappingDataTableIdentifier;
+                    for (DataTable mappingTable : target.getMappingTableList()) {
+                        mappingDataTableIdentifier = prepareDataTable(mappingTable);
+
+                        /*current target to mapping*/
+                        remark = "|" + dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
+                        addPointer(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
+
+                        /*source to mapping*/
+                        dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
+                        if (dataTablePair == null) {
+                            log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}) in target({}), owner({})", mappingDataTableIdentifier.name, targetDataTableIdentifier.name, mappingTable.getOwner());
+                            continue;
+                        }
+                        sourceDataTableIdentifier = prepareDataTable(dataTablePair.getKey());
+                        remark = "|" + dataTablePair.getValue().getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+                        addPointer(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
+                    } // end for
+
+                    /*source of columns to target*/
+                    List<DynamicValue> dynamicValueList = target.getDynamicValueList();
+                    if (dynamicValueList == null) {
+                        break;
+                    }
+                    COLValue colValue;
+                    DataTable lookupTable;
+                    Identifier lookupTableIdentifier;
+                    for (DynamicValue dynamicValue : dynamicValueList) {
+                        if (!DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
+                            continue;
+                        }
+
+                        colValue = (COLValue) dynamicValue;
+                        lookupTable = colValue.getLookupTable();
+                        lookupTableIdentifier = prepareDataTable(lookupTable);
+
+                        remark = "|" + colValue.getValueColumnName() + "<br/><br/><br/>" + colValue.getName() + "|";
+                        addPointer(lookupTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
+
+                        if (fullStack) {
+                            registerDataTable(lookupTable);
+                        }
+                    }
+                } // end case TAR:
+                break;
+
+                case MAP: {
+                    Identifier mappingDataTableIdentifier = prepareDataTable(dataTable);
+                    if (registeredDataTableList.size() == 1) {
+                        name = mappingDataTableIdentifier.name;
+                    }
+
+                    Pair<DataTable, DataTable> dataTablePair = (Pair<DataTable, DataTable>) dataTable.getOwner();
+                    if (dataTablePair == null) {
+                        log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}), owner({})", name, dataTable.getOwner());
+                        break;
+                    }
+
+                    Identifier sourceDataTableIdentifier = prepareDataTable(dataTablePair.getKey());
+                    Identifier targetDataTableIdentifier = prepareDataTable(dataTablePair.getValue());
+
+                    String remark = "|" + sourceDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+                    addPointer(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
+
+                    remark = "|" + targetDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
+                    addPointer(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
+
+                    if (fullStack) {
+                        registerDataTable(sourceDataTableIdentifier.dataTable);
+                        registerDataTable(targetDataTableIdentifier.dataTable);
+                    }
+                }
+                break;
+            }
+        }
+    } // end class Mermaid
 
     private String generateMermaid(Mermaid mermaid) {
         int number;

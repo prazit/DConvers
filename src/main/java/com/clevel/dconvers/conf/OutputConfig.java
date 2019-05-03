@@ -302,7 +302,7 @@ public class OutputConfig extends Config {
         markdownCommentDataSource = true;
         markdownCommentQuery = true;
         markdownMermaid = true;
-        markdownMermaidFull = false;
+        markdownMermaidFull = true;
 
         key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
@@ -323,6 +323,7 @@ public class OutputConfig extends Config {
             markdownCommentDataSource = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.DATA_SOURCE), markdownCommentDataSource);
             markdownCommentQuery = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.QUERY), markdownCommentQuery);
             markdownMermaid = markdownProperties.getBoolean(Property.MERMAID.key(), markdownMermaid);
+            markdownMermaidFull = markdownProperties.getBoolean(Property.MERMAID.connectKey(Property.FULL.key()), markdownMermaidFull);
         }
 
         // Default Properties for PDF
