@@ -219,6 +219,30 @@ public class MarkdownFormatter extends DataFormatter {
         return eof;
     }
 
+    private enum Prefix {
+        SRC("SRC:", "src"),
+        TAR("TAR:", "tar"),
+        MAP("MAP:", "map");
+
+        String namePrefix;
+        String identifierPrefix;
+
+        Prefix(String namePrefix, String identifierPrefix) {
+            this.namePrefix = namePrefix;
+            this.identifierPrefix = identifierPrefix;
+        }
+    }
+
+    private class Identifier {
+        DataTable dataTable;
+        String name;
+        String identifier;
+
+        public Identifier(DataTable dataTable) {
+            this.dataTable = dataTable;
+        }
+    }
+
     private class Mermaid {
         HashMap<String, String> dataSourceMap;
         HashMap<String, String> sourceMap;
@@ -236,7 +260,46 @@ public class MarkdownFormatter extends DataFormatter {
             this.pointerList = new ArrayList<>();
             this.fullStack = fullStack;
         }
-    }
+
+        Identifier prepareDataTable(DataTable dataTable) {
+            Identifier identifier = new Identifier(dataTable);
+
+            String dataTableName = dataTable.getName().toUpperCase();
+            String dataTableIdentifier = "";
+            switch (dataTable.getTableType()) {
+                case SRC:
+                    dataTableName = Prefix.SRC.namePrefix + dataTableName;
+                    dataTableIdentifier = sourceMap.get(dataTableName);
+                    if (dataTableIdentifier == null) {
+                        dataTableIdentifier = Prefix.SRC.identifierPrefix + sourceMap.size() + 1;
+                        sourceMap.put(dataTableName, dataTableIdentifier);
+                    }
+                    break;
+
+                case TAR:
+                    dataTableName = Prefix.TAR.namePrefix + dataTableName;
+                    dataTableIdentifier = targetMap.get(dataTableName);
+                    if (dataTableIdentifier == null) {
+                        dataTableIdentifier = Prefix.TAR.identifierPrefix + targetMap.size() + 1;
+                        targetMap.put(dataTableName, dataTableIdentifier);
+                    }
+                    break;
+
+                case MAP:
+                    dataTableName = Prefix.MAP.namePrefix + dataTableName;
+                    dataTableIdentifier = mappingMap.get(dataTableName);
+                    if (dataTableIdentifier == null) {
+                        dataTableIdentifier = Prefix.MAP.identifierPrefix + mappingMap.size() + 1;
+                        mappingMap.put(dataTableName, dataTableIdentifier);
+                    }
+                    break;
+            }
+
+            identifier.name = dataTableName;
+            identifier.identifier = dataTableIdentifier;
+            return identifier;
+        }
+    } // end class Mermaid
 
     private void prepareMermaid(DataTable dataTable, Mermaid mermaid) {
         String dataSourcePrfix = "DATASOURCE:";
@@ -413,7 +476,23 @@ public class MarkdownFormatter extends DataFormatter {
             break;
 
             case MAP: {
+                Identifier mappingDataTableIdentifier = mermaid.prepareDataTable(dataTable);
+                mermaid.name = mappingDataTableIdentifier.name;
 
+                Pair<DataTable, DataTable> dataTablePair = (Pair<DataTable, DataTable>) dataTable.getOwner();
+                if (dataTablePair == null) {
+                    log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}), owner({})", mermaid.name, dataTable.getOwner());
+                    break;
+                }
+
+                Identifier sourceDataTableIdentifier = mermaid.prepareDataTable(dataTablePair.getKey());
+                Identifier targetDataTableIdentifier = mermaid.prepareDataTable(dataTablePair.getValue());
+
+                String remark = "|" + sourceDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+                mermaid.pointerList.add(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
+
+                remark = "|" + targetDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
+                mermaid.pointerList.add(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
             }
             break;
         }
