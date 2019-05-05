@@ -269,13 +269,11 @@ public class MarkdownFormatter extends DataFormatter {
 
         Identifier prepareDataSource(String dataSourceName, String query) {
             String dsName = dataSourceName.contains(":") ? dataSourceName : Prefix.DATASOURCE.namePrefix + dataSourceName;
-            if (dsName.contains("MARKDOWN") || dsName.contains("SQL")) {
+            DataSource dataSource = application.getDataSource(dataSourceName);
+            if (dataSource.getDataSourceConfig().getDbms() == null) {
                 dsName += "<br/>" + query;
             } else {
-                DataSource dataSource = application.getDataSource(dataSourceName);
-                if (dataSource.getDataSourceConfig().getDbms() != null) {
-                    dsName += "<br/>from " + getTableName(query).toLowerCase();
-                }
+                dsName += "<br/>from " + getTableName(query).toLowerCase();
             }
 
             String dsIdentifier = dataSourceMap.get(dsName);
@@ -410,14 +408,16 @@ public class MarkdownFormatter extends DataFormatter {
                         remark = "|" + dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
                         addPointer(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
 
-                        /*source to mapping*/
                         dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
                         if (dataTablePair == null) {
                             log.warn("Markdown.mermaid: dataTablePair is null for mappingTable({}) in target({}), owner({})", mappingDataTableIdentifier.name, targetDataTableIdentifier.name, mappingTable.getOwner());
                             continue;
                         }
-                        sourceDataTableIdentifier = prepareDataTable(dataTablePair.getKey());
-                        remark = "|" + dataTablePair.getValue().getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+
+                        /*source to mapping*/
+                        DataTable asSourceDataTable = dataTablePair.getKey();
+                        sourceDataTableIdentifier = prepareDataTable(asSourceDataTable);
+                        remark = "|" + asSourceDataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
                         addPointer(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
                     } // end for
 
@@ -482,7 +482,7 @@ public class MarkdownFormatter extends DataFormatter {
             query = query.toUpperCase();
             int fromIndex = query.indexOf("FROM ");
             if (fromIndex < 0) {
-                return "Unknown";
+                return "Procedure";
             }
             fromIndex += 5;
 
@@ -490,11 +490,18 @@ public class MarkdownFormatter extends DataFormatter {
             if (blankIndex < 0) {
                 blankIndex = query.indexOf("\n", fromIndex);
                 if (blankIndex < 0) {
-                    return "Unknown(" + query.substring(fromIndex, fromIndex + 10).trim() + ")";
+                    return "Unknown";
                 }
             }
 
-            return query.substring(fromIndex, blankIndex).trim();
+            String tableName = query.substring(fromIndex, blankIndex).trim();
+            tableName = tableName.replaceAll("[()<>]", "").trim();
+
+            if (tableName.length() == 0) {
+                return "Nested SQL";
+            }
+
+            return tableName;
         }
     } // end class Mermaid
 
