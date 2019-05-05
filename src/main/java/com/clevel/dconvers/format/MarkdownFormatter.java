@@ -9,6 +9,7 @@ import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.dynvalue.COLValue;
 import com.clevel.dconvers.dynvalue.DynamicValue;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
+import com.clevel.dconvers.input.DataSource;
 import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
@@ -270,6 +271,11 @@ public class MarkdownFormatter extends DataFormatter {
             String dsName = dataSourceName.contains(":") ? dataSourceName : Prefix.DATASOURCE.namePrefix + dataSourceName;
             if (dsName.contains("MARKDOWN") || dsName.contains("SQL")) {
                 dsName += "<br/>" + query;
+            } else {
+                DataSource dataSource = application.getDataSource(dataSourceName);
+                if (dataSource.getDataSourceConfig().getDbms() != null) {
+                    dsName += "<br/>from " + getTableName(query).toLowerCase();
+                }
             }
 
             String dsIdentifier = dataSourceMap.get(dsName);
@@ -350,7 +356,9 @@ public class MarkdownFormatter extends DataFormatter {
 
                     Source source = (Source) dataTable.getOwner();
                     SourceConfig sourceConfig = source.getSourceConfig();
-                    Identifier dataSourceIdentifier = prepareDataSource(sourceConfig.getDataSource().toUpperCase(), sourceConfig.getQuery());
+                    String query = sourceConfig.getQuery();
+                    String dataSourceName = sourceConfig.getDataSource().toUpperCase();
+                    Identifier dataSourceIdentifier = prepareDataSource(dataSourceName, query);
 
                     String remark = "|" + dataTable.getRowCount() + " rows|";
                     addPointer(dataSourceIdentifier.identifier + pointer + remark + sourceDataTableIdentifier.identifier);
@@ -469,10 +477,28 @@ public class MarkdownFormatter extends DataFormatter {
                 break;
             }
         }
+
+        private String getTableName(String query) {
+            query = query.toUpperCase();
+            int fromIndex = query.indexOf("FROM ");
+            if (fromIndex < 0) {
+                return "Unknown";
+            }
+            fromIndex += 5;
+
+            int blankIndex = query.indexOf(" ", fromIndex);
+            if (blankIndex < 0) {
+                blankIndex = query.indexOf("\n", fromIndex);
+                if (blankIndex < 0) {
+                    return "Unknown(" + query.substring(fromIndex, fromIndex + 10).trim() + ")";
+                }
+            }
+
+            return query.substring(fromIndex, blankIndex).trim();
+        }
     } // end class Mermaid
 
     private String generateMermaid(Mermaid mermaid) {
-        int number;
         StringBuilder classes = new StringBuilder();
         StringBuilder generated = new StringBuilder();
         generated.append(eol).append("#### ").append(mermaid.name).append(eol).append(eol).append("```mermaid").append(eol).append("graph TD;").append(eol).append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol).append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol).append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
@@ -485,8 +511,8 @@ public class MarkdownFormatter extends DataFormatter {
         }
 
         if (mermaid.sourceMap.size() > 0) {
-            generated.append(eol).append("subgraph SOURCES").append(eol);
-            classes.append(eol).append("class ");
+            generated.append(eol);
+            classes.append("class ");
 
             String sourceName;
             String sourceIdentifier;
@@ -497,12 +523,11 @@ public class MarkdownFormatter extends DataFormatter {
                 classes.append(sourceIdentifier).append(",");
             }
 
-            generated.append("end").append(eol);
             classes.deleteCharAt(classes.length() - 1).append(" source;");
         }
 
         if (mermaid.targetMap.size() > 0) {
-            generated.append(eol).append("subgraph TARGETS").append(eol);
+            generated.append(eol);
             classes.append(eol).append("class ");
 
             String targetName;
@@ -514,7 +539,6 @@ public class MarkdownFormatter extends DataFormatter {
                 classes.append(targetIdentifier).append(",");
             }
 
-            generated.append("end").append(eol);
             classes.deleteCharAt(classes.length() - 1).append(" target;");
         }
 
