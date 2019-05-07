@@ -117,7 +117,7 @@ public class SQLDataSource extends DataSource {
     private int getColumnType(String sqlValue, String valueQuote) {
         if (sqlValue.contains(valueQuote)) {
             // '2018/07/30 21:12:38' or 'string'
-            if (sqlValue.indexOf('/') >= 0) {
+            if (sqlValue.indexOf('/') > 0 || sqlValue.indexOf(':') > 0 || sqlValue.indexOf('-') > 0) {
                 return Types.DATE;
             }
             return Types.VARCHAR;
