@@ -600,18 +600,18 @@ syntax: VAR:NAME
 ```
 
 System variable can contain 2 groups of value as following
-1. System Values
-2. Constant Values
+1. System Variables - value in this group can be changed.
+2. Constant Values - value in this group can not be changed.
 
-##### System Values
+##### System Variables
 
 | NAME              | Type   | Description                                                                       |
 |-------------------|--------|-----------------------------------------------------------------------------------|
-| PROGRESS_MESSAGES | string | log message of the current status                                                 |
-| WARNING_MESSAGES  | string | log message of all warning                                                        |
-| ERROR_MESSAGES    | string | log message of all error                                                          |
 | ROW_NUMBER        | int    | row number will be reset at the beginning of any datatable processes.             |
 | APPLICATION_STATE | int    | current state of application, find exit.code in this document for possible values |
+| SOURCE_FILE_NUMBER | int   | file number will be increase by 1 for every source, no reset action for this variable |
+| TARGET_FILE_NUMBER | int   | file number will be increase by 1 for every target, no reset action for this variable |
+| MAPPING_FILE_NUMBER | int   | file number will be increase by 1 for every mapping, no reset action for this variable |
 
 ##### Constant Values
 
@@ -620,6 +620,9 @@ System variable can contain 2 groups of value as following
 | NOW               | string   | not for now, in fact this variable contains the time to start application. |
 | EMPTY_STRING      | string   | "" for some configuration that has another default string.                 |
 | APPLICATION_START | datetime | date and time at start of this application                                 |
+| SOURCE_OUTPUT_PATH | string  | value from property 'converter.source.output' in conversion configuration file.                                 |
+| TARGET_OUTPUT_PATH | string  | value from property 'converter.target.output' in conversion configuration file.                                 |
+| MAPPING_OUTPUT_PATH | string  | value from property 'converter.mapping.output' in conversion configuration file.                                 |
 
 > You can see full list in source code of SystemVariable.java
 

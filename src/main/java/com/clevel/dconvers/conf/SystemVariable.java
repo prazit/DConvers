@@ -6,6 +6,10 @@ import java.sql.Types;
 
 public enum SystemVariable {
 
+    SOURCE_OUTPUT_PATH(Types.VARCHAR),
+    TARGET_OUTPUT_PATH(Types.VARCHAR),
+    MAPPING_OUTPUT_PATH(Types.VARCHAR),
+
     SOURCE_FILE_NUMBER(Types.INTEGER),
     TARGET_FILE_NUMBER(Types.INTEGER),
     MAPPING_FILE_NUMBER(Types.INTEGER),

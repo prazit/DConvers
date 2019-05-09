@@ -142,6 +142,13 @@ public class Application extends AppBase {
         mappingFileNumber.setValue((long) (dataConversionConfigFile.getMappingFileNumber()) - 1);
         sourceFileNumber.setValue((long) (dataConversionConfigFile.getSourceFileNumber()) - 1);
 
+        DataString targetOutputPath = (DataString) systemVariableMap.get(SystemVariable.TARGET_OUTPUT_PATH);
+        DataString mappingOutputPath = (DataString) systemVariableMap.get(SystemVariable.MAPPING_OUTPUT_PATH);
+        DataString sourceOutputPath = (DataString) systemVariableMap.get(SystemVariable.SOURCE_OUTPUT_PATH);
+        targetOutputPath.setValue(dataConversionConfigFile.getOutputTargetPath());
+        mappingOutputPath.setValue(dataConversionConfigFile.getOutputMappingPath());
+        sourceOutputPath.setValue(dataConversionConfigFile.getOutputSourcePath());
+
         tableSummary = new SummaryTable(this);
         tableSummary.setOwner(this);
         tableSummary.setQuery(SystemQuery.TABLE_SUMMARY.name());
