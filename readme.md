@@ -68,7 +68,8 @@ Conversion file is a properties file which contains 4 groups of property as foll
 1. Conversion Properties
 2. List of DataSource Properties 
 3. List of SFTP Properties 
-4. List of Converter File 
+4. List of Converter File
+5. List of Variables
 
 #### 1. Conversion Properties
 
@@ -108,6 +109,24 @@ Conversion file is a properties file which contains 4 groups of property as foll
 | Property  | Data Type | Default Value | Description                 |
 |-----------|-----------|---------------|-----------------------------|
 | converter | string    | null          | list of the converter files |
+| converter.source.output | string | "" | root path for output of source table |
+| converter.target.output | string | "" | root path for output of target table |
+| converter.mapping.output | string | "" | root path for output of mapping table |
+| converter.source.output.filenumber | int | 1 | root path for output of source table |
+| converter.target.output.filenumber | int | 1 | root path for output of target table |
+| converter.mapping.output.filenumber | int | 1 | root path for output of mapping table |
+
+
+#### 5. Variable Property
+
+```properties
+variable.first=<value>
+variable.second=<value>
+```
+
+Define user variable to use in converter like this 'VAR:MY_VARIABLE_NAME'.  
+
+> Please take care, don't use system variable name because of the value will be replaced by the system.
 
 
 ### Converter File
@@ -501,7 +520,8 @@ Syntax> remove([columnRange] or [columnIndex,anotherColumnIndex,..],..)
 
 ##### Row Split Transformer Function Properties
 
-This transformation used for a column contains CSV like value. After transform by this function, rows of datatable will be multiply by split-value-list. possible properties are described below
+This transformation used for a column contains CSV like value. After transform by this function, rows of datatable will be multiply by the split-value-list. 
+Possible properties are described below
 
 ```batch
 Syntax> rowsplit([ColumnIdentifier],[regex])
@@ -511,9 +531,9 @@ Syntax> rowsplit([ColumnIdentifier],[regex])
 
 | Property           | Data Type | Default Value | Description                                               |
 |--------------------|-----------|---------------|-----------------------------------------------------------|
-| [ColumnIdentifier] | int       | 1             | index of any column, start at 1                           |
+| [ColumnIdentifier] | int       | 1             | index number of the column to be split, index start at 1                           |
 | [regex]            | string    | [,]           | regex will be pass to the String.split(regex) function    |
-| [DataType]         | string    | STR           | STR for string, INT for long integer, DEC for decimal, DTE for date and time |
+| [DataType]         | string    | STR           | after split will be convert all values to this type, STR for string, INT for long integer, DEC for decimal, DTE for date and time |
 
 
 ##### Row Filter Transformer Function Properties

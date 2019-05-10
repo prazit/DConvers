@@ -6,6 +6,7 @@ public enum Property {
 
     PLUGINS("plugins"),
     CALCULATOR("calculator"),
+    VARIABLE("variable"),
 
     DATA_SOURCE("datasource"),
     SFTP("sftp"),

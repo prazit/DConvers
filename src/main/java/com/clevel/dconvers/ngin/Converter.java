@@ -648,11 +648,14 @@ public class Converter extends AppBase {
 
             case VAR:
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
-                if (systemVariable == null) {
-                    error("Invalid SystemVariable({}) for DynamicValue({}), see 'System Variables' for detailed", valueIdentifier, dynamicValue);
-                    return null;
+                if (systemVariable != null) {
+                    dataColumn = application.systemVariableMap.get(systemVariable);
+                }else{
+                    dataColumn = application.userVariableMap.get(valueIdentifier);
+                    if (dataColumn == null) {
+                        dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
+                    }
                 }
-                dataColumn = application.systemVariableMap.get(systemVariable);
                 break;
 
             case ARG:

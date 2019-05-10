@@ -19,16 +19,14 @@ public class VARValue extends DynamicValue {
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
         SystemVariable systemVariable = SystemVariable.parse(sourceColumnArg);
         if (systemVariable == null) {
-            valid = false;
-            error("Invalid name({}) for system variable, required by target({}.{})", sourceColumnName, targetName, name);
-            dataColumn = null;
-            return;
+            dataColumn = application.userVariableMap.get(sourceColumnArg);
+        }else {
+            dataColumn = application.systemVariableMap.get(systemVariable);
         }
 
-        dataColumn = application.systemVariableMap.get(systemVariable);
         if (dataColumn == null) {
             valid = false;
-            error("Invalid systemVariable({}), required by target({}.{})", systemVariable, targetName, name);
+            error("Variable({}) is not found!, required by target({}.{})", systemVariable, targetName, name);
             dataColumn = null;
         }
     }

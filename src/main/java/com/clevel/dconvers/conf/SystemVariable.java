@@ -24,7 +24,7 @@ public enum SystemVariable {
     EMPTY_STRING(Types.VARCHAR),    // ""
     APPLICATION_START(Types.TIMESTAMP),     // The time to start this application.
 
-    NOW(Types.TIMESTAMP),                   // Time in realtime.
+    NOW(Types.TIMESTAMP)                   // Time in realtime.
     ;
 
     private int dataType;
@@ -45,7 +45,7 @@ public enum SystemVariable {
             systemVariable = SystemVariable.valueOf(name);
         } catch (IllegalArgumentException ex) {
             systemVariable = null;
-            LoggerFactory.getLogger(SystemVariable.class).error("SystemVariable.parse(name:{}) is failed! {}", name, ex.getMessage());
+            //LoggerFactory.getLogger(SystemVariable.class).error("SystemVariable.parse(name:{}) is failed! {}", name, ex.getMessage());
         }
 
         return systemVariable;

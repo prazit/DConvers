@@ -22,6 +22,7 @@ public class DataConversionConfigFile extends ConfigFile {
     private HashMap<String, ConverterConfigFile> converterConfigMap;
 
     private List<Pair<String, String>> pluginsCalcList;
+    private List<Pair<String, String>> variableList;
 
     private String outputSourcePath;
     private String outputTargetPath;
@@ -119,12 +120,24 @@ public class DataConversionConfigFile extends ConfigFile {
 
         Configuration pluginsCalcProperties = properties.subset(Property.PLUGINS.connectKey(Property.CALCULATOR));
         Iterator<String> columnKeyList = pluginsCalcProperties.getKeys();
+        String key;
         pluginsCalcList = new ArrayList<>();
         for (Iterator<String> iterator = columnKeyList; iterator.hasNext(); ) {
-            String key = iterator.next();
+            key = iterator.next();
             pluginsCalcList.add(new Pair<>(key, getPropertyString(pluginsCalcProperties, key)));
         }
         log.debug("pluginsCalcList = {}", pluginsCalcList);
+
+
+        Configuration variableProperties = properties.subset(Property.VARIABLE.key());
+        Iterator<String> variableNameList = variableProperties.getKeys();
+        String variableName;
+        variableList = new ArrayList<>();
+        for (Iterator<String> iterator = variableNameList; iterator.hasNext(); ) {
+            variableName = iterator.next();
+            variableList.add(new Pair<>(variableName, getPropertyString(variableProperties, variableName)));
+        }
+        log.debug("variableList = {}", variableList);
 
 
         childValid = true;
@@ -210,6 +223,10 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public List<Pair<String, String>> getPluginsCalcList() {
         return pluginsCalcList;
+    }
+
+    public List<Pair<String, String>> getVariableList() {
+        return variableList;
     }
 
     public boolean isChildValid() {

@@ -109,6 +109,9 @@ public class SystemDataSource extends DataSource {
 
             dataRow = new DataRow(application, dataTable);
 
+            columnName = "USER";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, "0"));
+
             columnName = "VAR";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, variable.getName()));
 
@@ -117,6 +120,27 @@ public class SystemDataSource extends DataSource {
 
             columnName = "VALUE";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, variable.getType(), variable.getValue()));
+
+            dataTable.addRow(dataRow);
+        }
+
+        DataColumn userVar;
+        for (String key : application.userVariableMap.keySet()) {
+            userVar = application.userVariableMap.get(key);
+
+            dataRow = new DataRow(application, dataTable);
+
+            columnName = "USER";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, "1"));
+
+            columnName = "VAR";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, userVar.getName()));
+
+            columnName = "TYPE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(userVar.getType())));
+
+            columnName = "VALUE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, userVar.getType(), userVar.getValue()));
 
             dataTable.addRow(dataRow);
         }

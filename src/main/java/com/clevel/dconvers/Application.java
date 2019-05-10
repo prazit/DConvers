@@ -10,6 +10,7 @@ import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
 import javafx.util.Pair;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,7 @@ public class Application extends AppBase {
 
     public HashMap<String, SFTP> sftpMap;
     public HashMap<SystemVariable, DataColumn> systemVariableMap;
+    public HashMap<String, DataColumn> userVariableMap;
 
     public List<Converter> converterList;
     public Converter currentConverter;
@@ -148,6 +150,9 @@ public class Application extends AppBase {
         targetOutputPath.setValue(dataConversionConfigFile.getOutputTargetPath());
         mappingOutputPath.setValue(dataConversionConfigFile.getOutputMappingPath());
         sourceOutputPath.setValue(dataConversionConfigFile.getOutputSourcePath());
+
+        // define user variables here
+        setUserVariables(dataConversionConfigFile.getVariableList());
 
         tableSummary = new SummaryTable(this);
         tableSummary.setOwner(this);
@@ -307,7 +312,44 @@ public class Application extends AppBase {
         stop();
     }
 
+    public void setUserVariables(List<Pair<String, String>> variableList) {
+        String name;
+        String value;
+        int type;
+
+        DataColumn variable;
+
+        for (Pair<String, String> pair : variableList) {
+            name = pair.getKey().toUpperCase();
+            value = pair.getValue();
+            type = getVariableType(value);
+
+            variable = userVariableMap.get(name);
+            if (variable == null) {
+                variable = createDataColumn(name, type, value);
+                userVariableMap.put(name, variable);
+            } else {
+                variable.setValue(value);
+            }
+        }
+    }
+
+    private int getVariableType(String value) {
+        // 2.4566 or 24566
+        if (NumberUtils.isCreatable(value)) {
+            if (value.indexOf('.') >= 0) {
+                return Types.DECIMAL;
+            }
+            return Types.INTEGER;
+        }
+
+        // '2018/07/30 21:12:38' or 'string'
+
+        return Types.VARCHAR;
+    }
+
     private void initSystemVariables() {
+        userVariableMap = new HashMap<>();
         systemVariableMap = createSystemVariableMap();
 
         systemVariableMap.put(SystemVariable.NOW, new ComputeNow(this, "NOW"));
