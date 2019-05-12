@@ -7,6 +7,7 @@ public enum SystemQuery {
     ARG,
     VARIABLE,
     ENVIRONMENT,
+    MEMORY,
 
     TABLE_SUMMARY,
     OUTPUT_SUMMARY

@@ -188,6 +188,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | ARG            | arguments from app-switch --arg                                 |
 | VARIABLE       | system variable table contains all variable for value-type(VAR) |
 | ENVIRONMENT    | application environment properties sorted by PROPERTY           |
+| MEMORY         | show current memory information                                 |
 | TABLE_SUMMARY  | the summary table contains all tables from all converters       |
 | OUTPUT_SUMMARY | the summary table contains all outputs from all converters      |
 

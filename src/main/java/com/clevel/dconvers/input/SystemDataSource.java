@@ -7,9 +7,13 @@ import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
 import java.sql.Types;
 import java.util.*;
 
@@ -57,6 +61,9 @@ public class SystemDataSource extends DataSource {
             case OUTPUT_SUMMARY:
                 return application.outputSummary;
 
+            case MEMORY:
+                return memory(tableName, idColumnName);
+
             default: //case ENVIRONMENT:
                 return systemProperties(tableName, idColumnName);
         }
@@ -87,6 +94,49 @@ public class SystemDataSource extends DataSource {
 
             columnName = "VALUE";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, argument));
+
+            dataTable.addRow(dataRow);
+        }
+
+        return dataTable;
+    }
+
+    private DataTable memory(String tableName, String idColumnName) {
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
+        dataTable.setQuery(SystemQuery.MEMORY.name());
+
+        DataRow dataRow;
+        String columnName;
+        List<Pair<String,Long>> memoryPairList = new ArrayList<>();
+
+        Runtime runtime = Runtime.getRuntime();
+        MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heap = memBean.getHeapMemoryUsage();
+        MemoryUsage nonheap = memBean.getNonHeapMemoryUsage();
+
+        memoryPairList.add(new Pair<>("Max Memory", runtime.maxMemory()));
+        memoryPairList.add(new Pair<>("Total Memory", runtime.totalMemory()));
+        memoryPairList.add(new Pair<>("Free Memory", runtime.freeMemory()));
+
+        memoryPairList.add(new Pair<>("Heap Max", heap.getMax()));
+        memoryPairList.add(new Pair<>("Heap Init", heap.getInit()));
+        memoryPairList.add(new Pair<>("Heap Used", heap.getUsed()));
+        memoryPairList.add(new Pair<>("Heap Committed", heap.getCommitted()));
+
+        memoryPairList.add(new Pair<>("Non-heap Max", nonheap.getMax()));
+        memoryPairList.add(new Pair<>("Non-heap Init", nonheap.getInit()));
+        memoryPairList.add(new Pair<>("Non-heap Used", nonheap.getUsed()));
+        memoryPairList.add(new Pair<>("Non-heap Committed", nonheap.getCommitted()));
+
+        for (Pair<String, Long> pair : memoryPairList) {
+            dataRow = new DataRow(application, dataTable);
+
+            columnName = "Memory";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, pair.getKey()));
+
+            columnName = "Bytes";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, pair.getValue().toString()));
 
             dataTable.addRow(dataRow);
         }
