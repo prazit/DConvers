@@ -49,7 +49,7 @@ public abstract class Output extends AppBase {
         super(application, name);
 
         postSFTP = null;
-        outputName = "";
+        outputName = null;
     }
 
     public String print(OutputConfig outputConfig, DataTable dataTable) {
@@ -137,7 +137,12 @@ public abstract class Output extends AppBase {
 
         if (writer != null) {
             log.info("Output file is created(append:{}), local-file:{}", append, outputFile);
-            outputName = outputFile + (append ? " (append)" : " (create/replace)");
+            String fileName = outputFile + (append ? " (append)" : " (create/replace)");
+            if (outputName == null) {
+                outputName = fileName;
+            } else {
+                outputName += "," + fileName;
+            }
         }
 
         return writer;

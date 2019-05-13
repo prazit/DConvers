@@ -38,7 +38,7 @@ public class SummaryTable extends DataTable {
         columnName = "ID";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
 
-        columnName = "Type";
+        columnName = "Table Type";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
 
         columnName = "Table Name";
@@ -56,7 +56,7 @@ public class SummaryTable extends DataTable {
     /**
      * for Application.outputSummary
      */
-    public void addRow(String converterName, String tableName, OutputTypes outputType, String outputName, long rowCount) {
+    public void addRow(String converterName, DynamicValueType tableType, String tableName, OutputTypes outputType, String outputName, long rowCount) {
         log.info("{}:{} has {} row(s)", outputType.name(), outputName, tableName, rowCount);
 
         DataRow newRow = new DataRow(application, this);
@@ -66,11 +66,14 @@ public class SummaryTable extends DataTable {
         columnName = "ID";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
 
-        columnName = "Type";
+        columnName = "Output Type";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputType.name()));
 
         columnName = "Output Name";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputName));
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputName.replaceAll("[,]", "<br/>")));
+
+        columnName = "Table Type";
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
 
         columnName = "Table Name";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableName));

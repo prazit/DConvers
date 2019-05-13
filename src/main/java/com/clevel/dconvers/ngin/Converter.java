@@ -208,7 +208,7 @@ public class Converter extends AppBase {
                         return false;
                     }
                 }
-                outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
+                outputSummary.addRow(name, DynamicValueType.SRC, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
             }
             source.printed();
         }
@@ -277,7 +277,7 @@ public class Converter extends AppBase {
                             return false;
                         }
                     }
-                    outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
+                    outputSummary.addRow(name, DynamicValueType.TAR, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
                 }
             }
 
@@ -302,7 +302,7 @@ public class Converter extends AppBase {
                                 return false;
                             }
                         }
-                        outputSummary.addRow(name, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
+                        outputSummary.addRow(name, DynamicValueType.MAP, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
                     }
                 }
             }
@@ -650,7 +650,7 @@ public class Converter extends AppBase {
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
                 if (systemVariable != null) {
                     dataColumn = application.systemVariableMap.get(systemVariable);
-                }else{
+                } else {
                     dataColumn = application.userVariableMap.get(valueIdentifier);
                     if (dataColumn == null) {
                         dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");

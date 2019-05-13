@@ -299,7 +299,7 @@ public class DataTable extends AppBase implements JRDataSource {
                     return false;
                 }
             }
-            application.outputSummary.addRow(application.currentConverter.getName(), name, outputType, outputName, getRowCount());
+            application.outputSummary.addRow(application.currentConverter.getName(), getTableType(), name, outputType, outputName, getRowCount());
         }
 
         return success;
