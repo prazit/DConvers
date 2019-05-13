@@ -19,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MarkdownFormatter extends DataFormatter {
 
@@ -240,9 +237,15 @@ public class MarkdownFormatter extends DataFormatter {
         DataTable dataTable;
         String name;
         String identifier;
+        String remark;
 
         public Identifier(DataTable dataTable) {
             this.dataTable = dataTable;
+            this.remark = null;
+        }
+
+        public int compareTo(Identifier another) {
+            return this.identifier.compareTo(another.identifier);
         }
     }
 
@@ -250,10 +253,10 @@ public class MarkdownFormatter extends DataFormatter {
         private List<DataTable> registeredDataTableList;
         List<String> pointerList;
 
-        HashMap<String, String> dataSourceMap;
-        HashMap<String, String> sourceMap;
-        HashMap<String, String> targetMap;
-        HashMap<String, String> mappingMap;
+        HashMap<String, Identifier> dataSourceMap;
+        HashMap<String, Identifier> sourceMap;
+        HashMap<String, Identifier> targetMap;
+        HashMap<String, Identifier> mappingMap;
         boolean fullStack;
         String name;
 
@@ -270,59 +273,79 @@ public class MarkdownFormatter extends DataFormatter {
         Identifier prepareDataSource(String dataSourceName, String query) {
             String dsName = dataSourceName.contains(":") ? dataSourceName : Prefix.DATASOURCE.namePrefix + dataSourceName;
             DataSource dataSource = application.getDataSource(dataSourceName);
-            if (dataSource.getDataSourceConfig().getDbms() == null) {
+            if (dataSource == null || dataSource.getDataSourceConfig().getDbms() == null) {
                 dsName += "<br/>" + query;
             } else {
                 dsName += "<br/>from " + getTableName(query).toLowerCase();
             }
 
-            String dsIdentifier = dataSourceMap.get(dsName);
-            if (dsIdentifier == null) {
-                dsIdentifier = Prefix.DATASOURCE.identifierPrefix + (dataSourceMap.size() + 1);
-                dataSourceMap.put(dsName, dsIdentifier);
+            Identifier identifier = dataSourceMap.get(dsName);
+            if (identifier != null) {
+                return identifier;
             }
 
-            Identifier identifier = new Identifier(null);
+            identifier = new Identifier(null);
             identifier.name = dsName;
-            identifier.identifier = dsIdentifier;
+            identifier.identifier = Prefix.DATASOURCE.identifierPrefix + (dataSourceMap.size() + 1);
+            dataSourceMap.put(dsName, identifier);
+
             return identifier;
         }
 
         Identifier prepareDataTable(DataTable dataTable) {
-            String dataTableName = dataTable.getName().toUpperCase();
+            Identifier identifier = null;
+            String dataTableName;
             String dataTableIdentifier = "";
+            String remark = "";
+
+            if (dataTable == null) {
+                identifier = new Identifier(null);
+                identifier.name = "NULL";
+                identifier.identifier = "null";
+                return identifier;
+            }
+
+            dataTableName = dataTable.getName().toUpperCase();
             switch (dataTable.getTableType()) {
                 case SRC:
                     dataTableName = Prefix.SRC.namePrefix + dataTableName;
-                    dataTableIdentifier = sourceMap.get(dataTableName);
-                    if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.SRC.identifierPrefix + (sourceMap.size() + 1);
-                        sourceMap.put(dataTableName, dataTableIdentifier);
+                    identifier = sourceMap.get(dataTableName);
+                    if (identifier == null) {
+                        identifier = new Identifier(dataTable);
+                        identifier.name = dataTableName;
+                        identifier.identifier = Prefix.SRC.identifierPrefix + (sourceMap.size() + 1);
+                        sourceMap.put(dataTableName, identifier);
                     }
                     break;
 
                 case TAR:
                     dataTableName = Prefix.TAR.namePrefix + dataTableName;
-                    dataTableIdentifier = targetMap.get(dataTableName);
-                    if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.TAR.identifierPrefix + (targetMap.size() + 1);
-                        targetMap.put(dataTableName, dataTableIdentifier);
+                    identifier = targetMap.get(dataTableName);
+                    if (identifier == null) {
+                        identifier = new Identifier(dataTable);
+                        identifier.name = dataTableName;
+                        identifier.identifier = Prefix.TAR.identifierPrefix + (targetMap.size() + 1);
+                        targetMap.put(dataTableName, identifier);
+                    }
+                    Target target = (Target) dataTable.getOwner();
+                    int transformCount = target.getTargetConfig().getTransformConfig().getTransformList().size();
+                    if (transformCount > 0) {
+                        identifier.remark = "transform x" + transformCount;
                     }
                     break;
 
                 case MAP:
                     dataTableName = Prefix.MAP.namePrefix + dataTableName;
-                    dataTableIdentifier = mappingMap.get(dataTableName);
-                    if (dataTableIdentifier == null) {
-                        dataTableIdentifier = Prefix.MAP.identifierPrefix + (mappingMap.size() + 1);
-                        mappingMap.put(dataTableName, dataTableIdentifier);
+                    identifier = mappingMap.get(dataTableName);
+                    if (identifier == null) {
+                        identifier = new Identifier(dataTable);
+                        identifier.name = dataTableName;
+                        identifier.identifier = Prefix.MAP.identifierPrefix + (mappingMap.size() + 1);
+                        mappingMap.put(dataTableName, identifier);
                     }
                     break;
             }
 
-            Identifier identifier = new Identifier(dataTable);
-            identifier.name = dataTableName;
-            identifier.identifier = dataTableIdentifier;
             return identifier;
         }
 
@@ -508,28 +531,26 @@ public class MarkdownFormatter extends DataFormatter {
     private String generateMermaid(Mermaid mermaid) {
         StringBuilder classes = new StringBuilder();
         StringBuilder generated = new StringBuilder();
-        generated.append(eol).append("#### ").append(mermaid.name).append(eol).append(eol).append("```mermaid").append(eol).append("graph TD;").append(eol).append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol).append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol).append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
+        generated.append(eol).append("#### ").append(mermaid.name).append(eol).append(eol)
+                .append("```mermaid").append(eol)
+                .append("graph TD;").append(eol)
+                .append("classDef source fill:pink,stroke:red,stroke-width:4px;").append(eol)
+                .append("classDef map fill:chocolate,stroke:red,stroke-width:4px;").append(eol)
+                .append("classDef target fill:yellow,stroke:black,stroke-width:4px;").append(eol);
 
         if (mermaid.dataSourceMap.size() > 0) {
             generated.append(eol);
-            for (Map.Entry<String, String> datasourceEntry : mermaid.dataSourceMap.entrySet()) {
-                generated.append(datasourceEntry.getValue()).append("(").append(datasourceEntry.getKey()).append(");").append(eol);
-            }
+            classes.append("class ");
+
+            generateMermaidFromMap(generated, classes, mermaid.dataSourceMap);
+            classes.deleteCharAt(classes.length() - 1).append(" datasource;");
         }
 
         if (mermaid.sourceMap.size() > 0) {
             generated.append(eol);
-            classes.append("class ");
+            classes.append(eol).append("class ");
 
-            String sourceName;
-            String sourceIdentifier;
-            for (Map.Entry<String, String> sourceEntry : mermaid.sourceMap.entrySet()) {
-                sourceName = sourceEntry.getKey();
-                sourceIdentifier = sourceEntry.getValue();
-                generated.append(sourceIdentifier).append("(").append(sourceName).append(");").append(eol);
-                classes.append(sourceIdentifier).append(",");
-            }
-
+            generateMermaidFromMap(generated, classes, mermaid.sourceMap);
             classes.deleteCharAt(classes.length() - 1).append(" source;");
         }
 
@@ -537,15 +558,7 @@ public class MarkdownFormatter extends DataFormatter {
             generated.append(eol);
             classes.append(eol).append("class ");
 
-            String targetName;
-            String targetIdentifier;
-            for (Map.Entry<String, String> targetEntry : mermaid.targetMap.entrySet()) {
-                targetName = targetEntry.getKey();
-                targetIdentifier = targetEntry.getValue();
-                generated.append(targetIdentifier).append("(").append(targetName).append(");").append(eol);
-                classes.append(targetIdentifier).append(",");
-            }
-
+            generateMermaidFromMap(generated, classes, mermaid.targetMap);
             classes.deleteCharAt(classes.length() - 1).append(" target;");
         }
 
@@ -553,20 +566,14 @@ public class MarkdownFormatter extends DataFormatter {
             generated.append(eol);
             classes.append(eol).append("class ");
 
-            String mapName;
-            String mapIdentifier;
-            for (Map.Entry<String, String> mappingEntry : mermaid.mappingMap.entrySet()) {
-                mapName = mappingEntry.getKey();
-                mapIdentifier = mappingEntry.getValue();
-                generated.append(mapIdentifier).append("(").append(mapName).append(");").append(eol);
-                classes.append(mapIdentifier).append(",");
-            }
-
+            generateMermaidFromMap(generated, classes, mermaid.mappingMap);
             classes.deleteCharAt(classes.length() - 1).append(" map;");
         }
 
         if (mermaid.pointerList.size() > 0) {
             generated.append(eol);
+
+            mermaid.pointerList.sort(Comparator.naturalOrder());
             for (String pair : mermaid.pointerList) {
                 generated.append(pair).append(";").append(eol);
             }
@@ -574,6 +581,20 @@ public class MarkdownFormatter extends DataFormatter {
 
         generated.append(eol).append(classes).append(eol).append("```").append(eol).append(eof);
         return generated.toString();
+    }
+
+    private void generateMermaidFromMap(StringBuilder generated, StringBuilder classes, HashMap<String, Identifier> map) {
+        List<Identifier> identifierList = new ArrayList<>(map.values());
+        identifierList.sort(Identifier::compareTo);
+
+        for (Identifier identifier : identifierList) {
+            generated.append(identifier.identifier).append("(").append(identifier.name);
+            if (identifier.remark != null) {
+                generated.append("<br/>").append(identifier.remark);
+            }
+            generated.append(");").append(eol);
+            classes.append(identifier.identifier).append(",");
+        }
     }
 
     @Override
