@@ -70,13 +70,18 @@ public abstract class Output extends AppBase {
         }
 
         boolean printSuccess = true;
-        for (DataFormatter formatter : dataFormatterList) {
-            printSuccess = formatter.print(dataTable, writer);
-            formatter.reset();
+        try {
+            for (DataFormatter formatter : dataFormatterList) {
+                printSuccess = formatter.print(dataTable, writer);
+                formatter.reset();
 
-            if (!printSuccess) {
-                break;
+                if (!printSuccess) {
+                    break;
+                }
             }
+        } catch (Exception ex) {
+            error("print failed!, {}", ex.getMessage());
+            return null;
         }
 
         if (!closeWriter(outputConfig, dataTable, writer, printSuccess) || !printSuccess) {
