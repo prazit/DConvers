@@ -189,8 +189,8 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | VARIABLE       | system variable table contains all variable for value-type(VAR) |
 | ENVIRONMENT    | application environment properties sorted by PROPERTY           |
 | MEMORY         | show current memory information                                 |
-| TABLE_SUMMARY  | the summary table contains all tables from all converters       |
-| OUTPUT_SUMMARY | the summary table contains all outputs from all converters      |
+| TABLE_SUMMARY  | the summary table contains all tables from all converters, this table name is SRC:table_summary and can access at any converter.   |
+| OUTPUT_SUMMARY | the summary table contains all outputs from all converters, this table name is SRC:output_summary and can access at any converter. |
 
 
 #### Target Properties

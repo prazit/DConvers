@@ -14,6 +14,7 @@ public enum DynamicValueType {
     DTE(Types.DATE, DTEValue.class),        // DTE:DD/MM/yyyy = DTE:31/12/2020
     DTT(Types.DATE, DTEValue.class),        // DTT:DD/MM/yyyy hh:mm:ss => DTT:31/12/2020 23:59:59
 
+    SYS(0, SRCValue.class),        // SYS:source-name.column-name  // the target mapping file need to define as a source with the standard mapping table name such as 'map_branch_to_branch_address'
     SRC(0, SRCValue.class),        // SRC:source-name.column-name  // the target mapping file need to define as a source with the standard mapping table name such as 'map_branch_to_branch_address'
     TAR(0, SRCValue.class),        // TAR:target-name.column-name  // the target 'target-name' must be use the same source with this target, because of dconvers will use mapping table between TAR:target-name and target.target-name.source
     MAP(0, SRCValue.class),        // MAP:mapping-name.column-name

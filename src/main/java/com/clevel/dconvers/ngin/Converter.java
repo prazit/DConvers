@@ -388,11 +388,24 @@ public class Converter extends AppBase {
                 dataTable = getMapping(mappings[1]);
                 break;
 
+            case SYS:
+                dataTable = getSystemTable(mappings[1]);
+                break;
+
             default:
                 dataTable = null;
         }
 
         return dataTable;
+    }
+
+    private DataTable getSystemTable(String name) {
+        if (name == null) {
+            log.debug("getSystemTable(null) then return null");
+            return null;
+        }
+
+        return application.systemTableMap.get(name.toUpperCase());
     }
 
     public DataRow getDataRow(String rowIdentifier, DataTable dataTable) {

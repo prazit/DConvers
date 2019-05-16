@@ -6,6 +6,7 @@ import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.data.*;
+import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
 import javafx.util.Pair;
@@ -40,6 +41,7 @@ public class Application extends AppBase {
     public Converter currentConverter;
     public DataLong currentState;
 
+    public HashMap<String, DataTable> systemTableMap;
     public SummaryTable tableSummary;
     public SummaryTable outputSummary;
 
@@ -161,6 +163,10 @@ public class Application extends AppBase {
         outputSummary = new SummaryTable(this);
         outputSummary.setOwner(this);
         outputSummary.setQuery(SystemQuery.OUTPUT_SUMMARY.name());
+
+        systemTableMap = new HashMap<>();
+        systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.TABLE_SUMMARY.name(), tableSummary);
+        systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.OUTPUT_SUMMARY.name(), outputSummary);
 
         log.trace("Application. Load Plugins for calculator.");
         boolean loadPluginsSuccess = true;
