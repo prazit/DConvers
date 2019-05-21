@@ -57,7 +57,7 @@ public class SummaryTable extends DataTable {
      * for Application.outputSummary
      */
     public void addRow(String converterName, DynamicValueType tableType, String tableName, OutputTypes outputType, String outputName, long rowCount) {
-        log.info("{}:{} has {} row(s)", outputType.name(), outputName, tableName, rowCount);
+        log.info("{}:{} has {} row(s)", outputType.name(), outputName, rowCount);
 
         DataRow newRow = new DataRow(application, this);
         String columnName;
@@ -70,7 +70,7 @@ public class SummaryTable extends DataTable {
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputType.name()));
 
         columnName = "Output Name";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputName.replaceAll("[,]", "<br/>")));
+        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, (outputName == null) ? "NULL" : outputName.replaceAll("[,]", "<br/>")));
 
         columnName = "Table Type";
         newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));

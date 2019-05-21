@@ -62,7 +62,7 @@ public abstract class Output extends AppBase {
         try {
             writer = openWriter(outputConfig, dataTable);
         } catch (Exception ex) {
-            error("Print failed: {}", ex.getMessage(), ex);
+            error("Print failed", ex);
             return null;
         }
         if (writer == null) {
@@ -80,7 +80,7 @@ public abstract class Output extends AppBase {
                 }
             }
         } catch (Exception ex) {
-            error("print failed!, {}", ex.getMessage());
+            error("print failed!", ex);
             return null;
         }
 

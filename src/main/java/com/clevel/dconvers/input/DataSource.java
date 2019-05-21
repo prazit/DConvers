@@ -104,7 +104,7 @@ public class DataSource extends UtilBase {
             log.debug("getRowCount.size = {}", size);
             return size;
         } catch (Exception ex) {
-            log.debug("Exception has ouccured in DataSource.getRowCount() but this is normally for the Stored Procedure call. exception-message({})", ex.getMessage());
+            log.debug("Exception has ouccured in DataSource.getRowCount() but this is normally for the Stored Procedure call. ", ex);
         }
         return 0;
     }

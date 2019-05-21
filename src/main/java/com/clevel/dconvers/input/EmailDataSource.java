@@ -384,7 +384,7 @@ public class EmailDataSource extends DataSource {
             file = new File(path + newName);
             fileOutputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {
-            error("saveAttachedFile: {}", e.getMessage());
+            error("saveAttachedFile: {}", e);
             return;
         }
 
@@ -395,7 +395,7 @@ public class EmailDataSource extends DataSource {
                 fileOutputStream.write(buffer);
             }
         } catch (IOException e) {
-            error("saveAttachedFile: ", e.getMessage());
+            error("saveAttachedFile: ", e);
             return;
         }
 
@@ -403,7 +403,7 @@ public class EmailDataSource extends DataSource {
             fileOutputStream.close();
             filterInputStream.close();
         } catch (IOException e) {
-            log.warn("saveAttachedFile: ", e.getMessage());
+            log.warn("saveAttachedFile: ", e);
         }
     }
 

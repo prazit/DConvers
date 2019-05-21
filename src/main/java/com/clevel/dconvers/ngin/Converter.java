@@ -276,6 +276,8 @@ public class Converter extends AppBase {
                         if (exitOnError) {
                             return false;
                         }
+                        log.debug("no output config for target({})", dataTable.getName());
+                        continue;
                     }
                     outputSummary.addRow(name, DynamicValueType.TAR, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
                 }
@@ -301,6 +303,7 @@ public class Converter extends AppBase {
                             if (exitOnError) {
                                 return false;
                             }
+                            continue;
                         }
                         outputSummary.addRow(name, DynamicValueType.MAP, dataTable.getName(), outputType, outputName, dataTable.getRowCount());
                     }

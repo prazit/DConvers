@@ -503,25 +503,40 @@ public class MarkdownFormatter extends DataFormatter {
 
         private String getTableName(String query) {
             query = query.toUpperCase();
-            int fromIndex = query.indexOf("FROM ");
+            log.debug("getTableName.query='{}'", query);
+
+            int fromIndex = query.indexOf("SELECT");
+            if (fromIndex < 0) {
+                return "Unknown";
+            }
+
+            fromIndex = query.indexOf("FROM", fromIndex);
             if (fromIndex < 0) {
                 return "Procedure";
             }
-            fromIndex += 5;
+            fromIndex += 4;
 
-            int blankIndex = query.indexOf(" ", fromIndex);
-            if (blankIndex < 0) {
-                blankIndex = query.indexOf("\n", fromIndex);
-                if (blankIndex < 0) {
-                    return "Unknown";
-                }
+            String subQuery;
+            int toIndex = query.indexOf("\n", fromIndex);
+            if (toIndex < 0) {
+                subQuery = query.substring(fromIndex);
+            } else {
+                subQuery = query.substring(fromIndex, toIndex);
             }
+            subQuery = subQuery.trim();
 
-            String tableName = query.substring(fromIndex, blankIndex).trim();
-            tableName = tableName.replaceAll("[()<>]", "").trim();
+            toIndex = subQuery.indexOf(" ", fromIndex);
+            if (toIndex < 0) {
+                toIndex = subQuery.length();
+            }
+            log.debug("getTableName.subQuery='{}', fronIndex({}) toIndex({})", subQuery, fromIndex, toIndex);
+
+            String tableName = subQuery.substring(0, toIndex);
+            tableName = tableName.replaceAll("[{}()<>+*/\\-]", "").trim();
+            log.debug("getTableName.tableName='{}' after replaced", tableName);
 
             if (tableName.length() == 0) {
-                return "Nested SQL";
+                return "Complex-SQL";
             }
 
             return tableName;

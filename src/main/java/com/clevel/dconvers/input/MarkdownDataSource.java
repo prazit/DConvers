@@ -94,7 +94,7 @@ public class MarkdownDataSource extends DataSource {
             dataTable = null;
 
         } catch (Exception ex) {
-            error("MarkdownDataSource.getDataTable. has exception: {}", ex);
+            error("MarkdownDataSource.getDataTable. has exception: ", ex);
             dataTable = null;
 
         } finally {
