@@ -1,5 +1,5 @@
 # Design of source.requires.target
-
+(deprecated design)
 
 
 ### Sequence Diagram
@@ -21,7 +21,6 @@ Target_DataTable->Target_Output:printTarget
 Target_Output-->Target_DataTable:...
 Target_DataTable-->Target:...
 ```
-
 
 
 ### Alternative Way<br/><sup><sup>(recommended)</sup></sup>

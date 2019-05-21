@@ -49,7 +49,7 @@ And type this command to show help.
 ## Configuring
 
 Explain how to write the configuration files before run the DConvers application.  
-All configuration files in DConvers project are in standard properties file format.  
+All configuration files in DConvers project are in standard of properties file format.  
 The possible values for any property is depends on the DataType of the property as described below
 
 | Data Type | Possible Values     | Remark                                                                                                          |
@@ -64,11 +64,11 @@ The possible values for any property is depends on the DataType of the property 
 
 > All directory path must use '/' instead of '\\' on all operating systems.
 
-Conversion file is a properties file which contains 4 groups of property as follow
+Conversion file is a properties file which contains 5 groups of property as follow
 1. Conversion Properties
 2. List of DataSource Properties 
 3. List of SFTP Properties 
-4. List of Converter File
+4. List of Converter Files
 5. List of Variables
 
 #### 1. Conversion Properties
@@ -124,9 +124,9 @@ variable.first=<value>
 variable.second=<value>
 ```
 
-Define user variable to use in converter like this 'VAR:MY_VARIABLE_NAME'.  
+Define user variables here and then use them in DynamicValue expression like this 'VAR:MY_VARIABLE_NAME'.  
 
-> Please take care, don't use system variable name because of the value will be replaced by the system.
+> Please take care, don't use system variable name as user variable name because of the value will be replaced by the system.
 
 
 ### Converter File
@@ -217,7 +217,7 @@ rownumber=CAL:ROWCOUNT(cash_deposit_withdraw)+1
 | target.transform      | List      |               | see [Transform Properties](#Transform_Properties)                                                                        |
 
 
-#### Output Type
+#### Output Types
 
 The DConvers program has 7 optional output types with different set of property, they are listed below
 
@@ -570,7 +570,7 @@ Syntax> compile([replace or [ColumnName]]:[insertColumnIndex],[current or [[Tabl
 ```
 
 
-#### Dynamic Value Expression for Source.Query
+#### Dynamic Value Expression for any properties
 
 ```
 $[[Type]:[Value-Identifier])
@@ -591,7 +591,7 @@ TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of va
 MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
 CAL  | | | .
 
-#### Dynamic Value Expression for Target.Column.Value
+#### Dynamic Value Expression for Target.Column
 
 ```
 [Type]:[Value-Identifier]
