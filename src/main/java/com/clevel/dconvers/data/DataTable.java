@@ -8,17 +8,16 @@ import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class DataTable extends AppBase implements JRDataSource {
+public class DataTable extends AppBase {
 
     protected Object owner;
 
@@ -43,8 +42,6 @@ public class DataTable extends AppBase implements JRDataSource {
         valid = true;
         dataSource = "";
         query = "";
-        currentRow = -1;
-        needHeader = true;
     }
 
     public DataTable(Application application, String tableName, String idColumnName, Object owner) {
@@ -57,8 +54,6 @@ public class DataTable extends AppBase implements JRDataSource {
         valid = true;
         dataSource = "";
         query = "";
-        currentRow = -1;
-        needHeader = true;
     }
 
     @Override
@@ -291,10 +286,6 @@ public class DataTable extends AppBase implements JRDataSource {
         return success;
     }
 
-    private boolean needHeader;
-    private int currentRow;
-    private List<DataColumn> columnList;
-
     public DataTable clone() {
         DataTable dataTable = new DataTable(application, name, idColumnName);
         dataTable.setOwner(owner);
@@ -305,55 +296,5 @@ public class DataTable extends AppBase implements JRDataSource {
         return dataTable;
     }
 
-    @Override
-    public boolean next() throws JRException {
-        int rowCount = getRowCount();
-        //log.debug("next of currentRow({}), rowcount({})", currentRow, rowCount);
-        if (rowCount == 0) {
-            return false;
-        }
-
-        if (needHeader) {
-            columnList = getRow(0).getColumnList();
-            if (currentRow < 0) {
-                currentRow++;
-            } else {
-                needHeader = false;
-            }
-            return true;
-        }
-
-        if (currentRow >= rowCount) {
-            columnList = getRow(0).getColumnList();
-            return false;
-        }
-
-        currentRow++;
-        columnList = getRow(currentRow).getColumnList();
-        return true;
-    }
-
-    /**
-     * @param jrField name of field in jrxml file (row=0 is column headers) (row>0 is column values)
-     * @return
-     * @throws JRException
-     */
-    @Override
-    public Object getFieldValue(JRField jrField) throws JRException {
-        // field1,field2,...
-        String fieldName = jrField.getName();
-        int columnIndex = Integer.parseInt(fieldName.substring(5)) - 1;
-        //log.debug("getFieldValue(name:{}, desc:{}, class:{}) columnIndex is {}", fieldName, jrField.getDescription(), jrField.getValueClassName(), columnIndex);
-
-        if (columnIndex >= columnList.size()) {
-            return "-";
-        }
-
-        DataColumn dataColumn = columnList.get(columnIndex);
-        if (needHeader) {
-            return dataColumn.getName();
-        }
-        return dataColumn.getValue();
-    }
 
 }
