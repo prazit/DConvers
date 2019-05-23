@@ -328,7 +328,7 @@ public class FixedLengthFormatter extends DataFormatter {
             int count = rightLength - rightUsed;
             rightDecimal = fillRight(rightDecimal, "0", count);     // fraction need to fill by "0" only.
         } else if (rightUsed > rightLength) {
-            rightDecimal = decimal[1].substring(rightUsed - rightLength, rightUsed);
+            rightDecimal = decimal[1].substring(0, rightLength);
         }
 
         formatted = leftDecimal.concat(rightDecimal);
