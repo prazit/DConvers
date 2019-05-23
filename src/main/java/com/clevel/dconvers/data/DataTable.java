@@ -29,8 +29,6 @@ public class DataTable extends AppBase implements JRDataSource {
     protected List<DataRow> dataRowList;
     protected String idColumnName;
 
-    protected List<String> postUpdate;
-
     protected DataTable metaData;
     protected String dataSource;
     protected String query;
@@ -45,15 +43,13 @@ public class DataTable extends AppBase implements JRDataSource {
         valid = true;
         dataSource = "";
         query = "";
-        postUpdate = new ArrayList<>();
         currentRow = -1;
         needHeader = true;
     }
 
-    public DataTable(Application application, String tableName, String idColumnName, List<String> postUpdate, Object owner) {
+    public DataTable(Application application, String tableName, String idColumnName, Object owner) {
         super(application, tableName);
 
-        this.postUpdate = postUpdate;
         this.idColumnName = idColumnName;
         this.owner = owner;
         dataRowList = new ArrayList<>();
@@ -230,15 +226,6 @@ public class DataTable extends AppBase implements JRDataSource {
     public void setQuery(String query) {
         this.query = query;
     }
-
-    public List<String> getPostUpdate() {
-        return postUpdate;
-    }
-
-    public void setPostUpdate(List<String> postUpdate) {
-        this.postUpdate = postUpdate;
-    }
-
     public DynamicValueType getTableType() {
         if (!isValid() || owner == null) {
             return DynamicValueType.INV;
@@ -268,7 +255,6 @@ public class DataTable extends AppBase implements JRDataSource {
                 .append("idColumnName", idColumnName)
                 .append("dataSource", dataSource)
                 .append("query", query)
-                .append("postUpdate", postUpdate)
                 .append("metaData", metaData)
                 .toString()
                 .replace('=', ':');

@@ -182,7 +182,7 @@ public class Converter extends AppBase {
                 if (exitOnError) {
                     return false;
                 }
-                dataTable = new DataTable(application, source.getName(), "source_id", Collections.EMPTY_LIST, source);
+                dataTable = new DataTable(application, source.getName(), "source_id", source);
             }
 
             tableSummary.addRow(name, dataTable.getName(), DynamicValueType.SRC, dataTable.getRowCount());
@@ -256,7 +256,7 @@ public class Converter extends AppBase {
 
             dataTable = target.getDataTable();
             if (dataTable == null) {
-                dataTable = new DataTable(application, target.getName(), "target_id", Collections.EMPTY_LIST, target);
+                dataTable = new DataTable(application, target.getName(), "target_id", target);
             }
             setCurrentTable(dataTable);
 

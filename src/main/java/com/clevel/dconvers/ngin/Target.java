@@ -84,7 +84,7 @@ public class Target extends UtilBase {
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
-        dataTable = new DataTable(application, name, targetIdColumnName, targetConfig.getOutputConfig().getSqlPostSQL(), this);
+        dataTable = new DataTable(application, name, targetIdColumnName, this);
         dataTable.setOwner(this);
         converter.setCurrentTable(dataTable);
 
