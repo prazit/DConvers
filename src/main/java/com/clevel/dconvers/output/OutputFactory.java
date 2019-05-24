@@ -21,13 +21,13 @@ public class OutputFactory {
                 constructor.setAccessible(true);
                 output = (Output) constructor.newInstance(application, outputType.name());
             } catch (InstantiationException e) {
-                application.error("The output({}) cannot be instantiated, {}", outputType.name(), e.getMessage());
+                application.error("The output({}) cannot be instantiated, {}", outputType.getName(), e.getMessage());
             } catch (IllegalAccessException e) {
-                application.error("Create output({}) is failed, {}", outputType.name(), e.getMessage());
+                application.error("Create output({}) is failed, {}", outputType.getName(), e.getMessage());
             } catch (InvocationTargetException e) {
-                application.error("InvocationTargetException has occurred when create output({}), {}", outputType.name(), e.getMessage());
+                application.error("InvocationTargetException has occurred when create output({}), {}", outputType.getName(), e.getMessage());
             } catch (NoSuchMethodException e) {
-                application.error("No such method/constructor for output({}), {}", outputType.name(), e.getMessage());
+                application.error("No such method/constructor for output({}), {}", outputType.getName(), e.getMessage());
             } catch (Exception e) {
                 application.error("Unexpected exception, {}", e);
             }

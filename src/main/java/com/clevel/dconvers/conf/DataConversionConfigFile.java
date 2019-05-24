@@ -118,30 +118,26 @@ public class DataConversionConfigFile extends ConfigFile {
         }
 
 
-        Configuration pluginsCalcProperties = properties.subset(Property.PLUGINS.connectKey(Property.CALCULATOR));
-        Iterator<String> columnKeyList = pluginsCalcProperties.getKeys();
-        String key;
-        pluginsCalcList = new ArrayList<>();
-        for (Iterator<String> iterator = columnKeyList; iterator.hasNext(); ) {
-            key = iterator.next();
-            pluginsCalcList.add(new Pair<>(key, getPropertyString(pluginsCalcProperties, key)));
-        }
-        log.debug("pluginsCalcList = {}", pluginsCalcList);
-
-
-        Configuration variableProperties = properties.subset(Property.VARIABLE.key());
-        Iterator<String> variableNameList = variableProperties.getKeys();
-        String variableName;
-        variableList = new ArrayList<>();
-        for (Iterator<String> iterator = variableNameList; iterator.hasNext(); ) {
-            variableName = iterator.next();
-            variableList.add(new Pair<>(variableName, getPropertyString(variableProperties, variableName)));
-        }
-        log.debug("variableList = {}", variableList);
-
+        pluginsCalcList = loadStringPairList(properties.subset(Property.PLUGINS.connectKey(Property.CALCULATOR)));
+        pluginsOutputList = loadStringPairList(properties.subset(Property.PLUGINS.connectKey(Property.OUTPUT_FILE)));
+        pluginsDataSourceList = loadStringPairList(properties.subset(Property.PLUGINS.connectKey(Property.DATA_SOURCE)));
+        variableList = loadStringPairList(properties.subset(Property.VARIABLE.key()));
 
         childValid = true;
         return true;
+    }
+
+    private List<Pair<String, String>> loadStringPairList(Configuration pluginsProperties) {
+        List<Pair<String, String>> pluginsList = new ArrayList<>();
+        Iterator<String> columnKeyList = pluginsProperties.getKeys();
+        String key;
+        for (Iterator<String> iterator = columnKeyList; iterator.hasNext(); ) {
+            key = iterator.next();
+            pluginsList.add(new Pair<>(key, getPropertyString(pluginsProperties, key)));
+        }
+        log.debug("pluginsCalcList = {}", pluginsList);
+        return pluginsList;
+
     }
 
     @Override

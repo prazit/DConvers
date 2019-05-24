@@ -9,6 +9,7 @@ import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
+import com.clevel.dconvers.output.OutputTypes;
 import javafx.util.Pair;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -170,12 +171,27 @@ public class Application extends AppBase {
 
         log.trace("Application. Load Plugins for calculator.");
         boolean loadPluginsSuccess = true;
-        List<Pair<String, String>> pluginsCalcList = dataConversionConfigFile.getPluginsCalcList();
-        for (Pair<String, String> pluginsCalc : pluginsCalcList) {
+        List<Pair<String, String>> pluginsList = dataConversionConfigFile.getPluginsCalcList();
+        for (Pair<String, String> plugins : pluginsList) {
             try {
-                CalcTypes.addPlugins(pluginsCalc.getKey(), pluginsCalc.getValue());
+                CalcTypes.addPlugins(plugins.getKey(), plugins.getValue());
             } catch (ClassNotFoundException e) {
-                error("Load calculator plugins({}) is failed, class({}) not found!", pluginsCalc.getKey(), e.getMessage());
+                error("Load calculator plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
+                loadPluginsSuccess = false;
+            }
+        }
+        if (!loadPluginsSuccess && exitOnError) {
+            stopWithError();
+        }
+
+        log.trace("Application. Load Plugins for output.");
+        loadPluginsSuccess = true;
+        pluginsList = dataConversionConfigFile.getPluginsOutputList();
+        for (Pair<String, String> plugins : pluginsList) {
+            try {
+                OutputTypes.addPlugins(plugins.getKey(), plugins.getValue());
+            } catch (ClassNotFoundException e) {
+                error("Load output plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
                 loadPluginsSuccess = false;
             }
         }
