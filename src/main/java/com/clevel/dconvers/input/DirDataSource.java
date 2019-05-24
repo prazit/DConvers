@@ -3,6 +3,7 @@ package com.clevel.dconvers.input;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.DataDate;
+import com.clevel.dconvers.data.DataLong;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -107,32 +108,23 @@ public class DirDataSource extends DataSource {
             columnName = "Execute";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canExecute())));
 
+            columnName = "Absolute";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
+
             columnName = "LastModified";
             dataRow.putColumn(columnName, new DataDate(application, 0, Types.DATE, columnName, new Date(file.lastModified())));
 
             columnName = "Length";
-            dataRow.putColumn(columnName, new DataDate(application, 0, Types.INTEGER, columnName, String.valueOf(file.length())));
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.length())));
 
             columnName = "Path";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, file.getParent()));
-
-            columnName = "Absolute";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
 
             columnName = "AbsolutePath";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, file.getAbsolutePath()));
 
             columnName = "CanonicalPath";
             dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, getCanonicalPath(file)));
-
-            columnName = "FreeSpace";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.getFreeSpace())));
-
-            columnName = "UsableSpace";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.getUsableSpace())));
-
-            columnName = "TotalSpace";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.getTotalSpace())));
 
             dataTable.addRow(dataRow);
         }

@@ -140,7 +140,7 @@ public class FixedLengthFormatter extends DataFormatter {
             txtLine += separator;
         }
 
-        txtLine = txtLine.substring(0, txtLine.length() - separator.length() - separator.length());
+        txtLine = txtLine.substring(0, txtLine.length() - separator.length());
         return txtLine + eol;
     }
 
