@@ -29,6 +29,7 @@ public class MarkdownFormatter extends DataFormatter {
     private int rowIndexWidth;
     private String eol;
     private String eof;
+    private String remarkEOL;
     private boolean needMermaid;
     private boolean mermaidFullStack;
 
@@ -37,6 +38,7 @@ public class MarkdownFormatter extends DataFormatter {
 
         this.eol = eol;
         this.eof = eof;
+        remarkEOL = "<br/>";
         outputType = "markdown";
         this.needMermaid = mermaid;
         this.mermaidFullStack = mermaidFullStack;
@@ -428,7 +430,7 @@ public class MarkdownFormatter extends DataFormatter {
                         mappingDataTableIdentifier = prepareDataTable(mappingTable);
 
                         /*current target to mapping*/
-                        remark = "|" + dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
+                        remark = "|" + dataTable.getIdColumnName() + remarkEOL + "target_id|";
                         addPointer(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
 
                         dataTablePair = (Pair<DataTable, DataTable>) mappingTable.getOwner();
@@ -440,7 +442,7 @@ public class MarkdownFormatter extends DataFormatter {
                         /*source to mapping*/
                         DataTable asSourceDataTable = dataTablePair.getKey();
                         sourceDataTableIdentifier = prepareDataTable(asSourceDataTable);
-                        remark = "|" + asSourceDataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+                        remark = "|" + asSourceDataTable.getIdColumnName() + remarkEOL + "source_id|";
                         addPointer(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
                     } // end for
 
@@ -461,7 +463,7 @@ public class MarkdownFormatter extends DataFormatter {
                         lookupTable = colValue.getLookupTable();
                         lookupTableIdentifier = prepareDataTable(lookupTable);
 
-                        remark = "|" + colValue.getValueColumnName() + "<br/><br/><br/>" + colValue.getName() + "|";
+                        remark = "|" + colValue.getValueColumnName() + remarkEOL + colValue.getName() + "|";
                         addPointer(lookupTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
 
                         if (fullStack) {
@@ -486,10 +488,10 @@ public class MarkdownFormatter extends DataFormatter {
                     Identifier sourceDataTableIdentifier = prepareDataTable(dataTablePair.getKey());
                     Identifier targetDataTableIdentifier = prepareDataTable(dataTablePair.getValue());
 
-                    String remark = "|" + sourceDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "source_id|";
+                    String remark = "|" + sourceDataTableIdentifier.dataTable.getIdColumnName() + remarkEOL + "source_id|";
                     addPointer(sourceDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
 
-                    remark = "|" + targetDataTableIdentifier.dataTable.getIdColumnName() + "<br/><br/><br/>" + "target_id|";
+                    remark = "|" + targetDataTableIdentifier.dataTable.getIdColumnName() + remarkEOL + "target_id|";
                     addPointer(targetDataTableIdentifier.identifier + pointer + remark + mappingDataTableIdentifier.identifier);
 
                     if (fullStack) {
