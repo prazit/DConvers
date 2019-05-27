@@ -2,14 +2,14 @@ package com.clevel.dconvers.dynvalue;
 
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
 public enum OperatorType {
 
     ADD('+', OperatorAdd.class),
-    SUBTRACT('~', OperatorSubtract.class)
-    ;
+    SUBTRACT('~', OperatorSubtract.class);
 
     private char operator;
     private Class operatorClass;
@@ -56,7 +56,7 @@ public enum OperatorType {
             prepareOperators();
         }
 
-        return operators;
+        return Arrays.copyOf(operators, operators.length);
     }
 
     public static OperatorType parse(char operator) {

@@ -122,7 +122,7 @@ public class TargetConfig extends Config {
         if (value == null) {
             return 1;
         }
-        return Long.valueOf(value);
+        return Long.parseLong(value);
     }
 
     public List<Pair<String, String>> getColumnList() {

@@ -59,7 +59,7 @@ public class Application extends AppBase {
 
     public Application(String[] args) {
         super("DConvers");
-        this.args = args;
+        this.args = Arrays.copyOf(args, args.length);
         loadLogger();
 
         hasWarning = false;

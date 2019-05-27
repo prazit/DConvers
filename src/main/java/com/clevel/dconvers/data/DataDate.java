@@ -16,7 +16,7 @@ public class DataDate extends DataColumn {
 
     public DataDate(Application application, int index, int type, String name, Date value) {
         super(application, index, type, name);
-        this.value = value;
+        this.value = (value == null) ? null : new Date(value.getTime());
     }
 
     public DataDate(Application application, int index, int type, String name, String value) {
@@ -54,7 +54,7 @@ public class DataDate extends DataColumn {
     }
 
     public Date getDateValue() {
-        return value;
+        return (value == null) ? null : new Date(value.getTime());
     }
 
     @Override
@@ -99,7 +99,7 @@ public class DataDate extends DataColumn {
     }
 
     public void setValue(Date value) {
-        this.value = value;
+        this.value = (value == null) ? null : new Date(value.getTime());
     }
 
     private String format(Date date, String format) {

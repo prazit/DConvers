@@ -728,7 +728,7 @@ public class Converter extends AppBase {
             return "";
         }
 
-        if (dataTable == null || dataTable.getRowCount() == 0) {
+        if (dataTable.getRowCount() == 0) {
             log.warn("Source.valuesFromDataTable. dataTable({}) is empty.", dataTableMapping);
             return "";
         }
@@ -761,15 +761,16 @@ public class Converter extends AppBase {
     public String valueFromFile(String fileName) {
 
         BufferedReader br = null;
-        String content = "";
+        StringBuilder content = new StringBuilder();
         String newLine = "\n";
+        String value = null;
         int newLineLength = newLine.length();
         try {
             br = new BufferedReader(new FileReader(fileName));
             for (String line; (line = br.readLine()) != null; ) {
-                content += line + "\n";
+                content.append(line).append("\n");
             }
-            content = content.substring(0, content.length() - newLineLength);
+            value = content.toString().substring(0, content.length() - newLineLength);
 
         } catch (FileNotFoundException fx) {
             error("Converter.valueFromFile({}). file not found: {}", fileName, fx.getMessage());
@@ -787,7 +788,7 @@ public class Converter extends AppBase {
             }
         }
 
-        return content;
+        return value;
     }
 
     public DataTable getCurrentTable() {
@@ -827,7 +828,7 @@ public class Converter extends AppBase {
         sortedTarget = null;
         currentTable = null;
         currentRowIndex = 0;
-        System.gc();
+        /*System.gc()*/// FindBugs says this is dubious but if you get OutOfMemoryException you may be need to uncomment this again.
     }
 
 }

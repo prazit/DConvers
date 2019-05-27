@@ -29,7 +29,7 @@ public class FixedLengthTransform extends Transform {
 
         String[] newColumnArgs = newColumnArgsString.split("[:]");
         String newColumnName = newColumnArgs[0];
-        int newColumnIndex = Integer.valueOf(newColumnArgs[1]) - 1;
+        int newColumnIndex = Integer.parseInt(newColumnArgs[1]) - 1;
 
         String separator = getArgument(Property.SEPARATOR.key());
         String charset = getArgument(Property.OUTPUT_CHARSET.key(), "UTF-8");

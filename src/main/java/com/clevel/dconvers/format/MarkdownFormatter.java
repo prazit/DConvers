@@ -120,12 +120,14 @@ public class MarkdownFormatter extends DataFormatter {
         rowIndex++;
 
         String rowNumber = String.valueOf(rowIndex);
-        String record = "| " + rowNumber + StringUtils.repeat(' ', rowIndexWidth - rowNumber.length() - 1);
         String value;
         int columnIndex;
         int columnType;
         int valueLength;
         int width;
+
+        StringBuilder record = new StringBuilder();
+        record.append("| ").append(rowNumber).append(StringUtils.repeat(' ', rowIndexWidth - rowNumber.length() - 1));
 
         if (needHeader) {
             needHeader = false;
@@ -158,24 +160,23 @@ public class MarkdownFormatter extends DataFormatter {
 
                 if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
                     headerSeparator += "|" + StringUtils.repeat('-', width - 1) + ":";
-                    record += "| " + StringUtils.repeat(' ', width - valueLength - 2) + value + " ";
+                    record.append("| ").append(StringUtils.repeat(' ', width - valueLength - 2)).append(value).append(" ");
                 } else if (Types.DATE == columnType) {
                     headerSeparator += "|:" + StringUtils.repeat('-', width - 2) + ":";
-                    record += "| " + value + StringUtils.repeat(' ', width - valueLength - 2) + " ";
+                    record.append("| ").append(value).append(StringUtils.repeat(' ', width - valueLength - 2)).append(" ");
                 } else {
                     headerSeparator += "|" + StringUtils.repeat('-', width);
-                    record += "| " + value + StringUtils.repeat(' ', width - valueLength - 2) + " ";
+                    record.append("| ").append(value).append(StringUtils.repeat(' ', width - valueLength - 2)).append(" ");
                 }
-
 
                 columnIndex++;
             }
 
             header += "|" + eol;
             headerSeparator += "|" + eol;
-            record += "|" + eol;
+            record.append("|").append(eol);
 
-            return header + headerSeparator + record;
+            return header + headerSeparator + record.toString();
 
         } // end of if(needHeader)
 
@@ -200,14 +201,14 @@ public class MarkdownFormatter extends DataFormatter {
             if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
                 record += "| " + StringUtils.repeat(' ', width - valueLength - 2) + value + " ";
             } else {
-                record += "| " + value + StringUtils.repeat(' ', width - valueLength - 2) + " ";
+                record.append("| ").append(value).append(StringUtils.repeat(' ', width - valueLength - 2)).append(" ");
             }
 
             columnIndex++;
         }
-        record += "|" + eol;
+        record.append("|").append(eol);
 
-        return record;
+        return record.toString();
     }
 
     @Override
@@ -235,7 +236,7 @@ public class MarkdownFormatter extends DataFormatter {
         }
     }
 
-    private class Identifier {
+    static private class Identifier {
         DataTable dataTable;
         String name;
         String identifier;
@@ -248,6 +249,19 @@ public class MarkdownFormatter extends DataFormatter {
 
         public int compareTo(Identifier another) {
             return this.identifier.compareTo(another.identifier);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Identifier that = (Identifier) o;
+            return identifier.equals(that.identifier);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(identifier);
         }
     }
 
@@ -336,7 +350,7 @@ public class MarkdownFormatter extends DataFormatter {
                     }
                     break;
 
-                case MAP:
+                default: //case MAP:
                     dataTableName = Prefix.MAP.namePrefix + dataTableName;
                     identifier = mappingMap.get(dataTableName);
                     if (identifier == null) {
@@ -473,7 +487,7 @@ public class MarkdownFormatter extends DataFormatter {
                 } // end case TAR:
                 break;
 
-                case MAP: {
+                default:/*case MAP:*/ {
                     Identifier mappingDataTableIdentifier = prepareDataTable(dataTable);
                     if (registeredDataTableList.size() == 1) {
                         name = mappingDataTableIdentifier.name;

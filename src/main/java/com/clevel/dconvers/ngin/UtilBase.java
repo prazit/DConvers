@@ -51,7 +51,7 @@ public abstract class UtilBase extends AppBase {
             }
         } else {
             /* case: columnIdentifier is index number */
-            index = Integer.valueOf(columnIdentifier) - 1;
+            index = Integer.parseInt(columnIdentifier) - 1;
             if (index < 0) {
                 index = 0;
             } else if (index >= rowPrototype.getColumnCount()) {
