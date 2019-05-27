@@ -603,7 +603,7 @@ public class Application extends AppBase {
                         error("Invalid value({}) for decimal column({})", value, columnName);
                     }
                 }
-                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, BigDecimal.valueOf(doubleValue));
+                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, (doubleValue == null) ? null : BigDecimal.valueOf(doubleValue));
                 break;
 
             case Types.DATE:

@@ -158,7 +158,14 @@ public class MarkdownFormatter extends DataFormatter {
 
                 header += "| " + name + StringUtils.repeat(' ', width - nameLength - 2) + " ";
 
-                if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
+                if (Types.INTEGER == columnType || Types.BIGINT == columnType) {
+                    headerSeparator += "|" + StringUtils.repeat('-', width - 1) + ":";
+                    record.append("| ").append(StringUtils.repeat(' ', width - valueLength - 2)).append(value).append(" ");
+                } else if (Types.DECIMAL == columnType) {
+                    if (value.equals("0")) {
+                        value = "0.0";
+                        valueLength = value.length();
+                    }
                     headerSeparator += "|" + StringUtils.repeat('-', width - 1) + ":";
                     record.append("| ").append(StringUtils.repeat(' ', width - valueLength - 2)).append(value).append(" ");
                 } else if (Types.DATE == columnType) {
@@ -198,8 +205,14 @@ public class MarkdownFormatter extends DataFormatter {
             }
             width = columnWidth.get(columnIndex);
 
-            if (Types.INTEGER == columnType || Types.BIGINT == columnType || Types.DECIMAL == columnType) {
-                record += "| " + StringUtils.repeat(' ', width - valueLength - 2) + value + " ";
+            if (Types.INTEGER == columnType || Types.BIGINT == columnType) {
+                record.append("| ").append(StringUtils.repeat(' ', width - valueLength - 2)).append(value).append(" ");
+            } else if (Types.DECIMAL == columnType) {
+                if (value.equals("0")) {
+                    value = "0.0";
+                    valueLength = value.length();
+                }
+                record.append("| ").append(StringUtils.repeat(' ', width - valueLength - 2)).append(value).append(" ");
             } else {
                 record.append("| ").append(value).append(StringUtils.repeat(' ', width - valueLength - 2)).append(" ");
             }
