@@ -3,9 +3,11 @@ package com.clevel.dconvers.format;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
+import com.clevel.dconvers.input.DBMS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Types;
 import java.util.List;
 
 public class SQLInsertFormatter extends DataFormatter {
@@ -16,9 +18,13 @@ public class SQLInsertFormatter extends DataFormatter {
     private String nameQuotes;
     private String valueQuotes;
     private String eol;
+    private DBMS dbms;
+    private boolean isOracle;
 
-    public SQLInsertFormatter(Application application, String name, List<String> columnList, String nameQuotes, String valueQuotes, String eol) {
+    public SQLInsertFormatter(Application application, String name, String dbms, List<String> columnList, String nameQuotes, String valueQuotes, String eol) {
         super(application, name, true);
+        this.dbms = DBMS.parse(dbms);
+        isOracle = DBMS.ORACLE.equals(this.dbms);
         this.columnList = columnList;
         useColumnList = columnList != null && columnList.size() > 0;
         tableName = name;
@@ -46,6 +52,10 @@ public class SQLInsertFormatter extends DataFormatter {
             column.setQuotes(valueQuotes);
 
             value = column.getQuotedValue();
+            if (isOracle && !value.equals("null") && column.getType() == Types.DATE) {
+                value = "TO_DATE(" + value + ",'YYYY-MM-DD HH24:MI:SS')";
+            }
+
             //value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
             values += value + ", ";
         }
@@ -61,6 +71,7 @@ public class SQLInsertFormatter extends DataFormatter {
         String values = "";
         DataColumn column;
 
+        String value;
         for (String columnName : columnList) {
             column = row.getColumn(columnName);
             if (column == null) {
@@ -69,7 +80,13 @@ public class SQLInsertFormatter extends DataFormatter {
             }
             columns += nameQuotes + columnName + nameQuotes + ", ";
             column.setQuotes(valueQuotes);
-            values += column.getQuotedValue() + ", ";
+
+            value = column.getQuotedValue();
+            if (isOracle && !value.equals("null") && column.getType() == Types.DATE) {
+                value = "TO_DATE(" + value + ",'YYYY-MM-DD HH24:MI:SS')";
+            }
+
+            values += value + ", ";
         }
         columns = columns.substring(0, columns.length() - 2);
         values = values.substring(0, values.length() - 2);

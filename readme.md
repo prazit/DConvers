@@ -7,21 +7,22 @@ But, now has many features that help to transform data in a target table before 
 
 ### Supported Inputs and Outputs
 
-| Data Provider                      | Input / Data Source Name | Output / Property Name |
-|------------------------------------|--------------------------|------------------------|
-| Database                           | User-Defined             | DBInsert, DBUpdate     |
-| ResultSetMetaData                  | ResultSetMetaData        | -                      |
-| SQL(Create) File                   | -                        | SQL                    |
-| SQL(Insert) File                   | SQL                      | SQL                    |
-| SQL(Update) File                   | -                        | SQL                    |
-| Markdown Table                     | MARKDOWN                 | MARKDOWN               |
-| Email                              | EMAIL                    | -                      |
-| PDF                                | -                        | PDF                    |
-| Fixed Length                       | -                        | TXT                    |
-| CSV                                | CSV(future)              | CSV                    |
-| Configuration Generator for source | -                        | SRC                    |
-| Configuration Generator for target | -                        | TAR                    |
-| Directory List                     | DIR                      |                        |
+| Data Provider                      | Input / Data Source Name | Output / Property Name       |
+| ---------------------------------- | ------------------------ | ---------------------------- |
+| Database                           | User-Defined             | DBInsert, DBUpdate,DBExecute |
+| ResultSetMetaData                  | ResultSetMetaData        | -                            |
+| SQL(Create) File                   | -                        | SQL                          |
+| SQL(Insert) File                   | SQL                      | SQL                          |
+| SQL(Update) File                   | -                        | SQL                          |
+| Markdown Table                     | MARKDOWN                 | MARKDOWN                     |
+| Email                              | EMAIL                    | -                            |
+| PDF                                | -                        | PDF                          |
+| Fixed Length                       | -                        | TXT                          |
+| CSV                                | CSV(future)              | CSV                          |
+| Lines                              | Lines                    | Lines(future)                |
+| Configuration Generator for source | -                        | SRC                          |
+| Configuration Generator for target | -                        | TAR                          |
+| Directory List                     | DIR                      |                              |
 
 
 ### Prerequisites
@@ -168,17 +169,18 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 #### Datasource and query
 
-| Data Provider                  | datasource        | query (Dynamic Value Enabled)   | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                             |
-|--------------------------------|-------------------|---------------------------------|------------------------------------------|-----------|---------------|---------------------------------------------------------|
-| Database                       | User Defined Name | SQL String                      | split                                    | integer   | 0             | 0 mean not split, otherwise is number of result         |
-| ResultSet MetaData             | ResultSetMetaData | table name like SRC:name        |                                          |           |               |                                                         |
-| SQL(Insert) File               | SQL               | file-name                       | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value |
-|                                |                   |                                 | quotes.value                             | string    | "             | one character for quotes of string-value and date-value |
-| Markdown(Table) File           | MARKDOWN          | file-name                       |                                          |           |               |                                                         |
-| Email                          | EMAIL             | Search String                   |                                          |           |               |                                                         |
-| Fixed Length File              | TXT               | file-name                       |                                          |           |               |                                                         |
-| CSV File                       | CSV               | file-name                       |                                          |           |               |                                                         |
-| DConvers                       | SYSTEM            | see 'System Query' for detailed |                                          |           |               |                                                         |
+| Data Provider        | datasource        | query (Dynamic Value Enabled)                        | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                             |
+| -------------------- | ----------------- | ---------------------------------------------------- | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------- |
+| Database             | User Defined Name | SQL String                                           | split                                    | integer   | 0             | 0 mean not split, otherwise is number of result         |
+| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                             |                                          |           |               |                                                         |
+| SQL(Insert) File     | SQL               | file-name                                            | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value |
+|                      |                   |                                                      | quotes.value                             | string    | "             | one character for quotes of string-value and date-value |
+| Markdown(Table) File | MARKDOWN          | file-name                                            |                                          |           |               |                                                         |
+| Email                | EMAIL             | Search String                                        |                                          |           |               |                                                         |
+| Fixed Length File    | TXT               | file-name                                            |                                          |           |               |                                                         |
+| CSV File             | CSV               | file-name                                            |                                          |           |               |                                                         |
+| Line Based File      | Lines             | comma separated file-name or system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                 |
+| DConvers             | SYSTEM            | see 'System Query' for detailed                      |                                          |           |               |                                                         |
 
 
 #### System Query
@@ -226,8 +228,9 @@ The DConvers program has 7 optional output types with different set of property,
 - PDF File Output (using jasper report library)
 - TXT File Output (fixed length format)
 - CSV File Output (comma separated values)
-- DBInsert Output (execute sql insert)
-- DBUpdate Output (execute sql update)
+- DBInsert Output (generate and execute sql insert)
+- DBUpdate Output (generate and execute sql update)
+- DBExecute Output (execute sql statement)
 - Configuration File Output (create converter configuration that can use to backup data from database)
 
 
@@ -255,7 +258,7 @@ The DConvers program has 7 optional output types with different set of property,
 | sql.pre          | string         | null           | your sql statements to put at the beginning of file                                                        |
 | sql.post         | string         | null           | your sql statements to put at the end of file                                                              |
 
-> Remark: SQL Output for MySQL may be need property sql.post=SET FOREIGN_KEY_CHECKS = 0;
+> Remark: SQL Output for MySQL may be need property sql.pre=SET FOREIGN_KEY_CHECKS = 0;
 
 
 ##### Markdown Output Properties
@@ -363,6 +366,15 @@ The DConvers program has 7 optional output types with different set of property,
 | dbupdate.pre          | string         | null          | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)              |
 | dbupdate.post         | string         | null          | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)                    |
 
+##### DBExecute Output Properties
+
+| Property             | Data Type | Default Value | Description                                                  |
+| -------------------- | --------- | ------------- | ------------------------------------------------------------ |
+| dbexecute            | bool      | false         | execute sql insert or not.                                   |
+| dbexecute.datasource | string    | datasource    | datasource name.                                             |
+| dbexecute.column     | string    | sql           | name of a column that contains sql-statement to execute (sql statement must be end with ';', otherwise will be appended by sql from next row before) |
+| dbexecute.pre        | string    | null          | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled) |
+| dbexecute.post       | string    | null          | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled) |
 
 ##### SourceConfig Output Properties
 

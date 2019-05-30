@@ -22,7 +22,7 @@ public class SQLCreateFormatter extends DataFormatter {
     private boolean needBegin;
     private String eol;
 
-    private HashMap<String,Boolean> bigStringOrNot;
+    private HashMap<String, Boolean> bigStringOrNot;
 
     private String endOfCreate;
 
@@ -48,39 +48,64 @@ public class SQLCreateFormatter extends DataFormatter {
 
         bigStringOrNot = new HashMap<>();
 
-        if (DBMS.MYSQL.equals(this.dbms)) {
-            columnTypeBigInt = " bigint DEFAULT NULL";
-            columnTypeInteger = " int DEFAULT NULL";
-            columnTypeDecimal = " decimal(19,2) DEFAULT NULL";
-            columnTypeDate = " datetime DEFAULT NULL";
-            columnTypeString = " varchar(255) DEFAULT NULL";
-            columnTypeBigString = " text DEFAULT NULL";
+        switch (this.dbms) {
 
-            pkTypeBigInt = " bigint NOT NULL AUTO_INCREMENT";
-            pkTypeInteger = " int NOT NULL AUTO_INCREMENT";
-            pkTypeString = " varchar(255) NOT NULL";
+            case MYSQL:
+            case MARIADB:
+                columnTypeBigInt = " bigint DEFAULT NULL";
+                columnTypeInteger = " int DEFAULT NULL";
+                columnTypeDecimal = " decimal(19,2) DEFAULT NULL";
+                columnTypeDate = " datetime DEFAULT NULL";
+                columnTypeString = " varchar(255) DEFAULT NULL";
+                columnTypeBigString = " text DEFAULT NULL";
 
-            endOfCreate = " ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+                pkTypeBigInt = " bigint NOT NULL AUTO_INCREMENT";
+                pkTypeInteger = " int NOT NULL AUTO_INCREMENT";
+                pkTypeString = " varchar(255) NOT NULL";
 
-        } else {
-            columnTypeBigInt = " bigint default '0' null";
-            columnTypeInteger = " int default '0' null";
-            columnTypeDecimal = " decimal(19,2) null";
-            columnTypeDate = " datetime null";
-            columnTypeString = " varchar(255) default 'NULL' null";
-            columnTypeBigString = " varchar(1000) default 'NULL' null";
+                endOfCreate = " ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+                break;
 
-            pkTypeBigInt = " bigint auto_increment primary key";
-            pkTypeInteger = "  int auto_increment primary key";
-            pkTypeString = " varchar(255) primary key";
+            case ORACLE:
+                columnTypeBigInt = " int default '0' null";
+                columnTypeInteger = " integer default '0' null";
+                columnTypeDecimal = " number(19,2) null";
+                columnTypeDate = " date null";
+                columnTypeString = " varchar(255) default 'NULL' null";
+                columnTypeBigString = " varchar(1000) default 'NULL' null";
 
-            endOfCreate = ";";
+                pkTypeBigInt = " int not null primary key";
+                pkTypeInteger = " int not null primary key";
+                pkTypeString = " varchar(255) not null primary key";
+
+                endOfCreate = ";";
+                break;
+
+            default:
+            /*case AS400:
+            case DB2:
+            case DERBY:
+            case SQLSERVER:*/
+
+                columnTypeBigInt = " bigint default '0' null";
+                columnTypeInteger = " int default '0' null";
+                columnTypeDecimal = " decimal(19,2) null";
+                columnTypeDate = " datetime null";
+                columnTypeString = " varchar(255) default 'NULL' null";
+                columnTypeBigString = " varchar(1000) default 'NULL' null";
+
+                pkTypeBigInt = " bigint auto_increment primary key";
+                pkTypeInteger = "  int auto_increment primary key";
+                pkTypeString = " varchar(255) primary key";
+
+                endOfCreate = ";";
+
         }
     }
 
     @Override
     protected String preFormat(DataTable dataTable) {
-        idColumnName = dataTable.getIdColumnName();
+        idColumnName = dataTable.getIdColumnName().toUpperCase();
 
         if (dataTable.getRowCount() == 0) {
             return null;
@@ -93,7 +118,7 @@ public class SQLCreateFormatter extends DataFormatter {
             }
         }
 
-        HashMap<String,Boolean> readyColumns = new HashMap<>();
+        HashMap<String, Boolean> readyColumns = new HashMap<>();
         int normalStringLength = 255;
         DataString dataColumn;
         String value;
@@ -119,6 +144,7 @@ public class SQLCreateFormatter extends DataFormatter {
 
     @Override
     public String format(DataRow row) {
+
         /*
             create table source_to_target
             (
@@ -166,7 +192,7 @@ public class SQLCreateFormatter extends DataFormatter {
                 columnString = nameQuotes + idColumnName + nameQuotes + pkTypeString + ", ";
         }
 
-        String sqlCreate = "DROP TABLE IF EXISTS " + nameQuotes + tableName + nameQuotes + ";" + eol
+        String sqlCreate = (DBMS.MYSQL.equals(dbms) ? "DROP TABLE IF EXISTS " + nameQuotes + tableName + nameQuotes + ";" + eol : "")
                 + "CREATE TABLE " + nameQuotes + tableName + nameQuotes + " ( " + columnString + columns
                 + (DBMS.MYSQL.equals(dbms) ? ", PRIMARY KEY (" + nameQuotes + idColumnName + nameQuotes + "), UNIQUE KEY " + nameQuotes + idColumnName + nameQuotes + " (" + nameQuotes + idColumnName + nameQuotes + ")" : "")
                 + ") " + endOfCreate + eol;

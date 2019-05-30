@@ -344,6 +344,10 @@ public class DataSource extends UtilBase {
     }
 
     private String clobToString(Clob clob) {
+        if (clob == null) {
+            return null;
+        }
+
         try {
             return clob.getSubString(1L, (int) clob.length());
         } catch (Exception ex) {

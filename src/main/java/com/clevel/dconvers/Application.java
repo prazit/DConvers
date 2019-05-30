@@ -628,9 +628,15 @@ public class Application extends AppBase {
     }
 
     private Long toLong(String value) {
+        int dot = value.indexOf(".");
+        if (dot > 0) {
+            value = value.substring(0, dot);
+        }
+
         Long longValue;
         try {
-            longValue = Long.valueOf(value);
+
+            longValue = Long.parseLong(value);
         } catch (NumberFormatException ex) {
             return null;
         }
