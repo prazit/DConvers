@@ -151,6 +151,14 @@ public class OutputConfig extends Config {
     private List<String> dbUpdatePreSQL;
 
 
+    private boolean dbExecute;
+    private String dbExecuteDataSource;
+    private String dbExecuteColumn;
+    private String dbExecuteOutput;
+    private List<String> dbExecutePostSQL;
+    private List<String> dbExecutePreSQL;
+
+
     private List<OutputTypes> outputTypeList;
 
     public OutputConfig(Application application, String baseProperty, Configuration baseProperties) {
@@ -487,6 +495,27 @@ public class OutputConfig extends Config {
             dbUpdateValueQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbUpdateValueQuotes);
             dbUpdatePreSQL = getSQLStringList(dbUpdateProperties, Property.PRE_SQL.key());
             dbUpdatePostSQL = getSQLStringList(dbUpdateProperties, Property.POST_SQL.key());
+        }
+
+        // DBExecute Output Properties
+        dbExecute = false;
+        dbExecuteDataSource = "";
+        dbExecuteColumn = "sql";
+        dbExecuteOutput = "dbexecute_history_$[CAL:NAME(current)].log";
+        dbExecutePreSQL = new ArrayList<>();
+        dbExecutePostSQL = new ArrayList<>();
+
+        key = Property.DBEXECUTE.prefixKey(baseProperty);
+        dbExecute = properties.getBoolean(key, dbExecute);
+        if (dbExecute) {
+            outputTypeList.add(OutputTypes.EXECUTE_DB);
+
+            Configuration dbExecuteProperties = properties.subset(key);
+            dbExecuteDataSource = getPropertyString(dbExecuteProperties, Property.DATA_SOURCE.key(), dbExecuteDataSource);
+            dbExecuteColumn = getPropertyString(dbExecuteProperties, Property.COLUMN.key(), dbExecuteColumn);
+            dbExecuteOutput = getPropertyString(dbExecuteProperties, Property.OUTPUT_FILE.key(), dbExecuteOutput);
+            dbExecutePreSQL = getSQLStringList(dbExecuteProperties, Property.PRE_SQL.key());
+            dbExecutePostSQL = getSQLStringList(dbExecuteProperties, Property.POST_SQL.key());
         }
 
         return true;
@@ -1041,6 +1070,30 @@ public class OutputConfig extends Config {
         return values;
     }
 
+    public boolean isDbExecute() {
+        return dbExecute;
+    }
+
+    public String getDbExecuteDataSource() {
+        return dbExecuteDataSource;
+    }
+
+    public String getDbExecuteColumn() {
+        return dbExecuteColumn;
+    }
+
+    public String getDbExecuteOutput() {
+        return dbExecuteOutput;
+    }
+
+    public List<String> getDbExecutePostSQL() {
+        return dbExecutePostSQL;
+    }
+
+    public List<String> getDbExecutePreSQL() {
+        return dbExecutePreSQL;
+    }
+
     public List<OutputTypes> getOutputTypeList() {
         return outputTypeList;
     }
@@ -1051,8 +1104,7 @@ public class OutputConfig extends Config {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append(super.toString())
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
                 .append("src", src)
                 .append("srcSftp", srcSftp)
                 .append("srcSftpOutput", srcSftpOutput)
@@ -1082,6 +1134,7 @@ public class OutputConfig extends Config {
                 .append("sql", sql)
                 .append("sqlSftp", sqlSftp)
                 .append("sqlSftpOutput", sqlSftpOutput)
+                .append("sqlCombineOutput", sqlCombineOutput)
                 .append("sqlOutput", sqlOutput)
                 .append("sqlOutputAppend", sqlOutputAppend)
                 .append("sqlOutputAutoCreateDir", sqlOutputAutoCreateDir)
@@ -1089,8 +1142,10 @@ public class OutputConfig extends Config {
                 .append("sqlOutputEOL", sqlOutputEOL)
                 .append("sqlOutputEOF", sqlOutputEOF)
                 .append("sqlTable", sqlTable)
+                .append("sqlColumn", sqlColumn)
                 .append("sqlNameQuotes", sqlNameQuotes)
                 .append("sqlValueQuotes", sqlValueQuotes)
+                .append("sqlDBMS", sqlDBMS)
                 .append("sqlCreate", sqlCreate)
                 .append("sqlInsert", sqlInsert)
                 .append("sqlUpdate", sqlUpdate)
@@ -1105,6 +1160,11 @@ public class OutputConfig extends Config {
                 .append("markdownOutputCharset", markdownOutputCharset)
                 .append("markdownOutputEOL", markdownOutputEOL)
                 .append("markdownOutputEOF", markdownOutputEOF)
+                .append("markdownComment", markdownComment)
+                .append("markdownCommentDataSource", markdownCommentDataSource)
+                .append("markdownCommentQuery", markdownCommentQuery)
+                .append("markdownMermaid", markdownMermaid)
+                .append("markdownMermaidFull", markdownMermaidFull)
                 .append("pdf", pdf)
                 .append("pdfJRXML", pdfJRXML)
                 .append("pdfSftp", pdfSftp)
@@ -1146,6 +1206,7 @@ public class OutputConfig extends Config {
                 .append("csvFormatString", csvFormatString)
                 .append("dbInsert", dbInsert)
                 .append("dbInsertDataSource", dbInsertDataSource)
+                .append("dbInsertColumnList", dbInsertColumnList)
                 .append("dbInsertTable", dbInsertTable)
                 .append("dbInsertNameQuotes", dbInsertNameQuotes)
                 .append("dbInsertValueQuotes", dbInsertValueQuotes)
@@ -1153,14 +1214,24 @@ public class OutputConfig extends Config {
                 .append("dbInsertPreSQL", dbInsertPreSQL)
                 .append("dbUpdate", dbUpdate)
                 .append("dbUpdateDataSource", dbUpdateDataSource)
+                .append("dbUpdateColumnList", dbUpdateColumnList)
                 .append("dbUpdateTable", dbUpdateTable)
                 .append("dbUpdateId", dbUpdateId)
                 .append("dbUpdateNameQuotes", dbUpdateNameQuotes)
                 .append("dbUpdateValueQuotes", dbUpdateValueQuotes)
                 .append("dbUpdatePostSQL", dbUpdatePostSQL)
                 .append("dbUpdatePreSQL", dbUpdatePreSQL)
+                .append("dbExecute", dbExecute)
+                .append("dbExecuteDataSource", dbExecuteDataSource)
+                .append("dbExecuteColumn", dbExecuteColumn)
+                .append("dbExecuteOutput", dbExecuteOutput)
+                .append("dbExecutePostSQL", dbExecutePostSQL)
+                .append("dbExecutePreSQL", dbExecutePreSQL)
                 .append("outputTypeList", outputTypeList)
-                .toString();
+                .append("name", name)
+                .append("valid", valid)
+                .toString()
+                .replace('=', ':');
     }
 
 }

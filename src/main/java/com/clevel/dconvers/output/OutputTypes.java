@@ -18,6 +18,7 @@ public enum OutputTypes {
     CSV_FILE(CSVOutput.class),
     INSERT_DB(DBInsertOutput.class),
     UPDATE_DB(DBUpdateOutput.class),
+    EXECUTE_DB(DBExecuteOutput.class),
 
     CONVERTER_SOURCE_FILE(SRCOutput.class),
     CONVERTER_TARGET_FILE(TAROutput.class),

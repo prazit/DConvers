@@ -57,6 +57,7 @@ public enum Property {
     TAR("tar"),
     DBINSERT("dbinsert"),
     DBUPDATE("dbupdate"),
+    DBEXECUTE("dbexecute"),
     CONF("conf"),
     QUOTES("quotes"),
     NAME("name"),

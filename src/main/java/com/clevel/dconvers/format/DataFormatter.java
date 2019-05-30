@@ -4,14 +4,10 @@ import com.clevel.dconvers.Application;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.ngin.UtilBase;
-import javafx.util.Pair;
 import me.tongfei.progressbar.ProgressBar;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +79,7 @@ public abstract class DataFormatter extends UtilBase {
             }
             try {
                 stringBuffer.append(string);
-                if (stringBuffer.length() > 4096) {
+                if (stringBuffer.length() > 65536) {
                     print(stringBuffer, writer);
                     stringBuffer = new StringBuffer();
                 }
@@ -108,6 +104,7 @@ public abstract class DataFormatter extends UtilBase {
 
     private boolean print(StringBuffer stringBuffer, Writer writer) {
         if (stringBuffer.length() > 0) {
+            log.debug("print({})", stringBuffer.toString());
 
             if (!allowToWrite(stringBuffer)) {
                 return false;
@@ -160,15 +157,6 @@ public abstract class DataFormatter extends UtilBase {
 
     protected boolean allowToWrite(StringBuffer stringBuffer) {
         // this function allow you to see buffer before write to the output writer, this allow you to modify stringBuffer too.
-        int lines = 0;
-        int length = stringBuffer.length();
-        int index = 0;
-
-        for (index = stringBuffer.indexOf("\n"); index >= 0 && index < length; index = stringBuffer.indexOf("\n", index) + 1) {
-            lines++;
-        }
-        //log.debug("allowToWrite({} character(s), {} line break(s)).", stringBuffer.length(), lines);
-
         // return true allow to write, false not allow to write.
         return true;
     }
