@@ -240,6 +240,9 @@ public class Application extends AppBase {
         dataSourceName = Property.DIR.key();
         dataSourceMap.put(dataSourceName.toUpperCase(), new DirDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
+        dataSourceName = Property.LINES.key();
+        dataSourceMap.put(dataSourceName.toUpperCase(), new LinesDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
+
 
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();

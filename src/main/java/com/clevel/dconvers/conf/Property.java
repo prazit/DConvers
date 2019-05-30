@@ -99,6 +99,7 @@ public enum Property {
     SYSTEM("system"),
     RESULT_SET_META_DATA("ResultSetMetaData"),
     DIR("dir"),
+    LINES("lines"),
 
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),
