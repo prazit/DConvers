@@ -515,6 +515,17 @@ public class Converter extends AppBase {
 
     }
 
+    public List<String> compileDynamicValues(List<String> sourceStringList) {
+        Converter currentConverter = application.currentConverter;
+        List<String> values = new ArrayList<>();
+
+        for (String sql : sourceStringList) {
+            values.add(currentConverter.compileDynamicValues(sql));
+        }
+
+        return values;
+    }
+
     public String compileDynamicValues(String sourceString) {
         if (sourceString == null) {
             return null;
@@ -667,7 +678,11 @@ public class Converter extends AppBase {
                 if (systemVariable != null) {
                     dataColumn = application.systemVariableMap.get(systemVariable);
                 } else {
-                    dataColumn = application.userVariableMap.get(valueIdentifier);
+                    if (valueIdentifier == null) {
+                        dataColumn = null;
+                    }else{
+                        dataColumn = application.userVariableMap.get(valueIdentifier.toUpperCase());
+                    }
                     if (dataColumn == null) {
                         dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
                     }

@@ -755,11 +755,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getSqlPostSQL() {
-        return sqlPostSQL;
+        return application.currentConverter.compileDynamicValues(sqlPostSQL);
     }
 
     public List<String> getSqlPreSQL() {
-        return sqlPreSQL;
+        return application.currentConverter.compileDynamicValues(sqlPreSQL);
     }
 
     public boolean isMarkdown() {
@@ -999,25 +999,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbInsertPostSQL() {
-        Converter currentConverter = application.currentConverter;
-        List<String> values = new ArrayList<>();
-
-        for (String sql : dbInsertPostSQL) {
-            values.add(currentConverter.compileDynamicValues(sql));
-        }
-
-        return values;
+        return application.currentConverter.compileDynamicValues(dbInsertPostSQL);
     }
 
     public List<String> getDbInsertPreSQL() {
-        Converter currentConverter = application.currentConverter;
-        List<String> values = new ArrayList<>();
-
-        for (String sql : dbInsertPreSQL) {
-            values.add(currentConverter.compileDynamicValues(sql));
-        }
-
-        return values;
+        return application.currentConverter.compileDynamicValues(dbInsertPreSQL);
     }
 
     public boolean isDbUpdate() {
@@ -1049,25 +1035,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbUpdatePostSQL() {
-        Converter currentConverter = application.currentConverter;
-        List<String> values = new ArrayList<>();
-
-        for (String sql : dbUpdatePostSQL) {
-            values.add(currentConverter.compileDynamicValues(sql));
-        }
-
-        return values;
+        return application.currentConverter.compileDynamicValues(dbUpdatePostSQL);
     }
 
     public List<String> getDbUpdatePreSQL() {
-        Converter currentConverter = application.currentConverter;
-        List<String> values = new ArrayList<>();
-
-        for (String sql : dbUpdatePreSQL) {
-            values.add(currentConverter.compileDynamicValues(sql));
-        }
-
-        return values;
+        return application.currentConverter.compileDynamicValues(dbUpdatePreSQL);
     }
 
     public boolean isDbExecute() {
@@ -1083,15 +1055,15 @@ public class OutputConfig extends Config {
     }
 
     public String getDbExecuteOutput() {
-        return dbExecuteOutput;
+        return application.currentConverter.compileDynamicValues(dbExecuteOutput);
     }
 
     public List<String> getDbExecutePostSQL() {
-        return dbExecutePostSQL;
+        return application.currentConverter.compileDynamicValues(dbExecutePostSQL);
     }
 
     public List<String> getDbExecutePreSQL() {
-        return dbExecutePreSQL;
+        return application.currentConverter.compileDynamicValues(dbExecutePreSQL);
     }
 
     public List<OutputTypes> getOutputTypeList() {

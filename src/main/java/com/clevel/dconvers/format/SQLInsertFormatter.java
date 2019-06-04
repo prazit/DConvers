@@ -43,24 +43,24 @@ public class SQLInsertFormatter extends DataFormatter {
     }
 
     private String formatByOriginal(DataRow row) {
-        String columns = "";
-        String values = "";
+        StringBuilder columns = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+        StringBuilder nclob;
 
         String value;
         for (DataColumn column : row.getColumnList()) {
-            columns += nameQuotes + column.getName() + nameQuotes + ", ";
+            columns.append(nameQuotes).append(column.getName()).append(nameQuotes).append(", ");
             column.setQuotes(valueQuotes);
 
             value = column.getQuotedValue();
-            if (isOracle && !value.equals("null") && column.getType() == Types.DATE) {
-                value = "TO_DATE(" + value + ",'YYYY-MM-DD HH24:MI:SS')";
+            if (isOracle && !value.equals("null")) {
+                value = oracleValue(column.getType(), value);
             }
 
-            //value = value.replaceAll("\r\n|\n\r|\n", "<br/>");
-            values += value + ", ";
+            values.append(value).append(", ");
         }
-        columns = columns.substring(0, columns.length() - 2);
-        values = values.substring(0, values.length() - 2);
+        columns.setLength(columns.length() - 2);
+        values.setLength(values.length() - 2);
 
         String sqlInsert = "INSERT INTO " + nameQuotes + tableName + nameQuotes + " (" + columns + ") VALUES (" + values + ");" + eol;
         return sqlInsert;
@@ -82,8 +82,8 @@ public class SQLInsertFormatter extends DataFormatter {
             column.setQuotes(valueQuotes);
 
             value = column.getQuotedValue();
-            if (isOracle && !value.equals("null") && column.getType() == Types.DATE) {
-                value = "TO_DATE(" + value + ",'YYYY-MM-DD HH24:MI:SS')";
+            if (isOracle && !value.equals("null")) {
+                value = oracleValue(column.getType(), value);
             }
 
             values += value + ", ";
@@ -93,6 +93,31 @@ public class SQLInsertFormatter extends DataFormatter {
 
         String sqlInsert = "INSERT INTO " + nameQuotes + tableName + nameQuotes + " (" + columns + ") VALUES (" + values + ");" + eol;
         return sqlInsert;
+    }
+
+    private String oracleValue(int type, String value) {
+        if (type == Types.DATE) {
+            value = "TO_DATE(" + value + ",'YYYY/MM/DD HH24:MI:SS')";
+
+        } else if (type == Types.VARCHAR) {
+            value = value.replaceAll("[']", "''");
+            value = value.substring(1, value.length() - 1);
+            if (value.length() > 1000) {
+                value = value.substring(1, value.length() - 1);
+                StringBuilder nclob = new StringBuilder();
+                while (value.length() > 1000) {
+                    nclob.append("to_nclob('").append(value.substring(0, 1000)).append("') || ");
+                    value = value.substring(1000);
+                }
+                if (value.length() > 0) {
+                    nclob.append("to_nclob('").append(value).append("')");
+                } else {
+                    nclob.setLength(nclob.length() - 2);
+                }
+                value = nclob.toString();
+            }
+        }
+        return value;
     }
 
     @Override

@@ -21,7 +21,10 @@ public class DataConversionConfigFile extends ConfigFile {
     private HashMap<String, SFTPConfig> sftpConfigMap;
     private HashMap<String, ConverterConfigFile> converterConfigMap;
 
+    /* all plugins list is List<Pair<PluginName,FullQualifiedClassName>>*/
     private List<Pair<String, String>> pluginsCalcList;
+    private List<Pair<String, String>> pluginsOutputList;
+    private List<Pair<String, String>> pluginsDataSourceList;
     private List<Pair<String, String>> variableList;
 
     private String outputSourcePath;
@@ -219,6 +222,14 @@ public class DataConversionConfigFile extends ConfigFile {
 
     public List<Pair<String, String>> getPluginsCalcList() {
         return pluginsCalcList;
+    }
+
+    public List<Pair<String, String>> getPluginsOutputList() {
+        return pluginsOutputList;
+    }
+
+    public List<Pair<String, String>> getPluginsDataSourceList() {
+        return pluginsDataSourceList;
     }
 
     public List<Pair<String, String>> getVariableList() {

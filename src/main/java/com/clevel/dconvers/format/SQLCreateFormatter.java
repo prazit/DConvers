@@ -71,12 +71,12 @@ public class SQLCreateFormatter extends DataFormatter {
                 columnTypeInteger = " integer default '0' null";
                 columnTypeDecimal = " number(19,2) null";
                 columnTypeDate = " date null";
-                columnTypeString = " varchar(255) default 'NULL' null";
-                columnTypeBigString = " varchar(1000) default 'NULL' null";
+                columnTypeString = " nvarchar2(255) default 'NULL' null";
+                columnTypeBigString = " nclob default 'NULL' null";
 
                 pkTypeBigInt = " int not null primary key";
                 pkTypeInteger = " int not null primary key";
-                pkTypeString = " varchar(255) not null primary key";
+                pkTypeString = " nvarchar2(255) not null primary key";
 
                 endOfCreate = ";";
                 break;
