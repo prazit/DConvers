@@ -459,8 +459,7 @@ public class DataSource extends UtilBase {
             log.debug("DataSource({}).executeUpdate: sql = {}", name, sql);
             int affected = statement.executeUpdate(sql);
             if (affected == 0) {
-                log.warn("DataSource({}) no data has changed by last sql!", name);
-                application.hasWarning = true;
+                log.debug("DataSource({}).executeUpdate: no data has changed by this sql!", name);
             }
         } catch (SQLException se) {
             error("SQLException: {}", se.getMessage());

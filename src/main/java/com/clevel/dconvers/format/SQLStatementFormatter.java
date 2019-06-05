@@ -36,14 +36,23 @@ public class SQLStatementFormatter extends DataFormatter {
             error("DataSource({}) not found, that required to run sql statement.");
         }
 
+        StringBuilder sqlHistory = new StringBuilder();
+        sqlHistory.append("Preprocess: has ").append(preSQL.size()).append(" sql\n");
+        if (postSQL.size() == 0) {
+            return null;
+        }
+
         for (String sql : preSQL) {
             sql = sql.replace(';', ' ');
             if (!dataSource.executeUpdate(sql)) {
-                return null;
+                sqlHistory.append("FAILED - ").append(sql).append("\n");
+                return sqlHistory.toString();
             }
+            sqlHistory.append("SUCCESS - ").append(sql).append("\n");
         }
 
-        return null;
+        sqlHistory.append("DataTable(").append(dataTable.getName()).append(") has ").append(dataTable.getRowCount()).append(" rows\n");
+        return sqlHistory.toString();
     }
 
     @Override
@@ -55,28 +64,42 @@ public class SQLStatementFormatter extends DataFormatter {
         }
 
         String value = dataColumn.getValue();
+        String sqlHistory = null;
         if (value != null) {
             statement += "\n" + value.trim();
             if (statement.endsWith(";")) {
-                statement = statement.replace(';', ' ');
-                dataSource.executeUpdate(statement);
+                statement = statement.replace(';', ' ').trim();
+                boolean success = dataSource.executeUpdate(statement);
+                if (success) {
+                    sqlHistory = "SUCCESS - " + statement + "\n";
+                } else {
+                    sqlHistory = "FAILED - " + statement + "\n";
+                }
                 statement = "";
             }
         }
 
-        return null;
+        return sqlHistory;
     }
 
     @Override
     protected String postFormat(DataTable dataTable) {
+        StringBuilder sqlHistory = new StringBuilder();
+        sqlHistory.append("Postprocess: has ").append(postSQL.size()).append(" rows\n");
+        if (postSQL.size() == 0) {
+            return null;
+        }
+
         for (String sql : postSQL) {
             sql = sql.replace(';', ' ');
             if (!dataSource.executeUpdate(sql)) {
-                return null;
+                sqlHistory.append("FAILED - ").append(sql).append("\n");
+                return sqlHistory.toString();
             }
+            sqlHistory.append("SUCCESS - ").append(sql).append("\n");
         }
 
-        return null;
+        return sqlHistory.toString();
     }
 
     @Override
