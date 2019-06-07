@@ -64,7 +64,7 @@ public class SourceConfig extends Config {
         for (Iterator<String> it = paramKeyList; it.hasNext(); ) {
             paramName = it.next();
             paramValue = getPropertyString(paramProperties, paramName);
-            queryParameterMap.put(paramName, paramValue);
+            queryParameterMap.put(paramName.toUpperCase(), paramValue);
         }
 
         return true;

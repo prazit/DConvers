@@ -172,12 +172,14 @@ public class Application extends AppBase {
         log.trace("Application. Load Plugins for calculator.");
         boolean loadPluginsSuccess = true;
         List<Pair<String, String>> pluginsList = dataConversionConfigFile.getPluginsCalcList();
-        for (Pair<String, String> plugins : pluginsList) {
-            try {
-                CalcTypes.addPlugins(plugins.getKey(), plugins.getValue());
-            } catch (ClassNotFoundException e) {
-                error("Load calculator plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
-                loadPluginsSuccess = false;
+        if (pluginsList != null) {
+            for (Pair<String, String> plugins : pluginsList) {
+                try {
+                    CalcTypes.addPlugins(plugins.getKey(), plugins.getValue());
+                } catch (ClassNotFoundException e) {
+                    error("Load calculator plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
+                    loadPluginsSuccess = false;
+                }
             }
         }
         if (!loadPluginsSuccess && exitOnError) {
@@ -187,18 +189,19 @@ public class Application extends AppBase {
         log.trace("Application. Load Plugins for output.");
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsOutputList();
-        for (Pair<String, String> plugins : pluginsList) {
-            try {
-                OutputTypes.addPlugins(plugins.getKey(), plugins.getValue());
-            } catch (ClassNotFoundException e) {
-                error("Load output plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
-                loadPluginsSuccess = false;
+        if (pluginsList != null) {
+            for (Pair<String, String> plugins : pluginsList) {
+                try {
+                    OutputTypes.addPlugins(plugins.getKey(), plugins.getValue());
+                } catch (ClassNotFoundException e) {
+                    error("Load output plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
+                    loadPluginsSuccess = false;
+                }
             }
         }
         if (!loadPluginsSuccess && exitOnError) {
             stopWithError();
         }
-
 
         log.trace("Application. Load DataSources.");
         dataSourceMap = new HashMap<>();
@@ -343,6 +346,9 @@ public class Application extends AppBase {
         int type;
 
         DataColumn variable;
+        if (variableList == null) {
+            return;
+        }
 
         for (Pair<String, String> pair : variableList) {
             name = pair.getKey().toUpperCase();

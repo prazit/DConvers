@@ -171,7 +171,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 | Data Provider        | datasource        | query (Dynamic Value Enabled)                        | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                             |
 | -------------------- | ----------------- | ---------------------------------------------------- | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------- |
-| Database             | User Defined Name | SQL String                                           | split                                    | integer   | 0             | 0 mean not split, otherwise is number of result         |
+| Database             | User Defined Name | SQL String                                           | split                                    | integer   | 0             | 0 mean not split query, otherwise is split query every number of records         |
 | ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                             |                                          |           |               |                                                         |
 | SQL(Insert) File     | SQL               | file-name                                            | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value |
 |                      |                   |                                                      | quotes.value                             | string    | "             | one character for quotes of string-value and date-value |
@@ -179,9 +179,16 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | Email                | EMAIL             | Search String                                        |                                          |           |               |                                                         |
 | Fixed Length File    | TXT               | file-name                                            |                                          |           |               |                                                         |
 | CSV File             | CSV               | file-name                                            |                                          |           |               |                                                         |
-| Line Based File      | Lines             | comma separated file-name or system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                 |
+| Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                 |
 | DConvers             | SYSTEM            | see 'System Query' for detailed                      |                                          |           |               |                                                         |
 
+**Example: Query Parameter**
+
+```properties
+source.name.datasource=datasource_name
+source.name.query=$[TXT:query.sql]
+source.name.query.split=100
+```
 
 #### System Query
 

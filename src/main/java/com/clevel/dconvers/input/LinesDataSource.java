@@ -2,6 +2,7 @@ package com.clevel.dconvers.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.ngin.Converter;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.CharBuffer;
 import java.sql.Types;
 import java.util.*;
 
@@ -41,17 +43,26 @@ public class LinesDataSource extends DataSource {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setQuery(query);
 
+        String eol = queryParamMap.get(Property.OUTPUT_EOL.key().toUpperCase());
+
         List<File> fileList = getFileList(query);
         List<DataRow> dataRowList = new ArrayList<>();
-        for (File file : fileList) {
-            dataRowList.addAll(getRowList(file, dataTable));
+
+        if (eol.equals("\\n")) {
+            for (File file : fileList) {
+                dataRowList.addAll(getRowListByLine(file, dataTable));
+            }
+        } else {
+            for (File file : fileList) {
+                dataRowList.addAll(getRowListByEOL(file, dataTable, eol));
+            }
         }
 
         dataTable.setRowList(dataRowList);
         return dataTable;
     }
 
-    private List<DataRow> getRowList(File file, DataTable dataTable) {
+    private List<DataRow> getRowListByLine(File file, DataTable dataTable) {
         Converter converter = application.currentConverter;
         List<DataRow> dataRowList = new ArrayList<>();
         DataRow dataRow;
@@ -60,12 +71,53 @@ public class LinesDataSource extends DataSource {
 
         try {
             br = new BufferedReader(new FileReader(file));
-            for (String line; (line = br.readLine()) != null; ) {
-                lineNumber++;
+            for (String line; (line = br.readLine()) != null; lineNumber++) {
+                line = converter.compileDynamicValues(line + "\n");
+                dataRow = getDataRow(lineNumber, line, dataTable);
+                dataRowList.add(dataRow);
+            }
+
+        } catch (FileNotFoundException fx) {
+            error("file not found: {}", fx.getMessage());
+            dataRowList = Collections.emptyList();
+
+        } catch (Exception ex) {
+            error("unexpected exception: ", ex);
+            dataRowList = Collections.emptyList();
+
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    log.warn("close file {} is failed, {}", file.getName(), e);
+                }
+            }
+        }
+
+        return dataRowList;
+    }
+
+    private List<DataRow> getRowListByEOL(File file, DataTable dataTable, String eol) {
+        Converter converter = application.currentConverter;
+        List<DataRow> dataRowList = new ArrayList<>();
+        DataRow dataRow;
+        BufferedReader br = null;
+        int lineNumber = 0;
+
+        try {
+            Scanner scanner = new Scanner(file, "UTF-8").useDelimiter(eol);
+            String line;
+            while (scanner.hasNext()) {
+                line = scanner.next();
+                if (scanner.hasNext()) {
+                    line += eol;
+                }
                 line = converter.compileDynamicValues(line);
                 dataRow = getDataRow(lineNumber, line, dataTable);
                 dataRowList.add(dataRow);
             }
+
         } catch (FileNotFoundException fx) {
             error("file not found: {}", fx.getMessage());
             dataRowList = Collections.emptyList();

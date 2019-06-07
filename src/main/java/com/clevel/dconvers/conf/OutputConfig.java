@@ -262,7 +262,7 @@ public class OutputConfig extends Config {
         sqlColumn = new ArrayList<>();
         sqlNameQuotes = "";
         sqlValueQuotes = "\"";
-        sqlDBMS = "";
+        sqlDBMS = "MYSQL";
         sqlCreate = false;
         sqlInsert = false;
         sqlUpdate = false;
