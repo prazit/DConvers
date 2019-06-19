@@ -389,7 +389,7 @@ public class MarkdownFormatter extends DataFormatter {
         }
 
         void registerDataTable(DataTable dataTable) {
-            if (isRegistered(dataTable)) {
+            if (dataTable == null || isRegistered(dataTable)) {
                 return;
             }
 

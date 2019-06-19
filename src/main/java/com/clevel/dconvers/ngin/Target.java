@@ -34,6 +34,9 @@ public class Target extends UtilBase {
     /* main data set also store data in realtime changes */
     private DataTable dataTable;
 
+    /* store row from current-source in transfer process */
+    private DataRow currentSourceRow;
+
     private List<String> sourceList;
     private List<DataTable> mappingTableList;
     private List<DynamicValue> dynamicValueList;
@@ -54,6 +57,7 @@ public class Target extends UtilBase {
 
         sourceList = targetConfig.getSourceList();
         mappingTableList = new ArrayList<>();
+        currentSourceRow = null;
 
         return true;
     }
@@ -171,6 +175,7 @@ public class Target extends UtilBase {
 
             for (DataRow sourceRow : sourceRowList) {
                 progressBar.step();
+                currentSourceRow = sourceRow;
 
                 // -- start target table
 
@@ -215,6 +220,7 @@ public class Target extends UtilBase {
             } // end of for(DataRow)
 
             progressBar.close();
+            currentSourceRow = null;
 
             log.info("transferred from source({})", sourceName);
             log.debug("TAR:{} has {} row(s) before transform", name, dataTable.getRowCount());
@@ -256,6 +262,10 @@ public class Target extends UtilBase {
 
     public TargetConfig getTargetConfig() {
         return targetConfig;
+    }
+
+    public DataRow getCurrentSourceRow() {
+        return currentSourceRow;
     }
 
     public DataTable getDataTable() {
