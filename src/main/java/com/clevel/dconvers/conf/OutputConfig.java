@@ -462,7 +462,7 @@ public class OutputConfig extends Config {
 
             Configuration dbInsertProperties = properties.subset(key);
             dbInsertDataSource = getPropertyString(dbInsertProperties, Property.DATA_SOURCE.key(), dbInsertDataSource);
-            dbInsertColumnList = getStringList(dbInsertProperties, Property.TABLE.key());
+            dbInsertColumnList  = getStringList(dbInsertProperties, Property.COLUMN.key());
             dbInsertTable = getPropertyString(dbInsertProperties, Property.TABLE.key(), dbInsertTable);
             dbInsertNameQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
             dbInsertValueQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
@@ -489,6 +489,7 @@ public class OutputConfig extends Config {
             Configuration dbUpdateProperties = properties.subset(key);
             dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
             dbUpdateColumnList = getStringList(dbUpdateProperties, Property.TABLE.key());
+            dbUpdateColumnList  = getStringList(dbUpdateProperties, Property.COLUMN.key());
             dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
