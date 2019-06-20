@@ -21,6 +21,7 @@ public class DataSourceConfig extends Config {
     private String schema;
     private String user;
     private String password;
+    private int retry;
 
     private List<Pair<String, String>> propList;
 
@@ -62,6 +63,7 @@ public class DataSourceConfig extends Config {
         schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "");
         user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
         password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
+        retry = properties.getInt(dataSource.connectKey(name, Property.RETRY), 1);
 
         Configuration propProperties = properties.subset(dataSource.connectKey(name, Property.PROPERTIES));
         Iterator<String> propKeyList = propProperties.getKeys();
@@ -133,6 +135,10 @@ public class DataSourceConfig extends Config {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getRetry() {
+        return retry;
     }
 
     public List<Pair<String, String>> getPropList() {
@@ -207,6 +213,8 @@ public class DataSourceConfig extends Config {
                 .append("schema", schema)
                 .append("user", user)
                 .append("password", password)
+                .append("retry", retry)
+                .append("propList", propList)
                 .append("pre", pre)
                 .append("post", post)
                 .append("host", host)

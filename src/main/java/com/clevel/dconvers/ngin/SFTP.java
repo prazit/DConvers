@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 public class SFTP extends AppBase implements UserInfo {
 
     private SFTPConfig sftpConfig;
+    private int retry;
 
     private Session sftpSession;
     private ChannelSftp sftpChannel;
@@ -17,6 +18,8 @@ public class SFTP extends AppBase implements UserInfo {
         super(application, name);
 
         this.sftpConfig = sftpConfig;
+        this.retry = sftpConfig.getRetry();
+
         log.debug("SFTP({}) sftpConfig({})", name, sftpConfig);
         valid = open();
 
@@ -24,6 +27,8 @@ public class SFTP extends AppBase implements UserInfo {
     }
 
     public boolean open() {
+        log.info("Try(remain:{}) to connect to SFTP({}), ", retry, name);
+        retry--;
 
         try {
             JSch jsch = new JSch();
@@ -34,8 +39,12 @@ public class SFTP extends AppBase implements UserInfo {
 
             //log.info("sftp({}) session is connected", name);
         } catch (Exception ex) {
-            error("sftp({}) session connection is failed! {}", name, ex.getMessage());
-            return false;
+            if (retry <= 0) {
+                error("sftp({}) session connection is failed! {}", name, ex.getMessage());
+                return false;
+            } else {
+                return reopen();
+            }
         }
 
         try {
@@ -46,12 +55,21 @@ public class SFTP extends AppBase implements UserInfo {
 
             log.info("Connected to sftp({})", name);
         } catch (Exception ex) {
-            error("sftp({}) sftp channel connection is failed! {}", name, ex);
-            return false;
+            if (retry <= 0) {
+                error("sftp({}) sftp channel connection is failed! {}", name, ex);
+                return false;
+            } else {
+                return reopen();
+            }
         }
 
         return true;
 
+    }
+
+    public boolean reopen() {
+        close();
+        return open();
     }
 
     public void close() {
@@ -116,8 +134,13 @@ public class SFTP extends AppBase implements UserInfo {
             sftpChannel.put(localFile, remoteFile, ChannelSftp.OVERWRITE);
             log.info("SFTP({}) transfer local-file({}) to remote-file({}) is completed", name, localFile, remoteFile);
         } catch (SftpException e) {
-            error("SFTP({}) transfer local-file({}) to remote-file({}) is failed! {}", name, localFile, remoteFile, e.getMessage());
-            return false;
+            if (retry <= 0) {
+                error("SFTP({}) transfer local-file({}) to remote-file({}) is failed! {}", name, localFile, remoteFile, e.getMessage());
+                return false;
+            } else {
+                reopen();
+                return copyToSFTP(localFile, remoteFile);
+            }
         }
 
         return true;

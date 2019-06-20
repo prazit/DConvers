@@ -90,6 +90,7 @@ Conversion file is a properties file which contains 5 groups of property as foll
 | datasource.driver       | string                    | null          | driver class name with full package location            |
 | datasource.user         | string                    | null          | user name to connect to DBMS                            |
 | datasource.password     | string                    | null          | password to connect to DBMS                             |
+| datasource.retry        | integer                   | 1             | number of retry when connection is failed               |
 | datasource.quotes.name  | string                    | empty         | one character for quotes of string-value and date-value |
 | datasource.quotes.value | string                    | "             | one character for quotes of string-value and date-value |
 | datasource.prop.*       | pair<property_name,value> | empty         | list of property sent to DBMS when make a connection.   |
@@ -103,6 +104,7 @@ Conversion file is a properties file which contains 5 groups of property as foll
 | sftp.port     | string    | 22            | port use to connect to SFTP server           |
 | sftp.user     | string    | null          | user name to connect to SFTP server          |
 | sftp.password | string    | null          | password to connect to SFTP server           |
+| sftp.retry    | integer   | 1             | number of retry when connection lost         |
 
 
 #### 4. Converter File Property 
@@ -351,7 +353,7 @@ The DConvers program has 7 optional output types with different set of property,
 |-----------------------|----------------|---------------|----------------------------------------------------------------------------------------------------|
 | dbinsert              | bool           | false         | execute sql insert or not                                                                          |
 | dbinsert.datasource   | string         | datasource    | datasource name.                                                                                   |
-| dbinsert.column       | list of string | empty         | apply for custom order of column name or use as column filter, empty then use original column list |
+| dbinsert.column       | CSV string     | empty         | comma separated values, apply for custom order of column name or use as column filter, empty then use original column list(auto) |
 | dbinsert.table        | string         | table         | name of table to insert.                                                                           |
 | dbinsert.quotes.name  | string         | empty         | one character for quotes of table-name and column-name                                             |
 | dbinsert.quotes.value | string         | "             | one character for quotes of string-value and date-value                                            |
