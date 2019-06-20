@@ -367,7 +367,7 @@ The DConvers program has 7 optional output types with different set of property,
 |-----------------------|----------------|---------------|----------------------------------------------------------------------------------------------------|
 | dbupdate              | bool           | false         | execute sql insert or not.                                                                         |
 | dbupdate.datasource   | string         | datasource    | datasource name.                                                                                   |
-| dbupdate.column       | list of string | empty         | apply for custom order of column name or use as column filter, empty then use original column list |
+| dbupdate.column       | CSV string     | empty         | comma separated values, apply for custom order of column name or use as column filter, empty then use original column list |
 | dbupdate.table        | string         | table         | name of table to update.                                                                           |
 | dbupdate.id           | string         | [target.id]   | name of primary key column of the table                                                            |
 | dbupdate.quotes.name  | string         | empty         | one character for quotes of table-name and column-name                                             |
