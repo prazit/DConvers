@@ -37,14 +37,16 @@ public class SQLDataSource extends DataSource {
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String sqlFileName, HashMap<String, String> queryParamMap) {
 
-        String nameQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.NAME));
-        String valueQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.VALUE));
+        String nameQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.NAME).toUpperCase());
+        String valueQuote = queryParamMap.get(Property.QUOTES.connectKey(Property.VALUE).toUpperCase());
+
         if (nameQuote == null) {
             nameQuote = "";
         }
         if (valueQuote == null) {
             valueQuote = "\"";
         }
+        log.debug("SQLDataSource: nameQuote({}) valueQuote({}) queryParamMap({})", nameQuote, valueQuote, queryParamMap);
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);
@@ -117,7 +119,7 @@ public class SQLDataSource extends DataSource {
     private int getColumnType(String sqlValue, String valueQuote) {
         if (sqlValue.contains(valueQuote)) {
             // '2018/07/30 21:12:38' or 'string'
-            if (sqlValue.indexOf('/') > 0 || sqlValue.indexOf(':') > 0 || sqlValue.indexOf('-') > 0) {
+            if (sqlValue.indexOf('/') >= 0 || sqlValue.indexOf(':') >= 0 || sqlValue.indexOf('-') >= 0) {
                 return Types.DATE;
             }
             return Types.VARCHAR;

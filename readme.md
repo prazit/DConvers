@@ -371,7 +371,7 @@ The DConvers program has 7 optional output types with different set of property,
 | dbupdate.table        | string         | table         | name of table to update.                                                                           |
 | dbupdate.id           | string         | [target.id]   | name of primary key column of the table                                                            |
 | dbupdate.quotes.name  | string         | empty         | one character for quotes of table-name and column-name                                             |
-| dbupdate.quotes.value | string         | empty         | one character for quotes of string-value and date-value                                            |
+| dbupdate.quotes.value | string         | "             | one character for quotes of string-value and date-value                                            |
 | dbupdate.pre          | string         | null          | your sql statements to put at the beginning of generated-sql. (Dynamic Value Enabled)              |
 | dbupdate.post         | string         | null          | your sql statements to put at the end of generated-sql. (Dynamic Value Enabled)                    |
 

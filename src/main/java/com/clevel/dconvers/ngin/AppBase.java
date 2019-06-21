@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.data.DataTable;
 import org.slf4j.Logger;
 
 import java.lang.management.ManagementFactory;
@@ -54,7 +55,19 @@ public abstract class AppBase extends ValidatorBase {
         if (application.currentConverter == null) {
             return "";
         }
-        return " (current-converter:" + application.currentConverter.getName() + ")";
+
+        Converter converter = application.currentConverter;
+        String name = " (converter:" + converter.getName() + ")";
+        DataTable dataTable = converter.getCurrentTable();
+        if (dataTable == null) {
+            return name;
+        }
+
+        String tableName = dataTable.getName();
+        tableName = tableName.contains(":") ? tableName : "SRC:" + tableName;
+
+        name = " (table:" + dataTable.getName() + ")" + name;
+        return name;
     }
 
     public void error(String format, Object arg1, Object arg2) {

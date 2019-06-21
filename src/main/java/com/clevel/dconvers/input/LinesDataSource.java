@@ -44,6 +44,9 @@ public class LinesDataSource extends DataSource {
         dataTable.setQuery(query);
 
         String eol = queryParamMap.get(Property.OUTPUT_EOL.key().toUpperCase());
+        if (eol == null) {
+            eol = "\n";
+        }
 
         List<File> fileList = getFileList(query);
         List<DataRow> dataRowList = new ArrayList<>();

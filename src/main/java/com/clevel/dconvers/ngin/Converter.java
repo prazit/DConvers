@@ -240,14 +240,16 @@ public class Converter extends AppBase {
             outputConfig = target.getTargetConfig().getTransferOutputConfig();
             if (outputConfig.needOutput()) {
                 dataTable = target.getDataTableBeforeTransform();
-                setCurrentTable(dataTable);
-                log.debug("Print data before transformed {} row(s)", dataTable.getRowCount());
+                if (dataTable != null) {
+                    setCurrentTable(dataTable);
+                    log.debug("Print data before transformed {} row(s)", dataTable.getRowCount());
 
-                if (!dataTable.print(outputConfig)) {
-                    error("Print data before transformed is failed!");
-                    success = false;
-                    if (exitOnError) {
-                        return false;
+                    if (!dataTable.print(outputConfig)) {
+                        error("Print data before transformed is failed!");
+                        success = false;
+                        if (exitOnError) {
+                            return false;
+                        }
                     }
                 }
             }
