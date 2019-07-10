@@ -8,6 +8,7 @@ public enum SystemQuery {
     VARIABLE,
     ENVIRONMENT,
     MEMORY,
+    OS_VARIABLE,
 
     TABLE_SUMMARY,
     OUTPUT_SUMMARY

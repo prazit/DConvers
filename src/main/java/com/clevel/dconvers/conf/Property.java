@@ -59,6 +59,7 @@ public enum Property {
     DBINSERT("dbinsert"),
     DBUPDATE("dbupdate"),
     DBEXECUTE("dbexecute"),
+    OSVARIABLE("osvariable"),
     CONF("conf"),
     QUOTES("quotes"),
     NAME("name"),

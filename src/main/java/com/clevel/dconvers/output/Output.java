@@ -43,7 +43,7 @@ public abstract class Output extends AppBase {
     }
 
     private PostSFTP postSFTP;
-    private String outputName;
+    protected String outputName;
 
     public Output(Application application, String name) {
         super(application, name);

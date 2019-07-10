@@ -64,6 +64,9 @@ public class SystemDataSource extends DataSource {
             case MEMORY:
                 return memory(tableName, idColumnName);
 
+            case OS_VARIABLE:
+                return osVariables(tableName, idColumnName);
+
             default: //case ENVIRONMENT:
                 return systemProperties(tableName, idColumnName);
         }
@@ -223,6 +226,33 @@ public class SystemDataSource extends DataSource {
 
         return dataTable;
     }
+
+    private DataTable osVariables(String tableName, String idColumnName) {
+
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
+        dataTable.setQuery(SystemQuery.OS_VARIABLE.name());
+        DataRow dataRow;
+        String columnName;
+
+        Map<String, String> env = System.getenv();
+        List<String> envVariables = new ArrayList<>(env.keySet());
+        envVariables.sort(String::compareTo);
+        for (String varName : envVariables) {
+            dataRow = new DataRow(application, dataTable);
+
+            columnName = "VARIABLE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, varName));
+
+            columnName = "VALUE";
+            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, env.get(varName)));
+
+            dataTable.addRow(dataRow);
+        }
+
+        return dataTable;
+    }
+
 
     @Override
     public String toString() {

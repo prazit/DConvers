@@ -30,7 +30,7 @@ But, now has many features that help to transform data in a target table before 
 DConvers is a command line utility built on JDK 1.8 and you need a command line terminal like Windows CMD. 
 To run this program as well, you always need to write some configuration (datasources,sftps,converters,sources,targets).
 Define list of datasource and list of converter file in a [conversion file](#ConversionFile).
-Define list of source and list of target must be defined in one or more [converter file](#ConverterFile).  
+Define list of source and list of target in one or more [converter file](#ConverterFile).  
 
 > Library of database driver are required for user's defined datasource.   
 
@@ -47,7 +47,7 @@ And type this command to show help.
 ```
 
 
-## Configuring
+### Configuring
 
 Explain how to write the configuration files before run the DConvers application.  
 All configuration files in DConvers project are in standard of properties file format.  
@@ -61,7 +61,9 @@ The possible values for any property is depends on the DataType of the property 
 | string    | string              | character array as string                                                                                       |
 | date      | yyyy/MM/dd HH:mm:ss | date time string in the default pattern or custom pattern in a FORMAT calculator and some output configuration. |
 
-### Conversion File
+----
+
+## Conversion File
 
 > All directory path must use '/' instead of '\\' on all operating systems.
 
@@ -131,8 +133,9 @@ Define user variables here and then use them in DynamicValue expression like thi
 
 > Please take care, don't use system variable name as user variable name because of the value will be replaced by the system.
 
+----
 
-### Converter File
+## Converter File
 
 Converter file is a properties file which contains 3 groups of property as follow
 1 Converter Properties
@@ -590,19 +593,32 @@ Like the Get Transformer Function above, get a column-value from any where and t
 Syntax> compile([replace or [ColumnName]]:[insertColumnIndex],[current or [[TableType]:[TableName]]],[current or [rowIndex]],[columnIndex])
 ```
 
+----
 
-#### Dynamic Value Expression for any properties
+## Dynamic Value Expression
+
+Dynamic Value is used in Converter File, the usage of Dynamic Value has some differences between general properties and target.column.
+
+Dynamic value for general properties need to coverred by $[ ] but for target.column doesn't need cover.
 
 ```
-$[[Type]:[Value-Identifier])
+Properties-Syntax> property=$[[Type]:[Type-Parameters]]
+TargetColumn-Syntax> column.colname=[Type]:[Type-Parameters]
 
 example:
 source.name.query=$[TXT:../sql/select.sql]
+target.name.column.colname=VAR:APPLICATION_START
 ```
 
-When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
+When the content string of TXT file are loaded, content string can contains the Dynamic Value like this.
 
-The possible types of Dynamic Value for Query are described as below.
+```sql
+select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])
+```
+
+>   The system will detect and compile dynamic value until no remaining Dynamic Value Expression.
+
+##### Dynamic Value Types
 
 Type | Value Identifier | Example | Description
 -----|------------------|---------|------------
@@ -610,30 +626,27 @@ TXT  | Full path name of a text file | $[TXT:C:\path\file.ext] | Insert content 
 SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
 TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
 MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
-CAL  | | | .
+CAL  | [FunctionName] (ParameterList in CSV format) | $[CAL:GET(SRC:MySourceTable,1,2)] | Calculate a function to produce a value. see 'Calculators' for detailed. 
+VAR  | [VariableName] | $[VAR:APPLICATION_START] | Value from a variable. see 'Variables' for detailed. 
 
-#### Dynamic Value Expression for Target.Column
+----
 
-```
-[Type]:[Value-Identifier]
+## Calculators
 
-example:
-target.name.column.cname=CAL:../sql/select.sql
-```
+Calculators for use in CAL type dynamic value expression.
 
-When the query string contains the Dynamic Value, it will look like this: ```select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])```.
+| Calculator | Parameters                                                   | Description                                                  |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| GET        | CAL:GET([Table Identifier],[Row Identifier],[Column Identifier]) | Get a value from specified column.                           |
+| COMPILE    | CAL:COMPILE([Table Identifier],[Row Identifier],[Column Identifier]) | Get a value from specified column and then compile as dynamic value. |
+| FORMAT     | CAL:FORMAT([Table Identifier],[Row Identifier],[Column Identifier],[Pattern]) | Get a value from specified column and then format using [Pattern]. |
+| NAME       | CAL:NAME([Table Identifier])                                 | Name of a table.                                             |
+| ROWCOUNT   | CAL:ROWCOUNT([Table Identifier])                             | Number of rows of a table.                                   |
+| SUM        | CAL:SUM([Table Identifier],[Row Identifier],[[Column Identifier],..]) | Summarize all values in specified column list.               |
 
-The possible types of Dynamic Value for Query are described as below.
+----
 
-Type | Value Identifier | Example | Description
------|------------------|---------|------------
-SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
-TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
-MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
-MORE | | | |
-
-
-#### System Variables
+## Variables
 
 System Variables used in the Dynamic Value Statement to get value from constant value or system value.
 
@@ -668,6 +681,7 @@ System variable can contain 2 groups of value as following
 
 > You can see full list in source code of SystemVariable.java
 
+----
 
 #### Fixed Length Format
 
@@ -675,25 +689,29 @@ Explain how to defined Fixed Length Format for the property "txt.format".
 
 ----
 
-## Built With
+## APPENDIX
+
+
+
+### Built With
 
 * [IntelliJ IDEA](https://maven.apache.org/) - The popular java ide.
 
-## Contributing
+### Contributing
 
 Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
 
-## Versioning
+### Versioning
 
 We use [GIT](http://git.org/) for versioning. For the versions available, see the [tags on this repository](https://gitlab.the-c-level.com/Shared/DConvers/tags). 
 
-## Authors
+### Authors
 
 * **Prazit Jitmanozot** - *Full Stack* - [Prazit](https://gitlab.the-c-level.com/Prazit)
 
 See also the list of [contributors](https://gitlab.the-c-level.com/Shared/DConvers/contributors) who participated in this project.
 
-## License
+### License
 
 This project is a part of C-Level Company Limited in Thailand and protected by the Thailand Raw MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
@@ -702,3 +720,7 @@ This project is a part of C-Level Company Limited in Thailand and protected by t
 * Inspiration: this application birth in the Data Migration Project for SCT-Gold Version 2.x.
 * Inspiration: but many features are required by the LHBank ETL Project.
 * etc
+
+----
+
+-- end of document --

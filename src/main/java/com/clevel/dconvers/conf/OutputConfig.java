@@ -1,7 +1,6 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
@@ -157,6 +156,11 @@ public class OutputConfig extends Config {
     private String dbExecuteOutput;
     private List<String> dbExecutePostSQL;
     private List<String> dbExecutePreSQL;
+
+
+    private boolean osVariable;
+    private String osVariableName;
+    private String osVariableValue;
 
 
     private List<OutputTypes> outputTypeList;
@@ -517,6 +521,21 @@ public class OutputConfig extends Config {
             dbExecuteOutput = getPropertyString(dbExecuteProperties, Property.OUTPUT_FILE.key(), dbExecuteOutput);
             dbExecutePreSQL = getSQLStringList(dbExecuteProperties, Property.PRE_SQL.key());
             dbExecutePostSQL = getSQLStringList(dbExecuteProperties, Property.POST_SQL.key());
+        }
+
+        // OS Variable Output Properties
+        osVariable = false;
+        osVariableName = "VARIABLE";
+        osVariableValue = "VALUE";
+
+        key = Property.OSVARIABLE.prefixKey(baseProperty);
+        osVariable = properties.getBoolean(key, osVariable);
+        if (osVariable) {
+            outputTypeList.add(OutputTypes.OS_VARIABLE);
+
+            Configuration osVariableProperties = properties.subset(key);
+            osVariableName = getPropertyString(osVariableProperties, Property.NAME.key(), osVariableName);
+            osVariableValue = getPropertyString(osVariableProperties, Property.VALUE.key(), osVariableValue);
         }
 
         return true;
@@ -1069,6 +1088,18 @@ public class OutputConfig extends Config {
 
     public List<OutputTypes> getOutputTypeList() {
         return outputTypeList;
+    }
+
+    public boolean isOsVariable() {
+        return osVariable;
+    }
+
+    public String getOsVariableName() {
+        return osVariableName;
+    }
+
+    public String getOsVariableValue() {
+        return osVariableValue;
     }
 
     public boolean needOutput() {
