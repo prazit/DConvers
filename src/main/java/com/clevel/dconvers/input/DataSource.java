@@ -148,7 +148,7 @@ public class DataSource extends UtilBase {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 query = query.replaceAll("[\"]", dataSourceConfig.getValueQuotes());
-                log.debug("Querying: {}", query);
+                //log.debug("Querying: {}", query);
                 application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                 resultSet = statement.executeQuery(query);
                 application.timeTracker.stop(TimeTrackerKey.DATASOURCE);

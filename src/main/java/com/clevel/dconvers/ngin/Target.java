@@ -36,6 +36,7 @@ public class Target extends UtilBase {
 
     /* store row from current-source in transfer process */
     private DataRow currentSourceRow;
+    private DataRow currentTargetRow;
 
     private List<String> sourceList;
     private List<DataTable> mappingTableList;
@@ -58,6 +59,7 @@ public class Target extends UtilBase {
         sourceList = targetConfig.getSourceList();
         mappingTableList = new ArrayList<>();
         currentSourceRow = null;
+        currentTargetRow = null;
 
         return true;
     }
@@ -103,7 +105,6 @@ public class Target extends UtilBase {
         DataColumn targetColumn;
         String sourceColumnName;
         String targetColumnName;
-        DataRow targetRow;
         DataRow mappingRow;
         int targetColumnIndex;
 
@@ -173,6 +174,7 @@ public class Target extends UtilBase {
                 dynamicValueList.add(dynamicValue);
             }
 
+            boolean firstRow = true;
             for (DataRow sourceRow : sourceRowList) {
                 progressBar.step();
                 currentSourceRow = sourceRow;
@@ -180,7 +182,7 @@ public class Target extends UtilBase {
                 // -- start target table
 
                 varRowNumber.increaseValueBy(1);
-                targetRow = new DataRow(application, dataTable);
+                currentTargetRow = new DataRow(application, dataTable);
                 for (DynamicValue columnValue : dynamicValueList) {
                     targetColumn = columnValue.getValue(sourceRow);
                     if (targetColumn == null) {
@@ -189,15 +191,21 @@ public class Target extends UtilBase {
                         return false;
                     }
 
-                    targetRow.putColumn(targetColumn.getName(), targetColumn);
+                    currentTargetRow.putColumn(targetColumn.getName(), targetColumn);
+                    if (firstRow) {
+                        log.debug("buildTargetColumn({}.{})[{}]", dataTable.getName(), targetColumn.getName(), columnValue.getDynamicValueType());
+                    }
                 }
-                dataTable.addRow(targetRow);
+                dataTable.addRow(currentTargetRow);
+                if (firstRow) {
+                    firstRow = false;
+                }
 
                 // -- start mapping table
 
                 mappingRow = new DataRow(application, mappingTable);
 
-                targetColumn = targetRow.getColumn(targetIdColumnName);
+                targetColumn = currentTargetRow.getColumn(targetIdColumnName);
                 if (targetColumn == null) {
                     progressBar.close();
                     error("Invalid target id({}) for target({}) that required by mapping table({})", targetIdColumnName, name, mappingTableName);
@@ -266,6 +274,10 @@ public class Target extends UtilBase {
 
     public DataRow getCurrentSourceRow() {
         return currentSourceRow;
+    }
+
+    public DataRow getCurrentTargetRow() {
+        return currentTargetRow;
     }
 
     public DataTable getDataTable() {

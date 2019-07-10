@@ -104,7 +104,7 @@ public abstract class DataFormatter extends UtilBase {
 
     private boolean print(StringBuffer stringBuffer, Writer writer) {
         if (stringBuffer.length() > 0) {
-            log.debug("print({})", stringBuffer.toString());
+            //log.debug("print({})", stringBuffer.toString());
 
             if (!allowToWrite(stringBuffer)) {
                 return false;

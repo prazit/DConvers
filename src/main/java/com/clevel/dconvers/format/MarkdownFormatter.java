@@ -532,7 +532,7 @@ public class MarkdownFormatter extends DataFormatter {
 
         private String getTableName(String query) {
             query = query.toUpperCase();
-            log.debug("getTableName.query='{}'", query);
+            //log.debug("getTableName.query='{}'", query);
 
             int fromIndex = query.indexOf("SELECT");
             if (fromIndex < 0) {
@@ -558,11 +558,11 @@ public class MarkdownFormatter extends DataFormatter {
             if (toIndex < 0) {
                 toIndex = subQuery.length();
             }
-            log.debug("getTableName.subQuery='{}', fronIndex({}) toIndex({})", subQuery, fromIndex, toIndex);
+            //log.debug("getTableName.subQuery='{}', fronIndex({}) toIndex({})", subQuery, fromIndex, toIndex);
 
             String tableName = subQuery.substring(0, toIndex);
             tableName = tableName.replaceAll("[{}()<>+*/\\-]", "").trim();
-            log.debug("getTableName.tableName='{}' after replaced", tableName);
+            //log.debug("getTableName.tableName='{}' after replaced", tableName);
 
             if (tableName.length() == 0) {
                 return "Complex-SQL";
