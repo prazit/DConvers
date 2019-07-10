@@ -178,6 +178,7 @@ public class MarkdownDataSource extends DataSource {
     }
 
     private DataRow getDataRow(String line, String[] columnNames, int[] columnTypes, DataTable dataTable) {
+        Converter converter = application.currentConverter;
         String[] columns = splitColumns(line);
         //log.debug("separator columns = {}", (Object[]) columns);
 
@@ -198,6 +199,7 @@ public class MarkdownDataSource extends DataSource {
                 } else {
                     column = column.replaceAll("<br/>", "\n");
                     column = column.replaceAll("&vert;", "|");
+                    column = converter.compileDynamicValues(column);
                 }
             } else if (updateColumnTypes && columnType == Types.INTEGER && isDecimal(column)) {
                 columnType = Types.DECIMAL;
