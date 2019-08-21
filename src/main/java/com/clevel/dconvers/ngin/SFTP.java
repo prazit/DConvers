@@ -52,6 +52,7 @@ public class SFTP extends AppBase implements UserInfo {
             Channel channel = sftpSession.openChannel("sftp");
             channel.connect();
             sftpChannel = (ChannelSftp) channel;
+            valid = true;
 
             log.info("Connected to sftp({})", name);
         } catch (Exception ex) {
