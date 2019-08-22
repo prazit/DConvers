@@ -104,7 +104,7 @@ public class DataSource extends UtilBase {
             log.debug("getRowCount.size = {}", size);
             return size;
         } catch (Exception ex) {
-            log.debug("Exception has ouccured in DataSource.getRowCount() but this is normally for the Stored Procedure call. ", ex);
+            log.debug("Exception has ouccured in DataSource.getRowCount() but this is normally for the Stored Procedure call. ");
         }
         return 0;
     }
@@ -217,7 +217,7 @@ public class DataSource extends UtilBase {
         Timestamp timestamp;
 
         int rowCount = getRowCount(resultSet);
-        ProgressBar progressBar = getProgressBar("Build source(" + tableName + ")", rowCount);
+        ProgressBar progressBar = getProgressBar("Build source(" + tableName + ")", (rowCount == 0 ? 100 : rowCount));
 
         Object object;
         while (resultSet.next()) {
@@ -332,12 +332,15 @@ public class DataSource extends UtilBase {
 
             dataTable.addRow(dataRow);
             needMetaData = false;
+            if (dataTable.getRowCount() == rowCount) {
+                progressBar.stepTo(10);
+            }
         } // end of while
 
         progressBar.close();
 
-        if (log.isDebugEnabled() && rowCount > 0) {
-            log.debug("createDataTable({}). has {} rows, firstRow is {}", tableName, rowCount, dataTable.getRow(0));
+        if (log.isDebugEnabled()) {
+            log.debug("createDataTable({}). has {} rows, firstRow is {}", tableName, dataTable.getRowCount(), dataTable.getRow(0));
         }
 
         return dataTable;
