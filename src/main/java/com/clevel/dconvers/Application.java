@@ -7,6 +7,7 @@ import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
+import com.clevel.dconvers.format.VersionFormatter;
 import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.output.OutputTypes;
@@ -17,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Types;
@@ -104,6 +106,11 @@ public class Application extends AppBase {
 
         if (switches.isHelp()) {
             performHelp();
+            stop();
+        }
+
+        if (switches.isVersion()) {
+            performVersion();
             stop();
         }
 
@@ -404,7 +411,14 @@ public class Application extends AppBase {
         performTimeTracker();
 
         log.info("SUCCESS");
-        System.exit(dataConversionConfigFile.getSuccessCode());
+
+        int exitCode;
+        if (dataConversionConfigFile == null) {
+            exitCode = Defaults.EXIT_CODE_SUCCESS.getIntValue();
+        } else {
+            exitCode = dataConversionConfigFile.getSuccessCode();
+        }
+        System.exit(exitCode);
     }
 
     public void stopWithError() {
@@ -415,7 +429,14 @@ public class Application extends AppBase {
         performTimeTracker();
 
         log.info("EXIT WITH SOME ERROR");
-        System.exit(dataConversionConfigFile.getErrorCode());
+
+        int exitCode;
+        if (dataConversionConfigFile == null) {
+            exitCode = Defaults.EXIT_CODE_ERROR.getIntValue();
+        } else {
+            exitCode = dataConversionConfigFile.getErrorCode();
+        }
+        System.exit(exitCode);
     }
 
     public void stopWithWarning() {
@@ -426,7 +447,15 @@ public class Application extends AppBase {
         performTimeTracker();
 
         log.info("SUCCESSFUL WITH WARNING");
-        System.exit(dataConversionConfigFile.getWarningCode());
+
+
+        int exitCode;
+        if (dataConversionConfigFile == null) {
+            exitCode = Defaults.EXIT_CODE_WARNING.getIntValue();
+        } else {
+            exitCode = dataConversionConfigFile.getWarningCode();
+        }
+        System.exit(exitCode);
     }
 
     private void closeAllDataSource() {
@@ -515,12 +544,30 @@ public class Application extends AppBase {
 
     private void performHelp() {
         log.trace("Application.performHelp.");
+        printVersion();
 
         String syntax = "dconvers [switches]\n" +
                 "\nSwitches:\n";
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp(syntax, switches.getOptions());
+
+        System.out.println();
+    }
+
+    private void performVersion(){
+        log.trace("Application.performVersion.");
+        printVersion();
+        System.out.println();
+    }
+
+    private void printVersion() {
+        VersionFormatter versionFormatter = new VersionFormatter(this);
+        PrintWriter pw = new PrintWriter(System.out);
+
+        pw.write(versionFormatter.format(new VersionConfigFile(this)));
+        pw.println();
+        pw.flush();
     }
 
     //======= Utilities =======

@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
-Implementation-Title: C-Level ETL Application
-Implementation-Version: version: 1.0.0 build: 9 (14/06/2013 13:18)
+Implementation-Title: C-Level Data Conversion
 Built-By: C-Level Development Team.
 Class-Path: ../lib/cli-progressbar-0.7.0.jar ../lib/commons-beanutils-
  1.9.3.jar ../lib/commons-cli-1.4.jar ../lib/commons-configuration2-2.
@@ -18,7 +17,6 @@ Class-Path: ../lib/cli-progressbar-0.7.0.jar ../lib/commons-beanutils-
  ports/jasperreports-javaflow-6.2.2.jar ../lib/jasperreports/joda-time
  -2.4.jar ../lib/jasperreports/jtidy-r938.jar ../lib/jasperreports/tha
  ifonts-sarabun.jar
-Created-By: 1.5.0_09-b03 (Sun Microsystems Inc.)
 Implementation-Vendor: C-Level Company Limited
 Main-Class: com.clevel.dconvers.Main
 

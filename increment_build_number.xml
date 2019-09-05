@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="increment_build_number" default="all">
+  <description>
+    Auto increment build number in a version.properties file.
+  </description>
+
+  <macrodef name="property-calc">
+    <attribute name="name" />
+    <attribute name="value" />
+    <sequential>
+      <script language="javascript">
+        project.setProperty("@{name}", eval(@{value}));
+      </script>
+    </sequential>
+  </macrodef>
+
+  <property name="version.properties" location="src/main/resources/version.properties"/>
+  <property file="${version.properties}"/>
+
+  <target name="increment version.number">
+    <property-calc name="version.number" value="${version.number} + 1" />
+    <replaceregexp file="${version.properties}"
+                   match="version\.number\=.*"
+                   replace="version.number=${version.number}"
+                   byline="true"
+    />
+  </target>
+
+  <target name="increment revision.number">
+    <property-calc name="revision.number" value="${revision.number} + 1" />
+    <replaceregexp file="${version.properties}"
+                   match="revision\.number\=.*"
+                   replace="revision.number=${revision.number}"
+                   byline="true"
+    />
+  </target>
+
+  <target name="increment build.number">
+    <property-calc name="build.number" value="${build.number} + 1" />
+    <replaceregexp file="${version.properties}"
+                   match="build\.number\=.*"
+                   replace="build.number=${build.number}"
+                   byline="true"
+    />
+  </target>
+</project>

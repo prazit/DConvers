@@ -24,6 +24,7 @@ public class Switches extends AppBase {
     private boolean verbose;
     private Level verboseLevel;
     private boolean help;
+    private boolean version;
 
     public Switches(Application application) {
         super(application, "switches");
@@ -94,6 +95,7 @@ public class Switches extends AppBase {
         }
 
         help = cmd.hasOption(Option.HELP.getShortOpt());
+        version = cmd.hasOption(Option.VERSION.getShortOpt());
         arg = cmd.getOptionValue(Option.ARG.getShortOpt());
 
         return true;
@@ -103,7 +105,7 @@ public class Switches extends AppBase {
     public boolean validate() {
         log.trace("Switches.validateSwitches.");
 
-        if (source == null && !help) {
+        if (source == null && !help && !version) {
             error("invalid specified source-file");
             return false;
         }
@@ -129,6 +131,10 @@ public class Switches extends AppBase {
 
     public boolean isHelp() {
         return help;
+    }
+
+    public boolean isVersion() {
+        return version;
     }
 
     public String getArg() {

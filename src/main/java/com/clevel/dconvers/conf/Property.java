@@ -111,7 +111,15 @@ public enum Property {
     REPORT_TABLE("report.table"),
 
     SOURCE_ID("source_id"),
-    TARGET_ID("target_id");
+    TARGET_ID("target_id"),
+
+    VERSION_PROPERTIES("version.properties"),
+    PROJECT_NAME("project.name"),
+    VERSION_NAME("version.name"),
+    VERSION_NUMBER("version.number"),
+    REVISION_NUMBER("revision.number"),
+    BUILD_NUMBER("build.number"),
+    BUILD_DATE("build.date");
 
     private String key;
 

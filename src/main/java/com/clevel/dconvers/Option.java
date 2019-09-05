@@ -8,6 +8,7 @@ public enum Option {
     VERBOSE(false, "v", "verbose", false, "run in verbose mode will show TRACE level of messages"),
     LEVEL(false, "l", "level", true, "specified level will use as level of messages\npossible values are TRACE, DEBUG, ERROR, WARNING, INFO"),
 
+    VERSION(false, "n", "version", false, "print version information to console"),
     HELP(false, "h", "help", false, "print help message to console"),
 
     ARG(false, "r", "arg", true, "values in CSV format for the CAL:ARG()");
