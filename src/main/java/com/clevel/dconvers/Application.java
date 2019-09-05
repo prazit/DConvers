@@ -116,7 +116,9 @@ public class Application extends AppBase {
 
         String dataConversionConfigFilename = switches.getSource();
         log.debug("Working directory is '{}'", System.getProperty("user.dir"));
-        log.info("DConvers configuration file is '{}'.", dataConversionConfigFilename);
+
+        VersionFormatter versionFormatter = new VersionFormatter(this);
+        log.info(versionFormatter.format(new VersionConfigFile(this))+" configuration file is '{}'.", dataConversionConfigFilename);
 
         log.trace("Application. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);

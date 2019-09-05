@@ -9,7 +9,12 @@
     <attribute name="value" />
     <sequential>
       <script language="javascript">
-        project.setProperty("@{name}", eval(@{value}));
+        if("@{value}" == "date") {
+          var today = new Date();
+          project.setProperty("@{name}", today.getDate()+'/'+(today.getMonth()+1)+'/'+today.getFullYear()+' '+today.getHours() + ":" + today.getMinutes());
+        } else {
+          project.setProperty("@{name}", eval(@{value}));
+        }
       </script>
     </sequential>
   </macrodef>
@@ -40,7 +45,11 @@
     <replaceregexp file="${version.properties}"
                    match="build\.number\=.*"
                    replace="build.number=${build.number}"
-                   byline="true"
-    />
+                   byline="true"/>
+    <property-calc name="build.date" value="date" />
+    <replaceregexp file="${version.properties}"
+                   match="build\.date\=.*"
+                   replace="build.date=${build.date}"
+                   byline="true"/>
   </target>
 </project>
