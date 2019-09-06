@@ -20,6 +20,7 @@
   </macrodef>
 
   <property name="version.properties" location="src/main/resources/version.properties"/>
+  <property name="version.properties.building" location="out/production/Data Conversion/version.properties"/>
   <property file="${version.properties}"/>
 
   <target name="increment version.number">
@@ -46,8 +47,16 @@
                    match="build\.number\=.*"
                    replace="build.number=${build.number}"
                    byline="true"/>
+    <replaceregexp file="${version.properties.building}"
+                   match="build\.number\=.*"
+                   replace="build.number=${build.number}"
+                   byline="true"/>
     <property-calc name="build.date" value="date" />
     <replaceregexp file="${version.properties}"
+                   match="build\.date\=.*"
+                   replace="build.date=${build.date}"
+                   byline="true"/>
+    <replaceregexp file="${version.properties.building}"
                    match="build\.date\=.*"
                    replace="build.date=${build.date}"
                    byline="true"/>
