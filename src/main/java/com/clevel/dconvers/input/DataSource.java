@@ -369,11 +369,11 @@ public class DataSource extends UtilBase {
 
         try {
             connection.close();
+        } catch (SQLException se) {
+            log.warn("Disconnect is failed, already ignored!, ", se.getMessage());
+        } finally {
             connection = null;
             log.info("Disconnected from datasource({})", name);
-        } catch (SQLException se) {
-            error("disconnect is failed");
-            log.debug("SQLException = {}", se);
         }
     }
 
