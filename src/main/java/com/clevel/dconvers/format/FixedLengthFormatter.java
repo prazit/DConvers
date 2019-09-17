@@ -306,6 +306,11 @@ public class FixedLengthFormatter extends DataFormatter {
         int leftLength = targetLength - rightLength;
         //log.debug("decimalLength({}) = left({}), right({})", decimalLength, leftLength, rightLength);
 
+        // remove negative sign (standard format of Fixed Length is not allow the sign)
+        if (decimalAsStringValue.startsWith("-")) {
+            decimalAsStringValue = decimalAsStringValue.substring(1);
+        }
+
         String[] decimal = decimalAsStringValue.split("[.]");
         String leftDecimal = decimal.length == 0 ? "0" : decimal[0];
         String rightDecimal = decimal.length < 2 ? "" : decimal[1];
