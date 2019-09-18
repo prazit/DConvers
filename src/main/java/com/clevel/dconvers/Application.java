@@ -118,7 +118,7 @@ public class Application extends AppBase {
         log.debug("Working directory is '{}'", System.getProperty("user.dir"));
 
         VersionFormatter versionFormatter = new VersionFormatter(this);
-        log.info(versionFormatter.format(new VersionConfigFile(this))+" configuration file is '{}'.", dataConversionConfigFilename);
+        log.info(versionFormatter.versionString(new VersionConfigFile(this))+" configuration file is '{}'.", dataConversionConfigFilename);
 
         log.trace("Application. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
@@ -398,6 +398,11 @@ public class Application extends AppBase {
 
         currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
         currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
+
+        VersionFormatter versionFormatter = new VersionFormatter(this);
+        VersionConfigFile versionConfigFile = new VersionConfigFile(this);
+        systemVariableMap.get(SystemVariable.APPLICATION_VERSION).setValue(versionFormatter.versionNumber(versionConfigFile));
+        systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
     }
 
     private void performTimeTracker() {
@@ -564,10 +569,8 @@ public class Application extends AppBase {
     }
 
     private void printVersion() {
-        VersionFormatter versionFormatter = new VersionFormatter(this);
         PrintWriter pw = new PrintWriter(System.out);
-
-        pw.write(versionFormatter.format(new VersionConfigFile(this)));
+        pw.write(systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
         pw.println();
         pw.flush();
     }

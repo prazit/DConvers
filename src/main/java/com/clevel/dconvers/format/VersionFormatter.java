@@ -13,7 +13,17 @@ public class VersionFormatter extends AppBase {
         valid = true;
     }
 
-    public String format(VersionConfigFile versionConfigFile) {
+    public String versionNumber(VersionConfigFile versionConfigFile) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append(versionConfigFile.getVersionNumber())
+                .append(".").append(versionConfigFile.getRevisionNumber())
+                .append(".").append(versionConfigFile.getBuildNumber());
+
+        return stringBuilder.toString();
+    }
+
+    public String versionString(VersionConfigFile versionConfigFile) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(versionConfigFile.getProjectName());
 
@@ -24,10 +34,7 @@ public class VersionFormatter extends AppBase {
             stringBuilder.append(" v.");
         }
 
-        stringBuilder.append(" ").append(versionConfigFile.getVersionNumber())
-                .append(".").append(versionConfigFile.getRevisionNumber())
-                .append(".").append(versionConfigFile.getBuildNumber());
-
+        stringBuilder.append(" ").append(versionNumber(versionConfigFile));
         String buildDate = versionConfigFile.getBuildDate();
         if (buildDate != null && !buildDate.isEmpty()) {
             stringBuilder.append(" build ").append(buildDate);

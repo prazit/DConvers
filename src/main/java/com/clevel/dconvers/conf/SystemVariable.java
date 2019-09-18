@@ -17,6 +17,12 @@ public enum SystemVariable {
     // Row number will be reset at the beginning of any datatable processes.
     ROW_NUMBER(Types.INTEGER),
 
+    // Current Version (full text)
+    APPLICATION_FULL_VERSION(Types.VARCHAR),
+
+    // Current Version
+    APPLICATION_VERSION(Types.VARCHAR),
+
     // EXIT CODE for now
     APPLICATION_STATE(Types.INTEGER),
 
