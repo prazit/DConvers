@@ -121,8 +121,11 @@ public class OutputConfig extends Config {
     private String csvOutputEOL;
     private String csvOutputEOF;
     private boolean csvHeader;
+    private List<String> csvHeaderColumn;
     private String csvSeparator;
     private String csvNullString;
+    private List<String> csvFormat;
+    private String csvFormatDate;
     private String csvFormatDatetime;
     private String csvFormatInteger;
     private String csvFormatDecimal;
@@ -419,11 +422,14 @@ public class OutputConfig extends Config {
         csvOutputEOL = "\n";
         csvOutputEOF = "\n";
         csvHeader = true;
+        csvHeaderColumn = new ArrayList<>();
         csvSeparator = ",";
         csvNullString = "";
+        csvFormat = new ArrayList<>();
+        csvFormatDatetime = "dd/MM/yyyy";
         csvFormatDatetime = "dd/MM/yyyy HH:mm:ss";
-        csvFormatInteger = "#,##0";
-        csvFormatDecimal = "#,##0.00";
+        csvFormatInteger = "###0";
+        csvFormatDecimal = "###0.####";
         csvFormatString = "";
 
         key = Property.CSV.prefixKey(baseProperty);
@@ -443,6 +449,9 @@ public class OutputConfig extends Config {
             csvSeparator = getPropertyString(csvProperties, Property.SEPARATOR.key(), csvSeparator);
             csvNullString = getPropertyString(csvProperties, Property.NULL.key(), csvNullString);
             csvHeader = csvProperties.getBoolean(Property.HEADER.key(), csvHeader);
+            csvHeaderColumn = getStringList(csvProperties, Property.HEADER.connectKey(Property.COLUMN));
+            csvFormat = getStringList(csvProperties, Property.FORMAT.key());
+            csvFormatDate = getPropertyString(csvProperties, Property.FORMAT_DATE.key(), csvFormatDate);
             csvFormatDatetime = getPropertyString(csvProperties, Property.FORMAT_DATETIME.key(), csvFormatDatetime);
             csvFormatInteger = getPropertyString(csvProperties, Property.FORMAT_INTEGER.key(), csvFormatInteger);
             csvFormatDecimal = getPropertyString(csvProperties, Property.FORMAT_DECIMAL.key(), csvFormatDecimal);
@@ -554,7 +563,7 @@ public class OutputConfig extends Config {
         for (Object obj : objectList) {
             value = obj.toString();
             if (value.contains(",")) {
-                stringList.addAll(Arrays.asList(value.split(",")));
+                stringList.addAll(Arrays.asList(value.split("[,]")));
             } else {
                 stringList.add(value);
             }
@@ -954,6 +963,10 @@ public class OutputConfig extends Config {
         return csvNullString;
     }
 
+    public List<String> getCsvHeaderColumn() {
+        return csvHeaderColumn;
+    }
+
     public boolean isCsvHeader() {
         return csvHeader;
     }
@@ -976,6 +989,14 @@ public class OutputConfig extends Config {
 
     public String getCsvOutputEOF() {
         return application.currentConverter.compileDynamicValues(csvOutputEOF);
+    }
+
+    public List<String> getCsvFormat() {
+        return csvFormat;
+    }
+
+    public String getCsvFormatDate() {
+        return csvFormatDate;
     }
 
     public String getCsvFormatDatetime() {

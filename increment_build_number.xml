@@ -47,6 +47,16 @@
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
+
+        <replaceregexp file="${version.properties}"
+                       match="build\.number\=.*"
+                       replace="build.number=0"
+                       byline="true"/>
+        <replaceregexp file="${version.properties.building}"
+                       match="build\.number\=.*"
+                       replace="build.number=0"
+                       byline="true"/>
+
     </target>
 
     <target name="increment build.number">

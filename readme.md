@@ -343,11 +343,12 @@ The DConvers program has 7 optional output types with different set of property,
 | csv.eof             | string    | \n             | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled) |
 | csv.header          | bool      | true           | first line is header                                                                                    |
 | csv.separator       | string    | ,              | separator character or words use to separate values                                                     |
-| csv.format.string   | string    | null           | string format still in the future plan                                                                  |
-| csv.format.integer  | string    | #,##0          | integer number format (pattern)                                                                         |
-| csv.format.decimal  | string    | #,##0.00       | decimal format (pattern)                                                                                |
-| csv.format.date     | string    | yyyyMMdd       | date format (pattern)                                                                                   |
-| csv.format.datetime | string    | yyyyMMddHHmmss | datetime format (pattern)                                                                               |
+| csv.format          | string    | (none)         | see Fixed Length Format                                                                                 |
+| csv.format.string   | string    | (none)         | string format still in the future plan                                                                  |
+| csv.format.integer  | string    | ###0           | integer number format (pattern)                                                                         |
+| csv.format.decimal  | string    | ###0.##        | decimal format (pattern)                                                                                |
+| csv.format.date     | string    | dd/MM/yyyy     | date format (pattern)                                                                                   |
+| csv.format.datetime | string    | dd/MM/yyyy HH:mm:ss | datetime format (pattern)                                                                               |
 
 
 ##### DBInsert Output Properties
