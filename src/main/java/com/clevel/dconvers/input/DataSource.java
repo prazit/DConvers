@@ -167,20 +167,18 @@ public class DataSource extends UtilBase {
                 log.trace("Close statement...");
                 resultSet.close();
             } else {
-                dataTable = new DataTable(application, tableName, idColumnName);
-                dataTable.setDataSource(name);
-                dataTable.setQuery(query);
+                dataTable = createDataTable(tableName, idColumnName, name, query);
                 log.debug("DataTable({}) has 0 row", tableName);
             }
 
         } catch (SQLException se) {
-            error("SQLException: {}", se.getMessage());
-            return null;
+            dataTable = createDataTable(tableName, idColumnName, name, query);
+            error("DataTable({}) has 0 row due to SQLException: {}", tableName, se.getMessage());
 
         } catch (Exception e) {
-            error("Exception", e);
-            return null;
-
+            dataTable = createDataTable(tableName, idColumnName, name, query);
+            error("DataTable({}) has 0 row due to Exception: {}", tableName, e);
+            
         } finally {
             try {
                 if (statement != null) {
@@ -191,6 +189,13 @@ public class DataSource extends UtilBase {
             }
         }
 
+        return dataTable;
+    }
+
+    private DataTable createDataTable(String tableName, String idColumnName, String dataSourceName, String query){
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(dataSourceName);
+        dataTable.setQuery(query);
         return dataTable;
     }
 
