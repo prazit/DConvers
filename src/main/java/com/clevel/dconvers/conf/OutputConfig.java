@@ -426,7 +426,7 @@ public class OutputConfig extends Config {
         csvSeparator = ",";
         csvNullString = "";
         csvFormat = new ArrayList<>();
-        csvFormatDatetime = "dd/MM/yyyy";
+        csvFormatDate = "dd/MM/yyyy";
         csvFormatDatetime = "dd/MM/yyyy HH:mm:ss";
         csvFormatInteger = "###0";
         csvFormatDecimal = "###0.####";

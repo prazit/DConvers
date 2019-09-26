@@ -1,6 +1,7 @@
 package com.clevel.dconvers.format;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -123,11 +124,11 @@ public class CSVFormatter extends DataFormatter {
         eof = notNull(outputConfig.getCsvOutputEOF(), "");
 
         setFormatList(outputConfig.getCsvFormat());
-        integerFormat = notNull(outputConfig.getCsvFormatInteger(), this.integerFormat);
-        decimalFormat = notNull(outputConfig.getCsvFormatDecimal(), this.decimalFormat);
-        dateFormat = notNull(outputConfig.getCsvFormatDate(), this.dateFormat);
-        datetimeFormat = notNull(outputConfig.getCsvFormatDatetime(), this.datetimeFormat);
-        stringFormat = notNull(outputConfig.getCsvFormatString(), this.stringFormat);
+        integerFormat = notNull(outputConfig.getCsvFormatInteger(), Defaults.NUMBER_FORMAT.getStringValue());
+        decimalFormat = notNull(outputConfig.getCsvFormatDecimal(), Defaults.DECIMAL_FORMAT.getStringValue());
+        dateFormat = notNull(outputConfig.getCsvFormatDate(), Defaults.DATE_FORMAT.getStringValue());
+        datetimeFormat = notNull(outputConfig.getCsvFormatDatetime(), Defaults.DATE_FORMAT.getStringValue());
+        stringFormat = notNull(outputConfig.getCsvFormatString(), "");
 
         outputType = "CSV";
     }
@@ -139,6 +140,7 @@ public class CSVFormatter extends DataFormatter {
             return;
         }
 
+        log.trace("use custom format from config file.");
         for (String format : formatList) {
             this.formatList.add(new CSVColumn(format));
         }
@@ -153,12 +155,12 @@ public class CSVFormatter extends DataFormatter {
         DataRow firstRow = dataTable.getRow(0);
 
         if (formatList.size() == 0) {
-            // use default format by datatype of Column (for all columns).
+            log.trace("use default format by datatype of Column (for all columns).");
             for (DataColumn dataColumn : firstRow.getColumnList()) {
                 this.formatList.add(new CSVColumn(dataColumn));
             }
         } else if (formatList.size() < firstRow.getColumnCount()) {
-            // use default format by datatype of Column (for some columns).
+            log.trace("use default format by datatype of Column (for some columns).");
             int columnIndex = -1;
             int lastIndex = formatList.size() - 1;
             for (DataColumn dataColumn : firstRow.getColumnList()) {
