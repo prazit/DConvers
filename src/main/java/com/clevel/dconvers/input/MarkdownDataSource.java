@@ -121,7 +121,7 @@ public class MarkdownDataSource extends DataSource {
         log.debug("header columns = {}", (Object[]) columns);
 
         for (int index = 0; index < columns.length; index++) {
-            columns[index] = columns[index].trim();
+            columns[index] = columns[index].trim().replaceAll("[ ]", "__");
         }
 
         if (columns.length > 0 && columns[0].equals("No.")) {
