@@ -114,6 +114,7 @@ public enum Property {
     TARGET_ID("target_id"),
 
     VERSION_PROPERTIES("version.properties"),
+    CURRENT_VERSION("current.ver"),
     PROJECT_NAME("project.name"),
     VERSION_NAME("version.name"),
     VERSION_NUMBER("version.number"),

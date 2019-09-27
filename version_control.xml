@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="increment_build_number" default="stamp build.date">
     <description>
-        Auto increment build number in a version.properties file.
+        Auto increment build number in a current.ver file.
     </description>
 
     <macrodef name="property-calc">
@@ -19,18 +19,18 @@
         </sequential>
     </macrodef>
 
-    <property name="version.properties" location="src/main/resources/version.properties"/>
-    <property name="version.properties.building" location="out/production/Data Conversion/version.properties"/>
-    <property file="${version.properties}"/>
+    <property name="current.ver" location="src/main/resources/current.ver"/>
+    <property name="current.ver.building" location="out/production/Data Conversion/current.ver"/>
+    <property file="${current.ver}"/>
 
     <target name="increment version.number">
         <property-calc name="version.number" value="${version.number} + 1"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="version\.number\=.*"
                        replace="version.number=${version.number}"
                        byline="true"
         />
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
@@ -38,21 +38,21 @@
 
     <target name="increment revision.number">
         <property-calc name="revision.number" value="${revision.number} + 1"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="revision\.number\=.*"
                        replace="revision.number=${revision.number}"
                        byline="true"
         />
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
 
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.number\=.*"
                        replace="build.number=0"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.number\=.*"
                        replace="build.number=0"
                        byline="true"/>
@@ -61,28 +61,28 @@
 
     <target name="increment build.number">
         <property-calc name="build.number" value="${build.number} + 1"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
         <property-calc name="build.date" value="date"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
@@ -90,56 +90,56 @@
 
     <target name="decrement build.number">
         <property-calc name="build.number" value="${build.number} - 1"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
         <property-calc name="build.date" value="date"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
     </target>
 
     <target name="stamp build.date">
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.number\=.*"
                        replace="build.number=${build.number}"
                        byline="true"/>
         <property-calc name="build.date" value="date"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="build\.date\=.*"
                        replace="build.date=${build.date}"
                        byline="true"/>
-        <replaceregexp file="${version.properties}"
+        <replaceregexp file="${current.ver}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>
-        <replaceregexp file="${version.properties.building}"
+        <replaceregexp file="${current.ver.building}"
                        match="\#\/\* Current\: .* \*\/"
                        replace="#/* Current: ${project.name} ${version.name} ${version.number}.${revision.number}.${build.number} build ${build.date} */"
                        byline="true"/>

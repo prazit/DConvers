@@ -21,8 +21,8 @@ public class VersionConfigFile extends ConfigFile {
     /* fix bugs */
     private int buildNumber;
 
-    public VersionConfigFile(Application application) {
-        super(application, Property.VERSION_PROPERTIES.key());
+    public VersionConfigFile(Application application, String name) {
+        super(application, name);
 
         log.debug("VersionConfigFile({}) = {}", name, this);
         log.trace("VersionConfigFile({}) is created.", name);

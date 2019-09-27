@@ -87,7 +87,7 @@ public class Application extends AppBase {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         LoggerContext loggerContext = ((ch.qos.logback.classic.Logger) log).getLoggerContext();
         URL url = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
-        log.info("Logback configuration file is '{}'.", url);
+        log.info("Logback: {}", url);
 
         return log;
     }
@@ -117,8 +117,9 @@ public class Application extends AppBase {
         String dataConversionConfigFilename = switches.getSource();
         log.debug("Working directory is '{}'", System.getProperty("user.dir"));
 
-        VersionFormatter versionFormatter = new VersionFormatter(this);
-        log.info(versionFormatter.versionString(new VersionConfigFile(this))+" configuration file is '{}'.", dataConversionConfigFilename);
+        log.info("Engine: {}", systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
+        log.info("Configuration: {}", systemVariableMap.get(SystemVariable.CONFIG_VERSION).getValue());
+        log.info("Configuration file: {}", dataConversionConfigFilename);
 
         log.trace("Application. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
@@ -400,9 +401,14 @@ public class Application extends AppBase {
         currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
 
         VersionFormatter versionFormatter = new VersionFormatter(this);
-        VersionConfigFile versionConfigFile = new VersionConfigFile(this);
+        VersionConfigFile versionConfigFile = new VersionConfigFile(this, Property.CURRENT_VERSION.key());
         systemVariableMap.get(SystemVariable.APPLICATION_VERSION).setValue(versionFormatter.versionNumber(versionConfigFile));
         systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
+
+        VersionConfigFile cVersionConfigFile = new VersionConfigFile(this, Property.VERSION_PROPERTIES.key());
+        if (cVersionConfigFile.isValid()) {
+            systemVariableMap.get(SystemVariable.CONFIG_VERSION).setValue(versionFormatter.versionString(cVersionConfigFile));
+        }
     }
 
     private void performTimeTracker() {
@@ -562,7 +568,7 @@ public class Application extends AppBase {
         System.out.println();
     }
 
-    private void performVersion(){
+    private void performVersion() {
         log.trace("Application.performVersion.");
         printVersion();
         System.out.println();
