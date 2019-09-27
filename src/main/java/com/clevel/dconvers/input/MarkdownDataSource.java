@@ -141,6 +141,7 @@ public class MarkdownDataSource extends DataSource {
 
         for (String column : columns) {
             index++;
+            column = column.trim();
             if (column.startsWith(":")) {
                 if (column.endsWith(":")) {
                     // :----:
