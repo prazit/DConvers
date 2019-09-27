@@ -3,6 +3,7 @@ package com.clevel.dconvers.input;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.DataTable;
+import com.clevel.dconvers.ngin.Converter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -34,23 +35,25 @@ public class ResultSetMetaDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
-        DataTable metaDataTable = application.currentConverter.getDataTable(query);
+        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        Converter currentConverter = application.currentConverter;
+        currentConverter.setCurrentTable(dataTable);
+        dataTable.setDataSource(name);
+        dataTable.setQuery(query);
+
+        DataTable metaDataTable = currentConverter.getDataTable(query);
         if (metaDataTable == null) {
             error("Invalid query({}) for ResultSetMetaData, please check source.{}.query", query, tableName);
-            return null;
+            return dataTable;
         }
 
         DataTable metaData = metaDataTable.getMetaData();
         if (metaData == null) {
             error("No Meta-Data for query({}), please check source.{}.query", query, tableName);
-            return null;
+            return dataTable;
         }
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        dataTable.setDataSource(name);
-        dataTable.setQuery(query);
         dataTable.setRowList(metaData.getRowList());
-
         return dataTable;
     }
 

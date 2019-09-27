@@ -56,9 +56,11 @@ public class SystemDataSource extends DataSource {
                 return systemVariables(tableName, idColumnName);
 
             case TABLE_SUMMARY:
+                application.currentConverter.setCurrentTable(application.tableSummary);
                 return application.tableSummary;
 
             case OUTPUT_SUMMARY:
+                application.currentConverter.setCurrentTable(application.outputSummary);
                 return application.outputSummary;
 
             case MEMORY:
@@ -80,6 +82,8 @@ public class SystemDataSource extends DataSource {
         }
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ARG.name());
         DataRow dataRow;
@@ -106,6 +110,8 @@ public class SystemDataSource extends DataSource {
 
     private DataTable memory(String tableName, String idColumnName) {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.MEMORY.name());
 
@@ -151,6 +157,8 @@ public class SystemDataSource extends DataSource {
         HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.VARIABLE.name());
         DataRow dataRow;
@@ -204,6 +212,8 @@ public class SystemDataSource extends DataSource {
     private DataTable systemProperties(String tableName, String idColumnName) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ENVIRONMENT.name());
         DataRow dataRow;
@@ -230,6 +240,8 @@ public class SystemDataSource extends DataSource {
     private DataTable osVariables(String tableName, String idColumnName) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.OS_VARIABLE.name());
         DataRow dataRow;

@@ -194,6 +194,8 @@ public class DataSource extends UtilBase {
 
     private DataTable createDataTable(String tableName, String idColumnName, String dataSourceName, String query){
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        application.currentConverter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(dataSourceName);
         dataTable.setQuery(query);
         return dataTable;

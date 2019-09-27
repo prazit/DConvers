@@ -37,12 +37,15 @@ public class MarkdownDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, HashMap<String, String> queryParamMap) {
-        log.trace("MarkdownDataSource.getDataTable.");
+        log.trace("Creating DataTable(Markdown)...");
 
         Converter converter = application.currentConverter;
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        converter.setCurrentTable(dataTable);
+
         dataTable.setDataSource(name);
         dataTable.setQuery(markdownFileName);
+
 
         DataRow dataRow;
         String[] columnNames = null;
