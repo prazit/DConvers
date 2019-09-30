@@ -208,6 +208,9 @@ public class CSVFormatter extends DataFormatter {
             dataColumn.setIndex(columnIndex);
             dataColumn.setNullString(nullString);
             formatted = dataColumn.getFormattedValue(csvColumn.pattern);
+            if (formatted != null) {
+                formatted = formatted.trim();
+            }
 
             //log.debug("CSVFormatter.format: dataColumn={}", dataColumn.toString());
             //log.debug("CSVFormatter.format: csvColumn={}", csvColumn.toString());
