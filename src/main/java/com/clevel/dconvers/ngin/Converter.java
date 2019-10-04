@@ -44,6 +44,7 @@ public class Converter extends AppBase {
     public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
         super(application, name);
         this.converterConfigFile = converterConfigFile;
+        application.currentConverter = this;
 
         exitOnError = application.exitOnError;
 
@@ -678,14 +679,19 @@ public class Converter extends AppBase {
             case VAR:
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
                 if (systemVariable != null) {
+                    log.debug("dynamicValue({}) is System Variable({})", valueIdentifier, systemVariable.name());
                     dataColumn = application.systemVariableMap.get(systemVariable);
                 } else {
                     if (valueIdentifier == null) {
+                        log.debug("dynamicValue({}) is null!", valueIdentifier);
                         dataColumn = null;
-                    }else{
-                        dataColumn = application.userVariableMap.get(valueIdentifier.toUpperCase());
+                    } else {
+                        String userVariableName = valueIdentifier.toUpperCase();
+                        log.debug("dynamicValue({}) is User Variable({})", valueIdentifier, userVariableName);
+                        dataColumn = application.userVariableMap.get(userVariableName);
                     }
                     if (dataColumn == null) {
+                        log.debug("unknown variable({})", valueIdentifier);
                         dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
                     }
                 }

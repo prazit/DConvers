@@ -164,7 +164,7 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | Property                            | Data Type | Default Value | Description                                                  |
 | ----------------------------------- | --------- | ------------- | ------------------------------------------------------------ |
 | source.index                        | int       | 0             | Some converters contain a lot of sources, this property make all sources are sorted by this index. |
-| source.datasource                   | string    | empty string  | Name of data provider for this source, for possible values please see Datasource and Query. |
+| source.datasource                   | string    | empty string  | Name of data provider for this source, for possible values please see Datasource and Query. (Dynamic Value Enabled) |
 | source.query                        | string    | empty string  | A query string is used to retrieve data from a datasource. (Dynamic Value Enabled) |
 | source.id                           | string    | id            | Name of column that contains a key value for a data table of this source. |
 | source.output                       | List      |               | see [Output Properties](#Output_Properties)                  |

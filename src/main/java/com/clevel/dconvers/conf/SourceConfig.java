@@ -88,7 +88,7 @@ public class SourceConfig extends Config {
     }
 
     public String getDataSource() {
-        return dataSource;
+        return application.currentConverter.compileDynamicValues(dataSource);
     }
 
     public String getQuery() {
