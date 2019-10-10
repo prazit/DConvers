@@ -43,6 +43,7 @@ public class DBInsertOutput extends Output {
         String dataSourceName = outputConfig.getDbInsertDataSource();
         dataSource = application.getDataSource(dataSourceName.toUpperCase());
         if (dataSource == null) {
+            error("DBInsertOutput: Datasource({}) is not found, required by dbinsert.datasource",dataSourceName);
             return null;
         }
 
