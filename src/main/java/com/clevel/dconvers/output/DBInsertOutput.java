@@ -6,6 +6,7 @@ import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.DataFormatter;
 import com.clevel.dconvers.format.SQLInsertFormatter;
 import com.clevel.dconvers.input.DataSource;
+import com.mysql.jdbc.JDBC4MySQLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,29 +31,28 @@ public class DBInsertOutput extends Output {
         String tableName = outputConfig.getDbInsertTable();
         String nameQuotes = outputConfig.getDbInsertNameQuotes();
         String valueQuotes = outputConfig.getDbInsertValueQuotes();
-        String dbms = outputConfig.getSqlDBMS();
+
+        String dataSourceName = outputConfig.getDbInsertDataSource();
+        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        if (dataSource == null) {
+            error("DBInsertOutput: Datasource({}) is not found, required by dbinsert.datasource",dataSourceName);
+            return dataFormatterList;
+        }
+        String dbms = dataSource.getDataSourceConfig().getDbms();
 
         dataFormatterList.add(new SQLInsertFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
-
         return dataFormatterList;
     }
 
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
 
-        String dataSourceName = outputConfig.getDbInsertDataSource();
-        dataSource = application.getDataSource(dataSourceName.toUpperCase());
-        if (dataSource == null) {
-            error("DBInsertOutput: Datasource({}) is not found, required by dbinsert.datasource",dataSourceName);
-            return null;
-        }
-
         Writer writer = new StringWriter();
         List<String> preSQL = outputConfig.getDbInsertPreSQL();
         if (preSQL.size() > 0) {
             try {
                 for (String sql : preSQL) {
-                    writer.write(sql + "\n");
+                    writer.write(sql + ";\n");
                 }
             } catch (IOException e) {
                 error("DBInsertOutput: write the pre-sql failed, {}", e.getMessage());
@@ -74,7 +74,7 @@ public class DBInsertOutput extends Output {
         if (postSQL.size() > 0) {
             try {
                 for (String sql : postSQL) {
-                    writer.write(sql + "\n");
+                    writer.write(sql + ";\n");
                 }
             } catch (IOException e) {
                 error("DBInsertOutput: write the post-sql failed, {}", e.getMessage());

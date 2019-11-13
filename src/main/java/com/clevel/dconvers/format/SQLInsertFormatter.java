@@ -96,7 +96,7 @@ public class SQLInsertFormatter extends DataFormatter {
     }
 
     private String oracleValue(int type, String value) {
-        if (type == Types.DATE) {
+        if (type == Types.DATE || type == Types.TIMESTAMP) {
             value = "TO_DATE(" + value + ",'YYYY/MM/DD HH24:MI:SS')";
 
         } else if (type == Types.VARCHAR) {
