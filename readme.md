@@ -600,7 +600,7 @@ Syntax> compile([replace or [ColumnName]]:[insertColumnIndex],[current or [[Tabl
 
 Dynamic Value is used in Converter File, the usage of Dynamic Value has some differences between general properties and target.column.
 
-Dynamic value for general properties need to coverred by $[ ] but for target.column doesn't need cover.
+Dynamic value for general properties need to covered by $[ ] but for target.column doesn't need cover.
 
 ```
 Properties-Syntax> property=$[[Type]:[Type-Parameters]]
@@ -624,9 +624,9 @@ select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])
 Type | Value Identifier | Example | Description
 -----|------------------|---------|------------
 TXT  | Full path name of a text file | $[TXT:C:\path\file.ext] | Insert content from a specified file.
-SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id] | Insert list of values from a source table in formatted of CSV (value1,value2,...).  
-TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id] | Insert list of values from a target table in formatted of CSV (value1,value2,...).
-MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...).
+SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id{,default-value}] | Insert list of values from a source table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.  
+TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id{,default-value}] | Insert list of values from a target table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.
+MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id{,default-value}] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.
 CAL  | [FunctionName] (ParameterList in CSV format) | $[CAL:GET(SRC:MySourceTable,1,2)] | Calculate a function to produce a value. see 'Calculators' for detailed. 
 VAR  | [VariableName] | $[VAR:APPLICATION_START] | Value from a variable. see 'Variables' for detailed. 
 

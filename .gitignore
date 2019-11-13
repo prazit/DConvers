@@ -12,3 +12,7 @@ out/target/
 out/test/
 out/dconvers.jar
 out/summary.md
+/out/log/error.log
+/out/log/info.log
+/out/log/trace.log
+/out/log/warning.log

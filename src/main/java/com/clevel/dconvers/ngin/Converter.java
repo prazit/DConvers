@@ -668,10 +668,16 @@ public class Converter extends AppBase {
             case SRC:
             case TAR:
             case MAP:
-                String[] dataTableParameters = dynamicValue.split("[.]");
+                String[] csvParameters = dynamicValue.split("[,]");
+                String[] dataTableParameters = csvParameters[0].split("[.]");
                 value = valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
-                if (value == null) {
-                    return null;
+                if (value == null || value.isEmpty()) {
+                    if (csvParameters.length == 1) {
+                        return null;
+                    }
+
+                    /*use specified value when got empty csv*/
+                    value = csvParameters[1];
                 }
                 dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
