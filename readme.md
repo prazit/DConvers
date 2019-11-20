@@ -339,6 +339,7 @@ The DConvers program has 7 optional output types with different set of property,
 | csv.create.dir      | bool      | true           | auto create directory for non-existing path.                                                            |
 | csv.append          | bool      | false          | append or always replace                                                                                |
 | csv.charset         | string    | UTF-8          | name of character set                                                                                   |
+| csv.bof             | string    | (none)         | characters put at the beginning of file. (Dynamic Value Enabled) |
 | csv.eol             | string    | \n             | characters put at the end of line. (Dynamic Value Enabled)                                              |
 | csv.eof             | string    | \n             | characters put at the end of file, this is replacement of the eol of last line. (Dynamic Value Enabled) |
 | csv.header          | bool      | true           | first line is header                                                                                    |

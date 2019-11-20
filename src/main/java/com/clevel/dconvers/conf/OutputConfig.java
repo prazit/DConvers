@@ -118,6 +118,7 @@ public class OutputConfig extends Config {
     private boolean csvOutputAppend;
     private boolean csvOutputAutoCreateDir;
     private String csvOutputCharset;
+    private String csvOutputBOF;
     private String csvOutputEOL;
     private String csvOutputEOF;
     private boolean csvHeader;
@@ -419,6 +420,7 @@ public class OutputConfig extends Config {
         csvOutputAppend = false;
         csvOutputAutoCreateDir = true;
         csvOutputCharset = "UTF-8";
+        csvOutputBOF = "";
         csvOutputEOL = "\n";
         csvOutputEOF = "\n";
         csvHeader = true;
@@ -444,6 +446,7 @@ public class OutputConfig extends Config {
             csvOutputAppend = csvProperties.getBoolean(Property.OUTPUT_APPEND.key(), csvOutputAppend);
             csvOutputAutoCreateDir = csvProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), csvOutputAutoCreateDir);
             csvOutputCharset = getPropertyString(csvProperties, Property.OUTPUT_CHARSET.key(), csvOutputCharset);
+            csvOutputBOF = getPropertyString(csvProperties, Property.OUTPUT_BOF.key(), csvOutputBOF);
             csvOutputEOL = getPropertyString(csvProperties, Property.OUTPUT_EOL.key(), csvOutputEOL);
             csvOutputEOF = getPropertyString(csvProperties, Property.OUTPUT_EOF.key(), csvOutputEOF);
             csvSeparator = getPropertyString(csvProperties, Property.SEPARATOR.key(), csvSeparator);
@@ -983,6 +986,10 @@ public class OutputConfig extends Config {
         return csvOutputCharset;
     }
 
+    public String getCsvOutputBOF() {
+        return application.currentConverter.compileDynamicValues(csvOutputBOF);
+    }
+
     public String getCsvOutputEOL() {
         return application.currentConverter.compileDynamicValues(csvOutputEOL);
     }
@@ -1220,6 +1227,7 @@ public class OutputConfig extends Config {
                 .append("csvOutputAppend", csvOutputAppend)
                 .append("csvOutputAutoCreateDir", csvOutputAutoCreateDir)
                 .append("csvOutputCharset", csvOutputCharset)
+                .append("csvOutputBOF", csvOutputBOF)
                 .append("csvOutputEOL", csvOutputEOL)
                 .append("csvOutputEOF", csvOutputEOF)
                 .append("csvHeader", csvHeader)

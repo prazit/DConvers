@@ -24,6 +24,7 @@ public class CSVFormatter extends DataFormatter {
 
     private String separator;
     private String nullString;
+    private String bof;
     private String eol;
     private String eof;
 
@@ -120,6 +121,7 @@ public class CSVFormatter extends DataFormatter {
 
         separator = notNull(outputConfig.getCsvSeparator(), "");
         nullString = notNull(outputConfig.getCsvNullString(), "");
+        bof = notNull(outputConfig.getCsvOutputBOF(), "");
         eol = notNull(outputConfig.getCsvOutputEOL(), "");
         eof = notNull(outputConfig.getCsvOutputEOF(), "");
 
@@ -173,11 +175,11 @@ public class CSVFormatter extends DataFormatter {
         log.debug("CSVFormat.preFormat: {}", formatList);
 
         /* need header line or not */
+        String csvLine = bof.concat("");
         if (!header) {
-            return null;
+            return csvLine;
         }
 
-        String csvLine = "";
         if (headerColumnList.size() > 0) {
             for (String headerColumn : headerColumnList) {
                 csvLine += headerColumn;
@@ -243,7 +245,7 @@ public class CSVFormatter extends DataFormatter {
         stringBuffer.delete(bufferLength - eolLength, bufferLength);
         stringBuffer.append(eof);
 
-        log.debug("CSVFormatter.allowToWrite. eol({}), eof({}), lengthBefore({}), lengthAfter({})", eol, eof, bufferLength, stringBuffer.length());
+        log.debug("CSVFormatter.allowToWrite. bof({}), eol({}), eof({}), lengthBefore({}), lengthAfter({})", bof, eol, eof, bufferLength, stringBuffer.length());
         return super.allowToWrite(stringBuffer);
     }
 

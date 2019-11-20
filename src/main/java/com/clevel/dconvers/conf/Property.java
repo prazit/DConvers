@@ -69,6 +69,7 @@ public enum Property {
     OUTPUT_APPEND("append"),
     OUTPUT_AUTOCREATEDIR("auto.create.dir"),
     OUTPUT_CHARSET("charset"),
+    OUTPUT_BOF("bof"),
     OUTPUT_EOL("eol"),
     OUTPUT_EOF("eof"),
     COMMENT("comment"),
