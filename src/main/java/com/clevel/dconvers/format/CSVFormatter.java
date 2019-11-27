@@ -166,7 +166,7 @@ public class CSVFormatter extends DataFormatter {
             int columnIndex = -1;
             int lastIndex = formatList.size() - 1;
             for (DataColumn dataColumn : firstRow.getColumnList()) {
-                columnIndex ++;
+                columnIndex++;
                 if (columnIndex > lastIndex) {
                     this.formatList.add(new CSVColumn(dataColumn));
                 }
@@ -185,14 +185,15 @@ public class CSVFormatter extends DataFormatter {
                 csvLine += headerColumn;
                 csvLine += separator;
             }
-        } else {
+            csvLine = csvLine.substring(0, csvLine.length() - separator.length()) + eol;
+        } else if (dataTable.getRowCount() > 0) {
             for (DataColumn dataColumn : dataTable.getRow(0).getColumnList()) {
                 csvLine += dataColumn.getName();
                 csvLine += separator;
             }
+            csvLine = csvLine.substring(0, csvLine.length() - separator.length()) + eol;
         }
-        csvLine = csvLine.substring(0, csvLine.length() - separator.length()) + eol;
-
+        
         return csvLine;
     }
 
