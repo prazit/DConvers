@@ -23,6 +23,7 @@ public enum Property {
     HOST("host"),
     PORT("port"),
     SSL("ssl"),
+    ENCRYPTED("encrypted"),
 
     CONVERTER_FILE("converter"),
     SOURCE_PATH("source.output"),
@@ -151,8 +152,12 @@ public enum Property {
         return this.key() + "." + name;
     }
 
-    public String connectKey(String name, Property property) {
-        return this.key() + "." + name + "." + property.key();
+    public String connectKey(String name, Property... property) {
+        String connected = this.key() + "." + name;
+        for (Property prop : property) {
+            connected += "." + prop.key();
+        }
+        return  connected;
     }
 
     public String connectKey(Property property) {

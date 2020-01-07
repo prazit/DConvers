@@ -1,7 +1,7 @@
-#/* Current: C-Level DConvers Beta 2.3.12 build 27/11/2019 14:01 */
+#/* Current: C-Level DConvers Beta 2.3.13 build 7/1/2020 16:35 */
 project.name=C-Level DConvers
 version.name=Beta
-build.date=27/11/2019 14:01
+build.date=7/1/2020 16:35
 
 #/* major changes */
 version.number=2
@@ -10,4 +10,4 @@ version.number=2
 revision.number=3
 
 #/* fix bugs */
-build.number=12
+build.number=13

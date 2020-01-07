@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Crypto;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -64,6 +65,16 @@ public class DataSourceConfig extends Config {
         user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
         password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
         retry = properties.getInt(dataSource.connectKey(name, Property.RETRY), 1);
+
+        boolean userEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        if (userEncrypted) {
+            user = Crypto.decrypt(user);
+        }
+
+        boolean passwordEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        if (passwordEncrypted) {
+            password = Crypto.decrypt(password);
+        }
 
         Configuration propProperties = properties.subset(dataSource.connectKey(name, Property.PROPERTIES));
         Iterator<String> propKeyList = propProperties.getKeys();

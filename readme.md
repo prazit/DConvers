@@ -91,7 +91,9 @@ Conversion file is a properties file which contains 5 groups of property as foll
 | datasource.url          | string                    | null          | jdbc connection string                                  |
 | datasource.driver       | string                    | null          | driver class name with full package location            |
 | datasource.user         | string                    | null          | user name to connect to DBMS                            |
+| datasource.user.encrypted | boolean                    | false          | the user name is encrypted                            |
 | datasource.password     | string                    | null          | password to connect to DBMS                             |
+| datasource.password.encrypted | boolean                    | false          | the password is encrypted                         |
 | datasource.retry        | integer                   | 1             | number of retry when connection is failed               |
 | datasource.quotes.name  | string                    | empty         | one character for quotes of string-value and date-value |
 | datasource.quotes.value | string                    | "             | one character for quotes of string-value and date-value |
