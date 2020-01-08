@@ -7,6 +7,8 @@ import java.util.HashMap;
 public enum CalcTypes {
 
     COMPILE(CompileCalc.class),
+    ENCRYPT(EncryptCalc.class),
+    DECRYPT(DecryptCalc.class),
     FORMAT(FormatCalc.class),
     GET(GetCalc.class),
     NAME(NameCalc.class),

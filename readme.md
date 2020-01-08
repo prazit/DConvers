@@ -647,6 +647,8 @@ Calculators for use in CAL type dynamic value expression.
 | NAME       | CAL:NAME([Table Identifier])                                 | Name of a table.                                             |
 | ROWCOUNT   | CAL:ROWCOUNT([Table Identifier])                             | Number of rows of a table.                                   |
 | SUM        | CAL:SUM([Table Identifier],[Row Identifier],[[Column Identifier],..]) | Summarize all values in specified column list.               |
+| ENCRYPT    | CAL:ENCRYPT([Table Identifier],[Row Identifier],[Column Identifier]) | Similar to GET but the returned value will be encrypted (using DConvers Default Algorithm). |
+| DECRYPT    | CAL:DECRYPT([Table Identifier],[Row Identifier],[Column Identifier]) | Similar to GET but the returned value will be decrypted (using DConvers Default Algorithm) that mean the value before DECRYPT must be encrypted. |
 
 ----
 
