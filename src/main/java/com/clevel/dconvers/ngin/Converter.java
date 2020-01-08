@@ -427,7 +427,18 @@ public class Converter extends AppBase {
             return row;
         }
 
-        DataRow row = dataTable.getRow(Integer.parseInt(rowIdentifier) - 1);
+        int rowIndex;
+        if (rowIdentifier.contains(":")) {
+            String rowIdentifierCompiled = compileDynamicValues("$[" + rowIdentifier + "]");
+            log.debug("rowIdentifier={}", rowIdentifier);
+            log.debug("rowIdentifierCompiled={}", rowIdentifierCompiled);
+            rowIndex = Integer.parseInt(rowIdentifierCompiled) - 1;
+        } else {
+            rowIndex = Integer.parseInt(rowIdentifier) - 1;
+        }
+        log.debug("rowIndex={}", rowIndex);
+
+        DataRow row = dataTable.getRow(rowIndex);
         if (row.getColumnCount() == 0) {
             return null;
         }
@@ -438,6 +449,12 @@ public class Converter extends AppBase {
     public DataColumn getDataColumn(String columnIdentifier, DataRow dataRow) {
         if (dataRow == null || columnIdentifier == null) {
             return null;
+        }
+
+        if (columnIdentifier.contains(":")) {
+            log.debug("columnIdentifier(before-compile)={}", columnIdentifier);
+            columnIdentifier = compileDynamicValues("$[" + columnIdentifier + "]");
+            log.debug("columnIdentifier(after-compile)={}", columnIdentifier);
         }
 
         DataColumn dataColumn;

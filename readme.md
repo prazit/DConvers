@@ -639,6 +639,9 @@ VAR  | [VariableName] | $[VAR:APPLICATION_START] | Value from a variable. see 'V
 
 Calculators for use in CAL type dynamic value expression.
 
+>   Row Identifier can be row-index start at 1, CURRENT or DynamicValue such as VAR:ROW_NUMBER.
+>   Column Identifier can be column-index start at 1, Column Name or DynamicValue such as VAR:USER_VAR_COL1_NAME.
+
 | Calculator | Parameters                                                   | Description                                                  |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | GET        | CAL:GET([Table Identifier],[Row Identifier],[Column Identifier]) | Get a value from specified column.                           |

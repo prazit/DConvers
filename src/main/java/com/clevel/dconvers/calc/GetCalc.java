@@ -13,10 +13,17 @@ import java.sql.Types;
 
 public class GetCalc extends Calc {
 
-    private DataColumn value;
+    protected DataColumn value;
+
+    private boolean useDynamicIdentifier;
+    private String rowIdentifier;
+    private String columnIdentifier;
+    private Converter converter;
+    private DataTable datatable;
 
     public GetCalc(Application application, String name) {
         super(application, name);
+        useDynamicIdentifier = false;
     }
 
     @Override
@@ -30,22 +37,37 @@ public class GetCalc extends Calc {
             return false;
         }
 
-        Converter converter = application.currentConverter;
-        DataTable datatable = converter.getDataTable(arguments[0]);
-        DataRow row = converter.getDataRow(arguments[1], datatable);
-        DataColumn column = converter.getDataColumn(arguments[2], row);
+        converter = application.currentConverter;
+        datatable = converter.getDataTable(arguments[0]);
+        rowIdentifier = arguments[1];
+        columnIdentifier = arguments[2];
+
+        // Has dynamic value in Row/Column Identifier.
+        if (arguments[1].contains(":")) {
+            useDynamicIdentifier = true;
+            return true;
+        }
+
+        return prepareValue();
+    }
+
+    protected boolean prepareValue() {
+        DataRow row = converter.getDataRow(rowIdentifier, datatable);
+        DataColumn column = converter.getDataColumn(columnIdentifier, row);
         if (column == null) {
-            error("CAL:GET. invalid column identifier, please check GET({})!, default value({}) is returned.", getArguments(), value);
+            error("CAL:GET. invalid column identifier({}) in table({}) please check expression({}), default value({}) is returned.", columnIdentifier, datatable.getTableType() + ":" + datatable.getName(), getArguments(), value);
             return false;
         }
 
         value = column.clone(0, name);
-
         return true;
     }
 
     @Override
     protected DataColumn calculate() {
+        if (useDynamicIdentifier) {
+            prepareValue();
+        }
         return value;
     }
 

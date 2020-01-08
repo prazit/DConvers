@@ -8,26 +8,19 @@ import org.slf4j.LoggerFactory;
 
 public class EncryptCalc extends GetCalc {
 
-    private DataColumn value;
-
     public EncryptCalc(Application application, String name) {
         super(application, name);
     }
 
     @Override
-    protected boolean prepare() {
-        boolean result = super.prepare();
-        if (!result) {
+    protected boolean prepareValue() {
+        boolean success = super.prepareValue();
+        if (!success) {
             return false;
         }
 
         value.setValue(Crypto.encrypt(value.getValue()));
         return true;
-    }
-
-    @Override
-    protected DataColumn calculate() {
-        return value;
     }
 
     @Override
