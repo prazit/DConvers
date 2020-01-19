@@ -27,13 +27,19 @@ public enum OutputTypes {
     PLUGINS(null);
 
     private Class outputClass;
+    private Class outputConfigClass;
 
     OutputTypes(Class outputClass) {
         this.outputClass = outputClass;
+        outputConfigClass = null;
     }
 
     public Class getOutputClass() {
         return outputClass;
+    }
+
+    public Class getOutputConfigClass() {
+        return outputConfigClass;
     }
 
 
@@ -41,8 +47,7 @@ public enum OutputTypes {
         OutputTypes calcType;
 
         try {
-            name = name.toUpperCase();
-            calcType = OutputTypes.valueOf(name);
+            calcType = OutputTypes.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException ex) {
             calcType = parsePlugins(name);
             if (calcType == null) {
@@ -64,29 +69,48 @@ public enum OutputTypes {
 
     private String pluginName;
     private static HashMap<String, Class> plugins = new HashMap<>();
+    private static HashMap<String, Class> pluginConfigs = new HashMap<>();
 
-    public void forPlugins(String name, Class pluginsClass) {
+    public static HashMap<String, Class> getPlugins() {
+        return plugins;
+    }
+
+    public static HashMap<String, Class> getPluginConfigs() {
+        return pluginConfigs;
+    }
+
+    public void forPlugins(String name, Class pluginsClass, Class pluginConfigClass) {
         this.outputClass = pluginsClass;
+        this.outputConfigClass = pluginConfigClass;
         this.pluginName = name;
     }
 
 
     private static OutputTypes parsePlugins(String name) {
-        name = name.toUpperCase();
         Class pluginsClass = plugins.get(name);
         if (pluginsClass == null) {
             return null;
         }
 
-        OutputTypes calcTypes = OutputTypes.PLUGINS;
-        calcTypes.forPlugins(name, pluginsClass);
-        return calcTypes;
+        Class pluginConfigClass = pluginConfigs.get(name);
+        if (pluginConfigClass == null) {
+            return null;
+        }
+
+        OutputTypes outputTypes = OutputTypes.PLUGINS;
+        outputTypes.forPlugins(name, pluginsClass, pluginConfigClass);
+        return outputTypes;
     }
 
     public static void addPlugins(String outputName, String outputClassName) throws ClassNotFoundException {
         Class outputClass;
         outputClass = Class.forName(outputClassName);
-        plugins.put(outputName.toUpperCase(), outputClass);
+        plugins.put(outputName, outputClass);
+
+        Class outputConfigClass;
+        String outputConfigClassName = outputClassName.concat("Config");
+        outputConfigClass = Class.forName(outputConfigClassName);
+        pluginConfigs.put(outputName, outputConfigClass);
     }
 
     @Override

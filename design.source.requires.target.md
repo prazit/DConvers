@@ -25,7 +25,7 @@ Target_DataTable-->Target:...
 
 ### Alternative Way<br/><sup><sup>(recommended)</sup></sup>
 
-Using 2 converters, first converter to prepare/compute data and then store it in a markdown output, the second converter need to buildSource from markdown output at first source and then normal steps without source.requires.target.
+Using 2 converters, first converter to prepare/compute data and then staging into a markdown output file, the second converter need to buildSource from markdown output at first source and then normal steps without source.requires.target.
 
 
 

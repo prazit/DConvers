@@ -30,7 +30,12 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     protected boolean loadProperties() {
-        log.trace("ConverterConfigFile.loadProperties.");
+        // skip load properties here to avoid plugins not found, then load again after all plugins are loaded in the Application.start function.
+        return true;
+    }
+
+    public boolean loadConfig() {
+        log.trace("ConverterConfigFile.loadConfig.");
 
         index = properties.getInt(Property.CONVERTER_FILE.connectKey(Property.INDEX), 1);
 
@@ -78,12 +83,6 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     public boolean validate() {
-        log.debug("ConverterConfigFile.validateProperties. has {} sources and {} targets", sourceConfigMap.size(), targetConfigMap.size());
-
-        if (targetConfigMap.size() == 0) {
-            log.debug("No target is specified in converter({})", name);
-        }
-
         return true;
     }
 

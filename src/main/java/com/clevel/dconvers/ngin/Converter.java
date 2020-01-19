@@ -201,7 +201,7 @@ public class Converter extends AppBase {
             }
 
             for (OutputTypes outputType : outputTypeList) {
-                log.trace("printing Source({}) to Output({})", source.getName(), outputType.name());
+                log.trace("printing Source({}) to Output({})", source.getName(), outputType.getName());
                 outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
                 if (outputName == null) {
                     success = false;

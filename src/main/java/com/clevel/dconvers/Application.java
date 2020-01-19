@@ -183,6 +183,7 @@ public class Application extends AppBase {
         boolean loadPluginsSuccess = true;
         List<Pair<String, String>> pluginsList = dataConversionConfigFile.getPluginsCalcList();
         if (pluginsList != null) {
+            log.debug("Has {} plugins for calculator.", pluginsList.size());
             for (Pair<String, String> plugins : pluginsList) {
                 try {
                     CalcTypes.addPlugins(plugins.getKey(), plugins.getValue());
@@ -200,8 +201,10 @@ public class Application extends AppBase {
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsOutputList();
         if (pluginsList != null) {
+            log.debug("Has {} plugins for output.", pluginsList.size());
             for (Pair<String, String> plugins : pluginsList) {
                 try {
+                    log.debug("addPlugins({}, {}).", plugins.getKey(), plugins.getValue());
                     OutputTypes.addPlugins(plugins.getKey(), plugins.getValue());
                 } catch (ClassNotFoundException e) {
                     error("Load output plugins({}) is failed, class({}) not found!", plugins.getKey(), e.getMessage());
@@ -283,6 +286,7 @@ public class Application extends AppBase {
         HashMap<String, ConverterConfigFile> converterConfigMap = dataConversionConfigFile.getConverterConfigMap();
         if (converterConfigMap != null) {
             for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
+                converterConfigFile.loadConfig();
                 converterName = converterConfigFile.getName();
                 converter = new Converter(this, converterName, converterConfigFile);
 

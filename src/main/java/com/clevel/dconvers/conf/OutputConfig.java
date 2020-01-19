@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
@@ -10,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class OutputConfig extends Config {
 
@@ -169,9 +168,15 @@ public class OutputConfig extends Config {
 
     private List<OutputTypes> outputTypeList;
 
+    /**
+     * Map<Output Plugin Name, <? extends OutputPluginConfig>>
+     **/
+    private HashMap<String, OutputPluginConfig> outputPluginConfigMap;
+
     public OutputConfig(Application application, String baseProperty, Configuration baseProperties) {
         super(application, baseProperty);
         this.properties = baseProperties;
+        outputPluginConfigMap = new HashMap<>();
 
         valid = loadProperties();
         if (valid) valid = validate();
@@ -478,7 +483,7 @@ public class OutputConfig extends Config {
 
             Configuration dbInsertProperties = properties.subset(key);
             dbInsertDataSource = getPropertyString(dbInsertProperties, Property.DATA_SOURCE.key(), dbInsertDataSource);
-            dbInsertColumnList  = getStringList(dbInsertProperties, Property.COLUMN.key());
+            dbInsertColumnList = getStringList(dbInsertProperties, Property.COLUMN.key());
             dbInsertTable = getPropertyString(dbInsertProperties, Property.TABLE.key(), dbInsertTable);
             dbInsertNameQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.NAME), dbInsertNameQuotes);
             dbInsertValueQuotes = getPropertyString(dbInsertProperties, Property.QUOTES.connectKey(Property.VALUE), dbInsertValueQuotes);
@@ -505,7 +510,7 @@ public class OutputConfig extends Config {
             Configuration dbUpdateProperties = properties.subset(key);
             dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
             dbUpdateColumnList = getStringList(dbUpdateProperties, Property.TABLE.key());
-            dbUpdateColumnList  = getStringList(dbUpdateProperties, Property.COLUMN.key());
+            dbUpdateColumnList = getStringList(dbUpdateProperties, Property.COLUMN.key());
             dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
@@ -550,7 +555,31 @@ public class OutputConfig extends Config {
             osVariableValue = getPropertyString(osVariableProperties, Property.VALUE.key(), osVariableValue);
         }
 
+        // Load Plugin Config into outputPluginConfigMap
+        HashMap<String, Class> plugins = OutputTypes.getPlugins();
+        log.debug("OutputConfig.loadProperties found {}", plugins.size());
+        for (String pluginName : plugins.keySet()) {
+            key = baseProperty + "." + pluginName;
+            boolean enabled = properties.getBoolean(key, false);
+            log.debug("OutputConfig.loadProperties.plugin={}, baseProperty={}, enabled={}", pluginName, baseProperty, enabled);
+            if (enabled) {
+                OutputTypes type = OutputTypes.parse(pluginName);
+                outputTypeList.add(type);
+
+                OutputPluginConfig pluginConfig = OutputFactory.getPluginConfig(application, type);
+                pluginConfig.loadConfig(properties.subset(key));
+
+                log.debug("OutputConfig.loadProperties.plugin({})={}", pluginName, pluginConfig.toString());
+                outputPluginConfigMap.put(type.getName(), pluginConfig);
+            }
+        }
+        log.debug("OutputTypeList(name:{})={}", name, outputTypeList.toString());
+
         return true;
+    }
+
+    public HashMap<String, OutputPluginConfig> getOutputPluginConfigMap() {
+        return outputPluginConfigMap;
     }
 
     private List<String> getStringList(Configuration properties, String key) {
