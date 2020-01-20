@@ -30,16 +30,21 @@ public class MarkdownFormatter extends DataFormatter {
     private String eol;
     private String eof;
     private String remarkEOL;
+
+    private boolean showTitle;
+    private boolean showRowNumber;
     private boolean needMermaid;
     private boolean mermaidFullStack;
 
-    public MarkdownFormatter(Application application, String name, String eol, String eof, boolean mermaid, boolean mermaidFullStack) {
+    public MarkdownFormatter(Application application, String name, String eol, String eof, boolean showTitle, boolean showRowNumber, boolean mermaid, boolean mermaidFullStack) {
         super(application, name, true);
 
         this.eol = eol;
         this.eof = eof;
         remarkEOL = "<br/>";
         outputType = "markdown";
+        this.showTitle = showTitle;
+        this.showRowNumber = showRowNumber;
         this.needMermaid = mermaid;
         this.mermaidFullStack = mermaidFullStack;
     }
@@ -86,7 +91,11 @@ public class MarkdownFormatter extends DataFormatter {
             }
         }
 
-        return eol + "# TABLE: " + dataTable.getName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getName() + ")</sup></sup>" + eol;
+        if (showTitle) {
+            return eol + "# TABLE: " + dataTable.getName().replaceAll("[_]", " ").toUpperCase() + "<br/><sup><sup>(" + dataTable.getName() + ")</sup></sup>" + eol;
+        }
+
+        return null;
     }
 
     private void registerColumnWidth(int columnIndex, String value) {
@@ -127,15 +136,25 @@ public class MarkdownFormatter extends DataFormatter {
         int width;
 
         StringBuilder record = new StringBuilder();
-        record.append("| ").append(rowNumber).append(StringUtils.repeat(' ', rowIndexWidth - rowNumber.length() - 1));
+        if (showRowNumber) {
+            record.append("| ").append(rowNumber).append(StringUtils.repeat(' ', rowIndexWidth - rowNumber.length() - 1));
+        }
 
         if (needHeader) {
             needHeader = false;
 
-            String headerSeparator = "|-" + StringUtils.repeat('-', rowIndexWidth - 2) + ":";
-            String header = "| No." + StringUtils.repeat(' ', rowIndexWidth - 4);
+            String headerSeparator;
+            String header;
             String name;
             int nameLength;
+
+            if (showRowNumber) {
+                headerSeparator = "|-" + StringUtils.repeat('-', rowIndexWidth - 2) + ":";
+                header = "| No." + StringUtils.repeat(' ', rowIndexWidth - 4);
+            }else{
+                headerSeparator = "";
+                header = "";
+            }
 
             columnIndex = 0;
             for (DataColumn column : columnList) {

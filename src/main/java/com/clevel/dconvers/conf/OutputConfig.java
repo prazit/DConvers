@@ -79,6 +79,8 @@ public class OutputConfig extends Config {
     private boolean markdownComment;
     private boolean markdownCommentDataSource;
     private boolean markdownCommentQuery;
+    private boolean markdownTitle;
+    private boolean markdownRowNumber;
     private boolean markdownMermaid;
     private boolean markdownMermaidFull;
 
@@ -322,6 +324,8 @@ public class OutputConfig extends Config {
         markdownComment = true;
         markdownCommentDataSource = true;
         markdownCommentQuery = true;
+        markdownTitle = true;
+        markdownRowNumber = true;
         markdownMermaid = true;
         markdownMermaidFull = true;
 
@@ -343,6 +347,8 @@ public class OutputConfig extends Config {
             markdownComment = markdownProperties.getBoolean(Property.COMMENT.key(), markdownComment);
             markdownCommentDataSource = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.DATA_SOURCE), markdownCommentDataSource);
             markdownCommentQuery = markdownProperties.getBoolean(Property.COMMENT.connectKey(Property.QUERY), markdownCommentQuery);
+            markdownTitle = markdownProperties.getBoolean(Property.TITLE.key(), markdownTitle);
+            markdownRowNumber = markdownProperties.getBoolean(Property.ROW_NUMBER.key(), markdownRowNumber);
             markdownMermaid = markdownProperties.getBoolean(Property.MERMAID.key(), markdownMermaid);
             markdownMermaidFull = markdownProperties.getBoolean(Property.MERMAID.connectKey(Property.FULL.key()), markdownMermaidFull);
         }
@@ -871,6 +877,13 @@ public class OutputConfig extends Config {
         return markdownCommentQuery;
     }
 
+    public boolean isMarkdownTitle() {
+        return markdownTitle;
+    }
+
+    public boolean isMarkdownRowNumber() {
+        return markdownRowNumber;
+    }
     public boolean isMarkdownMermaid() {
         return markdownMermaid;
     }
@@ -1224,6 +1237,7 @@ public class OutputConfig extends Config {
                 .append("markdownComment", markdownComment)
                 .append("markdownCommentDataSource", markdownCommentDataSource)
                 .append("markdownCommentQuery", markdownCommentQuery)
+                .append("markdownTitle", markdownTitle)
                 .append("markdownMermaid", markdownMermaid)
                 .append("markdownMermaidFull", markdownMermaidFull)
                 .append("pdf", pdf)

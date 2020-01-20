@@ -49,6 +49,7 @@ public enum Property {
     CREATE("create"),
     INSERT("insert"),
     UPDATE("update"),
+    TITLE("title"),
     MARKDOWN("markdown"),
     MERMAID("mermaid"),
     FULL("full"),

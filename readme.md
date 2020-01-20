@@ -291,6 +291,8 @@ The DConvers program has 7 optional output types with different set of property,
 | markdown.comment            | bool      | true          | print comment as first block of content                      |
 | markdown.comment.datasource | bool      | true          | print datasource information in a comment block              |
 | markdown.comment.query      | bool      | true          | print query string in a comment block                        |
+| markdown.title              | bool      | true          | true = generate title of a table. |
+| markdown.rownumber          | bool      | true          | true = generate row number for each row. |
 | markdown.mermaid            | bool      | true          | true = generate mermaid graph TD and put at the end of markdown file, false = no mermaid in the markdown file. |
 | markdown.mermaid.full       | bool      | false         | true = generate mermaid graph TD with full stack option, false = normal. |
 
