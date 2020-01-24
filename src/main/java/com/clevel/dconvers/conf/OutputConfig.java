@@ -563,11 +563,11 @@ public class OutputConfig extends Config {
 
         // Load Plugin Config into outputPluginConfigMap
         HashMap<String, Class> plugins = OutputTypes.getPlugins();
-        log.debug("OutputConfig.loadProperties found {}", plugins.size());
+        //log.debug("OutputConfig.loadProperties found {} output-plugins", plugins.size());
         for (String pluginName : plugins.keySet()) {
             key = baseProperty + "." + pluginName;
             boolean enabled = properties.getBoolean(key, false);
-            log.debug("OutputConfig.loadProperties.plugin={}, baseProperty={}, enabled={}", pluginName, baseProperty, enabled);
+            //log.debug("OutputConfig.loadProperties.plugin={}, baseProperty={}, enabled={}", pluginName, baseProperty, enabled);
             if (enabled) {
                 OutputTypes type = OutputTypes.parse(pluginName);
                 outputTypeList.add(type);
@@ -575,11 +575,11 @@ public class OutputConfig extends Config {
                 OutputPluginConfig pluginConfig = OutputFactory.getPluginConfig(application, type);
                 pluginConfig.loadConfig(properties.subset(key));
 
-                log.debug("OutputConfig.loadProperties.plugin({})={}", pluginName, pluginConfig.toString());
+                //log.debug("OutputConfig.loadProperties.plugin({})={}", pluginName, pluginConfig.toString());
                 outputPluginConfigMap.put(type.getName(), pluginConfig);
             }
         }
-        log.debug("OutputTypeList(name:{})={}", name, outputTypeList.toString());
+        //log.debug("OutputTypeList(name:{})={}", name, outputTypeList.toString());
 
         return true;
     }

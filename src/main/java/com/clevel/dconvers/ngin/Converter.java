@@ -436,7 +436,7 @@ public class Converter extends AppBase {
         } else {
             rowIndex = Integer.parseInt(rowIdentifier) - 1;
         }
-        log.debug("rowIndex={}", rowIndex);
+        //log.debug("rowIndex={}", rowIndex);
 
         DataRow row = dataTable.getRow(rowIndex);
         if (row.getColumnCount() == 0) {
@@ -584,7 +584,7 @@ public class Converter extends AppBase {
             log.debug("Converter.compileFirstDynamicValue.parseExpression: dynamicValueExpression({}) return null", dynamicValueExpression);
             return null;
         }
-        log.debug("Converter.compileFirstDynamicValue: dynamicValueExpression({}) return dynamicValues({})", dynamicValueExpression, ArrayUtils.toString(dynamicValues));
+        //log.debug("Converter.compileFirstDynamicValue: dynamicValueExpression({}) return dynamicValues({})", dynamicValueExpression, ArrayUtils.toString(dynamicValues));
 
         // turn dynamicValue-array to token-array for computeExpression method.
         String dynamicValue;
@@ -702,19 +702,19 @@ public class Converter extends AppBase {
             case VAR:
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
                 if (systemVariable != null) {
-                    log.debug("dynamicValue({}) is System Variable({})", valueIdentifier, systemVariable.name());
+                    //log.debug("dynamicValue({}) is System Variable({})", valueIdentifier, systemVariable.name());
                     dataColumn = application.systemVariableMap.get(systemVariable);
                 } else {
                     if (valueIdentifier == null) {
-                        log.debug("dynamicValue({}) is null!", valueIdentifier);
+                        //log.debug("dynamicValue({}) is null!", valueIdentifier);
                         dataColumn = null;
                     } else {
                         String userVariableName = valueIdentifier.toUpperCase();
-                        log.debug("dynamicValue({}) is User Variable({})", valueIdentifier, userVariableName);
+                        //log.debug("dynamicValue({}) is User Variable({})", valueIdentifier, userVariableName);
                         dataColumn = application.userVariableMap.get(userVariableName);
                     }
                     if (dataColumn == null) {
-                        log.debug("unknown variable({})", valueIdentifier);
+                        //log.debug("unknown variable({})", valueIdentifier);
                         dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
                     }
                 }
@@ -766,7 +766,7 @@ public class Converter extends AppBase {
     }
 
     public String valuesFromDataTable(String dataTableMapping, String columnName) {
-        log.debug("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
+        //("Source.valuesFromDataTable(dataTableMapping:{}, columnName:{})", dataTableMapping, columnName);
 
         DataTable dataTable = getDataTable(dataTableMapping);
         if (dataTable == null) {
@@ -800,7 +800,7 @@ public class Converter extends AppBase {
         }
         values = values.substring(0, values.length() - 1);*/
 
-        log.debug("Source.valuesFromDataTable. return-value={}", values);
+        //log.debug("Source.valuesFromDataTable. return-value={}", values);
         return values;
     }
 

@@ -138,7 +138,7 @@ public class DataConversionConfigFile extends ConfigFile {
             key = iterator.next();
             pluginsList.add(new Pair<>(key, getPropertyString(pluginsProperties, key)));
         }
-        log.debug("pluginsCalcList = {}", pluginsList);
+        //log.debug("pluginsCalcList = {}", pluginsList);
         return pluginsList;
 
     }

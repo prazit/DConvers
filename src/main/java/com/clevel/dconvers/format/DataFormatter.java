@@ -92,7 +92,7 @@ public abstract class DataFormatter extends UtilBase {
         if (allRow) {
             progressBar.close();
         }
-        /*TODO DEBUG ONLY*/ memoryLog();
+        /*TODO DEBUG ONLY - memoryLog();*/
 
         string = postFormat(dataTable);
         if (string != null) {

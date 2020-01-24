@@ -83,7 +83,7 @@ public class DataSourceConfig extends Config {
             String key = it.next();
             propList.add(new Pair<>(key, getPropertyString(propProperties, key)));
         }
-        log.debug("propList = {}", propList);
+        //log.debug("propList = {}", propList);
 
         pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), "");
         post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
@@ -103,12 +103,12 @@ public class DataSourceConfig extends Config {
     public boolean validate() {
         log.trace("DataSourceConfig.validateProperties.");
 
-        if (!isEmailDataSource()) {
+        /*if (!isEmailDataSource()) {
             if (url == null || driver == null || user == null || password == null) {
                 log.debug("some value is null, please check datasource.{} section", name);
                 return false;
             }
-        }
+        }*/
 
         return true;
     }

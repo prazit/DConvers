@@ -192,9 +192,9 @@ public class Target extends UtilBase {
                     }
 
                     currentTargetRow.putColumn(targetColumn.getName(), targetColumn);
-                    if (firstRow) {
+                    /*if (firstRow) {
                         log.debug("buildTargetColumn({}.{})[{}]", dataTable.getName(), targetColumn.getName(), columnValue.getDynamicValueType());
-                    }
+                    }*/
                 }
                 dataTable.addRow(currentTargetRow);
                 if (firstRow) {

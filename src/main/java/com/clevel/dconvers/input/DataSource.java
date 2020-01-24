@@ -101,7 +101,7 @@ public class DataSource extends UtilBase {
             resultSet.last();
             int size = resultSet.getRow();
             resultSet.beforeFirst();
-            log.debug("getRowCount.size = {}", size);
+            //log.debug("getRowCount.size = {}", size);
             return size;
         } catch (Exception ex) {
             log.debug("Exception has ouccured in DataSource.getRowCount() but this is normally for the Stored Procedure call. ");
@@ -460,16 +460,16 @@ public class DataSource extends UtilBase {
         boolean success = true;
 
         try {
-            log.trace("Open statement...");
+            //log.trace("Open statement...");
             statement = createStatement(dataSourceConfig.getDbms());
             if (statement == null) {
                 throw new Exception("Create statement for update is failed, sql(" + sql + ")");
             }
 
-            log.debug("DataSource({}).executeUpdate: sql = {}", name, sql);
+            //log.debug("DataSource({}).executeUpdate: sql = {}", name, sql);
             int affected = statement.executeUpdate(sql);
             if (affected == 0) {
-                log.debug("DataSource({}).executeUpdate: no data has changed by this sql!", name);
+                log.debug("DataSource({}).executeUpdate: no data has changed by this sql={}", name, sql);
             }
         } catch (SQLException se) {
             error("SQLException: {}", se.getMessage());
@@ -482,7 +482,7 @@ public class DataSource extends UtilBase {
         } finally {
             try {
                 if (statement != null) {
-                    log.trace("Close statement...");
+                    //log.trace("Close statement...");
                     statement.close();
                 }
             } catch (SQLException se2) {
