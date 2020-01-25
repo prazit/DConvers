@@ -45,6 +45,7 @@ public class DirDataSource extends DataSource {
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
 
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
         String dir = query.replaceAll("[\\\\]", "/");

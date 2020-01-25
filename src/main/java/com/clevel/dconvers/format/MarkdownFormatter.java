@@ -68,7 +68,6 @@ public class MarkdownFormatter extends DataFormatter {
 
         int columnIndex;
         String value;
-        Integer width;
 
         DataRow firstRow = rowList.get(0);
         columnIndex = 0;
@@ -151,7 +150,7 @@ public class MarkdownFormatter extends DataFormatter {
             if (showRowNumber) {
                 headerSeparator = "|-" + StringUtils.repeat('-', rowIndexWidth - 2) + ":";
                 header = "| No." + StringUtils.repeat(' ', rowIndexWidth - 4);
-            }else{
+            } else {
                 headerSeparator = "";
                 header = "";
             }

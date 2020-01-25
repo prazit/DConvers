@@ -41,6 +41,7 @@ public class LinesDataSource extends DataSource {
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
         String eol = queryParamMap.get(Property.OUTPUT_EOL.key().toUpperCase());
@@ -77,6 +78,9 @@ public class LinesDataSource extends DataSource {
             for (String line; (line = br.readLine()) != null; lineNumber++) {
                 line = converter.compileDynamicValues(line + "\n");
                 dataRow = getDataRow(lineNumber, line, dataTable);
+                if (dataRow == null) {
+                    continue;
+                }
                 dataRowList.add(dataRow);
             }
 
@@ -118,6 +122,9 @@ public class LinesDataSource extends DataSource {
                 }
                 line = converter.compileDynamicValues(line);
                 dataRow = getDataRow(lineNumber, line, dataTable);
+                if (dataRow == null) {
+                    continue;
+                }
                 dataRowList.add(dataRow);
             }
 
@@ -142,7 +149,7 @@ public class LinesDataSource extends DataSource {
         return dataRowList;
     }
 
-    private DataRow getDataRow(int lineNumber, String line, DataTable dataTable) {
+    protected DataRow getDataRow(int lineNumber, String line, DataTable dataTable) {
         DataRow dataRow = new DataRow(application, dataTable);
         String columnName;
 

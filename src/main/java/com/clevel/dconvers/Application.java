@@ -259,6 +259,24 @@ public class Application extends AppBase {
         dataSourceName = Property.LINES.key();
         dataSourceMap.put(dataSourceName.toUpperCase(), new LinesDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
+        log.trace("Application. Load Plugins for datasource.");
+        loadPluginsSuccess = true;
+        pluginsList = dataConversionConfigFile.getPluginsDataSourceList();
+        if (pluginsList != null) {
+            log.debug("Has {} plugins for datasource.", pluginsList.size());
+            for (Pair<String, String> plugins : pluginsList) {
+                dataSourceName = plugins.getKey();
+                DataSource pluginDataSource = InputFactory.getDataSource(this, dataSourceName, plugins.getValue());
+                if (pluginDataSource == null) {
+                    loadPluginsSuccess = false;
+                    continue;
+                }
+                dataSourceMap.put(dataSourceName.toUpperCase(), pluginDataSource);
+            }
+        }
+        if (!loadPluginsSuccess && exitOnError) {
+            stopWithError();
+        }
 
         log.trace("Application. Load SFTP Services.");
         sftpMap = new HashMap<>();
