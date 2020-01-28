@@ -70,7 +70,7 @@ public class DataSource extends UtilBase {
             properties.put("user", dataSourceConfig.getUser());
             properties.put("password", dataSourceConfig.getPassword());
 
-            log.trace("Connecting to datasource({}) ...", name);
+            log.trace("Connecting to datasource({})[{}]", name, toString());
             connection = DriverManager.getConnection(url, properties);
             log.info("Connected to datasource({})", name);
 
