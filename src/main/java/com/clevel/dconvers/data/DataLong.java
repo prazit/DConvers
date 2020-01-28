@@ -43,7 +43,7 @@ public class DataLong extends DataColumn {
 
     @Override
     public String getQuotedValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
         return String.valueOf(value);
@@ -51,7 +51,7 @@ public class DataLong extends DataColumn {
 
     @Override
     public String getValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
         return String.valueOf(value);
@@ -59,7 +59,7 @@ public class DataLong extends DataColumn {
 
     @Override
     public String getFormattedValue(String pattern) {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -79,6 +79,11 @@ public class DataLong extends DataColumn {
 
     public void setValue(Long value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isNull() {
+        return value == null;
     }
 
     public void increaseValueBy(long increase) {

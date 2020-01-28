@@ -61,6 +61,8 @@ public abstract class DataColumn extends AppBase {
 
     public abstract void setValue(String value);
 
+    public abstract boolean isNull();
+
     public abstract DataColumn clone(String value);
 
     public abstract DataColumn clone(int index, String name);

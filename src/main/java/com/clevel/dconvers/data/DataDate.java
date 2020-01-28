@@ -54,7 +54,7 @@ public class DataDate extends DataColumn {
     }
 
     public Date getDateValue() {
-        return (value == null) ? null : new Date(value.getTime());
+        return (isNull()) ? null : new Date(value.getTime());
     }
 
     @Override
@@ -100,6 +100,11 @@ public class DataDate extends DataColumn {
 
     public void setValue(Date value) {
         this.value = (value == null) ? null : new Date(value.getTime());
+    }
+
+    @Override
+    public boolean isNull() {
+        return value == null;
     }
 
     private String format(Date date, String format) {

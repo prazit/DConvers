@@ -37,7 +37,7 @@ public class DataString extends DataColumn {
 
     @Override
     public String getQuotedValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -56,7 +56,7 @@ public class DataString extends DataColumn {
 
     @Override
     public String getValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -79,6 +79,11 @@ public class DataString extends DataColumn {
     @Override
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isNull() {
+        return value == null;
     }
 
     @Override

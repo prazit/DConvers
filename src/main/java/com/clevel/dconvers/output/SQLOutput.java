@@ -53,7 +53,7 @@ public class SQLOutput extends Output {
             dataFormatterList.add(new SQLInsertFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, eol));
         }
         if (generateUpdateStatement) {
-            dataFormatterList.add(new SQLUpdateFormatter(application, tableName, columnList, nameQuotes, valueQuotes, eol));
+            dataFormatterList.add(new SQLUpdateFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, eol));
         }
 
         log.debug("SQLOutput.formatterEnabled(create:{}, insert:{}, update:{})", generateCreateStatement, generateInsertStatement, generateUpdateStatement);

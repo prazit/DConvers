@@ -675,6 +675,7 @@ System variable can contain 2 groups of value as following
 |-------------------|--------|-----------------------------------------------------------------------------------|
 | ROW_NUMBER        | int    | row number will be reset at the beginning of any datatable processes.             |
 | APPLICATION_STATE | int    | current state of application, find exit.code in this document for possible values |
+| APPLICATION_STATE_MESSAGE | string    | message of the current state |
 | SOURCE_FILE_NUMBER | int   | file number will be increase by 1 for every source, no reset action for this variable |
 | TARGET_FILE_NUMBER | int   | file number will be increase by 1 for every target, no reset action for this variable |
 | MAPPING_FILE_NUMBER | int   | file number will be increase by 1 for every mapping, no reset action for this variable |

@@ -43,6 +43,7 @@ public class Application extends AppBase {
     public List<Converter> converterList;
     public Converter currentConverter;
     public DataLong currentState;
+    public DataString currentStateMessage;
 
     public HashMap<String, DataTable> systemTableMap;
     public SummaryTable tableSummary;
@@ -421,6 +422,9 @@ public class Application extends AppBase {
 
         currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
         currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
+
+        currentStateMessage = (DataString) systemVariableMap.get(SystemVariable.APPLICATION_STATE_MESSAGE);
+        currentStateMessage.setValue("");
 
         VersionFormatter versionFormatter = new VersionFormatter(this);
         VersionConfigFile versionConfigFile = new VersionConfigFile(this, Property.CURRENT_VERSION.key());

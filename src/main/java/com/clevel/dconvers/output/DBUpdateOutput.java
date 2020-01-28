@@ -31,8 +31,15 @@ public class DBUpdateOutput extends Output {
         String nameQuotes = outputConfig.getDbUpdateNameQuotes();
         String valueQuotes = outputConfig.getDbUpdateValueQuotes();
 
-        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, columnList, nameQuotes, valueQuotes, "\n"));
+        String dataSourceName = outputConfig.getDbUpdateDataSource();
+        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        if (dataSource == null) {
+            error("DBUpdateOutput: Datasource({}) is not found, required by dbupdate.datasource",dataSourceName);
+            return dataFormatterList;
+        }
+        String dbms = dataSource.getDataSourceConfig().getDbms();
 
+        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
         return dataFormatterList;
     }
 
@@ -93,9 +100,9 @@ public class DBUpdateOutput extends Output {
             }
 
             if (dataSource.executeUpdate(sqlStatement)) {
-                log.debug("DBUpdateOutput.executeUpdate is success.");
+                log.debug("DBUpdateOutput.executeUpdate({}) is success.", sqlStatement);
             } else {
-                log.debug("DBUpdateOutput.executeUpdate is failed.");
+                log.debug("DBUpdateOutput.executeUpdate({}) is failed.", sqlStatement);
                 return false;
             }
         }

@@ -6,7 +6,6 @@ import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.DataFormatter;
 import com.clevel.dconvers.format.SQLInsertFormatter;
 import com.clevel.dconvers.input.DataSource;
-import com.mysql.jdbc.JDBC4MySQLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

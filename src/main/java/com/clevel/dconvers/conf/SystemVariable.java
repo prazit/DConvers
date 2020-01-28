@@ -26,6 +26,7 @@ public enum SystemVariable {
 
     // EXIT CODE for now
     APPLICATION_STATE(Types.INTEGER),
+    APPLICATION_STATE_MESSAGE(Types.VARCHAR),
 
     // Constant values for configuration
     EMPTY_STRING(Types.VARCHAR),    // ""

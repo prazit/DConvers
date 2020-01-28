@@ -52,7 +52,7 @@ public class DataBigDecimal extends DataColumn {
 
     @Override
     public String getQuotedValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -61,7 +61,7 @@ public class DataBigDecimal extends DataColumn {
 
     @Override
     public String getValue() {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -70,7 +70,7 @@ public class DataBigDecimal extends DataColumn {
 
     @Override
     public String getFormattedValue(String pattern) {
-        if (value == null) {
+        if (isNull()) {
             return nullString;
         }
 
@@ -85,6 +85,11 @@ public class DataBigDecimal extends DataColumn {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isNull() {
+        return value == null;
     }
 
     @Override

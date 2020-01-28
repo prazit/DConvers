@@ -1,8 +1,10 @@
 package com.clevel.dconvers.ngin;
 
+import ch.qos.logback.core.Appender;
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.data.DataTable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -43,12 +45,22 @@ public abstract class AppBase extends ValidatorBase {
      */
     protected abstract Logger loadLogger();
 
-    private void afterError() {
+    private void afterError(String message) {
         application.currentState.setValue(application.errorCode);
+        if (application.currentStateMessage.getValue().isEmpty()) {
+            application.currentStateMessage.setValue(message);
+        }
     }
 
-    private void afterWarn() {
+    private void afterWarn(String message) {
+        if (application.currentState.getLongValue() == application.errorCode) {
+            return;
+        }
+
         application.currentState.setValue(application.warningCode);
+        if (application.currentStateMessage.getValue().isEmpty()) {
+            application.currentStateMessage.setValue(message);
+        }
     }
 
     private String currentConverterName() {
@@ -70,27 +82,33 @@ public abstract class AppBase extends ValidatorBase {
         return name;
     }
 
-    public void error(String format, Object arg1, Object arg2) {
-        log.error(format + currentConverterName(), arg1, arg2);
-        afterError();
-    }
-
     public void error(String format, Object... arguments) {
-        log.error(format + currentConverterName(), arguments);
-        afterError();
-    }
-
-    public void error(String format, Object arg) {
-        log.error(format + currentConverterName(), arg);
-        afterError();
+        String message = format + currentConverterName();
+        log.error(message, arguments);
+        afterError(formatMessage(message, arguments));
     }
 
     public void error(String msg, Throwable t) {
-        log.error(msg + currentConverterName(), t);
+        String message = msg + currentConverterName();
+        log.error(message, t);
         if (t instanceof OutOfMemoryError) {
             memoryLog();
         }
-        afterError();
+        afterError(formatMessage(message + t.getStackTrace()[0].toString()));
+    }
+
+    public void error(String msg) {
+        String message = msg + currentConverterName();
+        log.error(message);
+        afterError(formatMessage(message));
+    }
+
+    private String formatMessage(String format, Object... arguments) {
+        String message = format;
+        for (Object argument : arguments) {
+            message = message.replaceFirst("[{][}]", argument.toString());
+        }
+        return message;
     }
 
     public void memoryLog() {
@@ -112,11 +130,6 @@ public abstract class AppBase extends ValidatorBase {
         log.debug("Non-heap Init = {}", nonheap.getInit());
         log.debug("Non-heap Used = {}", nonheap.getUsed());
         log.debug("Non-heap Committed = {}", nonheap.getCommitted());
-    }
-
-    public void error(String msg) {
-        log.error(msg + currentConverterName());
-        afterError();
     }
 
 }
