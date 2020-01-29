@@ -2,8 +2,8 @@ package com.clevel.dconvers.input;
 
 import com.clevel.dconvers.Application;
 import com.clevel.dconvers.conf.DataSourceConfig;
+import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataDate;
-import com.clevel.dconvers.data.DataLong;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -14,15 +14,32 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DirDataSource extends DataSource {
 
+    private Properties moreProperties;
+    private boolean isIncludeSub;
+    private boolean isIncludeDir;
+
     public DirDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
         super(application, name, dataSourceConfig);
+
+        moreProperties = dataSourceConfig.getPropListAsProperties();
+
+        String sub = moreProperties.getProperty(Property.SUB.key());
+        if (sub == null) {
+            isIncludeSub = false;
+        } else {
+            isIncludeSub = Boolean.getBoolean(sub);
+        }
+
+        String dir = moreProperties.getProperty(Property.DIR.key());
+        if (dir == null) {
+            isIncludeDir = false;
+        } else {
+            isIncludeDir = Boolean.getBoolean(dir);
+        }
     }
 
     @Override
@@ -48,35 +65,44 @@ public class DirDataSource extends DataSource {
         dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
-        String dir = query.replaceAll("[\\\\]", "/");
+        String[] dirs = query.split("[,]");
+
         String path;
         String filter;
         int index;
         File directory;
         File[] files;
+        List<File> fileList = new ArrayList<>();
+        for (String dir : dirs) {
+            dir = dir.replaceAll("[\\\\]", "/");
 
-        index = dir.indexOf("*");
-        if (index >= 0) {
-            index = dir.lastIndexOf("/");
+            index = dir.indexOf("*");
             if (index >= 0) {
-                path = dir.substring(0, index);
-                filter = dir.substring(index + 1);
+                index = dir.lastIndexOf("/");
+                if (index >= 0) {
+                    path = dir.substring(0, index);
+                    filter = dir.substring(index + 1);
+                } else {
+                    path = System.getProperty("user.dir");
+                    filter = dir;
+                }
+                directory = new File(path);
+                files = directory.listFiles(new WildCardFilenameFilter(application, name, filter));
             } else {
-                path = System.getProperty("user.dir");
-                filter = dir;
+                directory = new File(dir);
+                files = directory.listFiles();
             }
-            directory = new File(path);
-            files = directory.listFiles(new WildCardFilenameFilter(application, name, filter));
-        } else {
-            directory = new File(dir);
-            files = directory.listFiles();
+
+            if (files == null) {
+                continue;
+            }
+            fileList.addAll(Arrays.asList(files));
         }
 
-        if (files == null) {
+        if (fileList.size() == 0) {
             return dataTable;
         }
 
-        List<File> fileList = Arrays.asList(files);
         fileList.sort((o1, o2) -> {
             int dir1 = o1.isDirectory() ? 0 : 1;
             int dir2 = o2.isDirectory() ? 0 : 1;
@@ -89,6 +115,10 @@ public class DirDataSource extends DataSource {
         String columnName;
         DataRow dataRow;
         for (File file : fileList) {
+            if (file.isDirectory() && !isIncludeDir) {
+                continue;
+            }
+
             dataRow = new DataRow(application, dataTable);
 
             columnName = "Name";

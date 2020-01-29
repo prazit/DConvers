@@ -176,18 +176,20 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 #### Datasource and query
 
-| Data Provider        | datasource        | query (Dynamic Value Enabled)                        | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                             |
-| -------------------- | ----------------- | ---------------------------------------------------- | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------- |
-| Database             | User Defined Name | SQL String                                           | split                                    | integer   | 0             | 0 mean not split query, otherwise is split query every number of records         |
-| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                             |                                          |           |               |                                                         |
-| SQL(Insert) File     | SQL               | file-name                                            | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value |
-|                      |                   |                                                      | quotes.value                             | string    | "             | one character for quotes of string-value and date-value |
-| Markdown(Table) File | MARKDOWN          | file-name                                            |                                          |           |               |                                                         |
-| Email                | EMAIL             | Search String                                        |                                          |           |               |                                                         |
-| Fixed Length File    | TXT               | file-name                                            |                                          |           |               |                                                         |
-| CSV File             | CSV               | file-name                                            |                                          |           |               |                                                         |
-| Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                 |
-| DConvers             | SYSTEM            | see 'System Query' for detailed                      |                                          |           |               |                                                         |
+| Data Provider        | datasource        | query (Dynamic Value Enabled)                                | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                                  |
+| -------------------- | ----------------- | ------------------------------------------------------------ | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------------ |
+| Database             | User Defined Name | SQL String                                                   | split                                    | integer   | 0             | 0 mean not split query, otherwise is split query every number of records |
+| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                                     |                                          |           |               |                                                              |
+| SQL(Insert) File     | SQL               | file-name                                                    | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value      |
+|                      |                   |                                                              | quotes.value                             | string    | "             | one character for quotes of string-value and date-value      |
+| Markdown(Table) File | MARKDOWN          | file-name                                                    |                                          |           |               |                                                              |
+| Email                | EMAIL             | Search String                                                |                                          |           |               |                                                              |
+| Fixed Length File    | TXT               | file-name                                                    |                                          |           |               |                                                              |
+| CSV File             | CSV               | file-name                                                    |                                          |           |               |                                                              |
+| Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                      |
+| DConvers             | SYSTEM            | see 'System Query' for detailed                              |                                          |           |               |                                                              |
+| File System          | DIR               | folder-path with wildcard                                    | sub                                      | boolean   | false         | include sub directories                                      |
+|                      |                   |                                                              | dir                                      | boolean   | true          | true = include folder, false = file only                     |
 
 **Example: Query Parameter**
 

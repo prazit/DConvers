@@ -105,6 +105,7 @@ public enum Property {
     SYSTEM("system"),
     RESULT_SET_META_DATA("ResultSetMetaData"),
     DIR("dir"),
+    SUB("sub"),
     LINES("lines"),
 
     ROW_NUMBER("rownumber"),

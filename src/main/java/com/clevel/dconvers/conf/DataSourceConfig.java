@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 public class DataSourceConfig extends Config {
 
@@ -154,6 +155,20 @@ public class DataSourceConfig extends Config {
 
     public List<Pair<String, String>> getPropList() {
         return propList;
+    }
+
+    public Properties getPropListAsProperties() {
+        Properties properties = new Properties();
+
+        if (propList.size() == 0) {
+            return properties;
+        }
+
+        for (Pair<String, String> propertyPair : propList) {
+            properties.put(propertyPair.getKey(), propertyPair.getValue());
+        }
+
+        return properties;
     }
 
     public String getPre() {
