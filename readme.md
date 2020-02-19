@@ -18,7 +18,7 @@ But, now has many features that help to transform data in a target table before 
 | Email                              | EMAIL                    | -                            |
 | PDF                                | -                        | PDF                          |
 | Fixed Length                       | -                        | TXT                          |
-| CSV                                | CSV(future)              | CSV                          |
+| CSV                                | -                        | CSV                          |
 | Lines                              | Lines                    | Lines(future)                |
 | Configuration Generator for source | -                        | SRC                          |
 | Configuration Generator for target | -                        | TAR                          |
@@ -184,8 +184,6 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 |                      |                   |                                                              | quotes.value                             | string    | "             | one character for quotes of string-value and date-value      |
 | Markdown(Table) File | MARKDOWN          | file-name                                                    |                                          |           |               |                                                              |
 | Email                | EMAIL             | Search String                                                |                                          |           |               |                                                              |
-| Fixed Length File    | TXT               | file-name                                                    |                                          |           |               |                                                              |
-| CSV File             | CSV               | file-name                                                    |                                          |           |               |                                                              |
 | Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                      |
 | DConvers             | SYSTEM            | see 'System Query' for detailed                              |                                          |           |               |                                                              |
 | File System          | DIR               | folder-path with wildcard                                    | sub                                      | boolean   | false         | include sub directories                                      |
@@ -628,14 +626,16 @@ select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])
 
 ##### Dynamic Value Types
 
-Type | Value Identifier | Example | Description
------|------------------|---------|------------
-TXT  | Full path name of a text file | $[TXT:C:\path\file.ext] | Insert content from a specified file.
-SRC  | [SourceName].[SourceColumn] | $[SRC:MySourceTable.id{,default-value}] | Insert list of values from a source table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.  
-TAR  | [TargetName].[TargetColumn] | $[TAR:MyTargetTable.id{,default-value}] | Insert list of values from a target table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.
-MAP  | [MappingName].[MappingColumn] | $[MAP:MappingTable.source_id{,default-value}] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist.
-CAL  | [FunctionName] (ParameterList in CSV format) | $[CAL:GET(SRC:MySourceTable,1,2)] | Calculate a function to produce a value. see 'Calculators' for detailed. 
-VAR  | [VariableName] | $[VAR:APPLICATION_START] | Value from a variable. see 'Variables' for detailed. 
+| Type | Value Identifier                             | Example                                       | Description                                                  |
+| ---- | -------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| TXT  | Full path name of a text file                | $[TXT:C:\path\file.ext]                       | Insert content from a specified file.                        |
+| HTP  | Full path name of a http file                | $[HTP:C:\path\file.http]                      | Insert file-name on the local host after load the specified file from http information in the specified http file. |
+| FTP  | Full path name of a ftp/sftp file            | $[FTP:<sftpserver-name>/path/file.ext]        | Insert file-name on the local host after load the specified file from ftp/sftp. |
+| SRC  | [SourceName].[SourceColumn]                  | $[SRC:MySourceTable.id{,default-value}]       | Insert list of values from a source table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist. |
+| TAR  | [TargetName].[TargetColumn]                  | $[TAR:MyTargetTable.id{,default-value}]       | Insert list of values from a target table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist. |
+| MAP  | [MappingName].[MappingColumn]                | $[MAP:MappingTable.source_id{,default-value}] | Insert list of values from a mapping table in formatted of CSV (value1,value2,...). When got empty CSV then return default-value if exist. |
+| CAL  | [FunctionName] (ParameterList in CSV format) | $[CAL:GET(SRC:MySourceTable,1,2)]             | Calculate a function to produce a value. see 'Calculators' for detailed. |
+| VAR  | [VariableName]                               | $[VAR:APPLICATION_START]                      | Value from a variable. see 'Variables' for detailed.         |
 
 ----
 

@@ -105,7 +105,7 @@ public abstract class Output extends AppBase {
             return true;
         }
 
-        SFTP sftp = application.sftpMap.get(postSFTP.sftp.toUpperCase());
+        SFTP sftp = application.getSFTP(postSFTP.sftp);
         if (sftp == null) {
             error("The sftp({}) is not found, please check sftp name ({}).", postSFTP.sftp, postSFTP);
             return false;

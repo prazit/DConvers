@@ -20,6 +20,8 @@ public enum DynamicValueType {
     MAP(0, SRCValue.class),        // MAP:mapping-name.column-name
 
     TXT(Types.VARCHAR, TXTValue.class),     // TXT:full-path\text-file.ext
+    HTP(Types.VARCHAR, HTTPValue.class),    // HTP:full-path\text-file.http
+    FTP(Types.VARCHAR, FTPValue.class),     // FTP:<sftp-server-name>/full-path/text-file.ext
 
     COL(0, COLValue.class),        // source-column-name>>MAPPING>>column-name = id>>MAP:branch_to_branch.source_id>>target_id
     NON(0, NONValue.class),        // None (no specified type) will use as source-column-name

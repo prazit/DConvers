@@ -609,6 +609,14 @@ public class Application extends AppBase {
 
     //======= Utilities =======
 
+    public SFTP getSFTP(String sftpName) {
+        if (sftpName == null) {
+            return null;
+        }
+
+        return sftpMap.get(sftpName.toUpperCase());
+    }
+
     private HashMap<SystemVariable, DataColumn> createSystemVariableMap() {
         List<SystemVariable> systemVariableList = Arrays.asList(SystemVariable.values());
         HashMap<SystemVariable, DataColumn> variables = new HashMap<>();

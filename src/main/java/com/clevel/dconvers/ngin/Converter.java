@@ -14,13 +14,19 @@ import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -568,6 +574,7 @@ public class Converter extends AppBase {
     }
 
     private String compileFirstDynamicValue(String sourceString) {
+
         int start = sourceString.indexOf("$[");
         if (start < 0) {
             return null;
@@ -576,6 +583,9 @@ public class Converter extends AppBase {
         int end = sourceString.indexOf("]", start);
         if (end < 0) {
             end = sourceString.length() - 1;
+        } else {
+            // inner expression first
+            start = sourceString.substring(0, end).lastIndexOf("$[");
         }
 
         String dynamicValueExpression = sourceString.substring(start + 2, end);
@@ -658,6 +668,7 @@ public class Converter extends AppBase {
 
         DataColumn dataColumn = null;
         String value;
+        /*TODO: need to use Dynamic Value List similar to the value of target.column*/
         switch (dynamicValueType) {
             case TXT:
                 value = valueFromFile(valueIdentifier);
@@ -718,6 +729,22 @@ public class Converter extends AppBase {
                         dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
                     }
                 }
+                break;
+
+            case HTP:
+                value = valueFromHttp(valueIdentifier);
+                if (value == null) {
+                    return null;
+                }
+                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                break;
+
+            case FTP:
+                value = valueFromFtp(valueIdentifier);
+                if (value == null) {
+                    return null;
+                }
+                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case ARG:
@@ -835,6 +862,205 @@ public class Converter extends AppBase {
         }
 
         return value;
+    }
+
+    /**
+     * Load file from FTP/SFTP, save on local and return local file name, yeah!!! cover ftp by txt may be needed like this: $[TXT:$[FTP:sftpserver\editable-query.sql]]
+     *
+     * @param ftpFileName full path to the remote file.
+     *                    example: sftpserver/upload/JQL.ps1
+     * @return full path to the local file loaded from remote file.
+     */
+    public String valueFromFtp(String ftpFileName) {
+        HttpProperty ftpFileNameProp = new HttpProperty(ftpFileName, "/");
+        File ftpFile = new File(ftpFileNameProp.value);
+
+        String outputPath = application.dataConversionConfigFile.getOutputMappingPath();
+        String ftpContentFileName = outputPath + ftpFile.getName();
+
+        SFTP sftp = application.getSFTP(ftpFileNameProp.name);
+        if (!sftp.copyToLocal(ftpFileNameProp.value, ftpContentFileName)) {
+            error("valueFromFtp is failed! empty string is returned.");
+            return "";
+        }
+
+        return ftpContentFileName;
+    }
+
+    /**
+     * Load file from HTTP/HTTPS, save on local and return local file name, yeah!!! cover htp by txt may be needed like this: $[TXT:$[HTP:http/file.http]]
+     *
+     * @param httpFileName full path to the file.http
+     * @return full path to the loaded file on the local environment.
+     */
+    public String valueFromHttp(String httpFileName) {
+        File httpFile = new File(httpFileName);
+        if (!httpFile.getName().endsWith(".http")) {
+            error("HTP: http file is required, not for '{}'", httpFileName);
+            return null;
+        }
+        if (!httpFile.exists()) {
+            error("HTP: file not found '{}'", httpFileName);
+            return null;
+        }
+
+        String httpFileString = valueFromFile(httpFileName);
+        log.debug("valueFromHttp.httpFileString={}", httpFileString);
+
+        HttpRequestString httpRequestString = new HttpRequestString(httpFileString);
+        log.trace("valueFromHttp.httpRequestString is created");
+
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpRequestBase httpRequest = createHttpRequest(httpRequestString);
+        if (httpRequest == null) {
+            return null;
+        }
+        log.debug("valueFromHttp.httpRequestMethod={}", httpRequest.getMethod());
+
+        String outputPath = application.dataConversionConfigFile.getOutputMappingPath();
+        String httpContentFileName;
+        HttpResponse httpResponse = null;
+        byte[] lf = "\n".getBytes();
+        try {
+            httpResponse = httpClient.execute(httpRequest);
+            HttpEntity entity = httpResponse.getEntity();
+
+            // debug only
+            for (Header header : httpResponse.getAllHeaders()) {
+                log.debug("httpResponse:header:{}={}", header.getName(), header.getValue());
+            }
+            Header contentType = entity.getContentType();
+            log.debug("httpResponse:contentType={}>>{}", contentType.getValue(), contentType);
+
+            // content file name
+            String httpResponseFileName;
+            if (httpResponse.containsHeader("Content-Disposition")) {
+                String disposition = httpResponse.getFirstHeader("Content-Disposition").getValue();
+                String fileName = disposition.replaceFirst("(?i)^.*filename=\"([^\"]+)\".*$", "$1");
+                httpContentFileName = outputPath + fileName;
+            } else {
+                httpContentFileName = outputPath + httpRequest.getURI().getHost();
+            }
+            httpResponseFileName = httpContentFileName + ".http.response";
+
+            // create response file.
+            FileOutputStream responseFileOutputStream = new FileOutputStream(httpResponseFileName);
+            responseFileOutputStream.write(httpResponse.getStatusLine().toString().getBytes());
+            for (Header header : httpResponse.getAllHeaders()) {
+                responseFileOutputStream.write(header.toString().getBytes());
+                responseFileOutputStream.write(lf);
+            }
+            responseFileOutputStream.close();
+
+            // create content file.
+            FileOutputStream contentFileOutputStream = new FileOutputStream(httpContentFileName);
+            entity.writeTo(contentFileOutputStream);
+            contentFileOutputStream.close();
+
+        } catch (HttpHostConnectException exception) {
+            error("valueFromHttp is failed! {}", exception.getMessage());
+            return null;
+
+        } catch (IOException ex) {
+            error("valueFromHttp is failed!", ex);
+            return null;
+
+        }
+
+        return httpContentFileName;
+    }
+
+    private class HttpRequestString {
+        String originalString;
+        int originalStringLength;
+        int currentOffset;
+
+        public HttpRequestString(String originalString) {
+            this.originalString = originalString;
+            originalStringLength = originalString.length();
+            currentOffset = 0;
+
+            log.debug("HttpRequestString(length:{}, originalString:{})", originalStringLength, originalString);
+        }
+
+        /**
+         * Skip comment line that startWith '#' symbol.
+         *
+         * @return return first line after comment block (without line separator), return null at EOF.
+         */
+        public String nextLine() {
+            if (currentOffset > originalStringLength) {
+                log.debug("HttpRequestString.nextLine.currentOffset({}) > originalStringLength({})", currentOffset, originalStringLength);
+                return null;
+            }
+
+            int nextLineIndex = originalString.indexOf("\n", currentOffset);
+            if (nextLineIndex < 0) {
+                log.debug("HttpRequestString.nextLine.nextLineIndex={}", nextLineIndex);
+                return null;
+            }
+
+            int nextLineOffset = nextLineIndex + 1;
+            if (originalString.substring(currentOffset, currentOffset + 1).equals("#")) {
+                currentOffset = nextLineOffset;
+                return nextLine();
+            }
+
+            String line = originalString.substring(currentOffset, nextLineOffset - 1);
+            currentOffset = nextLineOffset;
+            if (line.trim().isEmpty()) {
+                return nextLine();
+            }
+
+            return line;
+        }
+    }
+
+    private class HttpProperty {
+        String name;
+        String separator;
+        String value;
+
+        public HttpProperty(String httpLine, String separator) {
+            this.separator = separator;
+
+            int separatorIndex = httpLine.indexOf(separator, 1);
+            if (separatorIndex < 0) {
+                name = null;
+                value = null;
+            }
+
+            name = httpLine.substring(0, separatorIndex);
+            value = httpLine.substring(separatorIndex + 1);
+        }
+    }
+
+    private HttpRequestBase createHttpRequest(HttpRequestString httpRequestString) {
+        HttpRequestBase httpRequest;
+        String urlLine = httpRequestString.nextLine();
+        log.debug("createHttpRequest.urlLine={}", urlLine);
+        if (urlLine == null) {
+            error("createHttpRequest is failed by URL is null");
+            return null;
+        }
+
+        HttpProperty property = new HttpProperty(urlLine, " ");
+        if (property.name.equals("POST")) {
+            httpRequest = new HttpPost(property.value);
+        } else {
+            httpRequest = new HttpGet(property.value);
+        }
+
+        String nextLine = httpRequestString.nextLine();
+        while (nextLine != null) {
+            property = new HttpProperty(nextLine, ":");
+            if (property.name != null) {
+                httpRequest.addHeader(property.name, property.value);
+            }
+            // TODO: POST need coding for multipart contents here.
+        }
+
+        return httpRequest;
     }
 
     public DataTable getCurrentTable() {

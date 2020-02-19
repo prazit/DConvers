@@ -17,7 +17,8 @@ Class-Path: ../lib/cli-progressbar-0.7.0.jar ../lib/commons-beanutils-
  ports/jasperreports-javaflow-6.2.2.jar ../lib/jasperreports/joda-time
  -2.4.jar ../lib/jasperreports/jtidy-r938.jar ../lib/jasperreports/tha
  ifonts-sarabun.jar ../lib/commons-codec-1.14.jar ../lib/jfxrt.jar ../
- lib/lhbank-dconvers-plugins.jar
+ lib/lhbank-dconvers-plugins.jar ../lib/httpcore-4.4.13.jar ../lib/htt
+ pclient-4.5.11.jar
 Implementation-Vendor: C-Level Company Limited
 Main-Class: com.clevel.dconvers.Main
 
