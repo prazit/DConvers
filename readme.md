@@ -643,7 +643,7 @@ select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])
 
 Calculators for use in CAL type dynamic value expression.
 
->   Row Identifier can be row-index start at 1, CURRENT or DynamicValue such as VAR:ROW_NUMBER.
+>   Row Identifier can be row-index start at 1, CURRENT or DynamicValue such as VAR:ROW_NUMBER and can be LookupValue such as COLUMN_NAME=VALUE
 >   Column Identifier can be column-index start at 1, Column Name or DynamicValue such as VAR:USER_VAR_COL1_NAME.
 
 | Calculator | Parameters                                                   | Description                                                  |

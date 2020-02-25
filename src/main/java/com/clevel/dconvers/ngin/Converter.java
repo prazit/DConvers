@@ -433,13 +433,21 @@ public class Converter extends AppBase {
             return row;
         }
 
+        if (rowIdentifier.contains("=")) {
+            String[] parts = rowIdentifier.split("[=]");
+            DataRow row = dataTable.getRow(parts[0], parts[1]);
+            log.debug("rowIdentifier={}", rowIdentifier);
+            log.debug("rowReturned={}", row);
+            return row;
+        }
+
         int rowIndex;
         if (rowIdentifier.contains(":")) {
             String rowIdentifierCompiled = compileDynamicValues("$[" + rowIdentifier + "]");
             log.debug("rowIdentifier={}", rowIdentifier);
             log.debug("rowIdentifierCompiled={}", rowIdentifierCompiled);
             rowIndex = Integer.parseInt(rowIdentifierCompiled) - 1;
-        } else {
+        } else  {
             rowIndex = Integer.parseInt(rowIdentifier) - 1;
         }
         //log.debug("rowIndex={}", rowIndex);
