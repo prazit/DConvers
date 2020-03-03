@@ -515,7 +515,6 @@ public class OutputConfig extends Config {
 
             Configuration dbUpdateProperties = properties.subset(key);
             dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
-            dbUpdateColumnList = getStringList(dbUpdateProperties, Property.TABLE.key());
             dbUpdateColumnList = getStringList(dbUpdateProperties, Property.COLUMN.key());
             dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
             dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
