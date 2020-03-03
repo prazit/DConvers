@@ -23,6 +23,7 @@ public class Switches extends AppBase {
     private String arg;
     private boolean verbose;
     private Level verboseLevel;
+    private boolean test;
     private boolean help;
     private boolean version;
 
@@ -94,6 +95,7 @@ public class Switches extends AppBase {
             source = source + Defaults.CONFIG_FILE_EXT.getStringValue();
         }
 
+        test = cmd.hasOption(Option.TEST.getShortOpt());
         help = cmd.hasOption(Option.HELP.getShortOpt());
         version = cmd.hasOption(Option.VERSION.getShortOpt());
         arg = cmd.getOptionValue(Option.ARG.getShortOpt());
@@ -127,6 +129,10 @@ public class Switches extends AppBase {
 
     public Options getOptions() {
         return options;
+    }
+
+    public boolean isTest() {
+        return test;
     }
 
     public boolean isHelp() {

@@ -418,14 +418,6 @@ public class DataSource extends UtilBase {
         return dataSourceConfig;
     }
 
-    public void runPre() {
-        // TODO Run SQL from file specified in dataSourceConfig.getPre()
-    }
-
-    public void runPost() {
-        // TODO Run SQL from file specified in dataSourceConfig.getPost()
-    }
-
     private Statement createStatement(String dbmsString) {
         DBMS dbms = DBMS.parse(dbmsString);
         if (dbms == null) {

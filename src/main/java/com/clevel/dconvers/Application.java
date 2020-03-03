@@ -235,8 +235,6 @@ public class Application extends AppBase {
                     performInvalidDataSource(dataSource);
                 }
                 dataSourceMap.put(dataSourceName.toUpperCase(), dataSource);
-
-                dataSource.runPre();
             }
         } else if (exitOnError) {
             stopWithError();
@@ -323,35 +321,34 @@ public class Application extends AppBase {
             stopWithError();
         }
 
-        log.trace("Application. Launch Converters to transfer, transform and create output.");
-        converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
-
         Converter lastConverter = null;
-        if (converterList.size() > 0) {
-            lastConverter = converterList.get(converterList.size() - 1);
+        if (!switches.isTest()) {
+            log.trace("Application. Launch Converters to transfer, transform and create output.");
+            converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
-            for (Converter convert : converterList) {
-                log.info("Converter({}) configuration file is '{}'", convert.getConverterConfigFile().getIndex(), convert.getName());
-                currentConverter = convert;
+            if (converterList.size() > 0) {
+                lastConverter = converterList.get(converterList.size() - 1);
 
-                success = convert.printSources() && success;
+                for (Converter convert : converterList) {
+                    log.info("Converter({}) configuration file is '{}'", convert.getConverterConfigFile().getIndex(), convert.getName());
+                    currentConverter = convert;
 
-                success = convert.buildTargets() && success;
-                success = convert.printTarget() && success;
+                    success = convert.printSources() && success;
 
-                if (!lastConverter.equals(convert)) {
-                    convert.close();
+                    success = convert.buildTargets() && success;
+                    success = convert.printTarget() && success;
+
+                    if (!lastConverter.equals(convert)) {
+                        convert.close();
+                    }
                 }
             }
+        }else{
+            log.info("IN TEST MODE: Skip all table operations.");
         }
 
         if (!success && exitOnError) {
             stopWithError();
-        }
-
-        log.trace("Application. Run post process of each datasource.");
-        for (DataSource dataSourceItem : dataSourceMap.values()) {
-            dataSourceItem.runPost();
         }
 
         currentConverter = null;
