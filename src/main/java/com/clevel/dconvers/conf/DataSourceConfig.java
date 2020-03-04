@@ -54,6 +54,8 @@ public class DataSourceConfig extends Config {
     @Override
     protected boolean loadProperties() {
         log.trace("DataSourceConfig.loadProperties.");
+        propList = new ArrayList<>();
+
         if (properties == null) {
             return false;
         }
@@ -79,7 +81,6 @@ public class DataSourceConfig extends Config {
 
         Configuration propProperties = properties.subset(dataSource.connectKey(name, Property.PROPERTIES));
         Iterator<String> propKeyList = propProperties.getKeys();
-        propList = new ArrayList<>();
         for (Iterator<String> it = propKeyList; it.hasNext(); ) {
             String key = it.next();
             propList.add(new Pair<>(key, getPropertyString(propProperties, key)));

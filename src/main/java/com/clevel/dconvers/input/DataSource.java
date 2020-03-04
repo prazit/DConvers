@@ -77,10 +77,13 @@ public class DataSource extends UtilBase {
             return true;
 
         } catch (SQLException se) {
-            error("Connection is failed");
+            log.info("Can't connect to datasource({}), see error.log for detailed", name);
+            error("Connection to datasource({}) is failed! [{}]", name, toString());
             log.debug("SQLException = {}", se);
+
         } catch (Exception e) {
-            error("Load driver is failed");
+            log.info("Can't connect to datasource({}), see error.log for detailed", name);
+            error("Load driver of datasource({}) is failed! [{}]", name, toString());
             log.debug("Exception = {}", e);
         }
 
@@ -178,7 +181,7 @@ public class DataSource extends UtilBase {
         } catch (Exception e) {
             dataTable = createDataTable(tableName, idColumnName, name, query);
             error("DataTable({}) has 0 row due to Exception: {}", tableName, e);
-            
+
         } finally {
             try {
                 if (statement != null) {
@@ -192,7 +195,7 @@ public class DataSource extends UtilBase {
         return dataTable;
     }
 
-    private DataTable createDataTable(String tableName, String idColumnName, String dataSourceName, String query){
+    private DataTable createDataTable(String tableName, String idColumnName, String dataSourceName, String query) {
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         application.currentConverter.setCurrentTable(dataTable);
 
