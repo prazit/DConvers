@@ -6,6 +6,8 @@ import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class SFTP extends AppBase implements UserInfo {
 
     private SFTPConfig sftpConfig;
@@ -100,6 +102,10 @@ public class SFTP extends AppBase implements UserInfo {
         return sftpConfig.getPassword();
     }
 
+    public SFTPConfig getSftpConfig() {
+        return sftpConfig;
+    }
+
     @Override
     public boolean promptPassword(String message) {
         log.trace("SFTP.promptPassword(message:{})", message);
@@ -128,6 +134,29 @@ public class SFTP extends AppBase implements UserInfo {
 
         if (!isValid()) {
             error("The SFTP({}) is invalid! can not transfer remote-file({}) to local-file({}).", name, remoteFile, localFile);
+            return false;
+        }
+
+        try {
+            File file = new File(localFile);
+            if (file.exists()) {
+                if (!file.delete()) {
+                    error("Invalid filename of the localFile({}), the file is already exists", localFile);
+                    return false;
+                }
+
+            } else {
+                File parent = file.getParentFile();
+                if (!parent.exists()) {
+                    if (!parent.mkdirs()) {
+                        error("Invalid path to the localFile({})", localFile);
+                        return false;
+                    }
+                }
+
+            }
+        } catch (Exception ex) {
+            error("Invalid filename of the localFile({})", localFile);
             return false;
         }
 

@@ -13,6 +13,7 @@ public class SFTPConfig extends Config {
     private String user;
     private String password;
     private int retry;
+    private String tmp;
 
     public SFTPConfig(Application application, String name) {
         super(application, name);
@@ -40,6 +41,7 @@ public class SFTPConfig extends Config {
         user = properties.getString(sftpProperty.connectKey(name, Property.USER));
         password = properties.getString(sftpProperty.connectKey(name, Property.PASSWORD));
         retry = properties.getInt(sftpProperty.connectKey(name, Property.RETRY), 1);
+        tmp = properties.getString(sftpProperty.connectKey(name, Property.TMP), "");
 
         return true;
     }
@@ -76,16 +78,21 @@ public class SFTPConfig extends Config {
         return retry;
     }
 
+    public String getTmp() {
+        return application.currentConverter.compileDynamicValues(tmp);
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("name", name)
+                .append("valid", valid)
                 .append("host", host)
                 .append("port", port)
                 .append("user", user)
                 .append("password", password)
                 .append("retry", retry)
-                .append("name", name)
-                .append("valid", valid)
+                .append("tmp", tmp)
                 .toString()
                 .replace('=', ':');
     }

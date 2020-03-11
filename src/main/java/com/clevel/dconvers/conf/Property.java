@@ -17,6 +17,7 @@ public enum Property {
     USER("user"),
     PASSWORD("password"),
     RETRY("retry"),
+    TMP("tmp"),
     PROPERTIES("prop"),
     PRE("pre"),
     POST("post"),

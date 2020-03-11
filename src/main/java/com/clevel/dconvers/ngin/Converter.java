@@ -874,10 +874,15 @@ public class Converter extends AppBase {
         PropertyValue ftpFileNameProp = new PropertyValue(ftpFileName, "/");
         File ftpFile = new File(ftpFileNameProp.value);
 
-        String outputPath = application.dataConversionConfigFile.getOutputMappingPath();
+        SFTP sftp = application.getSFTP(ftpFileNameProp.name);
+        if (sftp == null) {
+            error("SFTP({}) is not found!", ftpFileNameProp.name);
+            return "";
+        }
+
+        String outputPath = application.dataConversionConfigFile.getOutputMappingPath() + sftp.getSftpConfig().getTmp();
         String ftpContentFileName = outputPath + ftpFile.getName();
 
-        SFTP sftp = application.getSFTP(ftpFileNameProp.name);
         if (!sftp.copyToLocal(ftpFileNameProp.value, ftpContentFileName)) {
             error("valueFromFtp is failed! empty string is returned.");
             return "";

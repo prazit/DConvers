@@ -102,13 +102,14 @@ Conversion file is a properties file which contains 5 groups of property as foll
 
 #### 3. SFTP Properties (SFTP Connection) 
 
-| Property      | Data Type | Default Value | Description                                  |
-|---------------|-----------|---------------|----------------------------------------------|
-| sftp.host     | string    | null          | ip address or domain name of the SFTP server |
-| sftp.port     | string    | 22            | port use to connect to SFTP server           |
-| sftp.user     | string    | null          | user name to connect to SFTP server          |
-| sftp.password | string    | null          | password to connect to SFTP server           |
-| sftp.retry    | integer   | 1             | number of retry when connection lost         |
+| Property      | Data Type | Default Value | Description                                                  |
+| ------------- | --------- | ------------- | ------------------------------------------------------------ |
+| sftp.host     | string    | null          | ip address or domain name of the SFTP server                 |
+| sftp.port     | string    | 22            | port use to connect to SFTP server                           |
+| sftp.user     | string    | null          | user name to connect to SFTP server                          |
+| sftp.password | string    | null          | password to connect to SFTP server                           |
+| sftp.retry    | integer   | 1             | number of retry when connection lost                         |
+| sftp.tmp      | string    | null          | path to the temporary folder used to store file downloaded from the remote server by FTP function. (Dynamic Value Enabled) |
 
 
 #### 4. Converter File Property 
