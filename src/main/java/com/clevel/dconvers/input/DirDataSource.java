@@ -24,22 +24,6 @@ public class DirDataSource extends DataSource {
 
     public DirDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
         super(application, name, dataSourceConfig);
-
-        moreProperties = dataSourceConfig.getPropListAsProperties();
-
-        String sub = moreProperties.getProperty(Property.SUB.key());
-        if (sub == null) {
-            isIncludeSub = false;
-        } else {
-            isIncludeSub = Boolean.getBoolean(sub);
-        }
-
-        String dir = moreProperties.getProperty(Property.DIR.key());
-        if (dir == null) {
-            isIncludeDir = false;
-        } else {
-            isIncludeDir = Boolean.getBoolean(dir);
-        }
     }
 
     @Override
@@ -61,42 +45,22 @@ public class DirDataSource extends DataSource {
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
 
+        isIncludeDir = Boolean.parseBoolean(queryParamMap.get(Property.DIR.key().toUpperCase()));
+        isIncludeSub = Boolean.parseBoolean(queryParamMap.get(Property.SUB.key().toUpperCase()));
+        log.debug("DirDataSource: isIncludeDir({}) isIncludeSub({})", isIncludeDir, isIncludeSub);
+
         DataTable dataTable = new DataTable(application, tableName, idColumnName);
         dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
         String[] dirs = query.split("[,]");
 
-        String path;
-        String filter;
-        int index;
-        File directory;
-        File[] files;
+        List<File> files;
         List<File> fileList = new ArrayList<>();
         for (String dir : dirs) {
-            dir = dir.replaceAll("[\\\\]", "/");
-
-            index = dir.indexOf("*");
-            if (index >= 0) {
-                index = dir.lastIndexOf("/");
-                if (index >= 0) {
-                    path = dir.substring(0, index);
-                    filter = dir.substring(index + 1);
-                } else {
-                    path = System.getProperty("user.dir");
-                    filter = dir;
-                }
-                directory = new File(path);
-                files = directory.listFiles(new WildCardFilenameFilter(application, name, filter));
-            } else {
-                directory = new File(dir);
-                files = directory.listFiles();
-            }
-
-            if (files == null) {
-                continue;
-            }
-            fileList.addAll(Arrays.asList(files));
+            log.debug("dir = {}", dir);
+            files = getFiles(dir);
+            fileList.addAll(files);
         }
 
         if (fileList.size() == 0) {
@@ -161,6 +125,55 @@ public class DirDataSource extends DataSource {
         }
 
         return dataTable;
+    }
+
+    private List<File> getFiles(String dir) {
+        List<File> fileList = new ArrayList<>();
+        File[] files;
+        dir = dir.replaceAll("[\\\\]", "/");
+
+        File directory;
+        int index = dir.indexOf("*");
+        if (index >= 0) {
+            String path;
+            String filter;
+            index = dir.lastIndexOf("/");
+            if (index >= 0) {
+                path = dir.substring(0, index);
+                filter = dir.substring(index + 1);
+            } else {
+                path = System.getProperty("user.dir");
+                filter = dir;
+            }
+            directory = new File(path);
+            files = directory.listFiles(new WildCardFilenameFilter(application, name, filter));
+            if (files == null) {
+                log.debug("files(0) with filter({}", filter);
+                return fileList;
+            }
+            log.debug("files({}) with filter({})", files.length, filter);
+        } else {
+            directory = new File(dir);
+            files = directory.listFiles();
+            if (files == null) {
+                log.debug("files(0) without filter");
+                return fileList;
+            }
+            log.debug("files({}) without filter", files.length);
+        }
+        fileList.addAll(Arrays.asList(files));
+
+        if (isIncludeSub) {
+            List<File> subFolders = new ArrayList<>();
+            for (File file : fileList) {
+                if (file.isDirectory()) {
+                    subFolders.addAll(getFiles(file.getAbsolutePath()));
+                }
+            }
+            fileList.addAll(subFolders);
+        }
+
+        return fileList;
     }
 
     private String booleanValue(boolean isTrue) {

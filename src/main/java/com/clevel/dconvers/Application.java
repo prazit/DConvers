@@ -137,6 +137,7 @@ public class Application extends AppBase {
         errorCode = dataConversionConfigFile.getErrorCode();
         warningCode = dataConversionConfigFile.getWarningCode();
         successCode = dataConversionConfigFile.getSuccessCode();
+        log.debug("successCode({}), errorCode({}), warningCode({})", successCode, errorCode, warningCode);
 
         long currentStatus = currentState.getLongValue();
         if (currentStatus == Defaults.EXIT_CODE_SUCCESS.getIntValue()) {
@@ -343,7 +344,7 @@ public class Application extends AppBase {
                     }
                 }
             }
-        }else{
+        } else {
             log.info("IN TEST MODE: Skip all table operations.");
         }
 
@@ -357,7 +358,7 @@ public class Application extends AppBase {
         }
 
         // Have some errors
-        if (currentState.getLongValue() == dataConversionConfigFile.getErrorCode()) {
+        if (currentState.getLongValue() == errorCode) {
             stopWithError();
         }
 
@@ -454,6 +455,8 @@ public class Application extends AppBase {
         } else {
             exitCode = dataConversionConfigFile.getSuccessCode();
         }
+        log.debug("exitCode({})", exitCode);
+
         System.exit(exitCode);
     }
 
@@ -470,8 +473,10 @@ public class Application extends AppBase {
         if (dataConversionConfigFile == null) {
             exitCode = Defaults.EXIT_CODE_ERROR.getIntValue();
         } else {
-            exitCode = dataConversionConfigFile.getErrorCode();
+            exitCode = (int) errorCode;
         }
+        log.debug("exitCode({})", exitCode);
+
         System.exit(exitCode);
     }
 
@@ -489,8 +494,10 @@ public class Application extends AppBase {
         if (dataConversionConfigFile == null) {
             exitCode = Defaults.EXIT_CODE_WARNING.getIntValue();
         } else {
-            exitCode = dataConversionConfigFile.getWarningCode();
+            exitCode = (int) warningCode;
         }
+        log.debug("exitCode({})", exitCode);
+
         System.exit(exitCode);
     }
 

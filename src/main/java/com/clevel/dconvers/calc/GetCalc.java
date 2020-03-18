@@ -48,6 +48,8 @@ public class GetCalc extends Calc {
             return true;
         }
 
+        /*TODO: in case of Row Identifier is CURRENT the value is depending to the CURRENT ROW INDEX*/
+
         return prepareValue();
     }
 
