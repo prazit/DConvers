@@ -23,7 +23,7 @@ public enum DynamicValueType {
     HTP(Types.VARCHAR, HTTPValue.class),    // HTP:full-path\text-file.http
     FTP(Types.VARCHAR, FTPValue.class),     // FTP:<sftp-server-name>/full-path/text-file.ext
 
-    COL(0, COLValue.class),        // source-column-name>>MAPPING>>column-name = id>>MAP:branch_to_branch.source_id>>target_id
+    LUP(0, LUPValue.class),        // Lookup Value // source-column-names>>MAPPINGs>>column-name,default-value = id>>MAP:branch_to_branch.source_id>>target_id,VAR:EMPTY_STRING
     NON(0, NONValue.class),        // None (no specified type) will use as source-column-name
     INV(0, INVValue.class),        // Invalid Specified Type
 
@@ -67,7 +67,7 @@ public enum DynamicValueType {
         }
 
         if (columnValue.indexOf(">>") >= 0) {
-            return DynamicValueType.COL;
+            return DynamicValueType.LUP;
         }
 
         char ch = columnValue.charAt(3);

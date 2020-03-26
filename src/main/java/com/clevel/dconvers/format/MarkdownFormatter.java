@@ -6,7 +6,7 @@ import com.clevel.dconvers.conf.SourceConfig;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
-import com.clevel.dconvers.dynvalue.COLValue;
+import com.clevel.dconvers.dynvalue.LUPValue;
 import com.clevel.dconvers.dynvalue.DynamicValue;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.input.DataSource;
@@ -496,19 +496,19 @@ public class MarkdownFormatter extends DataFormatter {
                     if (dynamicValueList == null) {
                         break;
                     }
-                    COLValue colValue;
+                    LUPValue lookupValue;
                     DataTable lookupTable;
                     Identifier lookupTableIdentifier;
                     for (DynamicValue dynamicValue : dynamicValueList) {
-                        if (!DynamicValueType.COL.equals(dynamicValue.getDynamicValueType())) {
+                        if (!DynamicValueType.LUP.equals(dynamicValue.getDynamicValueType())) {
                             continue;
                         }
 
-                        colValue = (COLValue) dynamicValue;
-                        lookupTable = colValue.getLookupTable();
+                        lookupValue = (LUPValue) dynamicValue;
+                        lookupTable = lookupValue.getLookupTable();
                         lookupTableIdentifier = prepareDataTable(lookupTable);
 
-                        remark = "|" + colValue.getValueColumnName() + remarkEOL + colValue.getName() + "|";
+                        remark = "|" + lookupValue.getValueColumnName() + remarkEOL + lookupValue.getName() + "|";
                         addPointer(lookupTableIdentifier.identifier + pointer + remark + targetDataTableIdentifier.identifier);
 
                         if (fullStack) {

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class COLValue extends DynamicValue {
+public class LUPValue extends DynamicValue {
 
     private Converter converter;
     private boolean isSingleColumn;
@@ -33,7 +33,7 @@ public class COLValue extends DynamicValue {
     private List<String> lookupColumnNameList;
     private List<String> lookupDataList;
 
-    public COLValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
+    public LUPValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
         super(application, targetName, targetColumnName, targetColumnIndex);
         lookupValue = null;
     }
@@ -245,7 +245,7 @@ public class COLValue extends DynamicValue {
 
     @Override
     protected Logger loadLogger() {
-        return LoggerFactory.getLogger(COLValue.class);
+        return LoggerFactory.getLogger(LUPValue.class);
     }
 
     public DataTable getLookupTable() {
