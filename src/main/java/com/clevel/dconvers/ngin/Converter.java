@@ -6,10 +6,7 @@ import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.data.*;
-import com.clevel.dconvers.dynvalue.DynamicValueType;
-import com.clevel.dconvers.dynvalue.Operator;
-import com.clevel.dconvers.dynvalue.OperatorFactory;
-import com.clevel.dconvers.dynvalue.OperatorType;
+import com.clevel.dconvers.dynvalue.*;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.lang3.ArrayUtils;
@@ -586,8 +583,12 @@ public class Converter extends AppBase {
             // inner expression first
             start = sourceString.substring(0, end).lastIndexOf("$[");
         }
-
         String dynamicValueExpression = sourceString.substring(start + 2, end);
+
+        if (dynamicValueExpression.startsWith(TableReaderMarker.TAB.name())) {
+            return compileFirstTableReader(sourceString, dynamicValueExpression);
+        }
+
         String[] dynamicValues = parseExpression(OperatorType.getOperators(), dynamicValueExpression);
         if (dynamicValues == null) {
             log.debug("Converter.compileFirstDynamicValue.parseExpression: dynamicValueExpression({}) return null", dynamicValueExpression);
@@ -612,6 +613,74 @@ public class Converter extends AppBase {
 
         String replacement = computeExpression(dynamicValues);
         return sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
+    }
+
+    private String compileFirstTableReader(String sourceString, String tableMarker) {
+        String compiledString = "";
+        tableMarker = "$[" + tableMarker + "]";
+
+        int starterIndex = sourceString.indexOf(tableMarker);
+        if (starterIndex < 0) {
+            return sourceString;
+        }
+        int repeaterIndex = sourceString.indexOf(tableMarker, starterIndex + tableMarker.length());
+        if (repeaterIndex < 0) {
+            repeaterIndex = sourceString.length() - 1;
+        }
+        String rowString = sourceString.substring(starterIndex + tableMarker.length(), repeaterIndex);
+        log.debug("betweenMarkers(starter:{},repeater:{}) = rowString({})", starterIndex, repeaterIndex, rowString);
+
+        String[] markerParts = tableMarker.split("[:]");
+        DataTable dataTable = getDataTable(markerParts[1]);
+        if (dataTable == null) {
+            error("Invalid table reader({}), table({}) not found", tableMarker, markerParts[1]);
+            return null;
+        }
+
+        String replacement = "";
+        String compiledRow;
+        for (DataRow dataRow : dataTable.getRowList()) {
+            compiledRow = compileRowReader(rowString, dataRow);
+            if (compiledRow == null) {
+                return null;
+            }
+            replacement += compiledRow;
+        }
+
+        compiledString = sourceString.substring(0, starterIndex) + replacement + sourceString.substring(repeaterIndex + tableMarker.length());
+        return compiledString;
+    }
+
+    private String compileRowReader(String rowString, DataRow dataRow) {
+        String compiledString = rowString.concat("");
+        String columnMarkerPrefix = "$[" + TableReaderMarker.COL.name() + ":";
+
+        int columnMarkerStartIndex;
+        int columnMarkerEndIndex = -1;
+        String columnMarker;
+        String[] markerParts;
+        DataColumn dataColumn;
+        for (columnMarkerStartIndex = compiledString.indexOf(columnMarkerPrefix);
+             columnMarkerStartIndex >= 0;
+             columnMarkerStartIndex = compiledString.indexOf(columnMarkerPrefix, columnMarkerEndIndex + 1)) {
+
+            columnMarkerEndIndex = compiledString.indexOf("]", columnMarkerStartIndex);
+            if (columnMarkerEndIndex < 0) {
+                columnMarkerEndIndex = compiledString.length();
+            }
+            columnMarker = compiledString.substring(columnMarkerStartIndex + columnMarkerPrefix.length(), columnMarkerEndIndex);
+
+            markerParts = columnMarker.split("[:]");
+            dataColumn = getDataColumn(markerParts[1], dataRow);
+            if (dataColumn == null) {
+                error("Invalid column reader({}), column({}) not found in table({})", columnMarker, markerParts[1], dataRow.getDataTable().getName());
+                return null;
+            }
+
+            compiledString = compiledString.substring(0, columnMarkerStartIndex) + dataColumn.getValue() + compiledString.substring(columnMarkerEndIndex + 1);
+        }
+
+        return compiledString;
     }
 
     public String getDynamicString(String dynamicValue) {

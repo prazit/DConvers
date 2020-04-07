@@ -32,7 +32,11 @@ public enum SystemVariable {
     EMPTY_STRING(Types.VARCHAR),    // ""
     APPLICATION_START(Types.TIMESTAMP),     // The time to start this application.
 
-    NOW(Types.TIMESTAMP)                   // Time in realtime.
+    NOW(Types.TIMESTAMP),                   // Time in realtime.
+
+    // Variables for Table Reader
+    TABLE_READER(Types.VARCHAR),
+    ROW_READER(Types.VARCHAR),
     ;
 
     private int dataType;

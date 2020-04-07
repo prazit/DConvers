@@ -638,6 +638,87 @@ select c,d,e from cde where c in ($[SRC:abc.c],$[SRC:bcd.c])
 | CAL  | [FunctionName] (ParameterList in CSV format) | $[CAL:GET(SRC:MySourceTable,1,2)]             | Calculate a function to produce a value. see 'Calculators' for detailed. |
 | VAR  | [VariableName]                               | $[VAR:APPLICATION_START]                      | Value from a variable. see 'Variables' for detailed.         |
 
+##### Table Reader Markers
+
+>   Between Starter and Repeater can contains both Dynamic Value and COL Marker.
+>
+>   see "Learn Table Reader by Example" below for more detailed
+
+| Type | Value Identifier                             | Example                                       | Description                                                  |
+| ---- | -------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------ |
+| TAB  | [Table Identifier]                           | $[TAB:MySourceTable]                          | Starter/Repeater of the table reader, table reader will read row by row to the last row, you always need to use COL type below to read value from the column of the current row, first appearance of the table called Starter and the second appearance of the same table called Repeater, when compiler found Starter will mark as current table reader and reset current row reader, when compiler found Repeater will move current row reader to the next row of the current table reader but for the last row that has no row for the reader process, the current table reader will become Waiter, Waiter has no row and wait for the next Starter. |
+| COL  | [Column Identifier]                          | $[COL:ColumnInMySourceTable]                  | Read value from the column of the current row reader in current table reader. |
+
+##### Learn Table Reader by Example
+
+**Converter Configuration File**
+
+```properties
+...
+your.property.with.dynamic.value.enabled=$[TXT:Email-Template.html]
+...
+```
+
+**Email-Template.html**
+
+```html
+<body>
+    <h1>
+        $[VAR:TABLE_READER]
+    </h1>
+    <table>
+    $[TAB:source_table]
+    <tr>
+        <td>No.</td>
+        <td>Name</td>
+        <td>Last</td>
+        <td>Email</td>
+    </tr>
+    <tr>
+        <td>$[VAR:ROW_READER]</td>
+        <td>$[COL:first_column]</td>
+        <td>$[COL:second_column]</td>
+        <td>$[COL:third_column]</td>
+    </tr>
+    $[TAB:source_table]
+    </table>
+</body>
+```
+
+**Compiled value of your.property.with.dynamic.value.enabled**
+
+Assume: source_table has 2 rows.
+
+```html
+<body>
+    <h1>
+        source_table
+    </h1>
+    <table>
+    <tr>
+        <td>No.</td>
+        <td>Name</td>
+        <td>Last</td>
+        <td>Email</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Prazit</td>
+        <td>Jitmanozot</td>
+        <td>prazit@the-c-level.com</td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>Art</td>
+        <td>Tiz</td>
+        <td>art@the-c-level.com</td>
+    </tr>
+    </table>
+</body>
+```
+
+
+
 ----
 
 ## Calculators
@@ -682,6 +763,8 @@ System variable can contain 2 groups of value as following
 | SOURCE_FILE_NUMBER | int   | file number will be increase by 1 for every source, no reset action for this variable |
 | TARGET_FILE_NUMBER | int   | file number will be increase by 1 for every target, no reset action for this variable |
 | MAPPING_FILE_NUMBER | int   | file number will be increase by 1 for every mapping, no reset action for this variable |
+| TABLE_READER | string | table-identifier of the current table reader (see Table Reader Markers for more detailed) |
+| ROW_READER | string | row-identifier of the current row reader (see Table Reader Markers for more detailed) |
 
 ##### Constant Values
 
