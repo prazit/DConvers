@@ -1,7 +1,7 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.Application;
-import com.clevel.dconvers.conf.SFTPConfig;
+import com.clevel.dconvers.conf.HostConfig;
 import com.jcraft.jsch.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +10,13 @@ import java.io.File;
 
 public class SFTP extends AppBase implements UserInfo {
 
-    private SFTPConfig sftpConfig;
+    private HostConfig sftpConfig;
     private int retry;
 
     private Session sftpSession;
     private ChannelSftp sftpChannel;
 
-    public SFTP(Application application, String name, SFTPConfig sftpConfig) {
+    public SFTP(Application application, String name, HostConfig sftpConfig) {
         super(application, name);
 
         this.sftpConfig = sftpConfig;
@@ -102,7 +102,7 @@ public class SFTP extends AppBase implements UserInfo {
         return sftpConfig.getPassword();
     }
 
-    public SFTPConfig getSftpConfig() {
+    public HostConfig getSftpConfig() {
         return sftpConfig;
     }
 

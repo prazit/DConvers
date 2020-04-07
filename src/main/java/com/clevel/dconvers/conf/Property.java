@@ -10,6 +10,7 @@ public enum Property {
 
     DATA_SOURCE("datasource"),
     SFTP("sftp"),
+    SMTP("smtp"),
     COMBINE("combine"),
     URL("url"),
     DRIVER("driver"),

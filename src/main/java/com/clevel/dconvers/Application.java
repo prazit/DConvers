@@ -37,6 +37,7 @@ public class Application extends AppBase {
     public DataConversionConfigFile dataConversionConfigFile;
 
     public HashMap<String, SFTP> sftpMap;
+    public HashMap<String, SMTP> smtpMap;
     public HashMap<SystemVariable, DataColumn> systemVariableMap;
     public HashMap<String, DataColumn> userVariableMap;
 
@@ -282,9 +283,9 @@ public class Application extends AppBase {
         sftpMap = new HashMap<>();
         SFTP sftp;
         String sftpName;
-        HashMap<String, SFTPConfig> sftpConfigMap = dataConversionConfigFile.getSftpConfigMap();
+        HashMap<String, HostConfig> sftpConfigMap = dataConversionConfigFile.getSftpConfigMap();
         if (sftpConfigMap != null) {
-            for (SFTPConfig sftpConfig : sftpConfigMap.values()) {
+            for (HostConfig sftpConfig : sftpConfigMap.values()) {
                 sftpName = sftpConfig.getName();
 
                 sftp = new SFTP(this, sftpName, sftpConfig);
@@ -292,6 +293,25 @@ public class Application extends AppBase {
                     performInvalidSFTP(sftp);
                 }
                 sftpMap.put(sftpName.toUpperCase(), sftp);
+            }
+        } else if (exitOnError) {
+            stopWithError();
+        }
+
+        log.trace("Application. Load SMTP Services.");
+        smtpMap = new HashMap<>();
+        SMTP smtp;
+        String smtpName;
+        HashMap<String, HostConfig> smtpConfigMap = dataConversionConfigFile.getSmtpConfigMap();
+        if (smtpConfigMap != null) {
+            for (HostConfig smtpConfig : smtpConfigMap.values()) {
+                smtpName = smtpConfig.getName();
+
+                smtp = new SMTP(this, smtpName, smtpConfig);
+                if (!smtp.isValid()) {
+                    performInvalidSMTP(smtp);
+                }
+                smtpMap.put(smtpName.toUpperCase(), smtp);
             }
         } else if (exitOnError) {
             stopWithError();
@@ -570,6 +590,16 @@ public class Application extends AppBase {
 
         error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
+        if (exitOnError) {
+            stopWithError();
+        }
+    }
+
+    private void performInvalidSMTP(SMTP smtp) {
+        log.trace("Application.performInvalidSMTP.");
+
+        error("Invalid SMTP({}) please check {}.", smtp.getName(), dataConversionConfigFile.getName());
+        log.debug("smtp = {}", smtp);
         if (exitOnError) {
             stopWithError();
         }

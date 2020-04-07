@@ -18,7 +18,8 @@ import java.util.List;
 public class DataConversionConfigFile extends ConfigFile {
 
     private HashMap<String, DataSourceConfig> dataSourceConfigMap;
-    private HashMap<String, SFTPConfig> sftpConfigMap;
+    private HashMap<String, HostConfig> sftpConfigMap;
+    private HashMap<String, HostConfig> smtpConfigMap;
     private HashMap<String, ConverterConfigFile> converterConfigMap;
 
     /* all plugins list is List<Pair<PluginName,FullQualifiedClassName>>*/
@@ -100,7 +101,21 @@ public class DataConversionConfigFile extends ConfigFile {
         sftpConfigMap = new HashMap<>();
         for (Object object : sftpNameList) {
             name = object.toString();
-            sftpConfigMap.put(name.toUpperCase(), new SFTPConfig(application, name));
+            sftpConfigMap.put(name.toUpperCase(), new HostConfig(application, name));
+        }
+
+
+        List<Object> smtpNameList;
+        try {
+            smtpNameList = properties.getList(Property.SMTP.key());
+        } catch (ConversionException ex) {
+            smtpNameList = new ArrayList<>();
+            smtpNameList.add(getPropertyString(properties, Property.SMTP.key()));
+        }
+        smtpConfigMap = new HashMap<>();
+        for (Object object : smtpNameList) {
+            name = object.toString();
+            smtpConfigMap.put(name.toUpperCase(), new HostConfig(application, name));
         }
 
 
@@ -216,8 +231,12 @@ public class DataConversionConfigFile extends ConfigFile {
         return dataSourceConfigMap;
     }
 
-    public HashMap<String, SFTPConfig> getSftpConfigMap() {
+    public HashMap<String, HostConfig> getSftpConfigMap() {
         return sftpConfigMap;
+    }
+
+    public HashMap<String, HostConfig> getSmtpConfigMap() {
+        return smtpConfigMap;
     }
 
     public List<Pair<String, String>> getPluginsCalcList() {

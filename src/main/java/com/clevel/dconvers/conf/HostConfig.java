@@ -1,12 +1,13 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.Application;
+import com.clevel.dconvers.ngin.Crypto;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SFTPConfig extends Config {
+public class HostConfig extends Config {
 
     private String host;
     private int port;
@@ -15,7 +16,7 @@ public class SFTPConfig extends Config {
     private int retry;
     private String tmp;
 
-    public SFTPConfig(Application application, String name) {
+    public HostConfig(Application application, String name) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
 
@@ -27,7 +28,7 @@ public class SFTPConfig extends Config {
 
     @Override
     protected Logger loadLogger() {
-        return LoggerFactory.getLogger(SFTPConfig.class);
+        return LoggerFactory.getLogger(HostConfig.class);
     }
 
     @Override
@@ -42,6 +43,16 @@ public class SFTPConfig extends Config {
         password = properties.getString(sftpProperty.connectKey(name, Property.PASSWORD));
         retry = properties.getInt(sftpProperty.connectKey(name, Property.RETRY), 1);
         tmp = properties.getString(sftpProperty.connectKey(name, Property.TMP), "");
+
+        boolean userEncrypted = properties.getBoolean(sftpProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        if (userEncrypted) {
+            user = Crypto.decrypt(user);
+        }
+
+        boolean passwordEncrypted = properties.getBoolean(sftpProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        if (passwordEncrypted) {
+            password = Crypto.decrypt(password);
+        }
 
         return true;
     }
@@ -90,7 +101,6 @@ public class SFTPConfig extends Config {
                 .append("host", host)
                 .append("port", port)
                 .append("user", user)
-                .append("password", password)
                 .append("retry", retry)
                 .append("tmp", tmp)
                 .toString()
