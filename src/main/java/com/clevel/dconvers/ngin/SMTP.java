@@ -80,20 +80,28 @@ public class SMTP extends AppBase {
         log.info("Disconnected from smtp({}).", name);
     }
 
-    public boolean sendMessage(String subject, String to, String cc, String bcc, boolean isHtmlContent, String content) {
+    public boolean sendMessage(String subject, String from, String to, String cc, String bcc, boolean isHtmlContent, String content) {
         if (!valid) {
             return false;
         }
+        log.trace("sendMessage started.");
 
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
             mimeMessage.setSubject(subject.trim());
-            mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            mimeMessage.setFrom(new InternetAddress(removeQuotes(from), false));
+
+            InternetAddress[] sendTo = InternetAddress.parse(removeQuotes(to), false);
+            mimeMessage.setRecipients(Message.RecipientType.TO, sendTo);
+
             if (cc != null && !cc.isEmpty()) {
-                mimeMessage.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
+                InternetAddress[] sendToCC = InternetAddress.parse(removeQuotes(cc), false);
+                mimeMessage.setRecipients(Message.RecipientType.CC, sendToCC);
             }
+
             if (bcc != null && !bcc.isEmpty()) {
-                mimeMessage.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
+                InternetAddress[] sendToBCC = InternetAddress.parse(removeQuotes(bcc), false);
+                mimeMessage.setRecipients(Message.RecipientType.BCC, sendToBCC);
             }
 
             if (isHtmlContent) {
@@ -101,19 +109,33 @@ public class SMTP extends AppBase {
             } else {
                 mimeMessage.setText(content);
             }
+
+            log.debug("localAddress={}", InternetAddress.getLocalAddress(session));
         } catch (MessagingException ex) {
-            error("SMTP({}).sendMessage.createMimeMessage is failed! {}", name, ex.getMessage());
+            error("SMTP({}).createMimeMessage is failed! {}", name, ex.getMessage());
+            error("", ex);
             return false;
         }
 
         try {
             Transport.send(mimeMessage);
+
+            /*DEBUG*/
+            for (Address address : mimeMessage.getAllRecipients()) {
+                log.debug("Recipient=(Type:{},Address:{})", address.getType(), address.toString());
+            }
         } catch (Exception ex) {
             error("SMTP({}).sendMessage is failed! {}", name, ex.getMessage());
+            error("", ex);
             return false;
         }
 
+        log.trace("sendMessage successful.");
         return true;
+    }
+
+    public String removeQuotes(String to) {
+        return to.replaceAll("[\"]", "");
     }
 
     public HostConfig getConfig() {

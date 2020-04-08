@@ -47,9 +47,8 @@ public class HtmlEmailFormatter extends DataFormatter {
         String bcc = outputConfig.getEmailBCC();
         String content = outputConfig.getEmailContent();
 
-        if (!smtp.sendMessage(subject, to, cc, bcc, isHtml, content)) {
-            /*TODO: uncomment return null below*/
-            //return null;
+        if (!smtp.sendMessage(subject, from, to, cc, bcc, isHtml, content)) {
+            return null;
         }
 
         String formatted = "";
