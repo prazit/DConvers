@@ -101,7 +101,7 @@ public class DataConversionConfigFile extends ConfigFile {
         sftpConfigMap = new HashMap<>();
         for (Object object : sftpNameList) {
             name = object.toString();
-            sftpConfigMap.put(name.toUpperCase(), new HostConfig(application, name));
+            sftpConfigMap.put(name.toUpperCase(), new HostConfig(application, name, Property.SFTP));
         }
 
 
@@ -115,7 +115,7 @@ public class DataConversionConfigFile extends ConfigFile {
         smtpConfigMap = new HashMap<>();
         for (Object object : smtpNameList) {
             name = object.toString();
-            smtpConfigMap.put(name.toUpperCase(), new HostConfig(application, name));
+            smtpConfigMap.put(name.toUpperCase(), new HostConfig(application, name, Property.SMTP));
         }
 
 

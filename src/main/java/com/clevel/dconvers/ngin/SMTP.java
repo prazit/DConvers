@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
 
@@ -87,14 +88,18 @@ public class SMTP extends AppBase {
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
             mimeMessage.setSubject(subject.trim());
-            mimeMessage.setRecipients(Message.RecipientType.TO, to);
-            mimeMessage.setRecipients(Message.RecipientType.CC, cc);
-            mimeMessage.setRecipients(Message.RecipientType.BCC, bcc);
+            mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            if (cc != null && !cc.isEmpty()) {
+                mimeMessage.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));
+            }
+            if (bcc != null && !bcc.isEmpty()) {
+                mimeMessage.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(bcc));
+            }
 
-            if (!isHtmlContent) {
-                mimeMessage.setText(content);
-            } else {
+            if (isHtmlContent) {
                 mimeMessage.setContent(content, "text/html");
+            } else {
+                mimeMessage.setText(content);
             }
         } catch (MessagingException ex) {
             error("SMTP({}).sendMessage.createMimeMessage is failed! {}", name, ex.getMessage());
@@ -109,6 +114,10 @@ public class SMTP extends AppBase {
         }
 
         return true;
+    }
+
+    public HostConfig getConfig() {
+        return smtpConfig;
     }
 
     @Override

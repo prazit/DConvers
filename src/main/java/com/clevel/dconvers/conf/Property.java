@@ -39,7 +39,6 @@ public enum Property {
 
     SOURCE("source"),
     SQL("sql"),
-    EMAIL("email"),
     QUERY("query"),
     ID("id"),
     FOR("for"),
@@ -110,6 +109,15 @@ public enum Property {
     SUB("sub"),
     LINES("lines"),
 
+    EMAIL("email"),
+    SUBJECT("subject"),
+    FROM("from"),
+    TO("to"),
+    CC("cc"),
+    BCC("bcc"),
+    HTML("html"),
+    CONTENT("content"),
+
     ROW_NUMBER("rownumber"),
     FILE_NUMBER("filenumber"),
 
@@ -161,7 +169,7 @@ public enum Property {
         for (Property prop : property) {
             connected += "." + prop.key();
         }
-        return  connected;
+        return connected;
     }
 
     public String connectKey(Property property) {

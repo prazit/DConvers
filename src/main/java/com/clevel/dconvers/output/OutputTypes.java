@@ -20,6 +20,7 @@ public enum OutputTypes {
     UPDATE_DB(DBUpdateOutput.class),
     EXECUTE_DB(DBExecuteOutput.class),
     OS_VARIABLE(OSVariableOutput.class),
+    EMAIL(EmailOutput.class),
 
     CONVERTER_SOURCE_FILE(SRCOutput.class),
     CONVERTER_TARGET_FILE(TAROutput.class),

@@ -15,10 +15,12 @@ public class HostConfig extends Config {
     private String password;
     private int retry;
     private String tmp;
+    private Property rootProperty;
 
-    public HostConfig(Application application, String name) {
+    public HostConfig(Application application, String name, Property rootProperty) {
         super(application, name);
         properties = application.dataConversionConfigFile.properties;
+        this.rootProperty = rootProperty;
 
         valid = loadProperties();
         if (valid) valid = validate();
@@ -35,21 +37,19 @@ public class HostConfig extends Config {
     protected boolean loadProperties() {
         log.trace("SFTPConfig.loadProperties.");
 
-        Property sftpProperty = Property.SFTP;
+        host = properties.getString(rootProperty.connectKey(name, Property.HOST), "");
+        port = properties.getInt(rootProperty.connectKey(name, Property.PORT), 22);
+        user = properties.getString(rootProperty.connectKey(name, Property.USER));
+        password = properties.getString(rootProperty.connectKey(name, Property.PASSWORD));
+        retry = properties.getInt(rootProperty.connectKey(name, Property.RETRY), 1);
+        tmp = properties.getString(rootProperty.connectKey(name, Property.TMP), "");
 
-        host = properties.getString(sftpProperty.connectKey(name, Property.HOST), "");
-        port = properties.getInt(sftpProperty.connectKey(name, Property.PORT), 22);
-        user = properties.getString(sftpProperty.connectKey(name, Property.USER));
-        password = properties.getString(sftpProperty.connectKey(name, Property.PASSWORD));
-        retry = properties.getInt(sftpProperty.connectKey(name, Property.RETRY), 1);
-        tmp = properties.getString(sftpProperty.connectKey(name, Property.TMP), "");
-
-        boolean userEncrypted = properties.getBoolean(sftpProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        boolean userEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false);
         if (userEncrypted) {
             user = Crypto.decrypt(user);
         }
 
-        boolean passwordEncrypted = properties.getBoolean(sftpProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        boolean passwordEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
         if (passwordEncrypted) {
             password = Crypto.decrypt(password);
         }
@@ -59,10 +59,10 @@ public class HostConfig extends Config {
 
     @Override
     public boolean validate() {
-        log.trace("SFTPConfig.validateProperties.");
+        log.trace("HostConfig.validateProperties.");
 
         if (user == null || password == null) {
-            log.debug("some value is null, please check sftp.{} section", name);
+            log.debug("some value is null, please check {}.{} section", rootProperty.name(),name);
             return false;
         }
 

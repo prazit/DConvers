@@ -651,6 +651,14 @@ public class Application extends AppBase {
         return sftpMap.get(sftpName.toUpperCase());
     }
 
+    public SMTP getSMTP(String smtpName) {
+        if (smtpName == null) {
+            return null;
+        }
+
+        return smtpMap.get(smtpName.toUpperCase());
+    }
+
     private HashMap<SystemVariable, DataColumn> createSystemVariableMap() {
         List<SystemVariable> systemVariableList = Arrays.asList(SystemVariable.values());
         HashMap<SystemVariable, DataColumn> variables = new HashMap<>();

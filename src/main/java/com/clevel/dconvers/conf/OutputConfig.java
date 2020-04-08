@@ -168,6 +168,28 @@ public class OutputConfig extends Config {
     private String osVariableValue;
 
 
+    private boolean email;
+    private String emailSftp;
+    private String emailSftpOutput;
+    private String emailOutput;
+    private boolean emailOutputAppend;
+    private boolean emailOutputAutoCreateDir;
+    private String emailOutputCharset;
+    private String emailOutputEOL;
+    private String emailOutputEOF;
+    private boolean emailComment;
+    private boolean emailCommentDataSource;
+    private boolean emailCommentQuery;
+    private String emailSMTP;
+    private String emailSubject;
+    private String emailFrom;
+    private String emailTo;
+    private String emailCC;
+    private String emailBCC;
+    private boolean emailHtml;
+    private String emailContent;
+
+
     private List<OutputTypes> outputTypeList;
 
     /**
@@ -559,6 +581,59 @@ public class OutputConfig extends Config {
             osVariableName = getPropertyString(osVariableProperties, Property.NAME.key(), osVariableName);
             osVariableValue = getPropertyString(osVariableProperties, Property.VALUE.key(), osVariableValue);
         }
+
+
+        // Default Properties for Email
+        email = false;
+        emailSftp = null;
+        emailSftpOutput = null;
+        emailOutput = "$[CAL:NAME(current)].md";
+        emailOutputAppend = false;
+        emailOutputAutoCreateDir = true;
+        emailOutputCharset = "UTF-8";
+        emailOutputEOL = "\n";
+        emailOutputEOF = "\n";
+        emailComment = true;
+        emailCommentDataSource = true;
+        emailCommentQuery = true;
+        emailSMTP = null;
+        emailSubject = null;
+        emailFrom = null;
+        emailTo = null;
+        emailCC = null;
+        emailBCC = null;
+        emailHtml = false;
+        emailContent = null;
+
+        key = Property.EMAIL.prefixKey(baseProperty);
+        email = properties.getBoolean(key, email);
+        if (email) {
+            outputTypeList.add(OutputTypes.EMAIL);
+
+            Configuration emailProperties = properties.subset(key);
+            emailSftp = getPropertyString(emailProperties, Property.SFTP.key(), emailSftp);
+            emailSftpOutput = getPropertyString(emailProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), emailSftpOutput);
+            emailOutput = getPropertyString(emailProperties, Property.OUTPUT_FILE.key(), emailOutput);
+            emailOutputAppend = emailProperties.getBoolean(Property.OUTPUT_APPEND.key(), emailOutputAppend);
+            emailOutputAutoCreateDir = emailProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), emailOutputAutoCreateDir);
+            emailOutputCharset = getPropertyString(emailProperties, Property.OUTPUT_CHARSET.key(), emailOutputCharset);
+            emailOutputEOL = getPropertyString(emailProperties, Property.OUTPUT_EOL.key(), emailOutputEOL);
+            emailOutputEOF = getPropertyString(emailProperties, Property.OUTPUT_EOF.key(), emailOutputEOF);
+
+            emailComment = emailProperties.getBoolean(Property.COMMENT.key(), emailComment);
+            emailCommentDataSource = emailProperties.getBoolean(Property.COMMENT.connectKey(Property.DATA_SOURCE), emailCommentDataSource);
+            emailCommentQuery = emailProperties.getBoolean(Property.COMMENT.connectKey(Property.QUERY), emailCommentQuery);
+
+            emailSMTP = getPropertyString(emailProperties, Property.SMTP.key(), emailSMTP);
+            emailSubject = getPropertyString(emailProperties, Property.SUBJECT.key(), emailSubject);
+            emailFrom = getPropertyString(emailProperties, Property.FROM.key(), emailFrom);
+            emailTo = getPropertyString(emailProperties, Property.TO.key(), emailTo);
+            emailCC = getPropertyString(emailProperties, Property.CC.key(), emailCC);
+            emailBCC = getPropertyString(emailProperties, Property.BCC.key(), emailBCC);
+            emailHtml = emailProperties.getBoolean(Property.HTML.key(), emailHtml);
+            emailContent = getPropertyString(emailProperties, Property.CONTENT.key(), emailContent);
+        }
+
 
         // Load Plugin Config into outputPluginConfigMap
         HashMap<String, Class> plugins = OutputTypes.getPlugins();
@@ -1169,6 +1244,86 @@ public class OutputConfig extends Config {
 
     public String getOsVariableValue() {
         return osVariableValue;
+    }
+
+    public boolean isEmail() {
+        return email;
+    }
+
+    public String getEmailSftp() {
+        return emailSftp;
+    }
+
+    public String getEmailSftpOutput() {
+        return application.currentConverter.compileDynamicValues(emailSftpOutput);
+    }
+
+    public String getEmailOutput() {
+        return application.currentConverter.compileDynamicValues(emailOutput);
+    }
+
+    public boolean isEmailOutputAppend() {
+        return emailOutputAppend;
+    }
+
+    public boolean isEmailOutputAutoCreateDir() {
+        return emailOutputAutoCreateDir;
+    }
+
+    public String getEmailOutputCharset() {
+        return emailOutputCharset;
+    }
+
+    public String getEmailOutputEOL() {
+        return emailOutputEOL;
+    }
+
+    public String getEmailOutputEOF() {
+        return emailOutputEOF;
+    }
+
+    public boolean isEmailComment() {
+        return emailComment;
+    }
+
+    public boolean isEmailCommentDataSource() {
+        return emailCommentDataSource;
+    }
+
+    public boolean isEmailCommentQuery() {
+        return emailCommentQuery;
+    }
+
+    public String getEmailSMTP() {
+        return emailSMTP;
+    }
+
+    public String getEmailSubject() {
+        return application.currentConverter.compileDynamicValues(emailSubject);
+    }
+
+    public String getEmailFrom() {
+        return application.currentConverter.compileDynamicValues(emailFrom);
+    }
+
+    public String getEmailTo() {
+        return application.currentConverter.compileDynamicValues(emailTo);
+    }
+
+    public String getEmailCC() {
+        return application.currentConverter.compileDynamicValues(emailCC);
+    }
+
+    public String getEmailBCC() {
+        return application.currentConverter.compileDynamicValues(emailBCC);
+    }
+
+    public boolean isEmailHtml() {
+        return emailHtml;
+    }
+
+    public String getEmailContent() {
+        return application.currentConverter.compileDynamicValues(emailContent);
     }
 
     public boolean needOutput() {

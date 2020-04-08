@@ -36,7 +36,7 @@ public enum SystemVariable {
 
     // Variables for Table Reader
     TABLE_READER(Types.VARCHAR),
-    ROW_READER(Types.VARCHAR),
+    ROW_READER(Types.INTEGER),
     ;
 
     private int dataType;

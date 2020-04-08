@@ -615,9 +615,9 @@ public class Converter extends AppBase {
         return sourceString.substring(0, start) + replacement + sourceString.substring(end + 1);
     }
 
-    private String compileFirstTableReader(String sourceString, String tableMarker) {
+    private String compileFirstTableReader(String sourceString, String tableAsMarker) {
         String compiledString = "";
-        tableMarker = "$[" + tableMarker + "]";
+        String tableMarker = "$[" + tableAsMarker + "]";
 
         int starterIndex = sourceString.indexOf(tableMarker);
         if (starterIndex < 0) {
@@ -630,12 +630,15 @@ public class Converter extends AppBase {
         String rowString = sourceString.substring(starterIndex + tableMarker.length(), repeaterIndex);
         log.debug("betweenMarkers(starter:{},repeater:{}) = rowString({})", starterIndex, repeaterIndex, rowString);
 
-        String[] markerParts = tableMarker.split("[:]");
-        DataTable dataTable = getDataTable(markerParts[1]);
+        String[] markerParts = tableAsMarker.split("[:]");
+        String tableName = markerParts[1];
+        DataTable dataTable = getDataTable(tableName);
         if (dataTable == null) {
-            error("Invalid table reader({}), table({}) not found", tableMarker, markerParts[1]);
+            error("Invalid table reader({}), table({}) not found", tableMarker, tableName);
             return null;
         }
+        application.systemVariableMap.get(SystemVariable.TABLE_READER).setValue(tableName);
+        application.systemVariableMap.get(SystemVariable.ROW_READER).setValue("0");
 
         String replacement = "";
         String compiledRow;
@@ -652,12 +655,15 @@ public class Converter extends AppBase {
     }
 
     private String compileRowReader(String rowString, DataRow dataRow) {
+        DataLong varRowReader = (DataLong) application.systemVariableMap.get(SystemVariable.ROW_READER);
+        varRowReader.setValue(varRowReader.getLongValue() + 1);
+
         String compiledString = rowString.concat("");
         String columnMarkerPrefix = "$[" + TableReaderMarker.COL.name() + ":";
 
         int columnMarkerStartIndex;
         int columnMarkerEndIndex = -1;
-        String columnMarker;
+        String columnName;
         String[] markerParts;
         DataColumn dataColumn;
         for (columnMarkerStartIndex = compiledString.indexOf(columnMarkerPrefix);
@@ -668,18 +674,19 @@ public class Converter extends AppBase {
             if (columnMarkerEndIndex < 0) {
                 columnMarkerEndIndex = compiledString.length();
             }
-            columnMarker = compiledString.substring(columnMarkerStartIndex + columnMarkerPrefix.length(), columnMarkerEndIndex);
+            columnName = compiledString.substring(columnMarkerStartIndex + columnMarkerPrefix.length(), columnMarkerEndIndex);
+            log.debug("columnName = {}", columnName);
 
-            markerParts = columnMarker.split("[:]");
-            dataColumn = getDataColumn(markerParts[1], dataRow);
+            dataColumn = getDataColumn(columnName, dataRow);
             if (dataColumn == null) {
-                error("Invalid column reader({}), column({}) not found in table({})", columnMarker, markerParts[1], dataRow.getDataTable().getName());
+                error("Invalid column reader({}), column({}) not found in table({})", columnMarkerPrefix + columnName + "]", columnName, dataRow.getDataTable().getName());
                 return null;
             }
 
             compiledString = compiledString.substring(0, columnMarkerStartIndex) + dataColumn.getValue() + compiledString.substring(columnMarkerEndIndex + 1);
         }
 
+        compiledString = compileDynamicValues(compiledString);
         return compiledString;
     }
 
