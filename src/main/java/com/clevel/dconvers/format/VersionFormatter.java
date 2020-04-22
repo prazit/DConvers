@@ -13,6 +13,11 @@ public class VersionFormatter extends AppBase {
         valid = true;
     }
 
+    public VersionFormatter() {
+        super(new Application("none"), "VersionFormatter");
+        valid = true;
+    }
+
     public String versionNumber(VersionConfigFile versionConfigFile) {
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -41,6 +46,10 @@ public class VersionFormatter extends AppBase {
         }
 
         return stringBuilder.toString();
+    }
+
+    public VersionConfigFile versionConfigFile(String versionFileName) {
+        return new VersionConfigFile(application, versionFileName);
     }
 
     @Override

@@ -84,11 +84,13 @@ public class Switches extends AppBase {
             return false;
         }
 
-        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
-        List<ch.qos.logback.classic.Logger> loggerList = loggerContext.getLoggerList();
-        loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));
-        log.trace("Switches.loadSwitches.");
-        log.debug("verbose level is {}", verboseLevel.toString());
+        if (!application.asLib) {
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            List<ch.qos.logback.classic.Logger> loggerList = loggerContext.getLoggerList();
+            loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));
+            log.trace("Switches.loadSwitches.");
+            log.debug("verbose level is {}", verboseLevel.toString());
+        }
 
         source = cmd.getOptionValue(Option.SOURCE.getShortOpt());
         if (source != null && source.lastIndexOf(".") < 0) {

@@ -34,7 +34,7 @@ public class VersionConfigFile extends ConfigFile {
 
         projectName = getPropertyString(properties, Property.PROJECT_NAME.key());
         versionName = getPropertyString(properties, Property.VERSION_NAME.key());
-        buildDate =  getPropertyString(properties, Property.BUILD_DATE.key());
+        buildDate = getPropertyString(properties, Property.BUILD_DATE.key());
 
         versionNumber = properties.getInt(Property.VERSION_NUMBER.key());
         revisionNumber = properties.getInt(Property.REVISION_NUMBER.key());

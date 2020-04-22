@@ -61,10 +61,35 @@ public class Application extends AppBase {
     private HashMap<String, DataSource> dataSourceMap;
     private Date appStartDate;
 
+    public boolean asLib;
+    private boolean isLibEnd;
+
     public Application(String[] args) {
         super("DConvers");
         this.args = Arrays.copyOf(args, args.length);
+        asLib = false;
+        construct();
+    }
+
+    public Application(String sourceConfig) {
+        super("DConvers Library");
+
+        /* args array need somethings like this
+        --source=ETLJOB\config\JOBSTATUS.conf
+        --logback=C:\Users\prazi\Documents\LHBank\ETL\DConvers\ETLJOB\config\shared-Local\logback-replace.xml
+        --verbose
+        --level=TRACE
+         */
+        this.args = new String[]{"--source=" + sourceConfig};
+
+        asLib = true;
+        construct();
+    }
+
+    private void construct() {
         loadLogger();
+
+        isLibEnd = false;
 
         hasWarning = false;
         exitOnError = false;
@@ -95,6 +120,11 @@ public class Application extends AppBase {
     }
 
     public void start() {
+        /*when start from the main class, the timeTracker is already assigned otherwise is not*/
+        if (timeTracker == null) {
+            timeTracker = new TimeTracker();
+        }
+
         timeTracker.start(TimeTrackerKey.APPLICATION, "start to stop");
         appStartDate = new Date();
         this.application = this;
@@ -104,16 +134,25 @@ public class Application extends AppBase {
         switches = new Switches(this);
         if (!switches.isValid()) {
             performInvalidSwitches();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         if (switches.isHelp()) {
             performHelp();
             stop();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         if (switches.isVersion()) {
             performVersion();
             stop();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         String dataConversionConfigFilename = switches.getSource();
@@ -132,6 +171,9 @@ public class Application extends AppBase {
                 performInvalidConfigFile();
             } else {
                 performInvalidConfigChild();
+            }
+            if (isLibEnd) {
+                return;
             }
         }
 
@@ -198,6 +240,9 @@ public class Application extends AppBase {
         }
         if (!loadPluginsSuccess && exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         log.trace("Application. Load Plugins for output.");
@@ -217,6 +262,9 @@ public class Application extends AppBase {
         }
         if (!loadPluginsSuccess && exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         log.trace("Application. Load DataSources.");
@@ -235,11 +283,17 @@ public class Application extends AppBase {
 
                 if (!dataSource.isValid()) {
                     performInvalidDataSource(dataSource);
+                    if (isLibEnd) {
+                        return;
+                    }
                 }
                 dataSourceMap.put(dataSourceName.toUpperCase(), dataSource);
             }
         } else if (exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         dataSourceName = Property.SQL.key();
@@ -277,6 +331,9 @@ public class Application extends AppBase {
         }
         if (!loadPluginsSuccess && exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         log.trace("Application. Load SFTP Services.");
@@ -291,11 +348,17 @@ public class Application extends AppBase {
                 sftp = new SFTP(this, sftpName, sftpConfig);
                 if (!sftp.isValid()) {
                     performInvalidSFTP(sftp);
+                    if (isLibEnd) {
+                        return;
+                    }
                 }
                 sftpMap.put(sftpName.toUpperCase(), sftp);
             }
         } else if (exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         log.trace("Application. Load SMTP Services.");
@@ -310,11 +373,17 @@ public class Application extends AppBase {
                 smtp = new SMTP(this, smtpName, smtpConfig);
                 if (!smtp.isValid()) {
                     performInvalidSMTP(smtp);
+                    if (isLibEnd) {
+                        return;
+                    }
                 }
                 smtpMap.put(smtpName.toUpperCase(), smtp);
             }
         } else if (exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         log.trace("Application. Load Converters.");
@@ -331,6 +400,9 @@ public class Application extends AppBase {
                 if (!converter.isValid()) {
                     if (exitOnError) {
                         performInvalidConverter(converter);
+                        if (isLibEnd) {
+                            return;
+                        }
                     }
                     success = false;
                 }
@@ -340,6 +412,9 @@ public class Application extends AppBase {
             log.info("Has {} converter(s)", converterList.size());
         } else if (exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         Converter lastConverter = null;
@@ -370,6 +445,9 @@ public class Application extends AppBase {
 
         if (!success && exitOnError) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         currentConverter = null;
@@ -380,6 +458,9 @@ public class Application extends AppBase {
         // Have some errors
         if (currentState.getLongValue() == errorCode) {
             stopWithError();
+            if (isLibEnd) {
+                return;
+            }
         }
 
         // Successful with warning
@@ -449,9 +530,11 @@ public class Application extends AppBase {
         systemVariableMap.get(SystemVariable.APPLICATION_VERSION).setValue(versionFormatter.versionNumber(versionConfigFile));
         systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
 
-        VersionConfigFile cVersionConfigFile = new VersionConfigFile(this, Property.VERSION_PROPERTIES.key());
-        if (cVersionConfigFile.isValid()) {
-            systemVariableMap.get(SystemVariable.CONFIG_VERSION).setValue(versionFormatter.versionString(cVersionConfigFile));
+        if (!asLib) {
+            VersionConfigFile cVersionConfigFile = new VersionConfigFile(this, Property.VERSION_PROPERTIES.key());
+            if (cVersionConfigFile.isValid()) {
+                systemVariableMap.get(SystemVariable.CONFIG_VERSION).setValue(versionFormatter.versionString(cVersionConfigFile));
+            }
         }
     }
 
@@ -477,7 +560,11 @@ public class Application extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        System.exit(exitCode);
+        if (asLib) {
+            isLibEnd = true;
+        } else {
+            System.exit(exitCode);
+        }
     }
 
     public void stopWithError() {
@@ -497,7 +584,11 @@ public class Application extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        System.exit(exitCode);
+        if (asLib) {
+            isLibEnd = true;
+        } else {
+            System.exit(exitCode);
+        }
     }
 
     public void stopWithWarning() {
@@ -518,7 +609,11 @@ public class Application extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        System.exit(exitCode);
+        if (asLib) {
+            isLibEnd = true;
+        } else {
+            System.exit(exitCode);
+        }
     }
 
     private void closeAllDataSource() {
