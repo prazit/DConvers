@@ -6,7 +6,7 @@ import java.sql.Types;
 
 public enum DynamicValueType {
 
-    ARG(Types.VARCHAR, ARGValue.class),     // read application arguments
+    ARG(Types.VARCHAR, ARGValue.class),     // read dconvers arguments
 
     STR(Types.VARCHAR, STRValue.class),     // STR:My string is longer than other value
     INT(Types.INTEGER, INTValue.class),     // INT:integer-value = INT:12345

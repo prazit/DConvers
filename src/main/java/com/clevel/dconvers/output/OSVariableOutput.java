@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataRow;
@@ -15,8 +15,8 @@ import java.util.Map;
 
 public class OSVariableOutput extends Output {
 
-    public OSVariableOutput(Application application, String name) {
-        super(application, name);
+    public OSVariableOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class OSVariableOutput extends Output {
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
         String outputPath;
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
         switch (dataTable.getTableType()) {
             case SRC:
                 outputPath = dataConversionConfigFile.getOutputSourcePath();

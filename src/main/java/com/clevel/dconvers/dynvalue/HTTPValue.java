@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -14,19 +14,19 @@ public class HTTPValue extends DynamicValue {
 
     private DataString dataString;
 
-    public HTTPValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public HTTPValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
 
         String value = converter.valueFromHttp(sourceColumnName);
         if (value == null) {
             dataString = null;
         } else {
-            dataString = (DataString) application.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
+            dataString = (DataString) dconvers.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
         }
 
     }

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.ngin.Converter;
@@ -13,15 +13,15 @@ public class NONValue extends DynamicValue {
     private String sourceName;
     private String sourceColumnName;
 
-    public NONValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public NONValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
         this.sourceName = sourceName;
         this.sourceColumnName = sourceColumnName;
-        converter = application.currentConverter;
+        converter = dconvers.currentConverter;
     }
 
     @Override

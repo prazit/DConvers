@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
@@ -26,8 +26,8 @@ public class PDFTableFormatter extends DataFormatter {
         private int currentRow;
         private List<DataColumn> columnList;
 
-        public JRDataTable(Application application, DataTable dataTable) {
-            super(application, dataTable.getName(), dataTable.getIdColumnName());
+        public JRDataTable(DConvers dconvers, DataTable dataTable) {
+            super(dconvers, dataTable.getName(), dataTable.getIdColumnName());
             currentRow = -1;
             needHeader = true;
             setOwner(dataTable.getOwner());
@@ -89,8 +89,8 @@ public class PDFTableFormatter extends DataFormatter {
         }
     }
 
-    public PDFTableFormatter(Application application, String name, String pdfFileName, Object jrxml) {
-        super(application, name, false);
+    public PDFTableFormatter(DConvers dconvers, String name, String pdfFileName, Object jrxml) {
+        super(dconvers, name, false);
 
         this.pdfFileName = pdfFileName;
         outputType = "PDF Table";
@@ -119,7 +119,7 @@ public class PDFTableFormatter extends DataFormatter {
             parameters.put("TITLE", "Table: " + dataTable.getName());
             parameters.put("QUERY", "Query: " + dataTable.getQuery());
 
-            JRDataTable jrDataTable = new JRDataTable(application, dataTable);
+            JRDataTable jrDataTable = new JRDataTable(dconvers, dataTable);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, jrDataTable);
             JasperExportManager.exportReportToPdfFile(jasperPrint, pdfFileName);
 

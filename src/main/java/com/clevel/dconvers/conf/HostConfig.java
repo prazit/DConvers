@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,9 +17,9 @@ public class HostConfig extends Config {
     private String tmp;
     private Property rootProperty;
 
-    public HostConfig(Application application, String name, Property rootProperty) {
-        super(application, name);
-        properties = application.dataConversionConfigFile.properties;
+    public HostConfig(DConvers dconvers, String name, Property rootProperty) {
+        super(dconvers, name);
+        properties = dconvers.dataConversionConfigFile.properties;
         this.rootProperty = rootProperty;
 
         valid = loadProperties();
@@ -90,7 +90,7 @@ public class HostConfig extends Config {
     }
 
     public String getTmp() {
-        return application.currentConverter.compileDynamicValues(tmp);
+        return dconvers.currentConverter.compileDynamicValues(tmp);
     }
 
     @Override

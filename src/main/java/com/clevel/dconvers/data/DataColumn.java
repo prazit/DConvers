@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 
 public abstract class DataColumn extends AppBase {
@@ -10,8 +10,8 @@ public abstract class DataColumn extends AppBase {
     protected String quotes;
     protected String nullString;
 
-    DataColumn(Application application, int index, int type, String name) {
-        super(application, name);
+    DataColumn(DConvers dconvers, int index, int type, String name) {
+        super(dconvers, name);
 
         this.index = index;
         this.type = type;

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
@@ -19,8 +19,8 @@ import java.util.HashMap;
 
 public class SQLDataSource extends DataSource {
 
-    public SQLDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public SQLDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SQLDataSource extends DataSource {
         }
         log.debug("SQLDataSource: nameQuote({}) valueQuote({}) queryParamMap({})", nameQuote, valueQuote, queryParamMap);
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
         dataTable.setDataSource(name);
         dataTable.setQuery(sqlFileName);
 
@@ -101,7 +101,7 @@ public class SQLDataSource extends DataSource {
         String[] columns = columnString.split(",");
         String[] values = valueString.split(",");
 
-        DataRow dataRow = new DataRow(application, dataTable);
+        DataRow dataRow = new DataRow(dconvers, dataTable);
         int length = columns.length;
         int columnType;
         String columnName;
@@ -110,7 +110,7 @@ public class SQLDataSource extends DataSource {
             value = values[i].trim();
             columnType = getColumnType(value, valueQuote);
             columnName = columns[i].trim();
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, columnType, value.replaceAll(valueQuote, "")));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, columnType, value.replaceAll(valueQuote, "")));
         }
 
         return dataRow;

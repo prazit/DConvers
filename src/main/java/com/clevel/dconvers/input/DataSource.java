@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.ngin.TimeTrackerKey;
@@ -25,8 +25,8 @@ public class DataSource extends UtilBase {
 
     private boolean useInformationSchema;
 
-    public DataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name);
+    public DataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name);
 
         this.dataSourceConfig = dataSourceConfig;
         useInformationSchema = false;
@@ -91,7 +91,7 @@ public class DataSource extends UtilBase {
     }
 
     private Connection getExistingConnection() {
-        DataSource dataSource = application.getDataSource(dataSourceConfig);
+        DataSource dataSource = dconvers.getDataSource(dataSourceConfig);
         if (dataSource == null) {
             return null;
         }
@@ -119,7 +119,7 @@ public class DataSource extends UtilBase {
         }
 
         if (query == null || query.trim().isEmpty()) {
-            error("Empty query is not allowed for tableName({}) idColumnName({}) in converter({})", tableName, idColumnName, application.currentConverter.getName());
+            error("Empty query is not allowed for tableName({}) idColumnName({}) in converter({})", tableName, idColumnName, dconvers.currentConverter.getName());
             return null;
         }
 
@@ -142,19 +142,19 @@ public class DataSource extends UtilBase {
                 } else {
                     callableStatement.registerOutParameter(1, OracleTypes.CURSOR);
                     log.debug("Querying by callableStatement(OUT): {}", query);
-                    application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
+                    dconvers.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                     callableStatement.execute();
                     resultSet = (ResultSet) callableStatement.getObject(1);
-                    application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
+                    dconvers.timeTracker.stop(TimeTrackerKey.DATASOURCE);
                 }
             } else {
                 log.trace("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 query = query.replaceAll("[\"]", dataSourceConfig.getValueQuotes());
                 //log.debug("Querying: {}", query);
-                application.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
+                dconvers.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                 resultSet = statement.executeQuery(query);
-                application.timeTracker.stop(TimeTrackerKey.DATASOURCE);
+                dconvers.timeTracker.stop(TimeTrackerKey.DATASOURCE);
                 log.trace("execute query is successful");
             }
 
@@ -196,8 +196,8 @@ public class DataSource extends UtilBase {
     }
 
     private DataTable createDataTable(String tableName, String idColumnName, String dataSourceName, String query) {
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(dataSourceName);
         dataTable.setQuery(query);
@@ -205,10 +205,10 @@ public class DataSource extends UtilBase {
     }
 
     private DataTable createDataTable(ResultSet resultSet, ResultSetMetaData metaData, String tableName, String idColumnName) throws Exception {
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
-        DataTable metaDataTable = new DataTable(application, tableName + "_meta_data", "columnName");
+        DataTable metaDataTable = new DataTable(dconvers, tableName + "_meta_data", "columnName");
         dataTable.setMetaData(metaDataTable);
 
         int columnCount = metaData.getColumnCount();
@@ -232,7 +232,7 @@ public class DataSource extends UtilBase {
         Object object;
         while (resultSet.next()) {
             progressBar.step();
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
                 columnLabel = metaData.getColumnLabel(columnIndex);
@@ -241,7 +241,7 @@ public class DataSource extends UtilBase {
                 switch (columnType) {
                     case Types.BIGINT:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(application, columnIndex, Types.BIGINT, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(dconvers, columnIndex, Types.BIGINT, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.INTEGER:
@@ -249,7 +249,7 @@ public class DataSource extends UtilBase {
                     case Types.BOOLEAN:
                     case Types.BIT:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataLong(application, columnIndex, Types.INTEGER, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
+                        dataColumn = new DataLong(dconvers, columnIndex, Types.INTEGER, columnLabel, object == null ? null : resultSet.getLong(columnIndex));
                         break;
 
                     case Types.CHAR:
@@ -258,12 +258,12 @@ public class DataSource extends UtilBase {
                     case Types.NCHAR:
                     case Types.LONGNVARCHAR:
                     case Types.LONGVARCHAR:
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, resultSet.getString(columnIndex));
+                        dataColumn = new DataString(dconvers, columnIndex, Types.VARCHAR, columnLabel, resultSet.getString(columnIndex));
                         break;
 
                     case Types.CLOB:
                     case Types.NCLOB:
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, clobToString(resultSet.getClob(columnIndex)));
+                        dataColumn = new DataString(dconvers, columnIndex, Types.VARCHAR, columnLabel, clobToString(resultSet.getClob(columnIndex)));
                         break;
 
                     case Types.DECIMAL:
@@ -271,7 +271,7 @@ public class DataSource extends UtilBase {
                     case Types.FLOAT:
                     case Types.REAL:
                     case Types.NUMERIC:
-                        dataColumn = new DataBigDecimal(application, columnIndex, Types.DECIMAL, columnLabel, resultSet.getBigDecimal(columnIndex));
+                        dataColumn = new DataBigDecimal(dconvers, columnIndex, Types.DECIMAL, columnLabel, resultSet.getBigDecimal(columnIndex));
                         break;
 
                     case Types.DATE:
@@ -281,7 +281,7 @@ public class DataSource extends UtilBase {
                         } else {
                             dateValue = new Date(date.getTime());
                         }
-                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnLabel, dateValue);
+                        dataColumn = new DataDate(dconvers, columnIndex, Types.DATE, columnLabel, dateValue);
                         break;
 
                     case Types.TIMESTAMP:
@@ -291,50 +291,50 @@ public class DataSource extends UtilBase {
                         } else {
                             dateValue = new Date(timestamp.getTime());
                         }
-                        dataColumn = new DataDate(application, columnIndex, Types.DATE, columnLabel, dateValue);
+                        dataColumn = new DataDate(dconvers, columnIndex, Types.DATE, columnLabel, dateValue);
                         break;
 
                     default:
                         object = resultSet.getObject(columnIndex);
-                        dataColumn = new DataString(application, columnIndex, Types.VARCHAR, columnLabel, object == null ? null : object.toString());
+                        dataColumn = new DataString(dconvers, columnIndex, Types.VARCHAR, columnLabel, object == null ? null : object.toString());
                 }
                 dataRow.putColumn(columnLabel, dataColumn);
 
                 if (needMetaData) {
-                    metaDataRow = new DataRow(application, dataTable);
+                    metaDataRow = new DataRow(dconvers, dataTable);
 
                     metaDataColumnName = "ColumnName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnName(columnIndex)));
 
                     metaDataColumnName = "ColumnLabel";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, columnLabel));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, columnLabel));
 
                     metaDataColumnName = "ColumnClassName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnClassName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnClassName(columnIndex)));
 
                     metaDataColumnName = "ColumnType";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(columnType)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(columnType)));
 
                     metaDataColumnName = "ColumnTypeName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnTypeName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnTypeName(columnIndex)));
 
                     metaDataColumnName = "Precision";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getPrecision(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getPrecision(columnIndex))));
 
                     metaDataColumnName = "Scale";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
 
                     metaDataColumnName = "ColumnDisplaySize";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
 
                     metaDataColumnName = "SchemaName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
 
                     metaDataColumnName = "CatalogName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getCatalogName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getCatalogName(columnIndex)));
 
                     metaDataColumnName = "TableName";
-                    metaDataRow.putColumn(metaDataColumnName, application.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
 
                     metaDataTable.addRow(metaDataRow);
                 }
@@ -380,7 +380,7 @@ public class DataSource extends UtilBase {
         try {
             connection.close();
         } catch (SQLException se) {
-            log.warn("Disconnect is failed, already ignored!, ", se.getMessage());
+            log.warn("Disconnect is failed, already ignored!, {}", se.getMessage());
         } finally {
             connection = null;
             log.info("Disconnected from datasource({})", name);

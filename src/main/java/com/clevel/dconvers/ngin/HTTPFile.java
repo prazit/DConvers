@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -20,11 +20,11 @@ import java.io.IOException;
 public class HTTPFile extends AppBase {
 
     /**
-     * @param application
+     * @param dconvers
      * @param httpFileName full path to the file.http
      */
-    public HTTPFile(Application application, String httpFileName) {
-        super(application, httpFileName);
+    public HTTPFile(DConvers dconvers, String httpFileName) {
+        super(dconvers, httpFileName);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class HTTPFile extends AppBase {
             return null;
         }
 
-        String httpFileString = application.currentConverter.valueFromFile(httpFileName);
+        String httpFileString = dconvers.currentConverter.valueFromFile(httpFileName);
         log.debug("downloadTo.httpFileString={}", httpFileString);
 
         HttpRequestString httpRequestString = new HttpRequestString(httpFileString);

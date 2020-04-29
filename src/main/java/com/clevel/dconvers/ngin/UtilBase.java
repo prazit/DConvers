@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
@@ -10,13 +10,12 @@ import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class UtilBase extends AppBase {
 
-    public UtilBase(Application application, String name) {
-        super(application, name);
+    public UtilBase(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     protected List<Integer> createIndexList(DataRow rowPrototype, String columnIdentifier) {
@@ -89,7 +88,7 @@ public abstract class UtilBase extends AppBase {
 
     protected DataRow insertReplaceColumn(DataRow existingRow, String newColumnName, int newColumnIndex, DataColumn value) {
 
-        DataRow newRow = new DataRow(application, existingRow.getDataTable());
+        DataRow newRow = new DataRow(dconvers, existingRow.getDataTable());
         List<DataColumn> columnList = newRow.getColumnList();
         columnList.addAll(existingRow.getColumnList());
 

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -14,13 +14,13 @@ import java.util.Date;
 public class DataDate extends DataColumn {
     private Date value;
 
-    public DataDate(Application application, int index, int type, String name, Date value) {
-        super(application, index, type, name);
+    public DataDate(DConvers dconvers, int index, int type, String name, Date value) {
+        super(dconvers, index, type, name);
         this.value = (value == null) ? null : new Date(value.getTime());
     }
 
-    public DataDate(Application application, int index, int type, String name, String value) {
-        super(application, index, type, name);
+    public DataDate(DConvers dconvers, int index, int type, String name, String value) {
+        super(dconvers, index, type, name);
 
         if (value == null) {
             this.value = null;
@@ -41,14 +41,14 @@ public class DataDate extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        DataDate dataDate = new DataDate(application, index, type, name, getValue(value));
+        DataDate dataDate = new DataDate(dconvers, index, type, name, getValue(value));
         dataDate.setNullString(nullString);
         return dataDate;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataDate dataDate = new DataDate(application, index, type, name, value);
+        DataDate dataDate = new DataDate(dconvers, index, type, name, value);
         dataDate.setNullString(nullString);
         return dataDate;
     }

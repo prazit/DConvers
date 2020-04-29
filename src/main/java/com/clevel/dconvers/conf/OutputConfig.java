@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
@@ -197,8 +197,8 @@ public class OutputConfig extends Config {
      **/
     private HashMap<String, OutputPluginConfig> outputPluginConfigMap;
 
-    public OutputConfig(Application application, String baseProperty, Configuration baseProperties) {
-        super(application, baseProperty);
+    public OutputConfig(DConvers dconvers, String baseProperty, Configuration baseProperties) {
+        super(dconvers, baseProperty);
         this.properties = baseProperties;
         outputPluginConfigMap = new HashMap<>();
 
@@ -646,7 +646,7 @@ public class OutputConfig extends Config {
                 OutputTypes type = OutputTypes.parse(pluginName);
                 outputTypeList.add(type);
 
-                OutputPluginConfig pluginConfig = OutputFactory.getPluginConfig(application, type);
+                OutputPluginConfig pluginConfig = OutputFactory.getPluginConfig(dconvers, type);
                 pluginConfig.loadConfig(properties.subset(key));
 
                 //log.debug("OutputConfig.loadProperties.plugin({})={}", pluginName, pluginConfig.toString());
@@ -832,15 +832,15 @@ public class OutputConfig extends Config {
     }
 
     public String getSqlSftpOutput() {
-        return application.currentConverter.compileDynamicValues(sqlSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(sqlSftpOutput);
     }
 
     public String getSqlOutput() {
-        return application.currentConverter.compileDynamicValues(sqlOutput);
+        return dconvers.currentConverter.compileDynamicValues(sqlOutput);
     }
 
     public String getSqlCombineOutput() {
-        return application.currentConverter.compileDynamicValues(sqlCombineOutput);
+        return dconvers.currentConverter.compileDynamicValues(sqlCombineOutput);
     }
 
     public boolean isSqlOutputAppend() {
@@ -856,11 +856,11 @@ public class OutputConfig extends Config {
     }
 
     public String getSqlOutputEOL() {
-        return application.currentConverter.compileDynamicValues(sqlOutputEOL);
+        return dconvers.currentConverter.compileDynamicValues(sqlOutputEOL);
     }
 
     public String getSqlOutputEOF() {
-        return application.currentConverter.compileDynamicValues(sqlOutputEOF);
+        return dconvers.currentConverter.compileDynamicValues(sqlOutputEOF);
     }
 
     public String getSqlTable() {
@@ -896,11 +896,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getSqlPostSQL() {
-        return application.currentConverter.compileDynamicValues(sqlPostSQL);
+        return dconvers.currentConverter.compileDynamicValues(sqlPostSQL);
     }
 
     public List<String> getSqlPreSQL() {
-        return application.currentConverter.compileDynamicValues(sqlPreSQL);
+        return dconvers.currentConverter.compileDynamicValues(sqlPreSQL);
     }
 
     public boolean isMarkdown() {
@@ -912,11 +912,11 @@ public class OutputConfig extends Config {
     }
 
     public String getMarkdownSftpOutput() {
-        return application.currentConverter.compileDynamicValues(markdownSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(markdownSftpOutput);
     }
 
     public String getMarkdownOutput() {
-        return application.currentConverter.compileDynamicValues(markdownOutput);
+        return dconvers.currentConverter.compileDynamicValues(markdownOutput);
     }
 
     public boolean isMarkdownOutputAppend() {
@@ -932,11 +932,11 @@ public class OutputConfig extends Config {
     }
 
     public String getMarkdownOutputEOL() {
-        return application.currentConverter.compileDynamicValues(markdownOutputEOL);
+        return dconvers.currentConverter.compileDynamicValues(markdownOutputEOL);
     }
 
     public String getMarkdownOutputEOF() {
-        return application.currentConverter.compileDynamicValues(markdownOutputEOF);
+        return dconvers.currentConverter.compileDynamicValues(markdownOutputEOF);
     }
 
     public boolean isMarkdownComment() {
@@ -975,7 +975,7 @@ public class OutputConfig extends Config {
     }
 
     public String getPdfSftpOutput() {
-        return application.currentConverter.compileDynamicValues(pdfSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(pdfSftpOutput);
     }
 
     public Object getPdfJRXML() {
@@ -983,7 +983,7 @@ public class OutputConfig extends Config {
     }
 
     public String getPdfOutput() {
-        return application.currentConverter.compileDynamicValues(pdfOutput);
+        return dconvers.currentConverter.compileDynamicValues(pdfOutput);
     }
 
     public boolean isPdfOutputAutoCreateDir() {
@@ -999,11 +999,11 @@ public class OutputConfig extends Config {
     }
 
     public String getTxtSftpOutput() {
-        return application.currentConverter.compileDynamicValues(txtSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(txtSftpOutput);
     }
 
     public String getTxtOutput() {
-        return application.currentConverter.compileDynamicValues(txtOutput);
+        return dconvers.currentConverter.compileDynamicValues(txtOutput);
     }
 
     public boolean isTxtOutputAppend() {
@@ -1019,11 +1019,11 @@ public class OutputConfig extends Config {
     }
 
     public String getTxtOutputEOL() {
-        return application.currentConverter.compileDynamicValues(txtOutputEOL);
+        return dconvers.currentConverter.compileDynamicValues(txtOutputEOL);
     }
 
     public String getTxtOutputEOF() {
-        return application.currentConverter.compileDynamicValues(txtOutputEOF);
+        return dconvers.currentConverter.compileDynamicValues(txtOutputEOF);
     }
 
     public String getTxtLengthMode() {
@@ -1067,11 +1067,11 @@ public class OutputConfig extends Config {
     }
 
     public String getCsvSftpOutput() {
-        return application.currentConverter.compileDynamicValues(csvSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(csvSftpOutput);
     }
 
     public String getCsvOutput() {
-        return application.currentConverter.compileDynamicValues(csvOutput);
+        return dconvers.currentConverter.compileDynamicValues(csvOutput);
     }
 
     public String getCsvSeparator() {
@@ -1103,15 +1103,15 @@ public class OutputConfig extends Config {
     }
 
     public String getCsvOutputBOF() {
-        return application.currentConverter.compileDynamicValues(csvOutputBOF);
+        return dconvers.currentConverter.compileDynamicValues(csvOutputBOF);
     }
 
     public String getCsvOutputEOL() {
-        return application.currentConverter.compileDynamicValues(csvOutputEOL);
+        return dconvers.currentConverter.compileDynamicValues(csvOutputEOL);
     }
 
     public String getCsvOutputEOF() {
-        return application.currentConverter.compileDynamicValues(csvOutputEOF);
+        return dconvers.currentConverter.compileDynamicValues(csvOutputEOF);
     }
 
     public List<String> getCsvFormat() {
@@ -1163,11 +1163,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbInsertPostSQL() {
-        return application.currentConverter.compileDynamicValues(dbInsertPostSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbInsertPostSQL);
     }
 
     public List<String> getDbInsertPreSQL() {
-        return application.currentConverter.compileDynamicValues(dbInsertPreSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbInsertPreSQL);
     }
 
     public boolean isDbUpdate() {
@@ -1199,11 +1199,11 @@ public class OutputConfig extends Config {
     }
 
     public List<String> getDbUpdatePostSQL() {
-        return application.currentConverter.compileDynamicValues(dbUpdatePostSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbUpdatePostSQL);
     }
 
     public List<String> getDbUpdatePreSQL() {
-        return application.currentConverter.compileDynamicValues(dbUpdatePreSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbUpdatePreSQL);
     }
 
     public boolean isDbExecute() {
@@ -1219,15 +1219,15 @@ public class OutputConfig extends Config {
     }
 
     public String getDbExecuteOutput() {
-        return application.currentConverter.compileDynamicValues(dbExecuteOutput);
+        return dconvers.currentConverter.compileDynamicValues(dbExecuteOutput);
     }
 
     public List<String> getDbExecutePostSQL() {
-        return application.currentConverter.compileDynamicValues(dbExecutePostSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbExecutePostSQL);
     }
 
     public List<String> getDbExecutePreSQL() {
-        return application.currentConverter.compileDynamicValues(dbExecutePreSQL);
+        return dconvers.currentConverter.compileDynamicValues(dbExecutePreSQL);
     }
 
     public List<OutputTypes> getOutputTypeList() {
@@ -1255,11 +1255,11 @@ public class OutputConfig extends Config {
     }
 
     public String getEmailSftpOutput() {
-        return application.currentConverter.compileDynamicValues(emailSftpOutput);
+        return dconvers.currentConverter.compileDynamicValues(emailSftpOutput);
     }
 
     public String getEmailOutput() {
-        return application.currentConverter.compileDynamicValues(emailOutput);
+        return dconvers.currentConverter.compileDynamicValues(emailOutput);
     }
 
     public boolean isEmailOutputAppend() {
@@ -1299,23 +1299,23 @@ public class OutputConfig extends Config {
     }
 
     public String getEmailSubject() {
-        return application.currentConverter.compileDynamicValues(emailSubject);
+        return dconvers.currentConverter.compileDynamicValues(emailSubject);
     }
 
     public String getEmailFrom() {
-        return application.currentConverter.compileDynamicValues(emailFrom);
+        return dconvers.currentConverter.compileDynamicValues(emailFrom);
     }
 
     public String getEmailTo() {
-        return application.currentConverter.compileDynamicValues(emailTo);
+        return dconvers.currentConverter.compileDynamicValues(emailTo);
     }
 
     public String getEmailCC() {
-        return application.currentConverter.compileDynamicValues(emailCC);
+        return dconvers.currentConverter.compileDynamicValues(emailCC);
     }
 
     public String getEmailBCC() {
-        return application.currentConverter.compileDynamicValues(emailBCC);
+        return dconvers.currentConverter.compileDynamicValues(emailBCC);
     }
 
     public boolean isEmailHtml() {
@@ -1323,7 +1323,7 @@ public class OutputConfig extends Config {
     }
 
     public String getEmailContent() {
-        return application.currentConverter.compileDynamicValues(emailContent);
+        return dconvers.currentConverter.compileDynamicValues(emailContent);
     }
 
     public boolean needOutput() {

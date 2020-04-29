@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataBigDecimal;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -12,13 +12,13 @@ public class DECValue extends DynamicValue {
 
     private DataBigDecimal dataBigDecimal;
 
-    public DECValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public DECValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
 
         if (sourceColumnArg.compareToIgnoreCase("NULL") == 0) {
             sourceColumnArg = null;
@@ -26,7 +26,7 @@ public class DECValue extends DynamicValue {
             sourceColumnArg = converter.compileDynamicValues(sourceColumnArg);
         }
 
-        dataBigDecimal = (DataBigDecimal) application.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
+        dataBigDecimal = (DataBigDecimal) dconvers.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
 
     }
 

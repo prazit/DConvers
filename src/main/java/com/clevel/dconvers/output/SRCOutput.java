@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.ConverterSourceFormatter;
@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SRCOutput extends Output {
-    public SRCOutput(Application application, String name) {
-        super(application, name);
+    public SRCOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new ConverterSourceFormatter(application, name, outputConfig));
+        dataFormatterList.add(new ConverterSourceFormatter(dconvers, name, outputConfig));
         return dataFormatterList;
     }
 

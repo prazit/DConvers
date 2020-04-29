@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -28,8 +28,8 @@ public class TargetConfig extends Config {
 
     private List<Pair<String, String>> columnList;
 
-    TargetConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
-        super(application, name);
+    TargetConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+        super(dconvers, name);
         properties = converterConfigFile.getProperties();
 
         valid = loadProperties();
@@ -37,22 +37,22 @@ public class TargetConfig extends Config {
 
         String targetBaseProperty = Property.TARGET.connectKey(name);
         if (valid) {
-            outputConfig = new OutputConfig(application, targetBaseProperty, properties);
+            outputConfig = new OutputConfig(dconvers, targetBaseProperty, properties);
             valid = outputConfig.isValid();
         }
 
         if (valid) {
-            transferOutputConfig = new OutputConfig(application, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
+            transferOutputConfig = new OutputConfig(dconvers, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
             valid = outputConfig.isValid();
         }
 
         if (valid) {
-            mappingOutputConfig = new OutputConfig(application, Property.MAPPING.prefixKey(targetBaseProperty), properties);
+            mappingOutputConfig = new OutputConfig(dconvers, Property.MAPPING.prefixKey(targetBaseProperty), properties);
             valid = outputConfig.isValid();
         }
 
         if (valid) {
-            transformConfig = new TransformConfig(application, targetBaseProperty, properties);
+            transformConfig = new TransformConfig(dconvers, targetBaseProperty, properties);
             valid = transformConfig.isValid();
         }
 
@@ -118,7 +118,7 @@ public class TargetConfig extends Config {
     }
 
     public long getRowNumberStartAt() {
-        String value = application.currentConverter.compileDynamicValues(rowNumberStartAt);
+        String value = dconvers.currentConverter.compileDynamicValues(rowNumberStartAt);
         if (value == null) {
             return 1;
         }

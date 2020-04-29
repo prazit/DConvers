@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.ngin.Converter;
 import org.slf4j.Logger;
@@ -12,8 +12,8 @@ import java.util.List;
 
 public class SumCalc extends Calc {
 
-    public SumCalc(Application application, String name) {
-        super(application, name);
+    public SumCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     private Converter converter;
@@ -24,7 +24,7 @@ public class SumCalc extends Calc {
 
     @Override
     protected boolean prepare() {
-        defaultValue = new DataLong(application, 0, Types.INTEGER, "default", 0L);
+        defaultValue = new DataLong(dconvers, 0, Types.INTEGER, "default", 0L);
 
         // sum([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
@@ -34,7 +34,7 @@ public class SumCalc extends Calc {
             return false;
         }
 
-        converter = application.currentConverter;
+        converter = dconvers.currentConverter;
         srcTable = converter.getDataTable(arguments[0]);
         if (srcTable == null || srcTable.getRowCount() == 0) {
             error("CAL:CONCAT. invalid identifier, please check CAL:SUM({})!, default value(\"{}\") is returned.", getArguments(), defaultValue);
@@ -91,9 +91,9 @@ public class SumCalc extends Calc {
         bigDecimalValue = new BigDecimal(sum);
         if (value.endsWith(".0")) {
             //value = value.substring(0, value.length() - 2);
-            return new DataBigDecimal(application, 0, Types.DECIMAL, name, bigDecimalValue);
+            return new DataBigDecimal(dconvers, 0, Types.DECIMAL, name, bigDecimalValue);
         } else {
-            return new DataLong(application, 0, Types.INTEGER, name, bigDecimalValue.longValue());
+            return new DataLong(dconvers, 0, Types.INTEGER, name, bigDecimalValue.longValue());
         }
 
     }

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -16,8 +16,8 @@ import java.util.List;
 
 public class ConcatTransform extends Transform {
 
-    public ConcatTransform(Application application, String name) {
-        super(application, name);
+    public ConcatTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ConcatTransform extends Transform {
                 value += column.getValue();
             }
 
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex.get(0), new DataString(application, 0, Types.VARCHAR, newColumnName, value));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex.get(0), new DataString(dconvers, 0, Types.VARCHAR, newColumnName, value));
             if (newRow == null) {
                 progressBar.close();
                 return false;

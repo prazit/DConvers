@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
@@ -19,12 +19,12 @@ public class SQLStatementFormatter extends DataFormatter {
 
     private String statement;
 
-    public SQLStatementFormatter(Application application, String name, String columnName, String dataSourceName, List<String> preSQL, List<String> postSQL) {
-        super(application, name, true);
+    public SQLStatementFormatter(DConvers dconvers, String name, String columnName, String dataSourceName, List<String> preSQL, List<String> postSQL) {
+        super(dconvers, name, true);
         this.columnName = columnName;
         this.preSQL = preSQL;
         this.postSQL = postSQL;
-        dataSource = application.getDataSource(dataSourceName);
+        dataSource = dconvers.getDataSource(dataSourceName);
 
         statement = "";
         outputType = "DB-Execute";

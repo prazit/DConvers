@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -13,8 +13,8 @@ public class DataBigDecimal extends DataColumn {
 
     private BigDecimal value;
 
-    public DataBigDecimal(Application application, int index, int type, String name, BigDecimal value) {
-        super(application, index, type, name);
+    public DataBigDecimal(DConvers dconvers, int index, int type, String name, BigDecimal value) {
+        super(dconvers, index, type, name);
 
         this.value = value;
     }
@@ -34,14 +34,14 @@ public class DataBigDecimal extends DataColumn {
             bigDecimal = null;
         }
 
-        DataBigDecimal dataBigDecimal = new DataBigDecimal(application, index, type, name, bigDecimal);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(dconvers, index, type, name, bigDecimal);
         dataBigDecimal.setNullString(nullString);
         return dataBigDecimal;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataBigDecimal dataBigDecimal = new DataBigDecimal(application, index, type, name, value);
+        DataBigDecimal dataBigDecimal = new DataBigDecimal(dconvers, index, type, name, value);
         dataBigDecimal.setNullString(nullString);
         return dataBigDecimal;
     }

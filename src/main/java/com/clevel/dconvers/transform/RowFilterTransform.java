@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -17,8 +17,8 @@ public class RowFilterTransform extends Transform {
         INCLUDE, EXCLUDE;
     }
 
-    public RowFilterTransform(Application application, String name) {
-        super(application, name);
+    public RowFilterTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override

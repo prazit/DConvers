@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataColumn;
@@ -36,8 +36,8 @@ public class FixedLengthFormatter extends DataFormatter {
     private boolean lengthInBytes;
     private boolean suppressWarning = false;
 
-    public FixedLengthFormatter(Application application, String name, String format, String lengthMode, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
-        super(application, name, true);
+    public FixedLengthFormatter(DConvers dconvers, String name, String format, String lengthMode, String separator, String eol, String eof, String charset, String dateFormat, String datetimeFormat, String fillString, String fillNumber, String fillDate) {
+        super(dconvers, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
         extractTxtFormat(format, txtTypeList, txtLengthList);
@@ -57,8 +57,8 @@ public class FixedLengthFormatter extends DataFormatter {
         log.debug("FixedLengthFormatter is created with LengthMode({})", lengthMode);
     }
 
-    public FixedLengthFormatter(Application application, String name, OutputConfig outputConfig) {
-        super(application, name, true);
+    public FixedLengthFormatter(DConvers dconvers, String name, OutputConfig outputConfig) {
+        super(dconvers, name, true);
         txtTypeList = new ArrayList<>();
         txtLengthList = new ArrayList<>();
         extractTxtFormat(outputConfig.getTxtFormat().toArray(new String[]{"STR:256"}), txtTypeList, txtLengthList);
@@ -129,7 +129,7 @@ public class FixedLengthFormatter extends DataFormatter {
                     log.warn("FixedLength: column(index:{},name:{}) and all columns after this column may be need format property for '{}', all of them will be ignored.", columnIndex + 1, dataColumn.getName(), name);
                     suppressWarning = true;
                 }
-                application.hasWarning = true;
+                dconvers.hasWarning = true;
                 break;
             }
 
@@ -278,7 +278,7 @@ public class FixedLengthFormatter extends DataFormatter {
 
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);
             log.warn("Integer value of column({}) has broken by the fixed length({})! OriginalValue({}) OutputValue({})", columnName, formatted.length(), integerAsStringValue, formatted);
-            application.hasWarning = true;
+            dconvers.hasWarning = true;
         } else {
             formatted = integerAsStringValue;
         }
@@ -338,7 +338,7 @@ public class FixedLengthFormatter extends DataFormatter {
 
         formatted = leftDecimal.concat(rightDecimal);
         if (warning) {
-            application.hasWarning = true;
+            dconvers.hasWarning = true;
             Logger log = LoggerFactory.getLogger(FixedLengthFormatter.class);
             log.warn("Decimal value of column({}) has broken by the fixed length! OriginalValue({}) OutputValue({})", columnName, decimalAsStringValue, formatted);
         }

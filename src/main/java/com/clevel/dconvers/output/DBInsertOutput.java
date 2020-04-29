@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.DataFormatter;
@@ -19,8 +19,8 @@ public class DBInsertOutput extends Output {
 
     private DataSource dataSource;
 
-    public DBInsertOutput(Application application, String name) {
-        super(application, name);
+    public DBInsertOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -32,14 +32,14 @@ public class DBInsertOutput extends Output {
         String valueQuotes = outputConfig.getDbInsertValueQuotes();
 
         String dataSourceName = outputConfig.getDbInsertDataSource();
-        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        dataSource = dconvers.getDataSource(dataSourceName.toUpperCase());
         if (dataSource == null) {
             error("DBInsertOutput: Datasource({}) is not found, required by dbinsert.datasource",dataSourceName);
             return dataFormatterList;
         }
         String dbms = dataSource.getDataSourceConfig().getDbms();
 
-        dataFormatterList.add(new SQLInsertFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
+        dataFormatterList.add(new SQLInsertFormatter(dconvers, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
         return dataFormatterList;
     }
 

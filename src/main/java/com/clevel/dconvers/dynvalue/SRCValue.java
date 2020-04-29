@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import org.slf4j.Logger;
@@ -12,8 +12,8 @@ public class SRCValue extends DynamicValue {
 
     private DataColumn dataColumn;
 
-    public SRCValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public SRCValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
@@ -24,11 +24,11 @@ public class SRCValue extends DynamicValue {
             return;
         }
 
-        String value = application.currentConverter.valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
+        String value = dconvers.currentConverter.valuesFromDataTable(dataTableParameters[0], dataTableParameters[1]);
         if (value == null) {
             dataColumn = null;
         } else {
-            dataColumn = application.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
+            dataColumn = dconvers.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
         }
     }
 

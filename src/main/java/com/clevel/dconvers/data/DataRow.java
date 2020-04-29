@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,8 +17,8 @@ public class DataRow extends AppBase {
     private HashMap<String, DataColumn> dataColumnMap;
     private List<DataColumn> columnList;
 
-    public DataRow(Application application, DataTable dataTable) {
-        super(application, dataTable.getName());
+    public DataRow(DConvers dconvers, DataTable dataTable) {
+        super(dconvers, dataTable.getName());
 
         this.dataTable = dataTable;
         dataColumnMap = new HashMap<>();
@@ -86,7 +86,7 @@ public class DataRow extends AppBase {
             }
             dataColumnMap.put(columnName, dataColumn);
         } catch (Exception e) {
-            dataColumnMap.put(columnName, new DataString(application, 0, 0, null, null));
+            dataColumnMap.put(columnName, new DataString(dconvers, 0, 0, null, null));
         }
     }
 
@@ -102,7 +102,7 @@ public class DataRow extends AppBase {
     }
 
     public DataRow clone() {
-        DataRow newRow = new DataRow(application, dataTable);
+        DataRow newRow = new DataRow(dconvers, dataTable);
 
         DataColumn newColumn;
         String columnName;

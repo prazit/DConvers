@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.ngin.AppBase;
@@ -12,8 +12,8 @@ public abstract class DynamicValue extends AppBase {
 
     private DynamicValueType dynamicValueType;
 
-    public DynamicValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetColumnName);
+    public DynamicValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetColumnName);
         this.targetName = targetName;
         this.targetColumnIndex = targetColumnIndex;
         valid = true;

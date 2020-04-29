@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.calc.Calc;
 import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
@@ -34,8 +34,8 @@ public abstract class Transform extends UtilBase {
         return value;
     }
 
-    public Transform(Application application, String name) {
-        super(application, name);
+    public Transform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     public abstract boolean transform(DataTable dataTable);
@@ -44,10 +44,10 @@ public abstract class Transform extends UtilBase {
         List<DataRow> oldRowList = dataTable.getRowList();
         List<DataRow> newRowList = new ArrayList<>();
 
-        Calc calculator = CalcFactory.getCalc(application, calcType);
+        Calc calculator = CalcFactory.getCalc(dconvers, calcType);
         calculator.setArguments(arguments);
 
-        Converter currentConverter = application.currentConverter;
+        Converter currentConverter = dconvers.currentConverter;
         currentConverter.setCurrentTable(currentTable);
 
         DataColumn value;

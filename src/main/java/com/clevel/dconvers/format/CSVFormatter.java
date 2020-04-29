@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataColumn;
@@ -112,8 +112,8 @@ public class CSVFormatter extends DataFormatter {
 
     private List<CSVColumn> formatList;
 
-    public CSVFormatter(Application application, String name, OutputConfig outputConfig) {
-        super(application, name, true);
+    public CSVFormatter(DConvers dconvers, String name, OutputConfig outputConfig) {
+        super(dconvers, name, true);
 
         header = outputConfig.isCsvHeader();
         headerColumnList = outputConfig.getCsvHeaderColumn();

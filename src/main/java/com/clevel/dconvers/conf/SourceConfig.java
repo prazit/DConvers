@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -23,15 +23,15 @@ public class SourceConfig extends Config {
 
     private OutputConfig outputConfig;
 
-    public SourceConfig(Application application, String name, ConverterConfigFile converterConfigFile) {
-        super(application, name);
+    public SourceConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+        super(dconvers, name);
 
         properties = converterConfigFile.getProperties();
 
         valid = loadProperties();
         if (valid) valid = validate();
         if (valid) {
-            outputConfig = new OutputConfig(application, Property.SOURCE.connectKey(name), properties);
+            outputConfig = new OutputConfig(dconvers, Property.SOURCE.connectKey(name), properties);
             valid = outputConfig.isValid();
         }
 
@@ -88,11 +88,11 @@ public class SourceConfig extends Config {
     }
 
     public String getDataSource() {
-        return application.currentConverter.compileDynamicValues(dataSource);
+        return dconvers.currentConverter.compileDynamicValues(dataSource);
     }
 
     public String getQuery() {
-        return application.currentConverter.compileDynamicValues(query);
+        return dconvers.currentConverter.compileDynamicValues(query);
     }
 
     public String getId() {

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -10,8 +10,8 @@ public class DataString extends DataColumn {
 
     private String value;
 
-    public DataString(Application application, int index, int type, String name, String value) {
-        super(application, index, type, name);
+    public DataString(DConvers dconvers, int index, int type, String name, String value) {
+        super(dconvers, index, type, name);
 
         this.value = value;
     }
@@ -23,14 +23,14 @@ public class DataString extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        DataString dataString = new DataString(application, index, type, name, value);
+        DataString dataString = new DataString(dconvers, index, type, name, value);
         dataString.setNullString(nullString);
         return dataString;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataString dataString = new DataString(application, index, type, name, value);
+        DataString dataString = new DataString(dconvers, index, type, name, value);
         dataString.setNullString(nullString);
         return dataString;
     }

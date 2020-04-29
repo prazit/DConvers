@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -13,8 +13,8 @@ import java.sql.Types;
 
 public class FormatCalc extends Calc {
 
-    public FormatCalc(Application application, String name) {
-        super(application, name);
+    public FormatCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     private String value;
@@ -30,7 +30,7 @@ public class FormatCalc extends Calc {
             return false;
         }
 
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         DataTable datatable = converter.getDataTable(arguments[0]);
         DataRow row = converter.getDataRow(arguments[1], datatable);
         DataColumn column = converter.getDataColumn(arguments[2], row);
@@ -46,7 +46,7 @@ public class FormatCalc extends Calc {
 
     @Override
     protected DataColumn calculate() {
-        return new DataString(application, 0, Types.VARCHAR, name, value);
+        return new DataString(dconvers, 0, Types.VARCHAR, name, value);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.DataFormatter;
@@ -17,14 +17,14 @@ import java.util.List;
  */
 public class TXTOutput extends Output {
 
-    public TXTOutput(Application application, String name) {
-        super(application, name);
+    public TXTOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new FixedLengthFormatter(application, name, outputConfig));
+        dataFormatterList.add(new FixedLengthFormatter(dconvers, name, outputConfig));
         return dataFormatterList;
     }
 

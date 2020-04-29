@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
@@ -29,8 +29,8 @@ public class ConverterTargetFormatter extends DataFormatter {
     private boolean forSource;
     private boolean forName;
 
-    public ConverterTargetFormatter(Application application, String name, OutputConfig outputConfig) {
-        super(application, name, false);
+    public ConverterTargetFormatter(DConvers dconvers, String name, OutputConfig outputConfig) {
+        super(dconvers, name, false);
 
         targetIndex = 0;
 
@@ -40,14 +40,14 @@ public class ConverterTargetFormatter extends DataFormatter {
         this.eof = outputConfig.getTarOutputEOF();
         doubleEOL = eol + eol;
 
-        nowString = application.systemVariableMap.get(SystemVariable.NOW).getValue();
+        nowString = dconvers.systemVariableMap.get(SystemVariable.NOW).getValue();
 
         targets = eol;
     }
 
     @Override
     protected String preFormat(DataTable dataTable) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         converterName = converter.getName();
 
         if (forSource) {
@@ -73,7 +73,7 @@ public class ConverterTargetFormatter extends DataFormatter {
         String tableName = dataTable.getName();
         if (dataTable.getRowCount() == 0) {
             log.warn("ConverterTargetFormatter.generateTargetFor. source({}) does't have column prototype to generate target configuration!", tableName);
-            application.hasWarning = true;
+            dconvers.hasWarning = true;
             return true;
         }
 

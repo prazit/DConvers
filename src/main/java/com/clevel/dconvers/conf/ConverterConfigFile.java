@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,8 +17,8 @@ public class ConverterConfigFile extends ConfigFile {
     private HashMap<String, TargetConfig> targetConfigMap;
     private int index;
 
-    public ConverterConfigFile(Application application, String name) {
-        super(application, name);
+    public ConverterConfigFile(DConvers dconvers, String name) {
+        super(dconvers, name);
         log.debug("ConverterConfigFile({}) = {}", name, this);
         log.trace("ConverterConfigFile({}) is created", name);
     }
@@ -30,7 +30,7 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     protected boolean loadProperties() {
-        // skip load properties here to avoid plugins not found, then load again after all plugins are loaded in the Application.start function.
+        // skip load properties here to avoid plugins not found, then load again after all plugins are loaded in the DConvers.start function.
         return true;
     }
 
@@ -52,7 +52,7 @@ public class ConverterConfigFile extends ConfigFile {
         String name;
         for (Object object : sourceNameList) {
             name = object.toString();
-            sourceConfig = new SourceConfig(application, name, this);
+            sourceConfig = new SourceConfig(dconvers, name, this);
             if (!sourceConfig.isValid()) {
                 return false;
             }
@@ -71,7 +71,7 @@ public class ConverterConfigFile extends ConfigFile {
         TargetConfig targetConfig;
         for (Object object : targetNameList) {
             name = object.toString();
-            targetConfig = new TargetConfig(application, name, this);
+            targetConfig = new TargetConfig(dconvers, name, this);
             if (!targetConfig.isValid()) {
                 return false;
             }

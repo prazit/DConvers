@@ -1,14 +1,14 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
 
 public class OperatorSubtract extends Operator {
 
-    public OperatorSubtract(Application application, String name) {
-        super(application, name);
+    public OperatorSubtract(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override

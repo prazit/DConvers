@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.SourceConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.input.DataSource;
@@ -14,8 +14,8 @@ public class Source extends AppBase {
     private DataSource dataSource;
     private DataTable dataTable;
 
-    public Source(Application application, String name, Converter converter, SourceConfig sourceConfig) {
-        super(application, name);
+    public Source(DConvers dconvers, String name, Converter converter, SourceConfig sourceConfig) {
+        super(dconvers, name);
 
         this.converter = converter;
         this.sourceConfig = sourceConfig;
@@ -30,7 +30,7 @@ public class Source extends AppBase {
         log.trace("Source({}).prepare.", name);
         String dataSourceName = sourceConfig.getDataSource();
         //log.debug("Source.prepare: dataSourceName={}", dataSourceName);
-        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        dataSource = dconvers.getDataSource(dataSourceName.toUpperCase());
         return true;
     }
 
@@ -40,7 +40,7 @@ public class Source extends AppBase {
 
         if (dataSource == null) {
             error("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
-            application.hasWarning = true;
+            dconvers.hasWarning = true;
             return false;
         }
 

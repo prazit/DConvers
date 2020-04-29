@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ public class VersionConfigFile extends ConfigFile {
     /* fix bugs */
     private int buildNumber;
 
-    public VersionConfigFile(Application application, String name) {
-        super(application, name);
+    public VersionConfigFile(DConvers dconvers, String name) {
+        super(dconvers, name);
 
         log.debug("VersionConfigFile({}) = {}", name, this);
         log.trace("VersionConfigFile({}) is created.", name);

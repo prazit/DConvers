@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.Configuration;
 
 /**
@@ -8,8 +8,8 @@ import org.apache.commons.configuration2.Configuration;
  */
 public abstract class OutputPluginConfig extends Config{
 
-    public OutputPluginConfig(Application application, String baseProperty) {
-        super(application, baseProperty);
+    public OutputPluginConfig(DConvers dconvers, String baseProperty) {
+        super(dconvers, baseProperty);
         log.trace("OutputPluginConfig({}) is created", name);
     }
 

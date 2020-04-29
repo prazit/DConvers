@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -15,8 +15,8 @@ public class CompileCalc extends Calc {
 
     private String value;
 
-    public CompileCalc(Application application, String name) {
-        super(application, name);
+    public CompileCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class CompileCalc extends Calc {
             return false;
         }
 
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         DataTable datatable = converter.getDataTable(arguments[0]);
         DataRow row = converter.getDataRow(arguments[1], datatable);
         DataColumn column = converter.getDataColumn(arguments[2], row);
@@ -46,8 +46,8 @@ public class CompileCalc extends Calc {
 
     @Override
     protected DataColumn calculate() {
-        String pureValue = application.currentConverter.compileDynamicValues(value);
-        return new DataString(application, 0, Types.VARCHAR, name, pureValue);
+        String pureValue = dconvers.currentConverter.compileDynamicValues(value);
+        return new DataString(dconvers, 0, Types.VARCHAR, name, pureValue);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.ngin.Converter;
@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public class ResultSetMetaDataSource extends DataSource {
 
-    public ResultSetMetaDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public ResultSetMetaDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class ResultSetMetaDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        Converter currentConverter = application.currentConverter;
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        Converter currentConverter = dconvers.currentConverter;
         currentConverter.setCurrentTable(dataTable);
         dataTable.setDataSource(name);
         dataTable.setQuery(query);

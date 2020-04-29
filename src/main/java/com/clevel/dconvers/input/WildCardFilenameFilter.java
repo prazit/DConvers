@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,8 +11,8 @@ import java.io.FilenameFilter;
 public class WildCardFilenameFilter extends AppBase implements FilenameFilter {
     private String regex;
 
-    public WildCardFilenameFilter(Application application, String name, String filter) {
-        super(application, name);
+    public WildCardFilenameFilter(DConvers dconvers, String name, String filter) {
+        super(dconvers, name);
         this.regex = filter.replaceAll("[*]", "[A-Za-z_0-9\\-,.%()\\sก-ูเ-์]*");
         //log.debug("WildCardFilenameFilter(filter:{}) regex={}", filter, regex);
     }

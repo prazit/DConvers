@@ -9,9 +9,9 @@ public class Main {
         TimeTracker timeTracker = new TimeTracker();
         timeTracker.start(TimeTrackerKey.OVERALL, "main process");
 
-        Application application = new Application(args);
-        application.timeTracker = timeTracker;
-        application.start();
+        DConvers dconvers = new DConvers(args);
+        dconvers.timeTracker = timeTracker;
+        dconvers.start();
     }
 
 }

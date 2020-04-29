@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.transform.TransformTypes;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
@@ -20,8 +20,8 @@ public class TransformConfig extends Config {
     // TransformList = List<Pair<TransformTypes,ArgumentList>>
     private List<Pair<TransformTypes,HashMap<String, String>>> transformList;
 
-    public TransformConfig(Application application, String baseProperty, Configuration baseProperties) {
-        super(application, baseProperty);
+    public TransformConfig(DConvers dconvers, String baseProperty, Configuration baseProperties) {
+        super(dconvers, baseProperty);
         this.properties = baseProperties;
 
         valid = loadProperties();

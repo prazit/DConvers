@@ -30,7 +30,7 @@ public enum SystemVariable {
 
     // Constant values for configuration
     EMPTY_STRING(Types.VARCHAR),    // ""
-    APPLICATION_START(Types.TIMESTAMP),     // The time to start this application.
+    APPLICATION_START(Types.TIMESTAMP),     // The time to start this dconvers.
 
     NOW(Types.TIMESTAMP),                   // Time in realtime.
 

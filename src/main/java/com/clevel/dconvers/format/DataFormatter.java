@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.ngin.UtilBase;
@@ -18,8 +18,8 @@ public abstract class DataFormatter extends UtilBase {
     protected Writer writer;
     protected List<Writer> moreWriter;
 
-    public DataFormatter(Application application, String name, boolean allRow) {
-        super(application, name);
+    public DataFormatter(DConvers dconvers, String name, boolean allRow) {
+        super(dconvers, name);
         this.allRow = allRow;
         outputType = "file";
         moreWriter = new ArrayList<>();

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.ConverterTargetFormatter;
@@ -13,14 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TAROutput extends Output {
-    public TAROutput(Application application, String name) {
-        super(application, name);
+    public TAROutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
     protected List<DataFormatter> getFormatterList(OutputConfig outputConfig, DataTable dataTable) {
         List<DataFormatter> dataFormatterList = new ArrayList<>();
-        dataFormatterList.add(new ConverterTargetFormatter(application, name, outputConfig));
+        dataFormatterList.add(new ConverterTargetFormatter(dconvers, name, outputConfig));
         return dataFormatterList;
     }
 

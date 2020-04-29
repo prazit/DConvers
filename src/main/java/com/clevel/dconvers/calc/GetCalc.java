@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -21,14 +21,14 @@ public class GetCalc extends Calc {
     private Converter converter;
     private DataTable datatable;
 
-    public GetCalc(Application application, String name) {
-        super(application, name);
+    public GetCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
         useDynamicIdentifier = false;
     }
 
     @Override
     protected boolean prepare() {
-        value = new DataString(application, 0, Types.VARCHAR, name, "");
+        value = new DataString(dconvers, 0, Types.VARCHAR, name, "");
 
         // get([current or [[TableType]:[TableName]]],[current or rowIndex],[columnIndex])
         String[] arguments = getArguments().split(",");
@@ -37,7 +37,7 @@ public class GetCalc extends Calc {
             return false;
         }
 
-        converter = application.currentConverter;
+        converter = dconvers.currentConverter;
         datatable = converter.getDataTable(arguments[0]);
         rowIdentifier = arguments[1];
         columnIdentifier = arguments[2];

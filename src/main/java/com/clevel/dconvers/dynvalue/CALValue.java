@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.calc.Calc;
 import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
@@ -15,8 +15,8 @@ public class CALValue extends DynamicValue {
     private String calcName;
     private String arguments;
 
-    public CALValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public CALValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CALValue extends DynamicValue {
             return;
         }
 
-        calculator = CalcFactory.getCalc(application, calcType);
+        calculator = CalcFactory.getCalc(dconvers, calcType);
         if (calculator == null) {
             valid = false;
             calculator = null;

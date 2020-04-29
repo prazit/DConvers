@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -12,8 +12,8 @@ import java.text.DecimalFormat;
 public class DataLong extends DataColumn {
     private Long value;
 
-    public DataLong(Application application, int index, int type, String name, Long value) {
-        super(application, index, type, name);
+    public DataLong(DConvers dconvers, int index, int type, String name, Long value) {
+        super(dconvers, index, type, name);
 
         this.value = value;
     }
@@ -25,14 +25,14 @@ public class DataLong extends DataColumn {
 
     @Override
     public DataColumn clone(String value) {
-        DataLong dataLong = new DataLong(application, index, type, name, Long.parseLong(value));
+        DataLong dataLong = new DataLong(dconvers, index, type, name, Long.parseLong(value));
         dataLong.setNullString(nullString);
         return dataLong;
     }
 
     @Override
     public DataColumn clone(int index, String name) {
-        DataLong dataLong = new DataLong(application, index, type, name, value);
+        DataLong dataLong = new DataLong(dconvers, index, type, name, value);
         dataLong.setNullString(nullString);
         return dataLong;
     }

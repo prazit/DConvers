@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -11,17 +11,17 @@ public class VARValue extends DynamicValue {
 
     private DataColumn dataColumn;
 
-    public VARValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public VARValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
         SystemVariable systemVariable = SystemVariable.parse(sourceColumnArg);
         if (systemVariable == null) {
-            dataColumn = application.userVariableMap.get(sourceColumnArg);
+            dataColumn = dconvers.userVariableMap.get(sourceColumnArg);
         }else {
-            dataColumn = application.systemVariableMap.get(systemVariable);
+            dataColumn = dconvers.systemVariableMap.get(systemVariable);
         }
 
         if (dataColumn == null) {

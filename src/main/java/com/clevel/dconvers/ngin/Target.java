@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
@@ -42,8 +42,8 @@ public class Target extends UtilBase {
     private List<DataTable> mappingTableList;
     private List<DynamicValue> dynamicValueList;
 
-    public Target(Application application, String name, Converter converter, TargetConfig targetConfig) {
-        super(application, name);
+    public Target(DConvers dconvers, String name, Converter converter, TargetConfig targetConfig) {
+        super(dconvers, name);
         this.converter = converter;
         this.targetConfig = targetConfig;
 
@@ -90,13 +90,13 @@ public class Target extends UtilBase {
         String mappingSourceIdColumnName = Property.SOURCE_ID.key();
         String mappingTargetIdColumnName = Property.TARGET_ID.key();
 
-        dataTable = new DataTable(application, name, targetIdColumnName, this);
+        dataTable = new DataTable(dconvers, name, targetIdColumnName, this);
         dataTable.setOwner(this);
         converter.setCurrentTable(dataTable);
 
         dataTableTransfer = dataTable;
 
-        HashMap<SystemVariable, DataColumn> systemVars = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVars = dconvers.systemVariableMap;
         DataLong varRowNumber = (DataLong) systemVars.get(SystemVariable.ROW_NUMBER);
         varRowNumber.setValue(targetConfig.getRowNumberStartAt() - 1);
 
@@ -120,7 +120,7 @@ public class Target extends UtilBase {
             log.debug("Target({}).buildDataTable from sourceName({})", name, sourceName);
 
             mappingTableName = getMappingTableName(sourceName, name);
-            mappingTable = new DataTable(application, mappingTableName, mappingTargetIdColumnName);
+            mappingTable = new DataTable(dconvers, mappingTableName, mappingTargetIdColumnName);
             mappingTableList.add(mappingTable);
 
             if (sourceName.indexOf(":") > 0) {
@@ -163,7 +163,7 @@ public class Target extends UtilBase {
                 sourceColumnType = DynamicValueType.parseTargetColumn(sourceColumnName);
                 sourceColumnTypeArg = sourceColumnName.length() > 4 ? sourceColumnName.substring(4) : "";
 
-                dynamicValue = DynamicValueFactory.getDynamicValue(sourceColumnType, application, name, targetColumnName, targetColumnIndex);
+                dynamicValue = DynamicValueFactory.getDynamicValue(sourceColumnType, dconvers, name, targetColumnName, targetColumnIndex);
                 if (dynamicValue == null) {
                     error("DynamicValue Creation is failed.");
                     valid = false;
@@ -182,7 +182,7 @@ public class Target extends UtilBase {
                 // -- start target table
 
                 varRowNumber.increaseValueBy(1);
-                currentTargetRow = new DataRow(application, dataTable);
+                currentTargetRow = new DataRow(dconvers, dataTable);
                 for (DynamicValue columnValue : dynamicValueList) {
                     targetColumn = columnValue.getValue(sourceRow);
                     if (targetColumn == null) {
@@ -203,7 +203,7 @@ public class Target extends UtilBase {
 
                 // -- start mapping table
 
-                mappingRow = new DataRow(application, mappingTable);
+                mappingRow = new DataRow(dconvers, mappingTable);
 
                 targetColumn = currentTargetRow.getColumn(targetIdColumnName);
                 if (targetColumn == null) {
@@ -250,7 +250,7 @@ public class Target extends UtilBase {
             argumentList = transformPair.getValue();
             log.trace("transforming Target({}) by Transform({})", name, transformType.name());
 
-            transform = TransformFactory.getTransform(application, transformType);
+            transform = TransformFactory.getTransform(dconvers, transformType);
             transform.setArgumentList(argumentList);
             if (!transform.transform(dataTable)) {
                 log.debug("Transform({}) is failed in Target({})", name, transformType.name());

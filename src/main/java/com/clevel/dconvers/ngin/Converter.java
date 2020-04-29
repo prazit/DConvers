@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.calc.Calc;
 import com.clevel.dconvers.calc.CalcFactory;
 import com.clevel.dconvers.calc.CalcTypes;
@@ -35,12 +35,12 @@ public class Converter extends AppBase {
     private int currentRowIndex;
     private boolean exitOnError;
 
-    public Converter(Application application, String name, ConverterConfigFile converterConfigFile) {
-        super(application, name);
+    public Converter(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+        super(dconvers, name);
         this.converterConfigFile = converterConfigFile;
-        application.currentConverter = this;
+        dconvers.currentConverter = this;
 
-        exitOnError = application.exitOnError;
+        exitOnError = dconvers.exitOnError;
 
         valid = prepare();
         if (valid) {
@@ -69,7 +69,7 @@ public class Converter extends AppBase {
         if (sourceConfigMap != null) {
             for (SourceConfig sourceConfig : sourceConfigMap.values()) {
                 name = sourceConfig.getName();
-                source = new Source(application, name, this, sourceConfig);
+                source = new Source(dconvers, name, this, sourceConfig);
                 valid = source.isValid();
                 if (!valid && exitOnError) {
                     return false;
@@ -86,7 +86,7 @@ public class Converter extends AppBase {
         if (targetConfigMap != null) {
             for (TargetConfig targetConfig : targetConfigMap.values()) {
                 name = targetConfig.getName();
-                target = new Target(application, name, this, targetConfig);
+                target = new Target(dconvers, name, this, targetConfig);
                 valid = target.isValid();
                 if (!valid && exitOnError) {
                     return false;
@@ -119,11 +119,11 @@ public class Converter extends AppBase {
 
     public boolean buildTargets() {
         log.trace("Converter({}).buildTargets", name);
-        TimeTracker timeTracker = application.timeTracker;
+        TimeTracker timeTracker = dconvers.timeTracker;
         boolean success = true;
 
         DataTable targetDataTable;
-        SummaryTable tableSummary = application.tableSummary;
+        SummaryTable tableSummary = dconvers.tableSummary;
         for (Target target : sortedTarget) {
             timeTracker.start(TimeTrackerKey.TARGET, "buildDataTable for target(" + target.getName() + ")");
             valid = target.buildDataTable();
@@ -152,17 +152,17 @@ public class Converter extends AppBase {
         log.trace("Converter({}).printSources", name);
         boolean success = true;
 
-        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
         DataLong sourceFileNumber = (DataLong) systemVariableMap.get(SystemVariable.SOURCE_FILE_NUMBER);
-        TimeTracker timeTracker = application.timeTracker;
+        TimeTracker timeTracker = dconvers.timeTracker;
 
         List<OutputTypes> outputTypeList;
         OutputConfig outputConfig;
         DataTable dataTable;
         String outputName;
 
-        SummaryTable tableSummary = application.tableSummary;
-        SummaryTable outputSummary = application.outputSummary;
+        SummaryTable tableSummary = dconvers.tableSummary;
+        SummaryTable outputSummary = dconvers.outputSummary;
 
         for (Source source : sortedSource) {
             sourceFileNumber.increaseValueBy(1);
@@ -177,7 +177,7 @@ public class Converter extends AppBase {
                 if (exitOnError) {
                     return false;
                 }
-                dataTable = new DataTable(application, source.getName(), "source_id", source);
+                dataTable = new DataTable(dconvers, source.getName(), "source_id", source);
             }
 
             tableSummary.addRow(name, dataTable.getName(), DynamicValueType.SRC, dataTable.getRowCount());
@@ -196,7 +196,7 @@ public class Converter extends AppBase {
 
             for (OutputTypes outputType : outputTypeList) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.getName());
-                outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, dataTable);
                 if (outputName == null) {
                     success = false;
                     if (exitOnError) {
@@ -215,7 +215,7 @@ public class Converter extends AppBase {
         log.trace("Converter({}).printTarget", name);
         boolean success = true;
 
-        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
         DataLong targetFileNumber = (DataLong) systemVariableMap.get(SystemVariable.TARGET_FILE_NUMBER);
         DataLong mappingFileNumber = (DataLong) systemVariableMap.get(SystemVariable.MAPPING_FILE_NUMBER);
 
@@ -224,7 +224,7 @@ public class Converter extends AppBase {
         DataTable dataTable;
         String outputName;
 
-        SummaryTable outputSummary = application.outputSummary;
+        SummaryTable outputSummary = dconvers.outputSummary;
 
         for (Target target : sortedTarget) {
             targetFileNumber.increaseValueBy(1);
@@ -253,7 +253,7 @@ public class Converter extends AppBase {
 
             dataTable = target.getDataTable();
             if (dataTable == null) {
-                dataTable = new DataTable(application, target.getName(), "target_id", target);
+                dataTable = new DataTable(dconvers, target.getName(), "target_id", target);
             }
             setCurrentTable(dataTable);
 
@@ -267,7 +267,7 @@ public class Converter extends AppBase {
                 }
                 for (OutputTypes outputType : outputTypeList) {
                     log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
-                    outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, dataTable);
+                    outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, dataTable);
                     if (outputName == null) {
                         success = false;
                         if (exitOnError) {
@@ -294,7 +294,7 @@ public class Converter extends AppBase {
 
                     for (OutputTypes outputType : outputTypeList) {
                         log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
-                        outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, mappingTable);
+                        outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, mappingTable);
                         if (outputName == null) {
                             success = false;
                             if (exitOnError) {
@@ -405,7 +405,7 @@ public class Converter extends AppBase {
             return null;
         }
 
-        return application.systemTableMap.get(name.toUpperCase());
+        return dconvers.systemTableMap.get(name.toUpperCase());
     }
 
     public DataRow getDataRow(String rowIdentifier, DataTable dataTable) {
@@ -524,7 +524,7 @@ public class Converter extends AppBase {
                 return null;
             }
 
-            Operator computer = OperatorFactory.getOperator(application, operatorType);
+            Operator computer = OperatorFactory.getOperator(dconvers, operatorType);
             if (computer == null) {
                 return null;
             }
@@ -538,7 +538,7 @@ public class Converter extends AppBase {
     }
 
     public List<String> compileDynamicValues(List<String> sourceStringList) {
-        Converter currentConverter = application.currentConverter;
+        Converter currentConverter = dconvers.currentConverter;
         List<String> values = new ArrayList<>();
 
         for (String sql : sourceStringList) {
@@ -637,8 +637,8 @@ public class Converter extends AppBase {
             error("Invalid table reader({}), table({}) not found", tableMarker, tableName);
             return null;
         }
-        application.systemVariableMap.get(SystemVariable.TABLE_READER).setValue(tableName);
-        application.systemVariableMap.get(SystemVariable.ROW_READER).setValue("0");
+        dconvers.systemVariableMap.get(SystemVariable.TABLE_READER).setValue(tableName);
+        dconvers.systemVariableMap.get(SystemVariable.ROW_READER).setValue("0");
 
         String replacement = "";
         String compiledRow;
@@ -655,7 +655,7 @@ public class Converter extends AppBase {
     }
 
     private String compileRowReader(String rowString, DataRow dataRow) {
-        DataLong varRowReader = (DataLong) application.systemVariableMap.get(SystemVariable.ROW_READER);
+        DataLong varRowReader = (DataLong) dconvers.systemVariableMap.get(SystemVariable.ROW_READER);
         varRowReader.setValue(varRowReader.getLongValue() + 1);
 
         String compiledString = rowString.concat("");
@@ -750,7 +750,7 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case CAL:
@@ -760,7 +760,7 @@ public class Converter extends AppBase {
                     error("Invalid Calculator({}) for DynamicValue({}), see 'Calculator Types' for detailed", values[0], dynamicValue);
                     return null;
                 }
-                Calc calculator = CalcFactory.getCalc(application, calcType);
+                Calc calculator = CalcFactory.getCalc(dconvers, calcType);
                 calculator.setArguments(values[1]);
                 dataColumn = calculator.calc();
                 if (dataColumn == null) {
@@ -782,14 +782,14 @@ public class Converter extends AppBase {
                     /*use specified value when got empty csv*/
                     value = csvParameters[1];
                 }
-                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case VAR:
                 SystemVariable systemVariable = SystemVariable.parse(valueIdentifier);
                 if (systemVariable != null) {
                     //log.debug("dynamicValue({}) is System Variable({})", valueIdentifier, systemVariable.name());
-                    dataColumn = application.systemVariableMap.get(systemVariable);
+                    dataColumn = dconvers.systemVariableMap.get(systemVariable);
                 } else {
                     if (valueIdentifier == null) {
                         //log.debug("dynamicValue({}) is null!", valueIdentifier);
@@ -797,11 +797,11 @@ public class Converter extends AppBase {
                     } else {
                         String userVariableName = valueIdentifier.toUpperCase();
                         //log.debug("dynamicValue({}) is User Variable({})", valueIdentifier, userVariableName);
-                        dataColumn = application.userVariableMap.get(userVariableName);
+                        dataColumn = dconvers.userVariableMap.get(userVariableName);
                     }
                     if (dataColumn == null) {
                         //log.debug("unknown variable({})", valueIdentifier);
-                        dataColumn = application.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
+                        dataColumn = dconvers.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
                     }
                 }
                 break;
@@ -811,7 +811,7 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case FTP:
@@ -819,12 +819,12 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = application.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
                 break;
 
             case ARG:
                 int argIndex = Integer.parseInt(valueIdentifier) - 1;
-                String[] args = application.args;
+                String[] args = dconvers.args;
                 if (argIndex < 0) {
                     log.warn("Invalid argument index({}), argument index is start at 1", ++argIndex);
                     argIndex = 0;
@@ -832,7 +832,7 @@ public class Converter extends AppBase {
                     log.warn("Invalid argument index({}), last argument index is {}", argIndex, args.length);
                     argIndex = args.length - 1;
                 }
-                dataColumn = application.createDataColumn("argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
+                dataColumn = dconvers.createDataColumn("argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
                 break;
 
             case STR: // constant for STR, INT, DTE, DTT, DEC
@@ -846,7 +846,7 @@ public class Converter extends AppBase {
                     valueIdentifier = compileDynamicValues(valueIdentifier);
                 }
 
-                dataColumn = application.createDataColumn(valueType, dynamicValueType.getDataType(), valueIdentifier);
+                dataColumn = dconvers.createDataColumn(valueType, dynamicValueType.getDataType(), valueIdentifier);
                 if (dataColumn == null) {
                     error("Invalid constant({}) for {} ", valueIdentifier, valueType);
                     return null;
@@ -950,13 +950,13 @@ public class Converter extends AppBase {
         PropertyValue ftpFileNameProp = new PropertyValue(ftpFileName, "/");
         File ftpFile = new File(ftpFileNameProp.value);
 
-        SFTP sftp = application.getSFTP(ftpFileNameProp.name);
+        SFTP sftp = dconvers.getSFTP(ftpFileNameProp.name);
         if (sftp == null) {
             error("SFTP({}) is not found!", ftpFileNameProp.name);
             return "";
         }
 
-        String outputPath = application.dataConversionConfigFile.getOutputMappingPath() + sftp.getSftpConfig().getTmp();
+        String outputPath = dconvers.dataConversionConfigFile.getOutputMappingPath() + sftp.getSftpConfig().getTmp();
         String ftpContentFileName = outputPath + ftpFile.getName();
 
         if (!sftp.copyToLocal(ftpFileNameProp.value, ftpContentFileName)) {
@@ -968,8 +968,8 @@ public class Converter extends AppBase {
     }
 
     public String valueFromHttp(String httpFileName) {
-        String outputPath = application.dataConversionConfigFile.getOutputMappingPath();
-        HTTPFile httpFile = new HTTPFile(application, httpFileName);
+        String outputPath = dconvers.dataConversionConfigFile.getOutputMappingPath();
+        HTTPFile httpFile = new HTTPFile(dconvers, httpFileName);
         return httpFile.downloadTo(outputPath);
     }
 
@@ -1001,7 +1001,7 @@ public class Converter extends AppBase {
     public void close() {
         valid = false;
         log = null;
-        application = null;
+        dconvers = null;
         converterConfigFile = null;
         sourceMap = null;
         targetMap = null;

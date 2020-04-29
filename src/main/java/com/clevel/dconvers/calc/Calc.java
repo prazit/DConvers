@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataString;
 import com.clevel.dconvers.ngin.UtilBase;
@@ -21,8 +21,8 @@ public abstract class Calc extends UtilBase {
         return arguments;
     }
 
-    public Calc(Application application, String name) {
-        super(application, name);
+    public Calc(DConvers dconvers, String name) {
+        super(dconvers, name);
 
         prepared = false;
     }
@@ -34,7 +34,7 @@ public abstract class Calc extends UtilBase {
     public DataColumn calc() {
         if (!prepared) {
             if (!prepare()) {
-                return new DataString(application, 0, Types.VARCHAR, "prepare_is_failed", "");
+                return new DataString(dconvers, 0, Types.VARCHAR, "prepare_is_failed", "");
             }
             prepared = true;
         }

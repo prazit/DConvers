@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
@@ -33,14 +33,14 @@ public class LUPValue extends DynamicValue {
     private List<String> lookupColumnNameList;
     private List<String> lookupDataList;
 
-    public LUPValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public LUPValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
         lookupValue = null;
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
-        converter = application.currentConverter;
+        converter = dconvers.currentConverter;
 
         // sourceColumnName contains 'lookupValueDef>>lookupTable.lookupColumnName>>valueColumnName,notFoundValue'
         // example: column.target_column_name=STR:OK,VAR:EMPTY_STRING>>SRC:OK_OR_NOT.state,empty>>description
@@ -98,7 +98,7 @@ public class LUPValue extends DynamicValue {
             if (notFoundValueDef.indexOf(":") > 0) {
                 DynamicValueType sourceColumnType2 = DynamicValueType.parseTargetColumn(notFoundValueDef);
                 String sourceColumnTypeArg2 = notFoundValueDef.length() > 4 ? notFoundValueDef.substring(4) : "";
-                notfoundValue = DynamicValueFactory.getDynamicValue(sourceColumnType2, application, targetName, name, targetColumnIndex);
+                notfoundValue = DynamicValueFactory.getDynamicValue(sourceColumnType2, dconvers, targetName, name, targetColumnIndex);
                 notfoundValue.prepare(sourceName, notFoundValueDef, sourceColumnType2, sourceColumnTypeArg2);
             } else {
                 notfoundValue = null;
@@ -165,10 +165,10 @@ public class LUPValue extends DynamicValue {
         if (lookupValue.indexOf(":") > 0) {
             DynamicValueType sourceColumnType2 = DynamicValueType.parseTargetColumn(lookupValue);
             String sourceColumnTypeArg2 = lookupValue.length() > 4 ? lookupValue.substring(4) : "";
-            dynamicValue = DynamicValueFactory.getDynamicValue(sourceColumnType2, application, targetName, name, targetColumnIndex);
+            dynamicValue = DynamicValueFactory.getDynamicValue(sourceColumnType2, dconvers, targetName, name, targetColumnIndex);
             dynamicValue.prepare(sourceName, lookupValue, sourceColumnType2, sourceColumnTypeArg2);
         } else {
-            dynamicValue = new NONValue(application, targetName, lookupValue, targetColumnIndex);
+            dynamicValue = new NONValue(dconvers, targetName, lookupValue, targetColumnIndex);
             dynamicValue.prepare(sourceName, lookupValue, DynamicValueType.NON, "");
         }
 

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataTable;
@@ -9,8 +9,8 @@ import org.slf4j.LoggerFactory;
 
 public class CompileTransform extends Transform {
 
-    public CompileTransform(Application application, String name) {
-        super(application, name);
+    public CompileTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override

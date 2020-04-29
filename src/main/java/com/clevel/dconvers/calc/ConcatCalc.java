@@ -1,6 +1,6 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ConcatCalc extends Calc {
 
-    public ConcatCalc(Application application, String name) {
-        super(application, name);
+    public ConcatCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     private Converter converter;
@@ -26,12 +26,12 @@ public class ConcatCalc extends Calc {
 
     @Override
     public boolean prepare() {
-        defaultValue = new DataString(application, 0, Types.VARCHAR, "default", "");
+        defaultValue = new DataString(dconvers, 0, Types.VARCHAR, "default", "");
 
         // concat([current or [[TableType]:[TableName]]],[current or [RowIndex]],[[ColumnRange] or [ColumnIndex]],..)
         String[] arguments = getArguments().split(",");
 
-        converter = application.currentConverter;
+        converter = dconvers.currentConverter;
         srcTable = converter.getDataTable(arguments[0]);
         if (srcTable == null) {
             error("CAL:CONCAT. invalid identifier, please check CAL:CONCAT({})!, default value(\"{}\") is returned.", defaultValue);
@@ -62,7 +62,7 @@ public class ConcatCalc extends Calc {
             value += column.getValue();
         }
 
-        return new DataString(application, 0, Types.VARCHAR, name, value);
+        return new DataString(dconvers, 0, Types.VARCHAR, name, value);
     }
 
     @Override

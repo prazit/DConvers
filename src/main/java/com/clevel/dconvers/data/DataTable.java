@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.ngin.AppBase;
@@ -32,8 +32,8 @@ public class DataTable extends AppBase {
     protected String dataSource;
     protected String query;
 
-    public DataTable(Application application, String tableName, String idColumnName) {
-        super(application, tableName);
+    public DataTable(DConvers dconvers, String tableName, String idColumnName) {
+        super(dconvers, tableName);
 
         this.idColumnName = idColumnName;
         this.owner = null;
@@ -44,8 +44,8 @@ public class DataTable extends AppBase {
         query = "";
     }
 
-    public DataTable(Application application, String tableName, String idColumnName, Object owner) {
-        super(application, tableName);
+    public DataTable(DConvers dconvers, String tableName, String idColumnName, Object owner) {
+        super(dconvers, tableName);
 
         this.idColumnName = idColumnName;
         this.owner = owner;
@@ -131,7 +131,7 @@ public class DataTable extends AppBase {
 
     public DataRow getRow(int row) {
         if (row >= dataRowList.size()) {
-            return new DataRow(application, this);
+            return new DataRow(dconvers, this);
         }
         return dataRowList.get(row);
     }
@@ -234,7 +234,7 @@ public class DataTable extends AppBase {
             return DynamicValueType.TAR;
         }
 
-        if (owner instanceof Application) {
+        if (owner instanceof DConvers) {
             return DynamicValueType.VAR;
         }
 
@@ -269,25 +269,25 @@ public class DataTable extends AppBase {
         }
 
         boolean success = true;
-        boolean exitOnError = application.exitOnError;
+        boolean exitOnError = dconvers.exitOnError;
         String outputName;
         for (OutputTypes outputType : outputTypeList) {
             log.trace("printing {}:{} to Output({})", tableType.name(), name, outputType.name());
-            outputName = OutputFactory.getOutput(application, outputType).print(outputConfig, this);
+            outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, this);
             if (outputName == null) {
                 success = false;
                 if (exitOnError) {
                     return false;
                 }
             }
-            application.outputSummary.addRow(application.currentConverter.getName(), getTableType(), name, outputType, outputName, getRowCount());
+            dconvers.outputSummary.addRow(dconvers.currentConverter.getName(), getTableType(), name, outputType, outputName, getRowCount());
         }
 
         return success;
     }
 
     public DataTable clone() {
-        DataTable dataTable = new DataTable(application, name, idColumnName);
+        DataTable dataTable = new DataTable(dconvers, name, idColumnName);
         dataTable.setOwner(owner);
         dataTable.setQuery(query);
         dataTable.setDataSource(dataSource);

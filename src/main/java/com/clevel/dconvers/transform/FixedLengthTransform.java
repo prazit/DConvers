@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -16,8 +16,8 @@ import java.util.List;
 
 public class FixedLengthTransform extends Transform {
 
-    public FixedLengthTransform(Application application, String name) {
-        super(application, name);
+    public FixedLengthTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class FixedLengthTransform extends Transform {
         String fillDate = getArgument(Property.FILL_DATE.key(), " ");
         String lengthMode = getArgument(Property.LENGTH_MODE.key(), LengthMode.CHAR.name());
 
-        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(application, name, format, lengthMode, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
+        FixedLengthFormatter fixedLengthFormatter = new FixedLengthFormatter(dconvers, name, format, lengthMode, separator, "", "", charset, dateFormat, datetimeFormat, fillString, fillNumber, fillDate);
 
         List<DataRow> newRowList = new ArrayList<>();
         List<DataRow> rowList = dataTable.getRowList();
@@ -50,7 +50,7 @@ public class FixedLengthTransform extends Transform {
 
         for (DataRow row : rowList) {
             formatted = fixedLengthFormatter.format(row);
-            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(application, 0, Types.VARCHAR, newColumnName, formatted));
+            newRow = insertReplaceColumn(row, newColumnName, newColumnIndex, new DataString(dconvers, 0, Types.VARCHAR, newColumnName, formatted));
             if (newRow == null) {
                 return false;
             }

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.ex.ConversionException;
@@ -43,8 +43,8 @@ public class DataConversionConfigFile extends ConfigFile {
 
     private boolean childValid;
 
-    public DataConversionConfigFile(Application application, String name) {
-        super(application, name);
+    public DataConversionConfigFile(DConvers dconvers, String name) {
+        super(dconvers, name);
 
         log.debug("DataConversionConfigFile({}) = {}", name, this);
         log.trace("DataConversionConfigFile({}) is created.", name);
@@ -58,7 +58,7 @@ public class DataConversionConfigFile extends ConfigFile {
     @Override
     protected boolean loadProperties() {
         log.trace("DataConversionConfigFile.loadProperties.");
-        application.dataConversionConfigFile = this;
+        dconvers.dataConversionConfigFile = this;
 
 
         Property converterProperty = Property.CONVERTER_FILE;
@@ -87,7 +87,7 @@ public class DataConversionConfigFile extends ConfigFile {
         String name;
         for (Object object : dataSourceNameList) {
             name = object.toString();
-            dataSourceConfigMap.put(name.toUpperCase(), new DataSourceConfig(application, name));
+            dataSourceConfigMap.put(name.toUpperCase(), new DataSourceConfig(dconvers, name));
         }
 
 
@@ -101,7 +101,7 @@ public class DataConversionConfigFile extends ConfigFile {
         sftpConfigMap = new HashMap<>();
         for (Object object : sftpNameList) {
             name = object.toString();
-            sftpConfigMap.put(name.toUpperCase(), new HostConfig(application, name, Property.SFTP));
+            sftpConfigMap.put(name.toUpperCase(), new HostConfig(dconvers, name, Property.SFTP));
         }
 
 
@@ -115,7 +115,7 @@ public class DataConversionConfigFile extends ConfigFile {
         smtpConfigMap = new HashMap<>();
         for (Object object : smtpNameList) {
             name = object.toString();
-            smtpConfigMap.put(name.toUpperCase(), new HostConfig(application, name, Property.SMTP));
+            smtpConfigMap.put(name.toUpperCase(), new HostConfig(dconvers, name, Property.SMTP));
         }
 
 
@@ -132,7 +132,7 @@ public class DataConversionConfigFile extends ConfigFile {
             if (name.lastIndexOf(".") < 0) {
                 name = name + Defaults.CONFIG_FILE_EXT.getStringValue();
             }
-            converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(application, name));
+            converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(dconvers, name));
         }
 
 

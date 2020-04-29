@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
@@ -20,8 +20,8 @@ public class MarkdownDataSource extends DataSource {
     private boolean skipFirstColumn;
     private boolean updateColumnTypes;
 
-    public MarkdownDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public MarkdownDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class MarkdownDataSource extends DataSource {
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, HashMap<String, String> queryParamMap) {
         log.trace("Creating DataTable(Markdown)...");
 
-        Converter converter = application.currentConverter;
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        Converter converter = dconvers.currentConverter;
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
         converter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
@@ -57,7 +57,7 @@ public class MarkdownDataSource extends DataSource {
         skipFirstColumn = false;
         updateColumnTypes = false;
         try {
-            br = new BufferedReader(new FileReader(application.getFileForRead(markdownFileName)));
+            br = new BufferedReader(new FileReader(dconvers.getFileForRead(markdownFileName)));
             for (String line; (line = br.readLine()) != null; ) {
                 lineCount++;
                 line = converter.compileDynamicValues(line);
@@ -182,11 +182,11 @@ public class MarkdownDataSource extends DataSource {
     }
 
     private DataRow getDataRow(String line, String[] columnNames, int[] columnTypes, DataTable dataTable) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         String[] columns = splitColumns(line);
         //log.debug("separator columns = {}", (Object[]) columns);
 
-        DataRow dataRow = new DataRow(application, dataTable);
+        DataRow dataRow = new DataRow(dconvers, dataTable);
         int index = -1;
         String columnName;
         int columnType;
@@ -210,7 +210,7 @@ public class MarkdownDataSource extends DataSource {
                 columnTypes[index] = columnType;
             }
 
-            dataRow.putColumn(columnName, application.createDataColumn(columnName.trim(), columnType, column));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName.trim(), columnType, column));
             //log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
         }
 

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -14,13 +14,13 @@ public class ARGValue extends DynamicValue {
 
     private DataString dataString;
 
-    public ARGValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public ARGValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
 
         int argIndex;
         try {
@@ -30,17 +30,17 @@ public class ARGValue extends DynamicValue {
             argIndex = 0;
         }
 
-        String[] args = application.args;
+        String[] args = dconvers.args;
         if (argIndex < 0) {
             log.warn("{}, invalid argument index({}), argument index is start at 1", sourceColumnName, argIndex + 1);
             argIndex = 0;
         } else if (argIndex > args.length) {
-            log.warn("{}, invalid argument index({}), last argument index is {}", sourceColumnName, args.length);
+            log.warn("{}, invalid argument index({}), last argument index is {}", sourceColumnName, argIndex + 1, args.length);
             argIndex = args.length - 1;
         }
 
         if (argIndex >= 0) {
-            dataString = (DataString) application.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
+            dataString = (DataString) dconvers.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
         } else {
             dataString = null;
         }

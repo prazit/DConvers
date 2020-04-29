@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.configuration2.Configuration;
 
@@ -32,8 +32,8 @@ public abstract class Config extends AppBase {
         return value;
     }
 
-    public Config(Application application, String name) {
-        super(application, name);
+    public Config(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     //-- Need Override

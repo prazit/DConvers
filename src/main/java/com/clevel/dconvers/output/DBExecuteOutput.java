@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
@@ -15,8 +15,8 @@ import java.util.List;
 
 public class DBExecuteOutput extends Output {
 
-    public DBExecuteOutput(Application application, String name) {
-        super(application, name);
+    public DBExecuteOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DBExecuteOutput extends Output {
         List<String> preSQL = outputConfig.getDbExecutePreSQL();
         List<String> postSQL = outputConfig.getDbExecutePostSQL();
 
-        dataFormatterList.add(new SQLStatementFormatter(application, name, column, dataSourceName, preSQL, postSQL));
+        dataFormatterList.add(new SQLStatementFormatter(dconvers, name, column, dataSourceName, preSQL, postSQL));
 
         return dataFormatterList;
     }
@@ -35,7 +35,7 @@ public class DBExecuteOutput extends Output {
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
         String outputPath;
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
         switch (dataTable.getTableType()) {
             case SRC:
                 outputPath = dataConversionConfigFile.getOutputSourcePath();

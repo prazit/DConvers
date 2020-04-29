@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
@@ -14,8 +14,8 @@ import java.util.List;
 
 public class RemoveTransform extends Transform {
 
-    public RemoveTransform(Application application, String name) {
-        super(application, name);
+    public RemoveTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class RemoveTransform extends Transform {
         log.debug("RemoveTransform.reverseOrderIndex => {}", indexList);
 
         for (DataRow row : rowList) {
-            newRow = new DataRow(application, dataTable);
+            newRow = new DataRow(dconvers, dataTable);
             newColumnList = newRow.getColumnList();
 
             newColumnList.addAll(row.getColumnList());

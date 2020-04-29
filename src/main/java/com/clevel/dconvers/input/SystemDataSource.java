@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
@@ -19,8 +19,8 @@ import java.util.*;
 
 public class SystemDataSource extends DataSource {
 
-    public SystemDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public SystemDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class SystemDataSource extends DataSource {
                 return systemVariables(tableName, idColumnName);
 
             case TABLE_SUMMARY:
-                application.currentConverter.setCurrentTable(application.tableSummary);
-                return application.tableSummary;
+                dconvers.currentConverter.setCurrentTable(dconvers.tableSummary);
+                return dconvers.tableSummary;
 
             case OUTPUT_SUMMARY:
-                application.currentConverter.setCurrentTable(application.outputSummary);
-                return application.outputSummary;
+                dconvers.currentConverter.setCurrentTable(dconvers.outputSummary);
+                return dconvers.outputSummary;
 
             case MEMORY:
                 return memory(tableName, idColumnName);
@@ -76,13 +76,13 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable arg(String tableName, String idColumnName) {
-        String arg = application.switches.getArg();
+        String arg = dconvers.switches.getArg();
         if (arg == null) {
             return null;
         }
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ARG.name());
@@ -94,13 +94,13 @@ public class SystemDataSource extends DataSource {
         for (String argument : args) {
             index++;
 
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "INDEX";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(index)));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(index)));
 
             columnName = "VALUE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, argument));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, argument));
 
             dataTable.addRow(dataRow);
         }
@@ -109,8 +109,8 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable memory(String tableName, String idColumnName) {
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.MEMORY.name());
@@ -139,13 +139,13 @@ public class SystemDataSource extends DataSource {
         memoryPairList.add(new Pair<>("Non-heap Committed", nonheap.getCommitted()));
 
         for (Pair<String, Long> pair : memoryPairList) {
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "Memory";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, pair.getKey()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, pair.getKey()));
 
             columnName = "Bytes";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, pair.getValue().toString()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, pair.getValue().toString()));
 
             dataTable.addRow(dataRow);
         }
@@ -154,10 +154,10 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable systemVariables(String tableName, String idColumnName) {
-        HashMap<SystemVariable, DataColumn> systemVariableMap = application.systemVariableMap;
+        HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.VARIABLE.name());
@@ -168,40 +168,40 @@ public class SystemDataSource extends DataSource {
         variables.sort(Comparator.comparing(DataColumn::getName));
         for (DataColumn variable : variables) {
 
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "USER";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, "0"));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, "0"));
 
             columnName = "VAR";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, variable.getName()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, variable.getName()));
 
             columnName = "TYPE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(variable.getType())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(variable.getType())));
 
             columnName = "VALUE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, variable.getType(), variable.getValue()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, variable.getType(), variable.getValue()));
 
             dataTable.addRow(dataRow);
         }
 
         DataColumn userVar;
-        for (String key : application.userVariableMap.keySet()) {
-            userVar = application.userVariableMap.get(key);
+        for (String key : dconvers.userVariableMap.keySet()) {
+            userVar = dconvers.userVariableMap.get(key);
 
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "USER";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, "1"));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, "1"));
 
             columnName = "VAR";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, userVar.getName()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, userVar.getName()));
 
             columnName = "TYPE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(userVar.getType())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(userVar.getType())));
 
             columnName = "VALUE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, userVar.getType(), userVar.getValue()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, userVar.getType(), userVar.getValue()));
 
             dataTable.addRow(dataRow);
         }
@@ -211,8 +211,8 @@ public class SystemDataSource extends DataSource {
 
     private DataTable systemProperties(String tableName, String idColumnName) {
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.ENVIRONMENT.name());
@@ -223,13 +223,13 @@ public class SystemDataSource extends DataSource {
         List<String> propertyList = new ArrayList<>(properties.stringPropertyNames());
         propertyList.sort(String::compareTo);
         for (String propertyName : propertyList) {
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "PROPERTY";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, propertyName));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, propertyName));
 
             columnName = "VALUE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, System.getProperty(propertyName)));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, System.getProperty(propertyName)));
 
             dataTable.addRow(dataRow);
         }
@@ -239,8 +239,8 @@ public class SystemDataSource extends DataSource {
 
     private DataTable osVariables(String tableName, String idColumnName) {
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
-        application.currentConverter.setCurrentTable(dataTable);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
+        dconvers.currentConverter.setCurrentTable(dataTable);
 
         dataTable.setDataSource(name);
         dataTable.setQuery(SystemQuery.OS_VARIABLE.name());
@@ -251,13 +251,13 @@ public class SystemDataSource extends DataSource {
         List<String> envVariables = new ArrayList<>(env.keySet());
         envVariables.sort(String::compareTo);
         for (String varName : envVariables) {
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "VARIABLE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, varName));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, varName));
 
             columnName = "VALUE";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, env.get(varName)));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, env.get(varName)));
 
             dataTable.addRow(dataRow);
         }

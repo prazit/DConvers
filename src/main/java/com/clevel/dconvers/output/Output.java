@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
@@ -45,8 +45,8 @@ public abstract class Output extends AppBase {
     private PostSFTP postSFTP;
     protected String outputName;
 
-    public Output(Application application, String name) {
-        super(application, name);
+    public Output(DConvers dconvers, String name) {
+        super(dconvers, name);
 
         postSFTP = null;
         outputName = null;
@@ -105,7 +105,7 @@ public abstract class Output extends AppBase {
             return true;
         }
 
-        SFTP sftp = application.getSFTP(postSFTP.sftp);
+        SFTP sftp = dconvers.getSFTP(postSFTP.sftp);
         if (sftp == null) {
             error("The sftp({}) is not found, please check sftp name ({}).", postSFTP.sftp, postSFTP);
             return false;
@@ -128,7 +128,7 @@ public abstract class Output extends AppBase {
                 writer = tryToCreateFile(outputFile, append, charset);
             } else {
                 error("Output.createFile is failed! please check parameters(outputFile:{}, autoCreateDir:{}, append:{}, charset:{})", outputFile, autoCreateDir, append, charset);
-                if (application.exitOnError) {
+                if (dconvers.exitOnError) {
                     return null;
                 }
 
@@ -182,7 +182,7 @@ public abstract class Output extends AppBase {
     }
 
     protected String getRootPath(DataTable dataTable) {
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
         Object owner = dataTable.getOwner();
         String outputPath;
 

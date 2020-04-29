@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataConversionConfigFile;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
@@ -23,8 +23,8 @@ import java.util.List;
 
 public class MarkdownOutput extends Output {
 
-    public MarkdownOutput(Application application, String name) {
-        super(application, name);
+    public MarkdownOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -37,14 +37,14 @@ public class MarkdownOutput extends Output {
         boolean mermaid = outputConfig.isMarkdownMermaid();
         boolean mermaidFull = outputConfig.isMarkdownMermaidFull();
 
-        dataFormatterList.add(new MarkdownFormatter(application, name, eol, eof, showTitle, showRowNumber, mermaid, mermaidFull));
+        dataFormatterList.add(new MarkdownFormatter(dconvers, name, eol, eof, showTitle, showRowNumber, mermaid, mermaidFull));
         return dataFormatterList;
     }
 
     @Override
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
-        String converterName = application.currentConverter.getName();
-        DataConversionConfigFile dataConversionConfigFile = application.dataConversionConfigFile;
+        String converterName = dconvers.currentConverter.getName();
+        DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
         DynamicValueType tableType = dataTable.getTableType();
         Object owner = dataTable.getOwner();
         String eol = outputConfig.getMarkdownOutputEOL();
@@ -56,10 +56,10 @@ public class MarkdownOutput extends Output {
             Source source = (Source) owner;
             outputPath = dataConversionConfigFile.getOutputSourcePath();
             String dataSourceName = dataTable.getDataSource();
-            DataSource dataSource = application.getDataSource(dataSourceName);
+            DataSource dataSource = dconvers.getDataSource(dataSourceName);
             headPrint = eol
-                    + "> Generated at " + application.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
-                    + "> Using " + application.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
+                    + "> Generated at " + dconvers.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
+                    + "> Using " + dconvers.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
                     + "> This markdown table contains " + dataTable.getRowCount() + " rows from source(" + source.getName() + ") in converter(" + converterName + ")  " + eol
                     + (outputConfig.isMarkdownCommentDataSource() ? ("> DataSource : " + (dataSource == null ? "null" : dataSource.toString()) + eol) : "");
             if (dataSource != null && dataSource.getDataSourceConfig().getDbms() != null) {
@@ -78,8 +78,8 @@ public class MarkdownOutput extends Output {
             Target target = (Target) owner;
             outputPath = dataConversionConfigFile.getOutputTargetPath();
             headPrint = eol
-                    + "> Generated at " + application.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
-                    + "> Using " + application.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
+                    + "> Generated at " + dconvers.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
+                    + "> Using " + dconvers.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
                     + "> This markdown table contains " + dataTable.getRowCount() + " rows from target(" + target.getName() + ") in converter(" + converterName + ")  " + eol
                     + (outputConfig.isMarkdownCommentQuery() ? ("> Data from : source(" + target.getTargetConfig().getSource() + ")  " + eol) : "")
                     + eol;
@@ -89,8 +89,8 @@ public class MarkdownOutput extends Output {
             outputPath = dataConversionConfigFile.getOutputMappingPath();
             if (sourceToTarget == null) {
                 headPrint = eol
-                        + "> Generated at " + application.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
-                        + "> Using " + application.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
+                        + "> Generated at " + dconvers.getSystemVariableValue(SystemVariable.NOW) + ".  " + eol
+                        + "> Using " + dconvers.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
                         + "> Mapping Table with unknown owner(null)" + eol
                         + eol;
             } else {
@@ -106,8 +106,8 @@ public class MarkdownOutput extends Output {
                     sourceName = "Target(" + source.getName() + ")";
                 }
                 headPrint = eol
-                        + "> Generated at " + application.getSystemVariableValue(SystemVariable.NOW) + "." + eol
-                        + "> Using " + application.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
+                        + "> Generated at " + dconvers.getSystemVariableValue(SystemVariable.NOW) + "." + eol
+                        + "> Using " + dconvers.getSystemVariableValue(SystemVariable.APPLICATION_FULL_VERSION) + ".  " + eol
                         + "> This markdown table contains " + dataTable.getRowCount() + " rows from mapping-table of target(" + target.getName() + ") in converter(" + converterName + ")" + eol
                         + (outputConfig.isMarkdownCommentQuery() ? ("> Data from : Target(" + target.getName() + ").id(" + targetTable.getIdColumnName() + ") as " + Property.TARGET_ID.key() + ", " + sourceName + ".id(" + sourceTable.getIdColumnName() + ") as " + Property.SOURCE_ID.key() + eol) : "")
                         + eol;

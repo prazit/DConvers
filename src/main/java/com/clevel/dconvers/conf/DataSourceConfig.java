@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
@@ -36,9 +36,9 @@ public class DataSourceConfig extends Config {
     private String valueQuotes;
     private String nameQuotes;
 
-    public DataSourceConfig(Application application, String name) {
-        super(application, name);
-        properties = application.dataConversionConfigFile.properties;
+    public DataSourceConfig(DConvers dconvers, String name) {
+        super(dconvers, name);
+        properties = dconvers.dataConversionConfigFile.properties;
 
         valid = loadProperties();
         if (valid) valid = validate();

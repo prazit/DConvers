@@ -1,6 +1,6 @@
 package com.clevel.dconvers.data;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.output.OutputTypes;
@@ -13,8 +13,8 @@ public class SummaryTable extends DataTable {
 
     private long lastID;
 
-    public SummaryTable(Application application) {
-        super(application, "Summary", "id");
+    public SummaryTable(DConvers dconvers) {
+        super(dconvers, "Summary", "id");
         lastID = 0;
         this.setDataSource(Property.SYSTEM.name());
     }
@@ -26,63 +26,63 @@ public class SummaryTable extends DataTable {
     }
 
     /**
-     * for Application.tableSummary
+     * for DConvers.tableSummary
      */
     public void addRow(String converterName, String tableName, DynamicValueType tableType, long rowCount) {
         log.info("{}:{} has {} row(s)", tableType.name(), tableName, rowCount);
 
-        DataRow newRow = new DataRow(application, this);
+        DataRow newRow = new DataRow(dconvers, this);
         String columnName;
         lastID++;
 
         columnName = "ID";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
 
         columnName = "Table Type";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
 
         columnName = "Table Name";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableName));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, tableName));
 
         columnName = "Row Count";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(rowCount)));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(rowCount)));
 
         columnName = "Converter";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, converterName));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, converterName));
 
         super.addRow(newRow);
     }
 
     /**
-     * for Application.outputSummary
+     * for DConvers.outputSummary
      */
     public void addRow(String converterName, DynamicValueType tableType, String tableName, OutputTypes outputType, String outputName, long rowCount) {
         log.info("{}:{} has {} row(s)", outputType.name(), outputName, rowCount);
 
-        DataRow newRow = new DataRow(application, this);
+        DataRow newRow = new DataRow(dconvers, this);
         String columnName;
         lastID++;
 
         columnName = "ID";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(lastID)));
 
         columnName = "Output Type";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, outputType.name()));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, outputType.name()));
 
         columnName = "Output Name";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, (outputName == null) ? "NULL" : outputName.replaceAll("[,]", "<br/>")));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, (outputName == null) ? "NULL" : outputName.replaceAll("[,]", "<br/>")));
 
         columnName = "Table Type";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, tableType.name()));
 
         columnName = "Table Name";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, tableName));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, tableName));
 
         columnName = "Row Count";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(rowCount)));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(rowCount)));
 
         columnName = "Converter";
-        newRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, converterName));
+        newRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, converterName));
 
         super.addRow(newRow);
     }

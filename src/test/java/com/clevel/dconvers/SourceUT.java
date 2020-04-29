@@ -13,9 +13,9 @@ public class SourceUT {
         log.debug("------- SourceUT.compileQuery is started");
 
         /*String[] args = "--source=\"sample-conversion.conf\" --verbose --level=DEBUG".split("[ ]");
-        Application application = new Application(args);
-        Converter converter = new Converter(application, "converter", new ConverterConfigFile(application, "converterConfig"));
-        Source source = new Source(null, "test", converter, new SourceConfig(application, "sourceConfig", converter.getConverterConfigFile()));
+        DConvers dconvers = new DConvers(args);
+        Converter converter = new Converter(dconvers, "converter", new ConverterConfigFile(dconvers, "converterConfig"));
+        Source source = new Source(null, "test", converter, new SourceConfig(dconvers, "sourceConfig", converter.getConverterConfigFile()));
         String query = source.getQuery("");*/
 
         //String query = getQuery("$(FILE:C:\\Users\\prazi\\Documents\\LHBank\\ETL\\Query\\DMS\\TFS_DARDWH.sql)");

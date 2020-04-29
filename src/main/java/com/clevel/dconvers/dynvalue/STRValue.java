@@ -1,6 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -14,13 +14,13 @@ public class STRValue extends DynamicValue {
 
     private DataString dataString;
 
-    public STRValue(Application application, String targetName, String targetColumnName, Integer targetColumnIndex) {
-        super(application, targetName, targetColumnName, targetColumnIndex);
+    public STRValue(DConvers dconvers, String targetName, String targetColumnName, Integer targetColumnIndex) {
+        super(dconvers, targetName, targetColumnName, targetColumnIndex);
     }
 
     @Override
     public void prepare(String sourceName, String sourceColumnName, DynamicValueType sourceColumnType, String sourceColumnArg) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
 
         if (sourceColumnArg.compareToIgnoreCase("NULL") == 0) {
             sourceColumnArg = null;
@@ -28,7 +28,7 @@ public class STRValue extends DynamicValue {
             sourceColumnArg = converter.compileDynamicValues(sourceColumnArg);
         }
 
-        dataString = (DataString) application.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
+        dataString = (DataString) dconvers.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
         if (dataString == null) {
             error("Invalid constant({}) for columnType({}) that required by target({}.{})", sourceColumnArg, sourceColumnType.name(), targetName, name);
             dataString = null;

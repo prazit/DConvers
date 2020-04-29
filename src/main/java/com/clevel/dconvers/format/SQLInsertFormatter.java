@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.input.DBMS;
@@ -21,8 +21,8 @@ public class SQLInsertFormatter extends DataFormatter {
     private DBMS dbms;
     private boolean isOracle;
 
-    public SQLInsertFormatter(Application application, String name, String dbms, List<String> columnList, String nameQuotes, String valueQuotes, String eol) {
-        super(application, name, true);
+    public SQLInsertFormatter(DConvers dconvers, String name, String dbms, List<String> columnList, String nameQuotes, String valueQuotes, String eol) {
+        super(dconvers, name, true);
         this.dbms = DBMS.parse(dbms);
         isOracle = DBMS.ORACLE.equals(this.dbms);
         this.columnList = columnList;

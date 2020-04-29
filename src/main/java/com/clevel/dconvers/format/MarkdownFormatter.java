@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.SourceConfig;
 import com.clevel.dconvers.data.DataColumn;
@@ -36,8 +36,8 @@ public class MarkdownFormatter extends DataFormatter {
     private boolean needMermaid;
     private boolean mermaidFullStack;
 
-    public MarkdownFormatter(Application application, String name, String eol, String eof, boolean showTitle, boolean showRowNumber, boolean mermaid, boolean mermaidFullStack) {
-        super(application, name, true);
+    public MarkdownFormatter(DConvers dconvers, String name, String eol, String eof, boolean showTitle, boolean showRowNumber, boolean mermaid, boolean mermaidFullStack) {
+        super(dconvers, name, true);
 
         this.eol = eol;
         this.eof = eof;
@@ -319,7 +319,7 @@ public class MarkdownFormatter extends DataFormatter {
 
         Identifier prepareDataSource(String dataSourceName, String query) {
             String dsName = dataSourceName.contains(":") ? dataSourceName : Prefix.DATASOURCE.namePrefix + dataSourceName;
-            DataSource dataSource = application.getDataSource(dataSourceName);
+            DataSource dataSource = dconvers.getDataSource(dataSourceName);
             if (dataSource == null || dataSource.getDataSourceConfig().getDbms() == null) {
                 dsName += "<br/>" + query;
             } else {
@@ -442,7 +442,7 @@ public class MarkdownFormatter extends DataFormatter {
                     Target target = (Target) dataTable.getOwner();
                     String remark;
 
-                    Converter converter = application.currentConverter;
+                    Converter converter = dconvers.currentConverter;
                     DataTable sourceDataTable;
                     Identifier sourceDataTableIdentifier;
 

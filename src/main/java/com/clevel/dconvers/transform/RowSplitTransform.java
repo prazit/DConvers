@@ -1,6 +1,6 @@
 package com.clevel.dconvers.transform;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
@@ -17,8 +17,8 @@ import java.util.regex.PatternSyntaxException;
 
 public class RowSplitTransform extends Transform {
 
-    public RowSplitTransform(Application application, String name) {
-        super(application, name);
+    public RowSplitTransform(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RowSplitTransform extends Transform {
         String regex = arguments.length < 2 ? Defaults.ROW_SPLIT_REGEX.getStringValue() : arguments[1];
         DynamicValueType dynamicValueType = arguments.length < 3 ? DynamicValueType.STR : DynamicValueType.parse(arguments[2]);
         int dataType = dynamicValueType == null ? DynamicValueType.STR.getDataType() : dynamicValueType.getDataType();
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
 
         DataColumn dataColumn;
         String columnName;
@@ -75,7 +75,7 @@ public class RowSplitTransform extends Transform {
                 dataColumn.setValue(values[0]);
             } else {
                 columnName = dataColumn.getName();
-                dataColumn = application.createDataColumn(columnName, dataType, values[0]);
+                dataColumn = dconvers.createDataColumn(columnName, dataType, values[0]);
                 dataRow.putColumn(columnName, dataColumn);
             }
 
@@ -89,7 +89,7 @@ public class RowSplitTransform extends Transform {
                     newColumn.setValue(newValue);
                 } else {
                     columnName = newColumn.getName();
-                    newColumn = application.createDataColumn(columnName, dataType, newValue);
+                    newColumn = dconvers.createDataColumn(columnName, dataType, newValue);
                     newRow.putColumn(columnName, newColumn);
                 }
 

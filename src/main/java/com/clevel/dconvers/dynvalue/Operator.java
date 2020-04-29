@@ -1,14 +1,14 @@
 package com.clevel.dconvers.dynvalue;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Operator extends AppBase {
 
-    public Operator(Application application, String name) {
-        super(application, name);
+    public Operator(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override

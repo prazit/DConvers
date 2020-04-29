@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.VersionConfigFile;
 import com.clevel.dconvers.ngin.AppBase;
 import org.slf4j.Logger;
@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 
 public class VersionFormatter extends AppBase {
 
-    public VersionFormatter(Application application) {
-        super(application, "VersionFormatter");
+    public VersionFormatter(DConvers dconvers) {
+        super(dconvers, "VersionFormatter");
         valid = true;
     }
 
     public VersionFormatter() {
-        super(new Application("none"), "VersionFormatter");
+        super(new DConvers("none"), "VersionFormatter");
         valid = true;
     }
 
@@ -49,7 +49,7 @@ public class VersionFormatter extends AppBase {
     }
 
     public VersionConfigFile versionConfigFile(String versionFileName) {
-        return new VersionConfigFile(application, versionFileName);
+        return new VersionConfigFile(dconvers, versionFileName);
     }
 
     @Override

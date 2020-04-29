@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.HostConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +17,8 @@ public class SMTP extends AppBase {
 
     private Session session;
 
-    public SMTP(Application application, String name, HostConfig smtpConfig) {
-        super(application, name);
+    public SMTP(DConvers dconvers, String name, HostConfig smtpConfig) {
+        super(dconvers, name);
 
         this.smtpConfig = smtpConfig;
         this.retry = smtpConfig.getRetry();

@@ -25,11 +25,11 @@ import java.sql.Types;
 import java.util.*;
 
 /**
- * Application is Global Object that pass through the process from start to the end.
+ * DConvers is Global Object that pass through the process from start to the end.
  * <p>
  * This class contains only the public members to let all process can access them directly.
  */
-public class Application extends AppBase {
+public class DConvers extends AppBase {
 
     public String[] args;
     public Switches switches;
@@ -64,14 +64,14 @@ public class Application extends AppBase {
     public boolean asLib;
     private boolean isLibEnd;
 
-    public Application(String[] args) {
+    public DConvers(String[] args) {
         super("DConvers");
         this.args = Arrays.copyOf(args, args.length);
         asLib = false;
         construct();
     }
 
-    public Application(String sourceConfig) {
+    public DConvers(String sourceConfig) {
         super("DConvers Library");
 
         /* args array need somethings like this
@@ -127,7 +127,7 @@ public class Application extends AppBase {
 
         timeTracker.start(TimeTrackerKey.APPLICATION, "start to stop");
         appStartDate = new Date();
-        this.application = this;
+        this.dconvers = this;
 
         initSystemVariables();
 
@@ -162,7 +162,7 @@ public class Application extends AppBase {
         log.info("Configuration: {}", systemVariableMap.get(SystemVariable.CONFIG_VERSION).getValue());
         log.info("Configuration file: {}", dataConversionConfigFilename);
 
-        log.trace("Application. Load DataConversionConfigFile.");
+        log.trace("DConvers. Load DataConversionConfigFile.");
         dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
         currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
 
@@ -224,7 +224,7 @@ public class Application extends AppBase {
         systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.TABLE_SUMMARY.name(), tableSummary);
         systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.OUTPUT_SUMMARY.name(), outputSummary);
 
-        log.trace("Application. Load Plugins for calculator.");
+        log.trace("DConvers. Load Plugins for calculator.");
         boolean loadPluginsSuccess = true;
         List<Pair<String, String>> pluginsList = dataConversionConfigFile.getPluginsCalcList();
         if (pluginsList != null) {
@@ -245,7 +245,7 @@ public class Application extends AppBase {
             }
         }
 
-        log.trace("Application. Load Plugins for output.");
+        log.trace("DConvers. Load Plugins for output.");
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsOutputList();
         if (pluginsList != null) {
@@ -267,7 +267,7 @@ public class Application extends AppBase {
             }
         }
 
-        log.trace("Application. Load DataSources.");
+        log.trace("DConvers. Load DataSources.");
         dataSourceMap = new HashMap<>();
         DataSource dataSource;
         String dataSourceName;
@@ -314,7 +314,7 @@ public class Application extends AppBase {
         dataSourceName = Property.LINES.key();
         dataSourceMap.put(dataSourceName.toUpperCase(), new LinesDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
-        log.trace("Application. Load Plugins for datasource.");
+        log.trace("DConvers. Load Plugins for datasource.");
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsDataSourceList();
         if (pluginsList != null) {
@@ -336,7 +336,7 @@ public class Application extends AppBase {
             }
         }
 
-        log.trace("Application. Load SFTP Services.");
+        log.trace("DConvers. Load SFTP Services.");
         sftpMap = new HashMap<>();
         SFTP sftp;
         String sftpName;
@@ -361,7 +361,7 @@ public class Application extends AppBase {
             }
         }
 
-        log.trace("Application. Load SMTP Services.");
+        log.trace("DConvers. Load SMTP Services.");
         smtpMap = new HashMap<>();
         SMTP smtp;
         String smtpName;
@@ -386,7 +386,7 @@ public class Application extends AppBase {
             }
         }
 
-        log.trace("Application. Load Converters.");
+        log.trace("DConvers. Load Converters.");
         converterList = new ArrayList<>();
         Converter converter;
         String converterName;
@@ -419,7 +419,7 @@ public class Application extends AppBase {
 
         Converter lastConverter = null;
         if (!switches.isTest()) {
-            log.trace("Application. Launch Converters to transfer, transform and create output.");
+            log.trace("DConvers. Launch Converters to transfer, transform and create output.");
             converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
             if (converterList.size() > 0) {
@@ -544,7 +544,7 @@ public class Application extends AppBase {
     }
 
     public void stop() {
-        log.trace("Application.stop.");
+        log.trace("DConvers.stop.");
 
         closeAllSFTP();
         closeAllDataSource();
@@ -568,7 +568,7 @@ public class Application extends AppBase {
     }
 
     public void stopWithError() {
-        log.trace("Application.stopWithError.");
+        log.trace("DConvers.stopWithError.");
 
         closeAllSFTP();
         closeAllDataSource();
@@ -592,7 +592,7 @@ public class Application extends AppBase {
     }
 
     public void stopWithWarning() {
-        log.trace("Application.stopWithWarning.");
+        log.trace("DConvers.stopWithWarning.");
 
         closeAllSFTP();
         closeAllDataSource();
@@ -617,7 +617,7 @@ public class Application extends AppBase {
     }
 
     private void closeAllDataSource() {
-        log.trace("Application.closeAllDataSource.");
+        log.trace("DConvers.closeAllDataSource.");
 
         if (dataSourceMap == null) {
             return;
@@ -629,7 +629,7 @@ public class Application extends AppBase {
     }
 
     private void closeAllSFTP() {
-        log.trace("Application.closeAllSFTP.");
+        log.trace("DConvers.closeAllSFTP.");
 
         if (sftpMap == null) {
             return;
@@ -641,7 +641,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidSwitches() {
-        log.trace("Application.performInvalidSwitches.");
+        log.trace("DConvers.performInvalidSwitches.");
 
         error("Invalid CLI Switches({}) please see help below", switches);
         log.debug("invalid switches: {}", switches);
@@ -651,7 +651,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidConfigFile() {
-        log.trace("Application.performInvalidConfigFile.");
+        log.trace("DConvers.performInvalidConfigFile.");
 
         error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
@@ -661,7 +661,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidConfigChild() {
-        log.trace("Application.performInvalidConfigChild.");
+        log.trace("DConvers.performInvalidConfigChild.");
 
         error("Invalid Child of Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
@@ -671,7 +671,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidDataSource(DataSource dataSource) {
-        log.trace("Application.performInvalidDataSource.");
+        log.trace("DConvers.performInvalidDataSource.");
 
         error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
@@ -681,7 +681,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidSFTP(SFTP sftp) {
-        log.trace("Application.performInvalidSFTP.");
+        log.trace("DConvers.performInvalidSFTP.");
 
         error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
@@ -691,7 +691,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidSMTP(SMTP smtp) {
-        log.trace("Application.performInvalidSMTP.");
+        log.trace("DConvers.performInvalidSMTP.");
 
         error("Invalid SMTP({}) please check {}.", smtp.getName(), dataConversionConfigFile.getName());
         log.debug("smtp = {}", smtp);
@@ -701,7 +701,7 @@ public class Application extends AppBase {
     }
 
     private void performInvalidConverter(Converter converter) {
-        log.trace("Application.performInvalidConverter.");
+        log.trace("DConvers.performInvalidConverter.");
 
         error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
         log.debug("converter = {}", converter);
@@ -711,7 +711,7 @@ public class Application extends AppBase {
     }
 
     private void performHelp() {
-        log.trace("Application.performHelp.");
+        log.trace("DConvers.performHelp.");
         printVersion();
 
         String syntax = "dconvers [switches]\n" +
@@ -724,7 +724,7 @@ public class Application extends AppBase {
     }
 
     private void performVersion() {
-        log.trace("Application.performVersion.");
+        log.trace("DConvers.performVersion.");
         printVersion();
         System.out.println();
     }

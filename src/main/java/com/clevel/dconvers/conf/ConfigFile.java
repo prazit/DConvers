@@ -1,6 +1,6 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
@@ -11,8 +11,8 @@ import java.io.StringWriter;
 
 public abstract class ConfigFile extends Config {
 
-    public ConfigFile(Application application, String configFile) {
-        super(application, configFile);
+    public ConfigFile(DConvers dconvers, String configFile) {
+        super(dconvers, configFile);
 
         Parameters params = new Parameters();
         FileBasedConfigurationBuilder<FileBasedConfiguration> builder;

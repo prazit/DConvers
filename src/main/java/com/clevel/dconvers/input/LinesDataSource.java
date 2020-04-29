@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
@@ -12,14 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.CharBuffer;
 import java.sql.Types;
 import java.util.*;
 
 public class LinesDataSource extends DataSource {
 
-    public LinesDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public LinesDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -40,7 +39,7 @@ public class LinesDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
         dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
@@ -67,7 +66,7 @@ public class LinesDataSource extends DataSource {
     }
 
     private List<DataRow> getRowListByLine(File file, DataTable dataTable) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         List<DataRow> dataRowList = new ArrayList<>();
         DataRow dataRow;
         BufferedReader br = null;
@@ -106,7 +105,7 @@ public class LinesDataSource extends DataSource {
     }
 
     private List<DataRow> getRowListByEOL(File file, DataTable dataTable, String eol) {
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         List<DataRow> dataRowList = new ArrayList<>();
         DataRow dataRow;
         BufferedReader br = null;
@@ -150,17 +149,17 @@ public class LinesDataSource extends DataSource {
     }
 
     protected DataRow getDataRow(int lineNumber, String line, DataTable dataTable) {
-        DataRow dataRow = new DataRow(application, dataTable);
+        DataRow dataRow = new DataRow(dconvers, dataTable);
         String columnName;
 
         columnName = "Number";
-        dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(lineNumber)));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(lineNumber)));
 
         columnName = "Line";
-        dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, line));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, line));
 
         columnName = "Length";
-        dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, (line == null) ? "0" : String.valueOf(line.length())));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, (line == null) ? "0" : String.valueOf(line.length())));
 
         return dataRow;
     }
@@ -199,7 +198,7 @@ public class LinesDataSource extends DataSource {
                 filter = pattern;
             }
             file = new File(path);
-            files = file.listFiles(new WildCardFilenameFilter(application, name, filter));
+            files = file.listFiles(new WildCardFilenameFilter(dconvers, name, filter));
         } else {
             file = new File(pattern);
             files = new File[]{file};

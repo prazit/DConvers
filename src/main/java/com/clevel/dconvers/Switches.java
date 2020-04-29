@@ -27,8 +27,8 @@ public class Switches extends AppBase {
     private boolean help;
     private boolean version;
 
-    public Switches(Application application) {
-        super(application, "switches");
+    public Switches(DConvers dconvers) {
+        super(dconvers, "switches");
         loadLogger();
 
         options = new Options();
@@ -60,7 +60,7 @@ public class Switches extends AppBase {
     private boolean loadSwitches() {
         CommandLineParser parser = new DefaultParser();
         try {
-            cmd = parser.parse(options, application.args);
+            cmd = parser.parse(options, dconvers.args);
         } catch (ParseException e) {
             error("parse switches failed: " + e.getMessage());
             return false;
@@ -84,7 +84,7 @@ public class Switches extends AppBase {
             return false;
         }
 
-        if (!application.asLib) {
+        if (!dconvers.asLib) {
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             List<ch.qos.logback.classic.Logger> loggerList = loggerContext.getLoggerList();
             loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));

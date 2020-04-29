@@ -1,6 +1,6 @@
 package com.clevel.dconvers.output;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.data.DataTable;
 import com.clevel.dconvers.format.DataFormatter;
@@ -19,8 +19,8 @@ public class DBUpdateOutput extends Output {
 
     private DataSource dataSource;
 
-    public DBUpdateOutput(Application application, String name) {
-        super(application, name);
+    public DBUpdateOutput(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
@@ -32,14 +32,14 @@ public class DBUpdateOutput extends Output {
         String valueQuotes = outputConfig.getDbUpdateValueQuotes();
 
         String dataSourceName = outputConfig.getDbUpdateDataSource();
-        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        dataSource = dconvers.getDataSource(dataSourceName.toUpperCase());
         if (dataSource == null) {
             error("DBUpdateOutput: Datasource({}) is not found, required by dbupdate.datasource",dataSourceName);
             return dataFormatterList;
         }
         String dbms = dataSource.getDataSourceConfig().getDbms();
 
-        dataFormatterList.add(new SQLUpdateFormatter(application, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
+        dataFormatterList.add(new SQLUpdateFormatter(dconvers, tableName, dbms, columnList, nameQuotes, valueQuotes, "\n"));
         return dataFormatterList;
     }
 
@@ -47,7 +47,7 @@ public class DBUpdateOutput extends Output {
     protected Writer openWriter(OutputConfig outputConfig, DataTable dataTable) {
 
         String dataSourceName = outputConfig.getDbUpdateDataSource();
-        dataSource = application.getDataSource(dataSourceName.toUpperCase());
+        dataSource = dconvers.getDataSource(dataSourceName.toUpperCase());
         if (dataSource == null) {
             return null;
         }

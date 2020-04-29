@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataRow;
@@ -19,8 +19,8 @@ public class HtmlEmailFormatter extends DataFormatter {
 
     private SMTP smtp;
 
-    public HtmlEmailFormatter(Application application, String name, OutputConfig outputConfig) {
-        super(application, name, true);
+    public HtmlEmailFormatter(DConvers dconvers, String name, OutputConfig outputConfig) {
+        super(dconvers, name, true);
 
         valueSeparator = ": ";
 
@@ -29,7 +29,7 @@ public class HtmlEmailFormatter extends DataFormatter {
         smtpName = outputConfig.getEmailSMTP();
         isHtml = outputConfig.isEmailHtml();
 
-        smtp = application.getSMTP(smtpName);
+        smtp = dconvers.getSMTP(smtpName);
         valid = (smtp != null);
 
         outputType = "Email";

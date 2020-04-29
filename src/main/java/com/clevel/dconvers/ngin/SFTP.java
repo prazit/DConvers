@@ -1,6 +1,6 @@
 package com.clevel.dconvers.ngin;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.HostConfig;
 import com.jcraft.jsch.*;
 import org.slf4j.Logger;
@@ -16,8 +16,8 @@ public class SFTP extends AppBase implements UserInfo {
     private Session sftpSession;
     private ChannelSftp sftpChannel;
 
-    public SFTP(Application application, String name, HostConfig sftpConfig) {
-        super(application, name);
+    public SFTP(DConvers dconvers, String name, HostConfig sftpConfig) {
+        super(dconvers, name);
 
         this.sftpConfig = sftpConfig;
         this.retry = sftpConfig.getRetry();

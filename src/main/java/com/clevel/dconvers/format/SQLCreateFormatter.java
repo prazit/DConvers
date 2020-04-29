@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
@@ -37,8 +37,8 @@ public class SQLCreateFormatter extends DataFormatter {
     private String pkTypeInteger;
     private String pkTypeString;
 
-    public SQLCreateFormatter(Application application, String name, String dbms, String nameQuotes, String eol, boolean needBegin) {
-        super(application, name, false);
+    public SQLCreateFormatter(DConvers dconvers, String name, String dbms, String nameQuotes, String eol, boolean needBegin) {
+        super(dconvers, name, false);
         tableName = name;
         this.dbms = DBMS.parse(dbms);
         this.nameQuotes = nameQuotes;

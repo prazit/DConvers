@@ -1,27 +1,25 @@
 package com.clevel.dconvers.ngin;
 
-import ch.qos.logback.core.Appender;
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataTable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 
 /**
- * Base class for all in this application framework.
+ * Base class for all in this dconvers framework.
  */
 public abstract class AppBase extends ValidatorBase {
 
-    protected Application application;
+    protected DConvers dconvers;
     protected Logger log;
 
     protected String name;
 
-    public AppBase(Application application, String name) {
-        this.application = application;
+    public AppBase(DConvers dconvers, String name) {
+        this.dconvers = dconvers;
         this.log = loadLogger();
         this.name = name;
         valid = false;
@@ -46,29 +44,32 @@ public abstract class AppBase extends ValidatorBase {
     protected abstract Logger loadLogger();
 
     private void afterError(String message) {
-        application.currentState.setValue(application.errorCode);
-        if (application.currentStateMessage.getValue().isEmpty()) {
-            application.currentStateMessage.setValue(message);
+        if (dconvers == null || dconvers.currentState == null) {
+            return;
+        }
+        dconvers.currentState.setValue(dconvers.errorCode);
+        if (dconvers.currentStateMessage.getValue().isEmpty()) {
+            dconvers.currentStateMessage.setValue(message);
         }
     }
 
     private void afterWarn(String message) {
-        if (application.currentState.getLongValue() == application.errorCode) {
+        if (dconvers.currentState.getLongValue() == dconvers.errorCode) {
             return;
         }
 
-        application.currentState.setValue(application.warningCode);
-        if (application.currentStateMessage.getValue().isEmpty()) {
-            application.currentStateMessage.setValue(message);
+        dconvers.currentState.setValue(dconvers.warningCode);
+        if (dconvers.currentStateMessage.getValue().isEmpty()) {
+            dconvers.currentStateMessage.setValue(message);
         }
     }
 
     private String currentConverterName() {
-        if (application.currentConverter == null) {
+        if (dconvers.currentConverter == null) {
             return "";
         }
 
-        Converter converter = application.currentConverter;
+        Converter converter = dconvers.currentConverter;
         String name = " (converter:" + converter.getName() + ")";
         DataTable dataTable = converter.getCurrentTable();
         if (dataTable == null) {

@@ -1,6 +1,6 @@
 package com.clevel.dconvers.format;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
@@ -27,8 +27,8 @@ public class ConverterSourceFormatter extends DataFormatter {
     private String sqlCount;
     private String truncateTables;
 
-    public ConverterSourceFormatter(Application application, String name, OutputConfig outputConfig) {
-        super(application, name, true);
+    public ConverterSourceFormatter(DConvers dconvers, String name, OutputConfig outputConfig) {
+        super(dconvers, name, true);
 
         eol = outputConfig.getSrcOutputEOL();
         eof = outputConfig.getSrcOutputEOF();
@@ -42,7 +42,7 @@ public class ConverterSourceFormatter extends DataFormatter {
         sourceIndex = 0;
         isFirstRow = true;
 
-        nowString = application.systemVariableMap.get(SystemVariable.NOW).getValue();
+        nowString = dconvers.systemVariableMap.get(SystemVariable.NOW).getValue();
 
         sqlCount = "";
         truncateTables = "";

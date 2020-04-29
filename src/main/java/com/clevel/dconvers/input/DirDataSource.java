@@ -1,6 +1,6 @@
 package com.clevel.dconvers.input;
 
-import com.clevel.dconvers.Application;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataDate;
@@ -22,8 +22,8 @@ public class DirDataSource extends DataSource {
     private boolean isIncludeSub;
     private boolean isIncludeDir;
 
-    public DirDataSource(Application application, String name, DataSourceConfig dataSourceConfig) {
-        super(application, name, dataSourceConfig);
+    public DirDataSource(DConvers dconvers, String name, DataSourceConfig dataSourceConfig) {
+        super(dconvers, name, dataSourceConfig);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DirDataSource extends DataSource {
         isIncludeSub = Boolean.parseBoolean(queryParamMap.get(Property.SUB.key().toUpperCase()));
         log.debug("DirDataSource: isIncludeDir({}) isIncludeSub({})", isIncludeDir, isIncludeSub);
 
-        DataTable dataTable = new DataTable(application, tableName, idColumnName);
+        DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
         dataTable.setDataSource(name);
         dataTable.setQuery(query);
 
@@ -83,43 +83,43 @@ public class DirDataSource extends DataSource {
                 continue;
             }
 
-            dataRow = new DataRow(application, dataTable);
+            dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "Name";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, file.getName()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getName()));
 
             columnName = "Directory";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isDirectory())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isDirectory())));
 
             columnName = "Hidden";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isHidden())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isHidden())));
 
             columnName = "Read";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canRead())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canRead())));
 
             columnName = "Write";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canWrite())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canWrite())));
 
             columnName = "Execute";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canExecute())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canExecute())));
 
             columnName = "Absolute";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
 
             columnName = "LastModified";
-            dataRow.putColumn(columnName, new DataDate(application, 0, Types.DATE, columnName, new Date(file.lastModified())));
+            dataRow.putColumn(columnName, new DataDate(dconvers, 0, Types.DATE, columnName, new Date(file.lastModified())));
 
             columnName = "Length";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.length())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.length())));
 
             columnName = "Path";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, file.getParent()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getParent()));
 
             columnName = "AbsolutePath";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, file.getAbsolutePath()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getAbsolutePath()));
 
             columnName = "CanonicalPath";
-            dataRow.putColumn(columnName, application.createDataColumn(columnName, Types.VARCHAR, getCanonicalPath(file)));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, getCanonicalPath(file)));
 
             dataTable.addRow(dataRow);
         }
@@ -146,7 +146,7 @@ public class DirDataSource extends DataSource {
                 filter = dir;
             }
             directory = new File(path);
-            files = directory.listFiles(new WildCardFilenameFilter(application, name, filter));
+            files = directory.listFiles(new WildCardFilenameFilter(dconvers, name, filter));
             if (files == null) {
                 log.debug("files(0) with filter({}", filter);
                 return fileList;

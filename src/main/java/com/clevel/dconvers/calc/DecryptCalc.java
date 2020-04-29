@@ -1,15 +1,14 @@
 package com.clevel.dconvers.calc;
 
-import com.clevel.dconvers.Application;
-import com.clevel.dconvers.data.DataColumn;
+import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DecryptCalc extends GetCalc {
 
-    public DecryptCalc(Application application, String name) {
-        super(application, name);
+    public DecryptCalc(DConvers dconvers, String name) {
+        super(dconvers, name);
     }
 
     @Override
