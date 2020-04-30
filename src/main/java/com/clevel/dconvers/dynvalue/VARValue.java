@@ -26,7 +26,7 @@ public class VARValue extends DynamicValue {
 
         if (dataColumn == null) {
             valid = false;
-            error("Variable({}) is not found!, required by target({}.{})", systemVariable, targetName, name);
+            error("Variable({}) is not found!, required by target({}.{})", sourceColumnArg, targetName, name);
             dataColumn = null;
         }
     }
