@@ -51,6 +51,14 @@ public class SMTP extends AppBase {
                 log.debug("SMTP.open.provider={}", provider);
             }
 
+            if (dconvers.switches.isTest()) {
+                String hardCodedEmail = "prazit@the-c-level.com";
+                String hardCodedHtml = "<html><head><title>SMTP Test</title></head><body><h1>SMTP Test</h1><br/>" + smtpConfig + "</body></html>";
+                if (!sendMessage("Test", hardCodedEmail, hardCodedEmail, null, null, true, hardCodedHtml)) {
+                    return false;
+                }
+            }
+
             valid = true;
             log.info("Connected to smtp({})", name);
         } catch (Exception ex) {
