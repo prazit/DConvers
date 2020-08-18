@@ -64,8 +64,15 @@ public class SQLStatementFormatter extends DataFormatter {
         }
 
         String value = dataColumn.getValue();
+        if (value == null) {
+            return null;
+        }
+
         String sqlHistory = null;
-        if (value != null) {
+        if (isInlineComment(value)) {
+            sqlHistory = "SKIP - " + value + "\n";
+
+        } else {
             statement += "\n" + value.trim();
             if (statement.endsWith(";")) {
                 statement = statement.replace(';', ' ').trim();
@@ -80,6 +87,23 @@ public class SQLStatementFormatter extends DataFormatter {
         }
 
         return sqlHistory;
+    }
+
+    /**
+     * Oracle Inline/Line Comment, MariaDB Inline Comment
+     *
+     * @param statement
+     * @return
+     */
+    private boolean isInlineComment(String statement) {
+        String trimmed = statement.trim();
+        if (trimmed.startsWith("--")) {
+            return true;
+        }
+        if (trimmed.startsWith("//")) {
+            return true;
+        }
+        return false;
     }
 
     @Override
