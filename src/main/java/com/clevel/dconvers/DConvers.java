@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.*;
 
@@ -71,6 +72,9 @@ public class DConvers extends AppBase {
         construct();
     }
 
+    /**
+     * asLib:
+     */
     public DConvers(String sourceConfig) {
         super("DConvers Library");
 
@@ -83,6 +87,8 @@ public class DConvers extends AppBase {
         this.args = new String[]{"--source=" + sourceConfig};
 
         asLib = true;
+        dataSourceMap = new HashMap<>();
+
         construct();
     }
 
@@ -210,7 +216,7 @@ public class DConvers extends AppBase {
         sourceOutputPath.setValue(dataConversionConfigFile.getOutputSourcePath());
 
         // define user variables here
-        setUserVariables(dataConversionConfigFile.getVariableList());
+        addUserVariables(dataConversionConfigFile.getVariableList());
 
         tableSummary = new SummaryTable(this);
         tableSummary.setOwner(this);
@@ -268,7 +274,9 @@ public class DConvers extends AppBase {
         }
 
         log.trace("DConvers. Load DataSources.");
-        dataSourceMap = new HashMap<>();
+        if (dataSourceMap == null) {
+            dataSourceMap = new HashMap<>();
+        }
         DataSource dataSource;
         String dataSourceName;
         HashMap<String, DataSourceConfig> dataSourceConfigMap = dataConversionConfigFile.getDataSourceConfigMap();
@@ -472,16 +480,18 @@ public class DConvers extends AppBase {
         stop();
     }
 
-    public void setUserVariables(List<Pair<String, String>> variableList) {
-        String name;
-        String value;
-        int type;
-
-        DataColumn variable;
+    /**
+     * asLib: also used in normal mode too.
+     */
+    public void addUserVariables(List<Pair<String, String>> variableList) {
         if (variableList == null) {
             return;
         }
 
+        DataColumn variable;
+        String name;
+        String value;
+        int type;
         for (Pair<String, String> pair : variableList) {
             name = pair.getKey().toUpperCase();
             value = pair.getValue();
@@ -495,6 +505,18 @@ public class DConvers extends AppBase {
                 variable.setValue(value);
             }
         }
+    }
+
+    /**
+     * asLib:
+     */
+    public boolean addDataSource(String dataSourceName, Connection connection) {
+        DataSource dataSource = new DataSource(this, dataSourceName, connection);
+        if (dataSource.getDataSourceConfig().isValid()) {
+            dataSourceMap.put(dataSourceName.toUpperCase(), dataSource);
+            return true;
+        }
+        return false;
     }
 
     private int getVariableType(String value) {

@@ -9,6 +9,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,9 +49,58 @@ public class DataSourceConfig extends Config {
         log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
     }
 
+    /**
+     * asLib: DataSourceConfig from Connection.
+     **/
+    public DataSourceConfig(DConvers dconvers, Connection connection) {
+        super(dconvers, "from connection");
+        properties = dconvers.dataConversionConfigFile.properties;
+
+        valid = loadProperties(connection);
+        if (valid) valid = validate();
+
+        log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
+    }
+
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(DataSourceConfig.class);
+    }
+
+    /**
+     * asLib:
+     */
+    protected boolean loadProperties(Connection connection) {
+        log.trace("DataSourceConfig.loadProperties(Connection).");
+        propList = new ArrayList<>();
+
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+
+            url = metaData.getURL();
+            driver = metaData.getDriverName();
+            schema = metaData.getSchemaTerm();
+            user = metaData.getUserName();
+            password = "";
+            retry = 3;
+
+            pre = "";
+            post = "";
+            nameQuotes = "";
+
+            String dbms = getDbms().toUpperCase();
+            if (dbms.equals("ORACLE")) {
+                valueQuotes = "\"";
+            } else {
+                /*MySQL(MariaDB),AS400*/
+                valueQuotes = "'";
+            }
+        } catch (SQLException ex) {
+            error("Load properties from Connection is failed!, ", ex);
+            return false;
+        }
+
+        return true;
     }
 
     @Override

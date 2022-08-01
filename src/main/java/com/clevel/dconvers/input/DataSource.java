@@ -35,6 +35,24 @@ public class DataSource extends UtilBase {
         log.trace("DataSource({}) is created", name);
     }
 
+    /**
+     * asLib: predefined datasource.
+     * <p>
+     * usage: DataSource dataSource = new DataSource(dconvers, "datasource-name", connection);
+     * and now the DataSource is ready to use, assign "datasource-name" to the table in converter configuration file before call dconvers.start().
+     */
+    public DataSource(DConvers dconvers, String name, Connection connection) {
+        super(dconvers, name);
+
+        this.dataSourceConfig = new DataSourceConfig(dconvers, connection);
+        this.connection = connection;
+
+        useInformationSchema = false;
+        valid = true;
+
+        log.trace("DataSource({}) is created", name);
+    }
+
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(DataSource.class);
