@@ -8,7 +8,7 @@
 | Mode   | Value for [buffer-mode] | Description                                                  |
 | ------ | ----------------------- | ------------------------------------------------------------ |
 | Memory | Memory                  | In normal (default), data-table load all records into Memory (large physical memory is required) |
-| DBMS   | [Data Source Name]      | Alternative way for large number of records or low memory resource, data-table load only the ActiveRows into Memory and unload them when they're going to be InactiveRows. |
+| DBMS   | [Data Source Name]      | Alternative way for large number of records or low memory resource, data-table will load only the ActiveRows into Memory and unload them when they're going to be Inactive. |
 
 
 
