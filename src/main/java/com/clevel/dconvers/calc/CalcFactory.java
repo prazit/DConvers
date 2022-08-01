@@ -1,7 +1,6 @@
 package com.clevel.dconvers.calc;
 
 import com.clevel.dconvers.DConvers;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +10,11 @@ public class CalcFactory {
 
     private static HashMap<CalcTypes, Calc> calcMap = new HashMap<>();
 
-    public static Calc getCalc(@NotNull DConvers dconvers, @NotNull CalcTypes calcType) {
+    /**
+     * @param dconvers @NotNull
+     * @param calcType @NotNull
+     */
+    public static Calc getCalc(DConvers dconvers, CalcTypes calcType) {
         Calc calc = calcMap.get(calcType);
         if (calc == null) {
 

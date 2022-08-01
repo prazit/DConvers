@@ -2,7 +2,6 @@ package com.clevel.dconvers.input;
 
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +12,12 @@ public class InputFactory {
     private static HashMap<String, DataSource> inputMap = new HashMap<>();
     private static HashMap<String, DataSourceConfig> dataSourceConfigMap = new HashMap<>();
 
-    public static DataSource getDataSource(@NotNull DConvers dconvers, @NotNull String name, @NotNull String className) {
+    /**
+     * @param dconvers  @NotNull
+     * @param name      @NotNull
+     * @param className @NotNull
+     */
+    public static DataSource getDataSource(DConvers dconvers, String name, String className) {
         DataSource dataSource = inputMap.get(name);
         if (dataSource == null) {
             DataSourceConfig dataSourceConfig = new DataSourceConfig(dconvers, name);

@@ -2,7 +2,6 @@ package com.clevel.dconvers.output;
 
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.OutputPluginConfig;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +12,11 @@ public class OutputFactory {
     private static HashMap<OutputTypes, Output> outputMap = new HashMap<>();
     private static HashMap<OutputTypes, OutputPluginConfig> outputConfigMap = new HashMap<>();
 
-    public static Output getOutput(@NotNull DConvers dconvers, @NotNull OutputTypes outputType) {
+    /**
+     * @param dconvers @NotNull
+     * @param outputType @NotNull
+     */
+    public static Output getOutput(DConvers dconvers, OutputTypes outputType) {
         Output output = outputMap.get(outputType);
         if (output == null) {
 
@@ -39,7 +42,11 @@ public class OutputFactory {
         return output;
     }
 
-    public static OutputPluginConfig getPluginConfig(@NotNull DConvers dconvers, @NotNull OutputTypes outputType) {
+    /**
+     * @param dconvers @NotNull
+     * @param outputType @NotNull
+     */
+    public static OutputPluginConfig getPluginConfig(DConvers dconvers, OutputTypes outputType) {
         OutputPluginConfig config = outputConfigMap.get(outputType);
         if (config == null) {
 

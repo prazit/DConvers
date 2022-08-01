@@ -1,15 +1,17 @@
 package com.clevel.dconvers.dynvalue;
 
 import com.clevel.dconvers.DConvers;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class DynamicValueFactory {
 
-
-    public static DynamicValue getDynamicValue(@NotNull DynamicValueType dynamicValueType, @NotNull DConvers dconvers, String targetName, String targetColumnName, int targetColumnIndex) {
+    /**
+     * @param dynamicValueType @NotNull
+     * @param dconvers @NotNull
+     */
+    public static DynamicValue getDynamicValue(DynamicValueType dynamicValueType, DConvers dconvers, String targetName, String targetColumnName, int targetColumnIndex) {
         DynamicValue dynamicValue = null;
 
         try {

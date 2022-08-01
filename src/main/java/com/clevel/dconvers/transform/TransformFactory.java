@@ -1,7 +1,6 @@
 package com.clevel.dconvers.transform;
 
 import com.clevel.dconvers.DConvers;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +10,11 @@ public class TransformFactory {
 
     private static HashMap<TransformTypes, Transform> transformMap = new HashMap<>();
 
-    public static Transform getTransform(@NotNull DConvers dconvers, @NotNull TransformTypes transformType) {
+    /**
+     * @param dconvers @NotNull
+     * @param transformType @NotNull
+     */
+    public static Transform getTransform(DConvers dconvers, TransformTypes transformType) {
         Transform transform = transformMap.get(transformType);
         if (transform == null) {
 

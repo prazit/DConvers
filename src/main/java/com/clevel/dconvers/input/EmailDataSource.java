@@ -3,6 +3,7 @@ package com.clevel.dconvers.input;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.lang3.time.DateUtils;
@@ -11,10 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.DatatypeConverter;
 import java.io.*;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Types;
 import java.util.Date;
 import java.util.Enumeration;
@@ -344,15 +342,7 @@ public class EmailDataSource extends DataSource {
     }
 
     private String md5(String sourceText) {
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("MD5");
-            md.update(sourceText.getBytes());
-        } catch (NoSuchAlgorithmException e) {
-            error("md5 encode failed: ", e);
-            return sourceText;
-        }
-        return DatatypeConverter.printHexBinary(md.digest());
+        return DigestUtils.md5Hex(sourceText);
     }
 
     private String getFileExtension(String fileName) {

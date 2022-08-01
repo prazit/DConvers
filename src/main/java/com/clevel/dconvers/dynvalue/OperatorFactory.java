@@ -1,7 +1,6 @@
 package com.clevel.dconvers.dynvalue;
 
 import com.clevel.dconvers.DConvers;
-import com.sun.istack.internal.NotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +10,11 @@ public class OperatorFactory {
 
     private static HashMap<OperatorType, Operator> operatorMap = new HashMap<>();
 
-    public static Operator getOperator(@NotNull DConvers dconvers, @NotNull OperatorType operatorType) {
+    /**
+     * @param dconvers @NotNull
+     * @param operatorType @NotNull
+     */
+    public static Operator getOperator(DConvers dconvers, OperatorType operatorType) {
         Operator operator = operatorMap.get(operatorType);
         if (operator == null) {
 
