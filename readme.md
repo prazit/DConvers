@@ -186,8 +186,8 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 | Markdown(Table) File | MARKDOWN          | file-name                                                    |                                          |           |               |                                                              |
 | Email                | EMAIL             | Search String                                                |                                          |           |               |                                                              |
 | Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                      |
-| DConvers             | SYSTEM            | see 'System Query' for detailed                              |                                          |           |               |                                                              |
-| File System          | DIR               | folder-path with wildcard                                    | sub                                      | boolean   | false         | include sub directories                                      |
+| Environment          | SYSTEM            | see 'System Query' for detailed                              |                                          |           |               |                                                              |
+| Directory List       | DIR               | folder-path with wildcard                                    | sub                                      | boolean   | false         | include sub directories                                      |
 |                      |                   |                                                              | dir                                      | boolean   | true          | true = include folder, false = file only                     |
 
 **Example: Query Parameter**
@@ -667,13 +667,13 @@ your.property.with.dynamic.value.enabled=$[TXT:Email-Template.html]
         $[VAR:TABLE_READER]
     </h1>
     <table>
-    $[TAB:source_table]
     <tr>
         <td>No.</td>
         <td>Name</td>
         <td>Last</td>
         <td>Email</td>
     </tr>
+    $[TAB:source_table]
     <tr>
         <td>$[VAR:ROW_READER]</td>
         <td>$[COL:first_column]</td>
@@ -725,8 +725,8 @@ Assume: source_table has 2 rows.
 
 Calculators for use in CAL type dynamic value expression.
 
->   Row Identifier can be row-index start at 1, CURRENT or DynamicValue such as VAR:ROW_NUMBER and can be LookupValue such as COLUMN_NAME=VALUE
->   Column Identifier can be column-index start at 1, Column Name or DynamicValue such as VAR:USER_VAR_COL1_NAME.
+>   **Row Identifier** can be row-index start at 1, CURRENT or DynamicValue such as VAR:ROW_NUMBER and can be LookupValue such as COLUMN_NAME=VALUE
+>   **Column Identifier** can be column-index start at 1, Column Name or DynamicValue such as VAR:USER_VAR_COL1_NAME.
 
 | Calculator | Parameters                                                   | Description                                                  |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
