@@ -2,6 +2,7 @@ package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ public class SourceConfig extends Config {
 
     private String dataSource;
     private String query;
-    private HashMap<String,String> queryParameterMap;
+    private HashMap<String, String> queryParameterMap;
     private String id;
     private boolean target;
 
@@ -130,5 +131,58 @@ public class SourceConfig extends Config {
                 .append("valid", valid)
                 .toString()
                 .replace('=', ':');
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setQuerySplit(int querySplit) {
+        this.querySplit = querySplit;
+    }
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setQueryParameterMap(HashMap<String, String> queryParameterMap) {
+        this.queryParameterMap = queryParameterMap;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTarget(boolean target) {
+        this.target = target;
+    }
+
+    public void setOutputConfig(OutputConfig outputConfig) {
+        this.outputConfig = outputConfig;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+        Property source = Property.SOURCE;
+
+        setPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE), "", dataSource);
+        setPropertyString(properties, source.connectKey(name, Property.QUERY), "", query);
+        setPropertyString(properties, source.connectKey(name, Property.ID), "id", id);
+        setPropertyInt(properties, source.connectKey(name, Property.INDEX), 0, index);
+        setPropertyInt(properties, source.connectKey(name, Property.QUERY_SPLIT), 0, querySplit);
+        setPropertyBoolean(properties, source.connectKey(name, Property.TARGET), true, target);
+
+        Configuration paramProperties = properties.subset(source.connectKey(name, Property.QUERY));
+        Iterator<String> paramKeyList = paramProperties.getKeys();
+        String propKey = source.connectKey(name, Property.QUERY, Property.PROPERTIES);
+        for (String key : queryParameterMap.keySet()) {
+            String value = queryParameterMap.get(key);
+            setPropertyString(properties, Property.connectKeyString(propKey, key), "", value);
+        }
+
     }
 }

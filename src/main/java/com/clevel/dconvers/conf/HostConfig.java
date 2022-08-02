@@ -2,6 +2,7 @@ package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -16,6 +17,9 @@ public class HostConfig extends Config {
     private int retry;
     private String tmp;
     private Property rootProperty;
+
+    private boolean userEncrypted;
+    private boolean passwordEncrypted;
 
     public HostConfig(DConvers dconvers, String name, Property rootProperty) {
         super(dconvers, name);
@@ -37,19 +41,19 @@ public class HostConfig extends Config {
     protected boolean loadProperties() {
         log.trace("SFTPConfig.loadProperties.");
 
-        host = properties.getString(rootProperty.connectKey(name, Property.HOST), "");
+        host = getPropertyString(properties, rootProperty.connectKey(name, Property.HOST), "");
         port = properties.getInt(rootProperty.connectKey(name, Property.PORT), 22);
-        user = properties.getString(rootProperty.connectKey(name, Property.USER));
-        password = properties.getString(rootProperty.connectKey(name, Property.PASSWORD));
+        user = getPropertyString(properties, rootProperty.connectKey(name, Property.USER));
+        password = getPropertyString(properties, rootProperty.connectKey(name, Property.PASSWORD));
         retry = properties.getInt(rootProperty.connectKey(name, Property.RETRY), 1);
-        tmp = properties.getString(rootProperty.connectKey(name, Property.TMP), "");
+        tmp = getPropertyString(properties, rootProperty.connectKey(name, Property.TMP), "");
 
-        boolean userEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        userEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false);
         if (userEncrypted) {
             user = Crypto.decrypt(user);
         }
 
-        boolean passwordEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        passwordEncrypted = properties.getBoolean(rootProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
         if (passwordEncrypted) {
             password = Crypto.decrypt(password);
         }
@@ -62,7 +66,7 @@ public class HostConfig extends Config {
         log.trace("HostConfig.validateProperties.");
 
         if (user == null || password == null) {
-            log.debug("some value is null, please check {}.{} section", rootProperty.name(),name);
+            log.debug("some value is null, please check {}.{} section", rootProperty.name(), name);
             return false;
         }
 
@@ -105,5 +109,52 @@ public class HostConfig extends Config {
                 .append("tmp", tmp)
                 .toString()
                 .replace('=', ':');
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
+    }
+
+    public void setTmp(String tmp) {
+        this.tmp = tmp;
+    }
+
+    public void setUserEncrypted(boolean userEncrypted) {
+        this.userEncrypted = userEncrypted;
+    }
+
+    public void setPasswordEncrypted(boolean passwordEncrypted) {
+        this.passwordEncrypted = passwordEncrypted;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        setPropertyString(properties, rootProperty.connectKey(name, Property.HOST), "", host);
+        setPropertyInt(properties, rootProperty.connectKey(name, Property.PORT), 22, port);
+        setPropertyString(properties, rootProperty.connectKey(name, Property.USER), "", (userEncrypted ? Crypto.encrypt(user) : user));
+        setPropertyString(properties, rootProperty.connectKey(name, Property.PASSWORD), "", (passwordEncrypted ? Crypto.encrypt(password) : password));
+        setPropertyInt(properties, rootProperty.connectKey(name, Property.RETRY), 1, retry);
+        setPropertyString(properties, rootProperty.connectKey(name, Property.TMP), "/tmp/", tmp);
+
+        setPropertyBoolean(properties, rootProperty.connectKey(name, Property.USER, Property.ENCRYPTED), false, userEncrypted);
+        setPropertyBoolean(properties, rootProperty.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false, passwordEncrypted);
+
     }
 }

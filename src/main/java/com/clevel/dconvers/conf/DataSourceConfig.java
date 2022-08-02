@@ -4,6 +4,7 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -27,6 +28,9 @@ public class DataSourceConfig extends Config {
     private String user;
     private String password;
     private int retry;
+
+    boolean userEncrypted;
+    boolean passwordEncrypted;
 
     private List<Pair<String, String>> propList;
 
@@ -121,12 +125,12 @@ public class DataSourceConfig extends Config {
         password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
         retry = properties.getInt(dataSource.connectKey(name, Property.RETRY), 1);
 
-        boolean userEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        userEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false);
         if (userEncrypted) {
             user = Crypto.decrypt(user);
         }
 
-        boolean passwordEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        passwordEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
         if (passwordEncrypted) {
             password = Crypto.decrypt(password);
         }
@@ -304,5 +308,97 @@ public class DataSourceConfig extends Config {
                 .append("valid", valid)
                 .toString()
                 .replace('=', ':');
+    }
+
+    public void setDbms(String dbms) {
+        this.dbms = dbms;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setDriver(String driver) {
+        this.driver = driver;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
+    }
+
+    public void setPropList(List<Pair<String, String>> propList) {
+        this.propList = propList;
+    }
+
+    public void setPre(String pre) {
+        this.pre = pre;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public void setValueQuotes(String valueQuotes) {
+        this.valueQuotes = valueQuotes;
+    }
+
+    public void setNameQuotes(String nameQuotes) {
+        this.nameQuotes = nameQuotes;
+    }
+
+    public void setUserEncrypted(boolean userEncrypted) {
+        this.userEncrypted = userEncrypted;
+    }
+
+    public void setPasswordEncrypted(boolean passwordEncrypted) {
+        this.passwordEncrypted = passwordEncrypted;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        /*save all properties*/
+        Property dataSource = Property.DATA_SOURCE;
+        setPropertyString(properties, dataSource.connectKey(name, Property.URL), "", url);
+        setPropertyString(properties, dataSource.connectKey(name, Property.DRIVER), "", driver);
+        setPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "", schema);
+        setPropertyString(properties, dataSource.connectKey(name, Property.USER), "", userEncrypted ? Crypto.encrypt(user) : user);
+        setPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD), "", passwordEncrypted ? Crypto.encrypt(password) : password);
+        setPropertyInt(properties, dataSource.connectKey(name, Property.RETRY), 1, retry);
+
+        setPropertyBoolean(properties, dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false, userEncrypted);
+        setPropertyBoolean(properties, dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false, passwordEncrypted);
+
+        for (Pair<String, String> prop : propList) setPropertyString(properties, dataSource.connectKey(Property.PROPERTIES.connectKey(prop.getKey())), "", prop.getValue());
+
+        setPropertyString(properties, dataSource.connectKey(name, Property.PRE), "", pre);
+        setPropertyString(properties, dataSource.connectKey(name, Property.POST), "", post);
+
+        setPropertyBoolean(properties, dataSource.connectKey(name, Property.SSL), false, ssl);
+        setPropertyString(properties, dataSource.connectKey(name, Property.HOST), "", host);
+
+        setPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), "", nameQuotes);
+        setPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), "\"", valueQuotes);
+
     }
 }

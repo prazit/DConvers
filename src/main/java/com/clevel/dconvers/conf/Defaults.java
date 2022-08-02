@@ -22,7 +22,9 @@ public enum Defaults {
 
     EXIT_CODE_SUCCESS(0),
     EXIT_CODE_ERROR(1),
-    EXIT_CODE_WARNING(2);
+    EXIT_CODE_WARNING(2),
+
+    INTERNAL_CONFIGS("internal.configs");
 
     private int type;
 
@@ -65,5 +67,10 @@ public enum Defaults {
 
     public boolean getBooleanValue() {
         return longValue == 1L;
+    }
+
+    @Override
+    public String toString() {
+        return type == Types.VARCHAR ? stringValue : String.valueOf(longValue);
     }
 }

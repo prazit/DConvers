@@ -4,6 +4,7 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.transform.TransformTypes;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,7 @@ public class TransformConfig extends Config {
     // ArgumentName = String
     // ArgumentList = HashMap<ArgumentName,ArgumentValue>>
     // TransformList = List<Pair<TransformTypes,ArgumentList>>
-    private List<Pair<TransformTypes,HashMap<String, String>>> transformList;
+    private List<Pair<TransformTypes, HashMap<String, String>>> transformList;
 
     public TransformConfig(DConvers dconvers, String baseProperty, Configuration baseProperties) {
         super(dconvers, baseProperty);
@@ -113,11 +114,36 @@ public class TransformConfig extends Config {
         return transform;
     }
 
-    public List<Pair<TransformTypes,HashMap<String, String>>> getTransformList() {
+    public List<Pair<TransformTypes, HashMap<String, String>>> getTransformList() {
         return transformList;
     }
 
     public boolean needTransform() {
         return transformList.size() > 0;
+    }
+
+    public void setTransformList(List<Pair<TransformTypes, HashMap<String, String>>> transformList) {
+        this.transformList = transformList;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+        String transformProperty = name + "." + Property.TRANSFORM.key();
+        String arguments, transform, value;
+        for (Pair<TransformTypes, HashMap<String, String>> transformation : transformList) {
+            TransformTypes transformTypes = transformation.getKey();
+            HashMap<String, String> argumentMap = transformation.getValue();
+
+            for (String argumentName : argumentMap.keySet()) {
+                if (argumentName.compareTo("arguments") == 0) {
+                    arguments = argumentMap.get(argumentName);
+                    transform = transformTypes.name() + "(" + arguments + ")";
+                    setPropertyString(properties, transformProperty, "", transform);
+                } else {
+                    value = argumentMap.get(argumentName);
+                    setPropertyString(properties, Property.connectKeyString(transformProperty, transformTypes.name(), argumentName), "", value);
+                }
+            }
+        }// end for(Pair)
     }
 }

@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -8,8 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConverterConfigFile extends ConfigFile {
 
@@ -108,5 +111,35 @@ public class ConverterConfigFile extends ConfigFile {
                 .append("targetConfigMap", targetConfigMap)
                 .toString()
                 .replace('=', ':');
+    }
+
+    public void setSourceConfigMap(HashMap<String, SourceConfig> sourceConfigMap) {
+        this.sourceConfigMap = sourceConfigMap;
+    }
+
+    public void setTargetConfigMap(HashMap<String, TargetConfig> targetConfigMap) {
+        this.targetConfigMap = targetConfigMap;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 1, index);
+
+        for (SourceConfig sourceConfig : sourceConfigMap.values()) {
+            setPropertyString(properties, Property.SOURCE.key(), "", sourceConfig.getName());
+            sourceConfig.saveProperties();
+        }
+
+        for (TargetConfig targetConfig : targetConfigMap.values()) {
+            setPropertyString(properties, Property.TARGET.key(), "", targetConfig.getName());
+            targetConfig.saveProperties();
+        }
+
+        propertiesBuilder.save();
     }
 }

@@ -4,6 +4,7 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -1464,4 +1465,622 @@ public class OutputConfig extends Config {
                 .replace('=', ':');
     }
 
+    public void setSrc(boolean src) {
+        this.src = src;
+    }
+
+    public void setSrcSftp(String srcSftp) {
+        this.srcSftp = srcSftp;
+    }
+
+    public void setSrcSftpOutput(String srcSftpOutput) {
+        this.srcSftpOutput = srcSftpOutput;
+    }
+
+    public void setSrcOutput(String srcOutput) {
+        this.srcOutput = srcOutput;
+    }
+
+    public void setSrcOutputAppend(boolean srcOutputAppend) {
+        this.srcOutputAppend = srcOutputAppend;
+    }
+
+    public void setSrcOutputAutoCreateDir(boolean srcOutputAutoCreateDir) {
+        this.srcOutputAutoCreateDir = srcOutputAutoCreateDir;
+    }
+
+    public void setSrcOutputCharset(String srcOutputCharset) {
+        this.srcOutputCharset = srcOutputCharset;
+    }
+
+    public void setSrcOutputEOL(String srcOutputEOL) {
+        this.srcOutputEOL = srcOutputEOL;
+    }
+
+    public void setSrcOutputEOF(String srcOutputEOF) {
+        this.srcOutputEOF = srcOutputEOF;
+    }
+
+    public void setSrcOwner(String srcOwner) {
+        this.srcOwner = srcOwner;
+    }
+
+    public void setSrcTable(String srcTable) {
+        this.srcTable = srcTable;
+    }
+
+    public void setSrcId(String srcId) {
+        this.srcId = srcId;
+    }
+
+    public void setSrcDataSource(String srcDataSource) {
+        this.srcDataSource = srcDataSource;
+    }
+
+    public void setSrcOutputs(String srcOutputs) {
+        this.srcOutputs = srcOutputs;
+    }
+
+    public void setTar(boolean tar) {
+        this.tar = tar;
+    }
+
+    public void setTarForSource(boolean tarForSource) {
+        this.tarForSource = tarForSource;
+    }
+
+    public void setTarForName(boolean tarForName) {
+        this.tarForName = tarForName;
+    }
+
+    public void setTarSftp(String tarSftp) {
+        this.tarSftp = tarSftp;
+    }
+
+    public void setTarSftpOutput(String tarSftpOutput) {
+        this.tarSftpOutput = tarSftpOutput;
+    }
+
+    public void setTarOutput(String tarOutput) {
+        this.tarOutput = tarOutput;
+    }
+
+    public void setTarOutputAppend(boolean tarOutputAppend) {
+        this.tarOutputAppend = tarOutputAppend;
+    }
+
+    public void setTarOutputAutoCreateDir(boolean tarOutputAutoCreateDir) {
+        this.tarOutputAutoCreateDir = tarOutputAutoCreateDir;
+    }
+
+    public void setTarOutputCharset(String tarOutputCharset) {
+        this.tarOutputCharset = tarOutputCharset;
+    }
+
+    public void setTarOutputEOL(String tarOutputEOL) {
+        this.tarOutputEOL = tarOutputEOL;
+    }
+
+    public void setTarOutputEOF(String tarOutputEOF) {
+        this.tarOutputEOF = tarOutputEOF;
+    }
+
+    public void setTarOutputs(String tarOutputs) {
+        this.tarOutputs = tarOutputs;
+    }
+
+    public void setSql(boolean sql) {
+        this.sql = sql;
+    }
+
+    public void setSqlSftp(String sqlSftp) {
+        this.sqlSftp = sqlSftp;
+    }
+
+    public void setSqlSftpOutput(String sqlSftpOutput) {
+        this.sqlSftpOutput = sqlSftpOutput;
+    }
+
+    public void setSqlCombineOutput(String sqlCombineOutput) {
+        this.sqlCombineOutput = sqlCombineOutput;
+    }
+
+    public void setSqlOutput(String sqlOutput) {
+        this.sqlOutput = sqlOutput;
+    }
+
+    public void setSqlOutputAppend(boolean sqlOutputAppend) {
+        this.sqlOutputAppend = sqlOutputAppend;
+    }
+
+    public void setSqlOutputAutoCreateDir(boolean sqlOutputAutoCreateDir) {
+        this.sqlOutputAutoCreateDir = sqlOutputAutoCreateDir;
+    }
+
+    public void setSqlOutputCharset(String sqlOutputCharset) {
+        this.sqlOutputCharset = sqlOutputCharset;
+    }
+
+    public void setSqlOutputEOL(String sqlOutputEOL) {
+        this.sqlOutputEOL = sqlOutputEOL;
+    }
+
+    public void setSqlOutputEOF(String sqlOutputEOF) {
+        this.sqlOutputEOF = sqlOutputEOF;
+    }
+
+    public void setSqlTable(String sqlTable) {
+        this.sqlTable = sqlTable;
+    }
+
+    public void setSqlColumn(List<String> sqlColumn) {
+        this.sqlColumn = sqlColumn;
+    }
+
+    public void setSqlNameQuotes(String sqlNameQuotes) {
+        this.sqlNameQuotes = sqlNameQuotes;
+    }
+
+    public void setSqlValueQuotes(String sqlValueQuotes) {
+        this.sqlValueQuotes = sqlValueQuotes;
+    }
+
+    public void setSqlDBMS(String sqlDBMS) {
+        this.sqlDBMS = sqlDBMS;
+    }
+
+    public void setSqlCreate(boolean sqlCreate) {
+        this.sqlCreate = sqlCreate;
+    }
+
+    public void setSqlInsert(boolean sqlInsert) {
+        this.sqlInsert = sqlInsert;
+    }
+
+    public void setSqlUpdate(boolean sqlUpdate) {
+        this.sqlUpdate = sqlUpdate;
+    }
+
+    public void setSqlPostSQL(List<String> sqlPostSQL) {
+        this.sqlPostSQL = sqlPostSQL;
+    }
+
+    public void setSqlPreSQL(List<String> sqlPreSQL) {
+        this.sqlPreSQL = sqlPreSQL;
+    }
+
+    public void setMarkdown(boolean markdown) {
+        this.markdown = markdown;
+    }
+
+    public void setMarkdownSftp(String markdownSftp) {
+        this.markdownSftp = markdownSftp;
+    }
+
+    public void setMarkdownSftpOutput(String markdownSftpOutput) {
+        this.markdownSftpOutput = markdownSftpOutput;
+    }
+
+    public void setMarkdownOutput(String markdownOutput) {
+        this.markdownOutput = markdownOutput;
+    }
+
+    public void setMarkdownOutputAppend(boolean markdownOutputAppend) {
+        this.markdownOutputAppend = markdownOutputAppend;
+    }
+
+    public void setMarkdownOutputAutoCreateDir(boolean markdownOutputAutoCreateDir) {
+        this.markdownOutputAutoCreateDir = markdownOutputAutoCreateDir;
+    }
+
+    public void setMarkdownOutputCharset(String markdownOutputCharset) {
+        this.markdownOutputCharset = markdownOutputCharset;
+    }
+
+    public void setMarkdownOutputEOL(String markdownOutputEOL) {
+        this.markdownOutputEOL = markdownOutputEOL;
+    }
+
+    public void setMarkdownOutputEOF(String markdownOutputEOF) {
+        this.markdownOutputEOF = markdownOutputEOF;
+    }
+
+    public void setMarkdownComment(boolean markdownComment) {
+        this.markdownComment = markdownComment;
+    }
+
+    public void setMarkdownCommentDataSource(boolean markdownCommentDataSource) {
+        this.markdownCommentDataSource = markdownCommentDataSource;
+    }
+
+    public void setMarkdownCommentQuery(boolean markdownCommentQuery) {
+        this.markdownCommentQuery = markdownCommentQuery;
+    }
+
+    public void setMarkdownTitle(boolean markdownTitle) {
+        this.markdownTitle = markdownTitle;
+    }
+
+    public void setMarkdownRowNumber(boolean markdownRowNumber) {
+        this.markdownRowNumber = markdownRowNumber;
+    }
+
+    public void setMarkdownMermaid(boolean markdownMermaid) {
+        this.markdownMermaid = markdownMermaid;
+    }
+
+    public void setMarkdownMermaidFull(boolean markdownMermaidFull) {
+        this.markdownMermaidFull = markdownMermaidFull;
+    }
+
+    public void setPdf(boolean pdf) {
+        this.pdf = pdf;
+    }
+
+    public void setPdfJRXML(Object pdfJRXML) {
+        this.pdfJRXML = pdfJRXML;
+    }
+
+    public void setPdfSftp(String pdfSftp) {
+        this.pdfSftp = pdfSftp;
+    }
+
+    public void setPdfSftpOutput(String pdfSftpOutput) {
+        this.pdfSftpOutput = pdfSftpOutput;
+    }
+
+    public void setPdfOutput(String pdfOutput) {
+        this.pdfOutput = pdfOutput;
+    }
+
+    public void setPdfOutputAutoCreateDir(boolean pdfOutputAutoCreateDir) {
+        this.pdfOutputAutoCreateDir = pdfOutputAutoCreateDir;
+    }
+
+    public void setTxt(boolean txt) {
+        this.txt = txt;
+    }
+
+    public void setTxtSftp(String txtSftp) {
+        this.txtSftp = txtSftp;
+    }
+
+    public void setTxtSftpOutput(String txtSftpOutput) {
+        this.txtSftpOutput = txtSftpOutput;
+    }
+
+    public void setTxtOutput(String txtOutput) {
+        this.txtOutput = txtOutput;
+    }
+
+    public void setTxtOutputAppend(boolean txtOutputAppend) {
+        this.txtOutputAppend = txtOutputAppend;
+    }
+
+    public void setTxtOutputAutoCreateDir(boolean txtOutputAutoCreateDir) {
+        this.txtOutputAutoCreateDir = txtOutputAutoCreateDir;
+    }
+
+    public void setTxtOutputCharset(String txtOutputCharset) {
+        this.txtOutputCharset = txtOutputCharset;
+    }
+
+    public void setTxtOutputEOL(String txtOutputEOL) {
+        this.txtOutputEOL = txtOutputEOL;
+    }
+
+    public void setTxtOutputEOF(String txtOutputEOF) {
+        this.txtOutputEOF = txtOutputEOF;
+    }
+
+    public void setTxtSeparator(String txtSeparator) {
+        this.txtSeparator = txtSeparator;
+    }
+
+    public void setTxtLengthMode(String txtLengthMode) {
+        this.txtLengthMode = txtLengthMode;
+    }
+
+    public void setTxtFormat(List<String> txtFormat) {
+        this.txtFormat = txtFormat;
+    }
+
+    public void setTxtFormatDate(String txtFormatDate) {
+        this.txtFormatDate = txtFormatDate;
+    }
+
+    public void setTxtFormatDatetime(String txtFormatDatetime) {
+        this.txtFormatDatetime = txtFormatDatetime;
+    }
+
+    public void setTxtFillString(String txtFillString) {
+        this.txtFillString = txtFillString;
+    }
+
+    public void setTxtFillNumber(String txtFillNumber) {
+        this.txtFillNumber = txtFillNumber;
+    }
+
+    public void setTxtFillDate(String txtFillDate) {
+        this.txtFillDate = txtFillDate;
+    }
+
+    public void setCsv(boolean csv) {
+        this.csv = csv;
+    }
+
+    public void setCsvSftp(String csvSftp) {
+        this.csvSftp = csvSftp;
+    }
+
+    public void setCsvSftpOutput(String csvSftpOutput) {
+        this.csvSftpOutput = csvSftpOutput;
+    }
+
+    public void setCsvOutput(String csvOutput) {
+        this.csvOutput = csvOutput;
+    }
+
+    public void setCsvOutputAppend(boolean csvOutputAppend) {
+        this.csvOutputAppend = csvOutputAppend;
+    }
+
+    public void setCsvOutputAutoCreateDir(boolean csvOutputAutoCreateDir) {
+        this.csvOutputAutoCreateDir = csvOutputAutoCreateDir;
+    }
+
+    public void setCsvOutputCharset(String csvOutputCharset) {
+        this.csvOutputCharset = csvOutputCharset;
+    }
+
+    public void setCsvOutputBOF(String csvOutputBOF) {
+        this.csvOutputBOF = csvOutputBOF;
+    }
+
+    public void setCsvOutputEOL(String csvOutputEOL) {
+        this.csvOutputEOL = csvOutputEOL;
+    }
+
+    public void setCsvOutputEOF(String csvOutputEOF) {
+        this.csvOutputEOF = csvOutputEOF;
+    }
+
+    public void setCsvHeader(boolean csvHeader) {
+        this.csvHeader = csvHeader;
+    }
+
+    public void setCsvHeaderColumn(List<String> csvHeaderColumn) {
+        this.csvHeaderColumn = csvHeaderColumn;
+    }
+
+    public void setCsvSeparator(String csvSeparator) {
+        this.csvSeparator = csvSeparator;
+    }
+
+    public void setCsvNullString(String csvNullString) {
+        this.csvNullString = csvNullString;
+    }
+
+    public void setCsvFormat(List<String> csvFormat) {
+        this.csvFormat = csvFormat;
+    }
+
+    public void setCsvFormatDate(String csvFormatDate) {
+        this.csvFormatDate = csvFormatDate;
+    }
+
+    public void setCsvFormatDatetime(String csvFormatDatetime) {
+        this.csvFormatDatetime = csvFormatDatetime;
+    }
+
+    public void setCsvFormatInteger(String csvFormatInteger) {
+        this.csvFormatInteger = csvFormatInteger;
+    }
+
+    public void setCsvFormatDecimal(String csvFormatDecimal) {
+        this.csvFormatDecimal = csvFormatDecimal;
+    }
+
+    public void setCsvFormatString(String csvFormatString) {
+        this.csvFormatString = csvFormatString;
+    }
+
+    public void setDbInsert(boolean dbInsert) {
+        this.dbInsert = dbInsert;
+    }
+
+    public void setDbInsertDataSource(String dbInsertDataSource) {
+        this.dbInsertDataSource = dbInsertDataSource;
+    }
+
+    public void setDbInsertColumnList(List<String> dbInsertColumnList) {
+        this.dbInsertColumnList = dbInsertColumnList;
+    }
+
+    public void setDbInsertTable(String dbInsertTable) {
+        this.dbInsertTable = dbInsertTable;
+    }
+
+    public void setDbInsertNameQuotes(String dbInsertNameQuotes) {
+        this.dbInsertNameQuotes = dbInsertNameQuotes;
+    }
+
+    public void setDbInsertValueQuotes(String dbInsertValueQuotes) {
+        this.dbInsertValueQuotes = dbInsertValueQuotes;
+    }
+
+    public void setDbInsertPostSQL(List<String> dbInsertPostSQL) {
+        this.dbInsertPostSQL = dbInsertPostSQL;
+    }
+
+    public void setDbInsertPreSQL(List<String> dbInsertPreSQL) {
+        this.dbInsertPreSQL = dbInsertPreSQL;
+    }
+
+    public void setDbUpdate(boolean dbUpdate) {
+        this.dbUpdate = dbUpdate;
+    }
+
+    public void setDbUpdateDataSource(String dbUpdateDataSource) {
+        this.dbUpdateDataSource = dbUpdateDataSource;
+    }
+
+    public void setDbUpdateColumnList(List<String> dbUpdateColumnList) {
+        this.dbUpdateColumnList = dbUpdateColumnList;
+    }
+
+    public void setDbUpdateTable(String dbUpdateTable) {
+        this.dbUpdateTable = dbUpdateTable;
+    }
+
+    public void setDbUpdateId(String dbUpdateId) {
+        this.dbUpdateId = dbUpdateId;
+    }
+
+    public void setDbUpdateNameQuotes(String dbUpdateNameQuotes) {
+        this.dbUpdateNameQuotes = dbUpdateNameQuotes;
+    }
+
+    public void setDbUpdateValueQuotes(String dbUpdateValueQuotes) {
+        this.dbUpdateValueQuotes = dbUpdateValueQuotes;
+    }
+
+    public void setDbUpdatePostSQL(List<String> dbUpdatePostSQL) {
+        this.dbUpdatePostSQL = dbUpdatePostSQL;
+    }
+
+    public void setDbUpdatePreSQL(List<String> dbUpdatePreSQL) {
+        this.dbUpdatePreSQL = dbUpdatePreSQL;
+    }
+
+    public void setDbExecute(boolean dbExecute) {
+        this.dbExecute = dbExecute;
+    }
+
+    public void setDbExecuteDataSource(String dbExecuteDataSource) {
+        this.dbExecuteDataSource = dbExecuteDataSource;
+    }
+
+    public void setDbExecuteColumn(String dbExecuteColumn) {
+        this.dbExecuteColumn = dbExecuteColumn;
+    }
+
+    public void setDbExecuteOutput(String dbExecuteOutput) {
+        this.dbExecuteOutput = dbExecuteOutput;
+    }
+
+    public void setDbExecutePostSQL(List<String> dbExecutePostSQL) {
+        this.dbExecutePostSQL = dbExecutePostSQL;
+    }
+
+    public void setDbExecutePreSQL(List<String> dbExecutePreSQL) {
+        this.dbExecutePreSQL = dbExecutePreSQL;
+    }
+
+    public void setOsVariable(boolean osVariable) {
+        this.osVariable = osVariable;
+    }
+
+    public void setOsVariableName(String osVariableName) {
+        this.osVariableName = osVariableName;
+    }
+
+    public void setOsVariableValue(String osVariableValue) {
+        this.osVariableValue = osVariableValue;
+    }
+
+    public void setEmail(boolean email) {
+        this.email = email;
+    }
+
+    public void setEmailSftp(String emailSftp) {
+        this.emailSftp = emailSftp;
+    }
+
+    public void setEmailSftpOutput(String emailSftpOutput) {
+        this.emailSftpOutput = emailSftpOutput;
+    }
+
+    public void setEmailOutput(String emailOutput) {
+        this.emailOutput = emailOutput;
+    }
+
+    public void setEmailOutputAppend(boolean emailOutputAppend) {
+        this.emailOutputAppend = emailOutputAppend;
+    }
+
+    public void setEmailOutputAutoCreateDir(boolean emailOutputAutoCreateDir) {
+        this.emailOutputAutoCreateDir = emailOutputAutoCreateDir;
+    }
+
+    public void setEmailOutputCharset(String emailOutputCharset) {
+        this.emailOutputCharset = emailOutputCharset;
+    }
+
+    public void setEmailOutputEOL(String emailOutputEOL) {
+        this.emailOutputEOL = emailOutputEOL;
+    }
+
+    public void setEmailOutputEOF(String emailOutputEOF) {
+        this.emailOutputEOF = emailOutputEOF;
+    }
+
+    public void setEmailComment(boolean emailComment) {
+        this.emailComment = emailComment;
+    }
+
+    public void setEmailCommentDataSource(boolean emailCommentDataSource) {
+        this.emailCommentDataSource = emailCommentDataSource;
+    }
+
+    public void setEmailCommentQuery(boolean emailCommentQuery) {
+        this.emailCommentQuery = emailCommentQuery;
+    }
+
+    public void setEmailSMTP(String emailSMTP) {
+        this.emailSMTP = emailSMTP;
+    }
+
+    public void setEmailSubject(String emailSubject) {
+        this.emailSubject = emailSubject;
+    }
+
+    public void setEmailFrom(String emailFrom) {
+        this.emailFrom = emailFrom;
+    }
+
+    public void setEmailTo(String emailTo) {
+        this.emailTo = emailTo;
+    }
+
+    public void setEmailCC(String emailCC) {
+        this.emailCC = emailCC;
+    }
+
+    public void setEmailBCC(String emailBCC) {
+        this.emailBCC = emailBCC;
+    }
+
+    public void setEmailHtml(boolean emailHtml) {
+        this.emailHtml = emailHtml;
+    }
+
+    public void setEmailContent(String emailContent) {
+        this.emailContent = emailContent;
+    }
+
+    public void setOutputTypeList(List<OutputTypes> outputTypeList) {
+        this.outputTypeList = outputTypeList;
+    }
+
+    public void setOutputPluginConfigMap(HashMap<String, OutputPluginConfig> outputPluginConfigMap) {
+        this.outputPluginConfigMap = outputPluginConfigMap;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        /*TODO: save Properties of OutputConf*/
+
+    }
 }

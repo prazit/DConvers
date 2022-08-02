@@ -11,16 +11,17 @@ import java.io.StringWriter;
 
 public abstract class ConfigFile extends Config {
 
+    protected FileBasedConfigurationBuilder<FileBasedConfiguration> propertiesBuilder;
+
     public ConfigFile(DConvers dconvers, String configFile) {
         super(dconvers, configFile);
 
         Parameters params = new Parameters();
-        FileBasedConfigurationBuilder<FileBasedConfiguration> builder;
 
         try {
-            builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
-            builder.configure(params.properties().setFileName(configFile));
-            properties = builder.getConfiguration();
+            propertiesBuilder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
+            propertiesBuilder.configure(params.properties().setFileName(configFile));
+            properties = propertiesBuilder.getConfiguration();
             valid = true;
             log.trace("load properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {

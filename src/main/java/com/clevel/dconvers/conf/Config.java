@@ -3,12 +3,17 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public abstract class Config extends AppBase {
 
-    //-- Shared
+    //-- Shared for Read
 
     protected Configuration properties;
+
+    public Configuration getProperties() {
+        return properties;
+    }
 
     protected String getPropertyString(Configuration properties, String key) {
         String value = properties.getString(key);
@@ -46,10 +51,23 @@ public abstract class Config extends AppBase {
      */
     protected abstract boolean loadProperties();
 
-    //-- access read only properties
+    protected abstract void saveProperties() throws ConfigurationException;
 
-    public Configuration getProperties() {
-        return properties;
+    //-- Shared for Write
+
+    protected void setPropertyString(Configuration properties, String key, String defaultValue, String value) {
+        if (defaultValue.compareTo(value) == 0) properties.clearProperty(key);
+        else properties.setProperty(key, (value == null) ? "" : trim(value));
+    }
+
+    protected void setPropertyInt(Configuration properties, String key, int defaultValue, int value) {
+        if (defaultValue == value) properties.clearProperty(key);
+        else properties.setProperty(key, value);
+    }
+
+    protected void setPropertyBoolean(Configuration properties, String key, boolean defaultValue, boolean value) {
+        if (defaultValue == value) properties.clearProperty(key);
+        else properties.setProperty(key, value);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -85,5 +86,10 @@ public class VersionConfigFile extends ConfigFile {
                 .append("valid", valid)
                 .toString()
                 .replace('=', ':');
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+        /*nothing*/
     }
 }

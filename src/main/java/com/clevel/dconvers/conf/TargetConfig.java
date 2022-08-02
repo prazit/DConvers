@@ -3,6 +3,7 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.DConvers;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -159,4 +160,63 @@ public class TargetConfig extends Config {
                 .replace('=', ':');
     }
 
+    public void setMappingOutputConfig(OutputConfig mappingOutputConfig) {
+        this.mappingOutputConfig = mappingOutputConfig;
+    }
+
+    public void setTransferOutputConfig(OutputConfig transferOutputConfig) {
+        this.transferOutputConfig = transferOutputConfig;
+    }
+
+    public void setTransformConfig(TransformConfig transformConfig) {
+        this.transformConfig = transformConfig;
+    }
+
+    public void setOutputConfig(OutputConfig outputConfig) {
+        this.outputConfig = outputConfig;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public void setSourceList(List<String> sourceList) {
+        this.sourceList = sourceList;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setRowNumberStartAt(String rowNumberStartAt) {
+        this.rowNumberStartAt = rowNumberStartAt;
+    }
+
+    public void setColumnList(List<Pair<String, String>> columnList) {
+        this.columnList = columnList;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
+        setPropertyString(targetProperties, Property.SOURCE.key(), "", source);
+        setPropertyString(targetProperties, Property.ID.key(), "id", id);
+        setPropertyString(targetProperties, Property.ROW_NUMBER.key(), "1", rowNumberStartAt);
+        setPropertyInt(targetProperties, Property.INDEX.key(), 1, index);
+
+        for (Pair<String, String> column : columnList) {
+            setPropertyString(targetProperties, Property.COLUMN.connectKey(column.getKey()), "", column.getValue());
+        }
+
+        transformConfig.saveProperties();
+        outputConfig.saveProperties();
+        mappingOutputConfig.saveProperties();
+        transferOutputConfig.saveProperties();
+
+    }
 }

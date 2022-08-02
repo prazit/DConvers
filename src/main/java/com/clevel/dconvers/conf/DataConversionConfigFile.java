@@ -1,16 +1,16 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.ngin.AppBase;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Source is a source file (target header file) that contains all targets.
@@ -119,15 +119,15 @@ public class DataConversionConfigFile extends ConfigFile {
         }
 
 
-        List<Object> converterNameList;
+        List<Object> converterNameObjectList;
         try {
-            converterNameList = properties.getList(converterProperty.key());
+            converterNameObjectList = properties.getList(converterProperty.key());
         } catch (ConversionException ex) {
-            converterNameList = new ArrayList<>();
-            converterNameList.add(getPropertyString(properties, converterProperty.key()));
+            converterNameObjectList = new ArrayList<>();
+            converterNameObjectList.add(getPropertyString(properties, converterProperty.key()));
         }
         converterConfigMap = new HashMap<>();
-        for (Object object : converterNameList) {
+        for (Object object : converterNameObjectList) {
             name = object.toString();
             if (name.lastIndexOf(".") < 0) {
                 name = name + Defaults.CONFIG_FILE_EXT.getStringValue();
@@ -155,7 +155,6 @@ public class DataConversionConfigFile extends ConfigFile {
         }
         //log.debug("pluginsCalcList = {}", pluginsList);
         return pluginsList;
-
     }
 
     @Override
@@ -259,4 +258,125 @@ public class DataConversionConfigFile extends ConfigFile {
         return childValid;
     }
 
+    public void setOutputSourcePath(String outputSourcePath) {
+        this.outputSourcePath = outputSourcePath;
+    }
+
+    public void setOutputTargetPath(String outputTargetPath) {
+        this.outputTargetPath = outputTargetPath;
+    }
+
+    public void setOutputMappingPath(String outputMappingPath) {
+        this.outputMappingPath = outputMappingPath;
+    }
+
+    public void setSourceFileNumber(int sourceFileNumber) {
+        this.sourceFileNumber = sourceFileNumber;
+    }
+
+    public void setTargetFileNumber(int targetFileNumber) {
+        this.targetFileNumber = targetFileNumber;
+    }
+
+    public void setMappingFileNumber(int mappingFileNumber) {
+        this.mappingFileNumber = mappingFileNumber;
+    }
+
+    public void setExitOnError(boolean exitOnError) {
+        this.exitOnError = exitOnError;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public void setWarningCode(int warningCode) {
+        this.warningCode = warningCode;
+    }
+
+    public void setSuccessCode(int successCode) {
+        this.successCode = successCode;
+    }
+
+    public void setDataSourceConfigMap(HashMap<String, DataSourceConfig> dataSourceConfigMap) {
+        this.dataSourceConfigMap = dataSourceConfigMap;
+    }
+
+    public void setSftpConfigMap(HashMap<String, HostConfig> sftpConfigMap) {
+        this.sftpConfigMap = sftpConfigMap;
+    }
+
+    public void setSmtpConfigMap(HashMap<String, HostConfig> smtpConfigMap) {
+        this.smtpConfigMap = smtpConfigMap;
+    }
+
+    public void setConverterConfigMap(HashMap<String, ConverterConfigFile> converterConfigMap) {
+        this.converterConfigMap = converterConfigMap;
+    }
+
+    public void setPluginsCalcList(List<Pair<String, String>> pluginsCalcList) {
+        this.pluginsCalcList = pluginsCalcList;
+    }
+
+    public void setPluginsOutputList(List<Pair<String, String>> pluginsOutputList) {
+        this.pluginsOutputList = pluginsOutputList;
+    }
+
+    public void setPluginsDataSourceList(List<Pair<String, String>> pluginsDataSourceList) {
+        this.pluginsDataSourceList = pluginsDataSourceList;
+    }
+
+    public void setVariableList(List<Pair<String, String>> variableList) {
+        this.variableList = variableList;
+    }
+
+    @Override
+    protected void saveProperties() throws ConfigurationException {
+
+        /*save all plugins*/
+        for (Pair<String, String> plugin : pluginsCalcList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.CALCULATOR.connectKey(plugin.getKey())), "", plugin.getValue());
+        for (Pair<String, String> plugin : pluginsOutputList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.OUTPUT_FILE.connectKey(plugin.getKey())), "", plugin.getValue());
+        for (Pair<String, String> plugin : pluginsDataSourceList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.DATA_SOURCE.connectKey(plugin.getKey())), "", plugin.getValue());
+
+        /*save all variables*/
+        for (Pair<String, String> plugin : variableList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.VARIABLE.connectKey(plugin.getKey())), "", plugin.getValue());
+
+        /*save all properties*/
+        Property converterProperty = Property.CONVERTER_FILE;
+        setPropertyString(properties, converterProperty.connectKey(Property.SOURCE_PATH), "", outputSourcePath);
+        setPropertyString(properties, converterProperty.connectKey(Property.TARGET_PATH), "", outputTargetPath);
+        setPropertyString(properties, converterProperty.connectKey(Property.MAPPING_PATH), "", outputMappingPath);
+
+        setPropertyInt(properties, converterProperty.connectKey(Property.SOURCE_PATH.connectKey(Property.FILE_NUMBER)), 1, sourceFileNumber);
+        setPropertyInt(properties, converterProperty.connectKey(Property.TARGET_PATH.connectKey(Property.FILE_NUMBER)), 1, targetFileNumber);
+        setPropertyInt(properties, converterProperty.connectKey(Property.MAPPING_PATH.connectKey(Property.FILE_NUMBER)), 1, mappingFileNumber);
+
+        setPropertyBoolean(properties, Property.EXIT_ON_ERROR.key(), true, exitOnError);
+        setPropertyInt(properties, converterProperty.connectKey(Property.EXIT_CODE_SUCCESS.key()), Defaults.EXIT_CODE_SUCCESS.getIntValue(), successCode);
+        setPropertyInt(properties, converterProperty.connectKey(Property.EXIT_CODE_ERROR.key()), Defaults.EXIT_CODE_ERROR.getIntValue(), errorCode);
+        setPropertyInt(properties, converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), Defaults.EXIT_CODE_WARNING.getIntValue(), warningCode);
+
+        /*save all dataSources*/
+        for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+            setPropertyString(properties, Property.DATA_SOURCE.key(), "", dataSourceConfig.getName());
+            dataSourceConfig.saveProperties();
+        }
+        for (HostConfig sftpConfig : sftpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+            setPropertyString(properties, Property.SFTP.key(), "", sftpConfig.getName());
+            sftpConfig.saveProperties();
+        }
+        for (HostConfig smtpConfig : smtpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+            setPropertyString(properties, Property.SMTP.key(), "", smtpConfig.getName());
+            smtpConfig.saveProperties();
+        }
+
+        /*save converter file name list*/
+        for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
+            setPropertyString(properties, converterProperty.key(), "", converterConfigFile.getName());
+            converterConfigFile.saveProperties();
+        }
+
+        /*commit all properties*/
+        propertiesBuilder.save();
+    }
 }

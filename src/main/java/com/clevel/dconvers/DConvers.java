@@ -64,7 +64,11 @@ public class DConvers extends AppBase {
 
     public boolean asLib;
     private boolean isLibEnd;
+    private boolean manualMode;
 
+    /**
+     * run from normal configuration files specified by command-line args.
+     */
     public DConvers(String[] args) {
         super("DConvers");
         this.args = Arrays.copyOf(args, args.length);
@@ -73,7 +77,8 @@ public class DConvers extends AppBase {
     }
 
     /**
-     * asLib:
+     * asLib: run from specified configuration files.
+     * asLib: run from manual configs, after create DConvers need to call setManual(true) before set all configs.
      */
     public DConvers(String sourceConfig) {
         super("DConvers Library");
@@ -96,6 +101,7 @@ public class DConvers extends AppBase {
         loadLogger();
 
         isLibEnd = false;
+        manualMode = false;
 
         hasWarning = false;
         exitOnError = false;
@@ -137,7 +143,7 @@ public class DConvers extends AppBase {
 
         initSystemVariables();
 
-        switches = new Switches(this);
+        if (!manualMode) switches = new Switches(this);
         if (!switches.isValid()) {
             performInvalidSwitches();
             if (isLibEnd) {
@@ -169,7 +175,7 @@ public class DConvers extends AppBase {
         log.info("Configuration file: {}", dataConversionConfigFilename);
 
         log.trace("DConvers. Load DataConversionConfigFile.");
-        dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
+        if (!manualMode) dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
         currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
 
         if (!dataConversionConfigFile.isValid()) {
@@ -922,6 +928,17 @@ public class DConvers extends AppBase {
 
         file = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + pathname);
         return file;
+    }
+
+    /**
+     * asLib: for manual set configs instead of loadProperties.
+     */
+    public void setManualMode(boolean manualMode) {
+        this.manualMode = manualMode;
+        if (manualMode) {
+            switches = new Switches(this);
+            dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
+        }
     }
 
 }

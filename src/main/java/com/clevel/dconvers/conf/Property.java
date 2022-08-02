@@ -156,6 +156,12 @@ public enum Property {
         return property;
     }
 
+    public static String connectKeyString(String... keyString) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String key : keyString) stringBuilder.append(".").append(key);
+        return stringBuilder.toString();
+    }
+
     public String key() {
         return key;
     }
