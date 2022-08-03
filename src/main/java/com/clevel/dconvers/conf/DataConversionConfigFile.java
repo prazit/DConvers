@@ -163,17 +163,23 @@ public class DataConversionConfigFile extends ConfigFile {
 
         for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
             if (!dataSourceConfig.isValid()) {
-                error("Invalid datasource specified ({})", dataSourceConfig.getName());
-                childValid = false;
-                return false;
+                //try validate once for manualMode.
+                if (!dataSourceConfig.validate()) {
+                    error("Invalid datasource specified ({})", dataSourceConfig.getName());
+                    childValid = false;
+                    return false;
+                }
             }
         }
 
         for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
             if (!converterConfigFile.isValid()) {
-                error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
-                childValid = false;
-                return false;
+                //try validate once for manualMode.
+                if (!converterConfigFile.validate()) {
+                    error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
+                    childValid = false;
+                    return false;
+                }
             }
         }
 
@@ -331,15 +337,19 @@ public class DataConversionConfigFile extends ConfigFile {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
+
+        valid = validate();
+        if (!valid) throw new ConfigurationException("properties are invalid! saveProperties is not allowed.");
+        properties.clear();
 
         /*save all plugins*/
-        for (Pair<String, String> plugin : pluginsCalcList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.CALCULATOR.connectKey(plugin.getKey())), "", plugin.getValue());
-        for (Pair<String, String> plugin : pluginsOutputList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.OUTPUT_FILE.connectKey(plugin.getKey())), "", plugin.getValue());
-        for (Pair<String, String> plugin : pluginsDataSourceList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.DATA_SOURCE.connectKey(plugin.getKey())), "", plugin.getValue());
+        if (pluginsCalcList != null) for (Pair<String, String> plugin : pluginsCalcList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.CALCULATOR.connectKey(plugin.getKey())), "", plugin.getValue());
+        if (pluginsOutputList != null) for (Pair<String, String> plugin : pluginsOutputList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.OUTPUT_FILE.connectKey(plugin.getKey())), "", plugin.getValue());
+        if (pluginsDataSourceList != null) for (Pair<String, String> plugin : pluginsDataSourceList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.DATA_SOURCE.connectKey(plugin.getKey())), "", plugin.getValue());
 
         /*save all variables*/
-        for (Pair<String, String> plugin : variableList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.VARIABLE.connectKey(plugin.getKey())), "", plugin.getValue());
+        if (variableList != null) for (Pair<String, String> plugin : variableList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.VARIABLE.connectKey(plugin.getKey())), "", plugin.getValue());
 
         /*save all properties*/
         Property converterProperty = Property.CONVERTER_FILE;
@@ -357,21 +367,21 @@ public class DataConversionConfigFile extends ConfigFile {
         setPropertyInt(properties, converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), Defaults.EXIT_CODE_WARNING.getIntValue(), warningCode);
 
         /*save all dataSources*/
-        for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+        if (dataSourceConfigMap != null) for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
             setPropertyString(properties, Property.DATA_SOURCE.key(), "", dataSourceConfig.getName());
             dataSourceConfig.saveProperties();
         }
-        for (HostConfig sftpConfig : sftpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+        if (sftpConfigMap != null) for (HostConfig sftpConfig : sftpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
             setPropertyString(properties, Property.SFTP.key(), "", sftpConfig.getName());
             sftpConfig.saveProperties();
         }
-        for (HostConfig smtpConfig : smtpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+        if (smtpConfigMap != null) for (HostConfig smtpConfig : smtpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
             setPropertyString(properties, Property.SMTP.key(), "", smtpConfig.getName());
             smtpConfig.saveProperties();
         }
 
         /*save converter file name list*/
-        for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
+        if (converterConfigMap != null) for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
             setPropertyString(properties, converterProperty.key(), "", converterConfigFile.getName());
             converterConfigFile.saveProperties();
         }

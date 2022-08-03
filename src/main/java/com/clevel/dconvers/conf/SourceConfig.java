@@ -29,11 +29,13 @@ public class SourceConfig extends Config {
 
         properties = converterConfigFile.getProperties();
 
-        valid = loadProperties();
-        if (valid) valid = validate();
-        if (valid) {
-            outputConfig = new OutputConfig(dconvers, Property.SOURCE.connectKey(name), properties);
-            valid = outputConfig.isValid();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+            if (valid) {
+                outputConfig = new OutputConfig(dconvers, Property.SOURCE.connectKey(name), properties);
+                valid = outputConfig.isValid();
+            }
         }
 
         log.trace("SourceConfig({}) is created", name);
@@ -166,7 +168,7 @@ public class SourceConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
         Property source = Property.SOURCE;
 
         setPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE), "", dataSource);

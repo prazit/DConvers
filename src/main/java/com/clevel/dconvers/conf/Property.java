@@ -158,7 +158,8 @@ public enum Property {
 
     public static String connectKeyString(String... keyString) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (String key : keyString) stringBuilder.append(".").append(key);
+        stringBuilder.append(keyString[0]);
+        for (int index = 1; index < keyString.length; index++) stringBuilder.append(".").append(keyString[index]);
         return stringBuilder.toString();
     }
 

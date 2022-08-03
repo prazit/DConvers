@@ -126,7 +126,7 @@ public class ConverterConfigFile extends ConfigFile {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
 
         setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 1, index);
 

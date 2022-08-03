@@ -203,8 +203,10 @@ public class OutputConfig extends Config {
         this.properties = baseProperties;
         outputPluginConfigMap = new HashMap<>();
 
-        valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+        }
 
         log.trace("OutputConfig({}) is created", name);
     }
@@ -2078,9 +2080,68 @@ public class OutputConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
 
-        /*TODO: save Properties of OutputConf*/
+        if(src) saveSourceProperties();
+        if(tar) saveTargetProperties();
+        if(sql) saveSQLProperties();
+        if(markdown) saveMarkdownProperties();
+        if(pdf) savePDFProperties();
+        if(txt) saveTXTProperties();
+        if(csv) saveCSVProperties();
+        if(dbInsert) saveDBInsertProperties();
+        if(dbUpdate) saveDBUpdateProperties();
+        if(dbExecute) saveDBExecuteProperties();
+        if(osVariable) saveOSVariableProperties();
+        if(email) saveEmailProperties();
+
+    }
+
+    private void saveEmailProperties() {
+
+    }
+
+    private void saveOSVariableProperties() {
+
+    }
+
+    private void saveDBExecuteProperties() {
+
+    }
+
+    private void saveDBUpdateProperties() {
+
+    }
+
+    private void saveDBInsertProperties() {
+
+    }
+
+    private void saveCSVProperties() {
+
+    }
+
+    private void saveTXTProperties() {
+
+    }
+
+    private void savePDFProperties() {
+
+    }
+
+    private void saveMarkdownProperties() {
+
+    }
+
+    private void saveSQLProperties() {
+
+    }
+
+    private void saveTargetProperties() {
+
+    }
+
+    private void saveSourceProperties() {
 
     }
 }

@@ -26,8 +26,10 @@ public class HostConfig extends Config {
         properties = dconvers.dataConversionConfigFile.properties;
         this.rootProperty = rootProperty;
 
-        valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+        }
 
         log.trace("SFTPConfig({}) is created", name);
     }
@@ -144,7 +146,7 @@ public class HostConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
 
         setPropertyString(properties, rootProperty.connectKey(name, Property.HOST), "", host);
         setPropertyInt(properties, rootProperty.connectKey(name, Property.PORT), 22, port);

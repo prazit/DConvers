@@ -941,4 +941,7 @@ public class DConvers extends AppBase {
         }
     }
 
+    public boolean getManualMode() {
+        return manualMode;
+    }
 }

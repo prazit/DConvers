@@ -25,8 +25,10 @@ public class TransformConfig extends Config {
         super(dconvers, baseProperty);
         this.properties = baseProperties;
 
-        valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+        }
 
         log.trace("TransformConfig({}) is created", name);
     }
@@ -127,7 +129,7 @@ public class TransformConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
         String transformProperty = name + "." + Property.TRANSFORM.key();
         String arguments, transform, value;
         for (Pair<TransformTypes, HashMap<String, String>> transformation : transformList) {

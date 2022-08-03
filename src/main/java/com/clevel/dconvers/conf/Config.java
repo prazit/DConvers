@@ -56,8 +56,9 @@ public abstract class Config extends AppBase {
     //-- Shared for Write
 
     protected void setPropertyString(Configuration properties, String key, String defaultValue, String value) {
+        if (value == null) value = "";
         if (defaultValue.compareTo(value) == 0) properties.clearProperty(key);
-        else properties.setProperty(key, (value == null) ? "" : trim(value));
+        else properties.setProperty(key, trim(value));
     }
 
     protected void setPropertyInt(Configuration properties, String key, int defaultValue, int value) {

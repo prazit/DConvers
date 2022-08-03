@@ -38,8 +38,10 @@ public abstract class ConfigFile extends Config {
             error("Load properties '{}' is failed! {}", configFile, e.getMessage());
         }
 
-        if (valid) valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            if (valid) valid = loadProperties();
+            if (valid) valid = validate();
+        }
     }
 
 }

@@ -33,28 +33,30 @@ public class TargetConfig extends Config {
         super(dconvers, name);
         properties = converterConfigFile.getProperties();
 
-        valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
 
-        String targetBaseProperty = Property.TARGET.connectKey(name);
-        if (valid) {
-            outputConfig = new OutputConfig(dconvers, targetBaseProperty, properties);
-            valid = outputConfig.isValid();
-        }
+            String targetBaseProperty = Property.TARGET.connectKey(name);
+            if (valid) {
+                outputConfig = new OutputConfig(dconvers, targetBaseProperty, properties);
+                valid = outputConfig.isValid();
+            }
 
-        if (valid) {
-            transferOutputConfig = new OutputConfig(dconvers, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
-            valid = outputConfig.isValid();
-        }
+            if (valid) {
+                transferOutputConfig = new OutputConfig(dconvers, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
+                valid = outputConfig.isValid();
+            }
 
-        if (valid) {
-            mappingOutputConfig = new OutputConfig(dconvers, Property.MAPPING.prefixKey(targetBaseProperty), properties);
-            valid = outputConfig.isValid();
-        }
+            if (valid) {
+                mappingOutputConfig = new OutputConfig(dconvers, Property.MAPPING.prefixKey(targetBaseProperty), properties);
+                valid = outputConfig.isValid();
+            }
 
-        if (valid) {
-            transformConfig = new TransformConfig(dconvers, targetBaseProperty, properties);
-            valid = transformConfig.isValid();
+            if (valid) {
+                transformConfig = new TransformConfig(dconvers, targetBaseProperty, properties);
+                valid = transformConfig.isValid();
+            }
         }
 
         log.trace("SourceConfig({}) is created", name);
@@ -201,7 +203,7 @@ public class TargetConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         setPropertyString(targetProperties, Property.SOURCE.key(), "", source);

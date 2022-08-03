@@ -47,8 +47,10 @@ public class DataSourceConfig extends Config {
         super(dconvers, name);
         properties = dconvers.dataConversionConfigFile.properties;
 
-        valid = loadProperties();
-        if (valid) valid = validate();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+        }
 
         log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
     }
@@ -310,10 +312,6 @@ public class DataSourceConfig extends Config {
                 .replace('=', ':');
     }
 
-    public void setDbms(String dbms) {
-        this.dbms = dbms;
-    }
-
     public void setUrl(String url) {
         this.url = url;
     }
@@ -375,7 +373,7 @@ public class DataSourceConfig extends Config {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
 
         /*save all properties*/
         Property dataSource = Property.DATA_SOURCE;
@@ -389,7 +387,8 @@ public class DataSourceConfig extends Config {
         setPropertyBoolean(properties, dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false, userEncrypted);
         setPropertyBoolean(properties, dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false, passwordEncrypted);
 
-        for (Pair<String, String> prop : propList) setPropertyString(properties, dataSource.connectKey(Property.PROPERTIES.connectKey(prop.getKey())), "", prop.getValue());
+        String propertiesKey = dataSource.connectKey(name, Property.PROPERTIES);
+        if (propList != null) for (Pair<String, String> prop : propList) setPropertyString(properties, Property.connectKeyString(propertiesKey, prop.getKey()), "", prop.getValue());
 
         setPropertyString(properties, dataSource.connectKey(name, Property.PRE), "", pre);
         setPropertyString(properties, dataSource.connectKey(name, Property.POST), "", post);

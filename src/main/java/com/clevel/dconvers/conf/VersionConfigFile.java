@@ -89,7 +89,7 @@ public class VersionConfigFile extends ConfigFile {
     }
 
     @Override
-    protected void saveProperties() throws ConfigurationException {
+    public void saveProperties() throws ConfigurationException {
         /*nothing*/
     }
 }
