@@ -4,6 +4,7 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.Crypto;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -47,6 +48,7 @@ public class DataSourceConfig extends Config {
         super(dconvers, name);
         properties = dconvers.dataConversionConfigFile.properties;
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
@@ -62,8 +64,11 @@ public class DataSourceConfig extends Config {
         super(dconvers, "from connection");
         properties = dconvers.dataConversionConfigFile.properties;
 
-        valid = loadProperties(connection);
-        if (valid) valid = validate();
+        loadDefaults();
+        if (!dconvers.getManualMode()) {
+            valid = loadProperties(connection);
+            if (valid) valid = validate();
+        }
 
         log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
     }
@@ -71,6 +76,11 @@ public class DataSourceConfig extends Config {
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(DataSourceConfig.class);
+    }
+
+    @Override
+    public void loadDefaults() {
+        /*TODO: loadDefaults*/
     }
 
     /**
@@ -374,10 +384,16 @@ public class DataSourceConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        PropertiesConfigurationLayout layout = getPropertiesLayout();
+
+        Property dataSource = Property.DATA_SOURCE;
+        String urlKey = dataSource.connectKey(name, Property.URL);
+
+        layout.setBlancLinesBefore(urlKey, 1);
+        layout.setComment(urlKey, name.toUpperCase());
 
         /*save all properties*/
-        Property dataSource = Property.DATA_SOURCE;
-        setPropertyString(properties, dataSource.connectKey(name, Property.URL), "", url);
+        setPropertyString(properties, urlKey, "", url);
         setPropertyString(properties, dataSource.connectKey(name, Property.DRIVER), "", driver);
         setPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "", schema);
         setPropertyString(properties, dataSource.connectKey(name, Property.USER), "", userEncrypted ? Crypto.encrypt(user) : user);

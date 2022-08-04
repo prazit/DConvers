@@ -30,9 +30,7 @@ public class VersionConfigFile extends ConfigFile {
     }
 
     @Override
-    protected boolean loadProperties() {
-        log.trace("VersionConfigFile.loadProperties.");
-
+    public void loadDefaults() {
         projectName = getPropertyString(properties, Property.PROJECT_NAME.key());
         versionName = getPropertyString(properties, Property.VERSION_NAME.key());
         buildDate = getPropertyString(properties, Property.BUILD_DATE.key());
@@ -40,7 +38,11 @@ public class VersionConfigFile extends ConfigFile {
         versionNumber = properties.getInt(Property.VERSION_NUMBER.key());
         revisionNumber = properties.getInt(Property.REVISION_NUMBER.key());
         buildNumber = properties.getInt(Property.BUILD_NUMBER.key());
+    }
 
+    @Override
+    protected boolean loadProperties() {
+        /*nothing*/
         return true;
     }
 

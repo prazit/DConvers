@@ -4,6 +4,7 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -201,8 +202,8 @@ public class OutputConfig extends Config {
     public OutputConfig(DConvers dconvers, String baseProperty, Configuration baseProperties) {
         super(dconvers, baseProperty);
         this.properties = baseProperties;
-        outputPluginConfigMap = new HashMap<>();
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
@@ -212,9 +213,9 @@ public class OutputConfig extends Config {
     }
 
     @Override
-    protected boolean loadProperties() {
-        String baseProperty = name;
+    public void loadDefaults() {
         outputTypeList = new ArrayList<>();
+        outputPluginConfigMap = new HashMap<>();
 
         // Default Properties for Source
         src = false;
@@ -232,27 +233,6 @@ public class OutputConfig extends Config {
         srcOutputEOL = "\n";
         srcOutputEOF = "\n";
 
-        String key = Property.SRC.prefixKey(baseProperty);
-        src = properties.getBoolean(key, src);
-        if (src) {
-            outputTypeList.add(OutputTypes.CONVERTER_SOURCE_FILE);
-
-            Configuration srcProperties = properties.subset(key);
-            srcOwner = getPropertyString(srcProperties, Property.OWNER.key(), srcOwner);
-            srcTable = getPropertyString(srcProperties, Property.TABLE.key(), srcTable);
-            srcId = getPropertyString(srcProperties, Property.ID.key(), srcId);
-            srcDataSource = getPropertyString(srcProperties, Property.DATA_SOURCE.key(), srcDataSource);
-            srcOutputs = getPropertyString(srcProperties, Property.OUTPUT_TYPES.key(), srcOutputs);
-            srcSftp = getPropertyString(srcProperties, Property.SFTP.key(), srcSftp);
-            srcSftpOutput = getPropertyString(srcProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), srcSftpOutput);
-            srcOutput = getPropertyString(srcProperties, Property.OUTPUT_FILE.key(), srcOutput);
-            srcOutputAppend = srcProperties.getBoolean(Property.OUTPUT_APPEND.key(), srcOutputAppend);
-            srcOutputAutoCreateDir = srcProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), srcOutputAutoCreateDir);
-            srcOutputCharset = getPropertyString(srcProperties, Property.OUTPUT_CHARSET.key(), srcOutputCharset);
-            srcOutputEOL = getPropertyString(srcProperties, Property.OUTPUT_EOL.key(), srcOutputEOL);
-            srcOutputEOF = getPropertyString(srcProperties, Property.OUTPUT_EOF.key(), srcOutputEOF);
-        }
-
         // Default Properties for Target
         tar = false;
         tarForSource = false;
@@ -267,25 +247,6 @@ public class OutputConfig extends Config {
         tarOutputEOL = "\n";
         tarOutputEOF = "\n";
 
-        key = Property.TAR.prefixKey(baseProperty);
-        tar = properties.getBoolean(key, tar);
-        if (tar) {
-            outputTypeList.add(OutputTypes.CONVERTER_TARGET_FILE);
-
-            Configuration tarProperties = properties.subset(key);
-            tarOutputs = getPropertyString(tarProperties, Property.OUTPUT_TYPES.key(), tarOutputs);
-            tarForSource = tarProperties.getBoolean(Property.FOR.connectKey(Property.SOURCE), tarForSource);
-            tarForName = tarProperties.getBoolean(Property.FOR.connectKey(Property.NAME), tarForName);
-            tarSftp = getPropertyString(tarProperties, Property.SFTP.key(), tarSftp);
-            tarSftpOutput = getPropertyString(tarProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
-            tarOutputs = getPropertyString(tarProperties, Property.TABLE.key(), tarOutputs);
-            tarOutput = getPropertyString(tarProperties, Property.OUTPUT_FILE.key(), tarOutput);
-            tarOutputAppend = tarProperties.getBoolean(Property.OUTPUT_APPEND.key(), tarOutputAppend);
-            tarOutputAutoCreateDir = tarProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), tarOutputAutoCreateDir);
-            tarOutputCharset = getPropertyString(tarProperties, Property.OUTPUT_CHARSET.key(), tarOutputCharset);
-            tarOutputEOL = getPropertyString(tarProperties, Property.OUTPUT_EOL.key(), tarOutputEOL);
-            tarOutputEOF = getPropertyString(tarProperties, Property.OUTPUT_EOF.key(), tarOutputEOF);
-        }
 
         // Defaults Properties for SQL
         sql = false;
@@ -308,6 +269,177 @@ public class OutputConfig extends Config {
         sqlUpdate = false;
         sqlPreSQL = new ArrayList<>();
         sqlPostSQL = new ArrayList<>();
+
+        // Default Properties for Markdown
+        markdown = false;
+        markdownSftp = null;
+        markdownSftpOutput = null;
+        markdownOutput = "$[CAL:NAME(current)].md";
+        markdownOutputAppend = false;
+        markdownOutputAutoCreateDir = true;
+        markdownOutputCharset = "UTF-8";
+        markdownOutputEOL = "\n";
+        markdownOutputEOF = "\n";
+        markdownComment = true;
+        markdownCommentDataSource = true;
+        markdownCommentQuery = true;
+        markdownTitle = true;
+        markdownRowNumber = true;
+        markdownMermaid = true;
+        markdownMermaidFull = true;
+
+        // Default Properties for PDF
+        pdf = false;
+        pdfSftp = null;
+        pdfSftpOutput = null;
+        pdfOutput = "$[CAL:NAME(current)].pdf";
+        pdfOutputAutoCreateDir = true;
+        pdfJRXML = "";
+
+        // TXT Output Properties
+        txt = false;
+        txtSftp = null;
+        txtSftpOutput = null;
+        txtOutput = "$[CAL:NAME(current)].txt";
+        txtOutputAppend = false;
+        txtOutputAutoCreateDir = true;
+        txtOutputCharset = "UTF-8";
+        txtOutputEOL = "\n";
+        txtOutputEOF = "\n";
+        txtLengthMode = "char"; // char or byte
+        txtSeparator = "";
+        txtFormat = new ArrayList<>();
+        txtFormatDate = "yyyyMMdd";
+        txtFormatDatetime = "yyyyMMddHHmmss";
+        txtFillString = " ";
+        txtFillNumber = "0";
+        txtFillDate = " ";
+
+        // CSV Output Properties
+        csv = false;
+        csvSftp = null;
+        csvSftpOutput = null;
+        csvOutput = "$[CAL:NAME(current)].csv";
+        csvOutputAppend = false;
+        csvOutputAutoCreateDir = true;
+        csvOutputCharset = "UTF-8";
+        csvOutputBOF = "";
+        csvOutputEOL = "\n";
+        csvOutputEOF = "\n";
+        csvHeader = true;
+        csvHeaderColumn = new ArrayList<>();
+        csvSeparator = ",";
+        csvNullString = "";
+        csvFormat = new ArrayList<>();
+        csvFormatDate = "dd/MM/yyyy";
+        csvFormatDatetime = "dd/MM/yyyy HH:mm:ss";
+        csvFormatInteger = "###0";
+        csvFormatDecimal = "###0.####";
+        csvFormatString = "";
+
+        // DBInsert Output Properties
+        dbInsert = false;
+        dbInsertDataSource = "";
+        dbInsertColumnList = new ArrayList<>();
+        dbInsertTable = name;
+        dbInsertNameQuotes = "";
+        dbInsertValueQuotes = "\"";
+        dbInsertPreSQL = new ArrayList<>();
+        dbInsertPostSQL = new ArrayList<>();
+
+        // DBUpdate Output Properties
+        dbUpdate = false;
+        dbUpdateDataSource = "";
+        dbUpdateColumnList = new ArrayList<>();
+        dbUpdateTable = name;
+        dbUpdateNameQuotes = "";
+        dbUpdateValueQuotes = "\"";
+        dbUpdateId = "id";
+        dbUpdatePreSQL = new ArrayList<>();
+        dbUpdatePostSQL = new ArrayList<>();
+
+        // DBExecute Output Properties
+        dbExecute = false;
+        dbExecuteDataSource = "";
+        dbExecuteColumn = "sql";
+        dbExecuteOutput = "dbexecute_history_$[CAL:NAME(current)].log";
+        dbExecutePreSQL = new ArrayList<>();
+        dbExecutePostSQL = new ArrayList<>();
+
+        // OS Variable Output Properties
+        osVariable = false;
+        osVariableName = "VARIABLE";
+        osVariableValue = "VALUE";
+
+        // Default Properties for Email
+        email = false;
+        emailSftp = null;
+        emailSftpOutput = null;
+        emailOutput = "$[CAL:NAME(current)].md";
+        emailOutputAppend = false;
+        emailOutputAutoCreateDir = true;
+        emailOutputCharset = "UTF-8";
+        emailOutputEOL = "\n";
+        emailOutputEOF = "\n";
+        emailComment = true;
+        emailCommentDataSource = true;
+        emailCommentQuery = true;
+        emailSMTP = null;
+        emailSubject = null;
+        emailFrom = null;
+        emailTo = null;
+        emailCC = null;
+        emailBCC = null;
+        emailHtml = false;
+        emailContent = null;
+
+
+        /*TODO: loadDefaults*/
+    }
+
+    @Override
+    protected boolean loadProperties() {
+        String baseProperty = name;
+
+        String key = Property.SRC.prefixKey(baseProperty);
+        src = properties.getBoolean(key, src);
+        if (src) {
+            outputTypeList.add(OutputTypes.CONVERTER_SOURCE_FILE);
+
+            Configuration srcProperties = properties.subset(key);
+            srcOwner = getPropertyString(srcProperties, Property.OWNER.key(), srcOwner);
+            srcTable = getPropertyString(srcProperties, Property.TABLE.key(), srcTable);
+            srcId = getPropertyString(srcProperties, Property.ID.key(), srcId);
+            srcDataSource = getPropertyString(srcProperties, Property.DATA_SOURCE.key(), srcDataSource);
+            srcOutputs = getPropertyString(srcProperties, Property.OUTPUT_TYPES.key(), srcOutputs);
+            srcSftp = getPropertyString(srcProperties, Property.SFTP.key(), srcSftp);
+            srcSftpOutput = getPropertyString(srcProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), srcSftpOutput);
+            srcOutput = getPropertyString(srcProperties, Property.OUTPUT_FILE.key(), srcOutput);
+            srcOutputAppend = srcProperties.getBoolean(Property.OUTPUT_APPEND.key(), srcOutputAppend);
+            srcOutputAutoCreateDir = srcProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), srcOutputAutoCreateDir);
+            srcOutputCharset = getPropertyString(srcProperties, Property.OUTPUT_CHARSET.key(), srcOutputCharset);
+            srcOutputEOL = getPropertyString(srcProperties, Property.OUTPUT_EOL.key(), srcOutputEOL);
+            srcOutputEOF = getPropertyString(srcProperties, Property.OUTPUT_EOF.key(), srcOutputEOF);
+        }
+
+        key = Property.TAR.prefixKey(baseProperty);
+        tar = properties.getBoolean(key, tar);
+        if (tar) {
+            outputTypeList.add(OutputTypes.CONVERTER_TARGET_FILE);
+
+            Configuration tarProperties = properties.subset(key);
+            tarOutputs = getPropertyString(tarProperties, Property.OUTPUT_TYPES.key(), tarOutputs);
+            tarForSource = tarProperties.getBoolean(Property.FOR.connectKey(Property.SOURCE), tarForSource);
+            tarForName = tarProperties.getBoolean(Property.FOR.connectKey(Property.NAME), tarForName);
+            tarSftp = getPropertyString(tarProperties, Property.SFTP.key(), tarSftp);
+            tarSftpOutput = getPropertyString(tarProperties, Property.SFTP.connectKey(Property.OUTPUT_FILE), tarSftpOutput);
+            tarOutput = getPropertyString(tarProperties, Property.OUTPUT_FILE.key(), tarOutput);
+            tarOutputAppend = tarProperties.getBoolean(Property.OUTPUT_APPEND.key(), tarOutputAppend);
+            tarOutputAutoCreateDir = tarProperties.getBoolean(Property.OUTPUT_AUTOCREATEDIR.key(), tarOutputAutoCreateDir);
+            tarOutputCharset = getPropertyString(tarProperties, Property.OUTPUT_CHARSET.key(), tarOutputCharset);
+            tarOutputEOL = getPropertyString(tarProperties, Property.OUTPUT_EOL.key(), tarOutputEOL);
+            tarOutputEOF = getPropertyString(tarProperties, Property.OUTPUT_EOF.key(), tarOutputEOF);
+        }
 
         key = Property.SQL.prefixKey(baseProperty);
         sql = properties.getBoolean(key, sql);
@@ -336,24 +468,6 @@ public class OutputConfig extends Config {
             sqlPostSQL = getSQLStringList(sqlProperties, Property.POST_SQL.key());
         }
 
-        // Default Properties for Markdown
-        markdown = false;
-        markdownSftp = null;
-        markdownSftpOutput = null;
-        markdownOutput = "$[CAL:NAME(current)].md";
-        markdownOutputAppend = false;
-        markdownOutputAutoCreateDir = true;
-        markdownOutputCharset = "UTF-8";
-        markdownOutputEOL = "\n";
-        markdownOutputEOF = "\n";
-        markdownComment = true;
-        markdownCommentDataSource = true;
-        markdownCommentQuery = true;
-        markdownTitle = true;
-        markdownRowNumber = true;
-        markdownMermaid = true;
-        markdownMermaidFull = true;
-
         key = Property.MARKDOWN.prefixKey(baseProperty);
         markdown = properties.getBoolean(key, markdown);
         if (markdown) {
@@ -378,14 +492,6 @@ public class OutputConfig extends Config {
             markdownMermaidFull = markdownProperties.getBoolean(Property.MERMAID.connectKey(Property.FULL.key()), markdownMermaidFull);
         }
 
-        // Default Properties for PDF
-        pdf = false;
-        pdfSftp = null;
-        pdfSftpOutput = null;
-        pdfOutput = "$[CAL:NAME(current)].pdf";
-        pdfOutputAutoCreateDir = true;
-        pdfJRXML = "";
-
         key = Property.PDF_TABLE.prefixKey(baseProperty);
         pdf = properties.getBoolean(key, pdf);
         if (pdf) {
@@ -403,26 +509,6 @@ public class OutputConfig extends Config {
                 pdfJRXML = jrxml;
             }
         }
-
-        // TXT Output Properties
-        txt = false;
-        txtSftp = null;
-        txtSftpOutput = null;
-        txtOutput = "$[CAL:NAME(current)].txt";
-        txtOutputAppend = false;
-        txtOutputAutoCreateDir = true;
-        txtOutputCharset = "UTF-8";
-        txtOutputEOL = "\n";
-        txtOutputEOF = "\n";
-        txtLengthMode = "char"; // char or byte
-        txtSeparator = "";
-        txtFormat = new ArrayList<>();
-        txtFormat.add("STR:256");
-        txtFormatDate = "yyyyMMdd";
-        txtFormatDatetime = "yyyyMMddHHmmss";
-        txtFillString = " ";
-        txtFillNumber = "0";
-        txtFillDate = " ";
 
         key = Property.TXT.prefixKey(baseProperty);
         txt = properties.getBoolean(key, txt);
@@ -447,28 +533,6 @@ public class OutputConfig extends Config {
             txtFillNumber = getPropertyString(txtProperties, Property.FILL_NUMBER.key(), txtFillNumber);
             txtFillDate = getPropertyString(txtProperties, Property.FILL_DATE.key(), txtFillDate);
         }
-
-        // CSV Output Properties
-        csv = false;
-        csvSftp = null;
-        csvSftpOutput = null;
-        csvOutput = "$[CAL:NAME(current)].csv";
-        csvOutputAppend = false;
-        csvOutputAutoCreateDir = true;
-        csvOutputCharset = "UTF-8";
-        csvOutputBOF = "";
-        csvOutputEOL = "\n";
-        csvOutputEOF = "\n";
-        csvHeader = true;
-        csvHeaderColumn = new ArrayList<>();
-        csvSeparator = ",";
-        csvNullString = "";
-        csvFormat = new ArrayList<>();
-        csvFormatDate = "dd/MM/yyyy";
-        csvFormatDatetime = "dd/MM/yyyy HH:mm:ss";
-        csvFormatInteger = "###0";
-        csvFormatDecimal = "###0.####";
-        csvFormatString = "";
 
         key = Property.CSV.prefixKey(baseProperty);
         csv = properties.getBoolean(key, csv);
@@ -497,16 +561,6 @@ public class OutputConfig extends Config {
             csvFormatString = getPropertyString(csvProperties, Property.FORMAT_STRING.key(), csvFormatString);
         }
 
-        // DBInsert Output Properties
-        dbInsert = false;
-        dbInsertDataSource = "";
-        dbInsertColumnList = new ArrayList<>();
-        dbInsertTable = name;
-        dbInsertNameQuotes = "";
-        dbInsertValueQuotes = "\"";
-        dbInsertPreSQL = new ArrayList<>();
-        dbInsertPostSQL = new ArrayList<>();
-
         key = Property.DBINSERT.prefixKey(baseProperty);
         dbInsert = properties.getBoolean(key, dbInsert);
         if (dbInsert) {
@@ -522,17 +576,6 @@ public class OutputConfig extends Config {
             dbInsertPostSQL = getSQLStringList(dbInsertProperties, Property.POST_SQL.key());
         }
 
-        // DBUpdate Output Properties
-        dbUpdate = false;
-        dbUpdateDataSource = "";
-        dbUpdateColumnList = new ArrayList<>();
-        dbUpdateTable = name;
-        dbUpdateNameQuotes = "";
-        dbUpdateValueQuotes = "\"";
-        dbUpdateId = getPropertyString(properties, Property.ID.key(), "id");
-        dbUpdatePreSQL = new ArrayList<>();
-        dbUpdatePostSQL = new ArrayList<>();
-
         key = Property.DBUPDATE.prefixKey(baseProperty);
         dbUpdate = properties.getBoolean(key, dbUpdate);
         if (dbUpdate) {
@@ -542,20 +585,12 @@ public class OutputConfig extends Config {
             dbUpdateDataSource = getPropertyString(dbUpdateProperties, Property.DATA_SOURCE.key(), dbUpdateDataSource);
             dbUpdateColumnList = getStringList(dbUpdateProperties, Property.COLUMN.key());
             dbUpdateTable = getPropertyString(dbUpdateProperties, Property.TABLE.key(), dbUpdateTable);
-            dbUpdateId = dbUpdateProperties.getString(Property.ID.key(), dbUpdateId);
+            dbUpdateId = getPropertyString(properties, Property.ID.key(), dbUpdateId);
             dbUpdateNameQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.NAME), dbUpdateNameQuotes);
             dbUpdateValueQuotes = dbUpdateProperties.getString(Property.QUOTES.connectKey(Property.VALUE), dbUpdateValueQuotes);
             dbUpdatePreSQL = getSQLStringList(dbUpdateProperties, Property.PRE_SQL.key());
             dbUpdatePostSQL = getSQLStringList(dbUpdateProperties, Property.POST_SQL.key());
         }
-
-        // DBExecute Output Properties
-        dbExecute = false;
-        dbExecuteDataSource = "";
-        dbExecuteColumn = "sql";
-        dbExecuteOutput = "dbexecute_history_$[CAL:NAME(current)].log";
-        dbExecutePreSQL = new ArrayList<>();
-        dbExecutePostSQL = new ArrayList<>();
 
         key = Property.DBEXECUTE.prefixKey(baseProperty);
         dbExecute = properties.getBoolean(key, dbExecute);
@@ -570,11 +605,6 @@ public class OutputConfig extends Config {
             dbExecutePostSQL = getSQLStringList(dbExecuteProperties, Property.POST_SQL.key());
         }
 
-        // OS Variable Output Properties
-        osVariable = false;
-        osVariableName = "VARIABLE";
-        osVariableValue = "VALUE";
-
         key = Property.OSVARIABLE.prefixKey(baseProperty);
         osVariable = properties.getBoolean(key, osVariable);
         if (osVariable) {
@@ -584,29 +614,6 @@ public class OutputConfig extends Config {
             osVariableName = getPropertyString(osVariableProperties, Property.NAME.key(), osVariableName);
             osVariableValue = getPropertyString(osVariableProperties, Property.VALUE.key(), osVariableValue);
         }
-
-
-        // Default Properties for Email
-        email = false;
-        emailSftp = null;
-        emailSftpOutput = null;
-        emailOutput = "$[CAL:NAME(current)].md";
-        emailOutputAppend = false;
-        emailOutputAutoCreateDir = true;
-        emailOutputCharset = "UTF-8";
-        emailOutputEOL = "\n";
-        emailOutputEOF = "\n";
-        emailComment = true;
-        emailCommentDataSource = true;
-        emailCommentQuery = true;
-        emailSMTP = null;
-        emailSubject = null;
-        emailFrom = null;
-        emailTo = null;
-        emailCC = null;
-        emailBCC = null;
-        emailHtml = false;
-        emailContent = null;
 
         key = Property.EMAIL.prefixKey(baseProperty);
         email = properties.getBoolean(key, email);
@@ -636,7 +643,6 @@ public class OutputConfig extends Config {
             emailHtml = emailProperties.getBoolean(Property.HTML.key(), emailHtml);
             emailContent = getPropertyString(emailProperties, Property.CONTENT.key(), emailContent);
         }
-
 
         // Load Plugin Config into outputPluginConfigMap
         HashMap<String, Class> plugins = OutputTypes.getPlugins();
@@ -961,6 +967,7 @@ public class OutputConfig extends Config {
     public boolean isMarkdownRowNumber() {
         return markdownRowNumber;
     }
+
     public boolean isMarkdownMermaid() {
         return markdownMermaid;
     }
@@ -2081,67 +2088,263 @@ public class OutputConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-
-        if(src) saveSourceProperties();
-        if(tar) saveTargetProperties();
-        if(sql) saveSQLProperties();
-        if(markdown) saveMarkdownProperties();
-        if(pdf) savePDFProperties();
-        if(txt) saveTXTProperties();
-        if(csv) saveCSVProperties();
-        if(dbInsert) saveDBInsertProperties();
-        if(dbUpdate) saveDBUpdateProperties();
-        if(dbExecute) saveDBExecuteProperties();
-        if(osVariable) saveOSVariableProperties();
-        if(email) saveEmailProperties();
-
-    }
-
-    private void saveEmailProperties() {
+        PropertiesConfigurationLayout layout = getPropertiesLayout();
+        if (src) saveSourceProperties(layout);
+        if (tar) saveTargetProperties(layout);
+        if (sql) saveSQLProperties(layout);
+        if (markdown) saveMarkdownProperties(layout);
+        if (pdf) savePDFProperties(layout);
+        if (txt) saveTXTProperties(layout);
+        if (csv) saveCSVProperties(layout);
+        if (dbInsert) saveDBInsertProperties(layout);
+        if (dbUpdate) saveDBUpdateProperties(layout);
+        if (dbExecute) saveDBExecuteProperties(layout);
+        if (osVariable) saveOSVariableProperties(layout);
+        if (email) saveEmailProperties(layout);
 
     }
 
-    private void saveOSVariableProperties() {
+    private void saveEmailProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.EMAIL.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, email);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, emailSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, emailSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].md", emailOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, emailOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, emailOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", emailOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", emailOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", emailOutputEOF);
+
+        setPropertyBoolean(properties, Property.COMMENT.prefixKey(name), true, emailComment);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.COMMENT.connectKey(Property.DATA_SOURCE)), true, emailCommentDataSource);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.COMMENT.connectKey(Property.QUERY)), true, emailCommentQuery);
+
+        setPropertyString(properties, Property.SMTP.prefixKey(name), null, emailSMTP);
+        setPropertyString(properties, Property.SUBJECT.prefixKey(name), null, emailSubject);
+        setPropertyString(properties, Property.FROM.prefixKey(name), null, emailFrom);
+        setPropertyString(properties, Property.TO.prefixKey(name), null, emailTo);
+        setPropertyString(properties, Property.CC.prefixKey(name), null, emailCC);
+        setPropertyString(properties, Property.BCC.prefixKey(name), null, emailBCC);
+        setPropertyBoolean(properties, Property.HTML.prefixKey(name), false, emailHtml);
+        setPropertyString(properties, Property.CONTENT.prefixKey(name), null, emailContent);
     }
 
-    private void saveDBExecuteProperties() {
+    private void saveOSVariableProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.OSVARIABLE.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, osVariable);
 
+        setPropertyString(properties, Property.NAME.prefixKey(name), "VARIABLE", osVariableName);
+        setPropertyString(properties, Property.VALUE.prefixKey(name), "VALUE", osVariableValue);
     }
 
-    private void saveDBUpdateProperties() {
+    private void saveDBExecuteProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.DBEXECUTE.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, dbExecute);
 
+        setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbExecuteDataSource);
+        setPropertyString(properties, Property.COLUMN.prefixKey(name), "sql", dbExecuteColumn);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "dbexecute_history_$[CAL:NAME(current)].log", dbExecuteOutput);
+
+        for (String sql : dbExecutePreSQL) addPropertyString(properties, Property.PRE_SQL.prefixKey(name), sql, sql);
+        for (String sql : dbExecutePostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), sql, sql);
     }
 
-    private void saveDBInsertProperties() {
+    private void saveDBUpdateProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.DBUPDATE.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, dbUpdate);
 
+        setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbUpdateDataSource);
+
+        for (String column : dbUpdateColumnList) addPropertyString(properties, Property.COLUMN.prefixKey(name), "", column);
+
+        setPropertyString(properties, Property.TABLE.prefixKey(name), this.name, dbUpdateTable);
+        setPropertyString(properties, Property.ID.prefixKey(name), dbUpdateId, dbUpdateId);
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.NAME)), "", dbUpdateNameQuotes);
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.VALUE)), "\"", dbUpdateValueQuotes);
+
+        for (String sql : dbUpdatePreSQL) addPropertyString(properties, Property.PRE_SQL.prefixKey(name), "", sql);
+        for (String sql : dbUpdatePostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), "", sql);
     }
 
-    private void saveCSVProperties() {
+    private void saveDBInsertProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.DBINSERT.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, dbInsert);
 
+        setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbInsertDataSource);
+
+        for (String column : dbInsertColumnList) addPropertyString(properties, Property.COLUMN.prefixKey(name), column, column);
+
+        setPropertyString(properties, Property.TABLE.prefixKey(name), this.name, dbInsertTable);
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.NAME)), "", dbInsertNameQuotes);
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.VALUE)), "\"", dbInsertValueQuotes);
+
+        for (String sql : dbInsertPreSQL) addPropertyString(properties, Property.connectKeyString(name, Property.PRE_SQL.connectKey(Property.VALUE)), sql, sql);
+        for (String sql : dbInsertPostSQL) addPropertyString(properties, Property.connectKeyString(name, Property.POST_SQL.connectKey(Property.VALUE)), sql, sql);
     }
 
-    private void saveTXTProperties() {
+    private void saveCSVProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.CSV.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, csv);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, csvSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, csvSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].csv", csvOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, csvOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, csvOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", csvOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_BOF.prefixKey(name), "", csvOutputBOF);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", csvOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", csvOutputEOF);
+        setPropertyString(properties, Property.SEPARATOR.prefixKey(name), ",", csvSeparator);
+        setPropertyString(properties, Property.NULL.prefixKey(name), "", csvNullString);
+        setPropertyBoolean(properties, Property.HEADER.prefixKey(name), true, csvHeader);
+
+        for (String column : csvHeaderColumn) addPropertyString(properties, Property.HEADER.prefixKey(name), column, column);
+        for (String format : csvFormat) addPropertyString(properties, Property.FORMAT.prefixKey(name), format, format);
+
+        setPropertyString(properties, Property.FORMAT_DATE.prefixKey(name), "dd/MM/yyyy", csvFormatDate);
+        setPropertyString(properties, Property.FORMAT_DATETIME.prefixKey(name), "dd/MM/yyyy HH:mm:ss", csvFormatDatetime);
+        setPropertyString(properties, Property.FORMAT_INTEGER.prefixKey(name), "###0", csvFormatInteger);
+        setPropertyString(properties, Property.FORMAT_DECIMAL.prefixKey(name), "###0.####", csvFormatDecimal);
+        setPropertyString(properties, Property.FORMAT_STRING.prefixKey(name), "", csvFormatString);
     }
 
-    private void savePDFProperties() {
+    private void saveTXTProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.TXT.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, txt);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, txtSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, txtSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].txt", txtOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, txtOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, txtOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", txtOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", txtOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", txtOutputEOF);
+        setPropertyString(properties, Property.LENGTH_MODE.prefixKey(name), "char", txtLengthMode);
+        setPropertyString(properties, Property.SEPARATOR.prefixKey(name), "", txtSeparator);
+
+        if (txtFormat.size() == 0) setPropertyString(properties, Property.FORMAT.prefixKey(name), "STR:256", "STR:256");
+        else for (String format : txtFormat) addPropertyString(properties, Property.FORMAT.prefixKey(name), "STR:256", format);
+
+        setPropertyString(properties, Property.FORMAT_DATE.prefixKey(name), "yyyyMMdd", txtFormatDate);
+        setPropertyString(properties, Property.FORMAT_DATETIME.prefixKey(name), "yyyyMMddHHmmss", txtFormatDatetime);
+        setPropertyString(properties, Property.FILL_STRING.prefixKey(name), " ", txtFillString);
+        setPropertyString(properties, Property.FILL_NUMBER.prefixKey(name), "0", txtFillNumber);
+        setPropertyString(properties, Property.FILL_DATE.prefixKey(name), " ", txtFillDate);
     }
 
-    private void saveMarkdownProperties() {
+    private void savePDFProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.PDF_TABLE.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, pdf);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, pdfSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, pdfSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].pdf", pdfOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, pdfOutputAutoCreateDir);
+        /*Notice: when you need PDF-Table again please add JRXML to Property or split PDF to Plugin*/
     }
 
-    private void saveSQLProperties() {
+    private void saveMarkdownProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.MARKDOWN.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, markdown);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, markdownSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, markdownSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].md", markdownOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, markdownOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, markdownOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", markdownOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", markdownOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", markdownOutputEOF);
+
+        setPropertyBoolean(properties, Property.COMMENT.prefixKey(name), true, markdownComment);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.COMMENT.connectKey(Property.DATA_SOURCE)), true, markdownCommentDataSource);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.COMMENT.connectKey(Property.QUERY)), true, markdownCommentQuery);
+        setPropertyBoolean(properties, Property.TITLE.prefixKey(name), true, markdownTitle);
+        setPropertyBoolean(properties, Property.ROW_NUMBER.prefixKey(name), true, markdownRowNumber);
+        setPropertyBoolean(properties, Property.MERMAID.prefixKey(name), true, markdownMermaid);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.MERMAID.connectKey(Property.FULL.key())), true, markdownMermaidFull);
     }
 
-    private void saveTargetProperties() {
+    private void saveSQLProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.SQL.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, sql);
 
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, sqlSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, sqlSftpOutput);
+        setPropertyString(properties, Property.connectKeyString(name, Property.COMBINE.connectKey(Property.OUTPUT_FILE)), null, sqlCombineOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].sql", sqlOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, sqlOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, sqlOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", sqlOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", sqlOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", sqlOutputEOF);
+        setPropertyString(properties, Property.TABLE.prefixKey(name), this.name, sqlTable);
+        setPropertyString(properties, Property.DBMS.prefixKey(name), "MYSQL", sqlDBMS);
+
+        for (String column : sqlColumn) addPropertyString(properties, Property.COLUMN.prefixKey(name), column, column);
+
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.NAME)), "", sqlNameQuotes);
+        setPropertyString(properties, Property.connectKeyString(name, Property.QUOTES.connectKey(Property.VALUE)), "\"", sqlValueQuotes);
+        setPropertyBoolean(properties, Property.CREATE.prefixKey(name), false, sqlCreate);
+        setPropertyBoolean(properties, Property.INSERT.prefixKey(name), false, sqlInsert);
+        setPropertyBoolean(properties, Property.UPDATE.prefixKey(name), false, sqlUpdate);
+
+        for (String sql : sqlPreSQL) addPropertyString(properties, Property.PRE_SQL.prefixKey(name), sql, sql);
+        for (String sql : sqlPostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), sql, sql);
     }
 
-    private void saveSourceProperties() {
+    private void saveTargetProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.TAR.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, tar);
 
+        setPropertyString(properties, Property.OUTPUT_TYPES.prefixKey(name), "sql,md", tarOutputs);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.FOR.connectKey(Property.SOURCE)), false, tarForSource);
+        setPropertyBoolean(properties, Property.connectKeyString(name, Property.FOR.connectKey(Property.NAME)), false, tarForName);
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, tarSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, tarSftpOutput);
+
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].conf", tarOutput);
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, tarOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, tarOutputAutoCreateDir);
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", tarOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", tarOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", tarOutputEOF);
+    }
+
+    private void saveSourceProperties(PropertiesConfigurationLayout layout) {
+        String name = Property.SRC.prefixKey(this.name);
+        layout.setBlancLinesBefore(name, 1);
+        setPropertyBoolean(properties, name, false, src);
+
+        setPropertyString(properties, Property.OWNER.prefixKey(name), "OWNER", srcOwner);
+        setPropertyString(properties, Property.TABLE.prefixKey(name), "TABLE_NAME", srcTable);
+        setPropertyString(properties, Property.ID.prefixKey(name), "COLUMN_NAME", srcId);
+        setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "datasource-name", srcDataSource);
+        setPropertyString(properties, Property.OUTPUT_TYPES.prefixKey(name), "sql,md", srcOutputs);
+        setPropertyString(properties, Property.SFTP.prefixKey(name), null, srcSftp);
+        setPropertyString(properties, Property.connectKeyString(name, Property.SFTP.connectKey(Property.OUTPUT_FILE)), null, srcSftpOutput);
+        setPropertyString(properties, Property.OUTPUT_FILE.prefixKey(name), "$[CAL:NAME(current)].conf", srcOutput);
+
+        setPropertyBoolean(properties, Property.OUTPUT_APPEND.prefixKey(name), false, srcOutputAppend);
+        setPropertyBoolean(properties, Property.OUTPUT_AUTOCREATEDIR.prefixKey(name), true, srcOutputAutoCreateDir);
+
+        setPropertyString(properties, Property.OUTPUT_CHARSET.prefixKey(name), "UTF-8", srcOutputCharset);
+        setPropertyString(properties, Property.OUTPUT_EOL.prefixKey(name), "\n", srcOutputEOL);
+        setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", srcOutputEOF);
     }
 }

@@ -15,8 +15,12 @@ public abstract class OutputPluginConfig extends Config{
 
     public void loadConfig(Configuration baseProperties) {
         this.properties = baseProperties;
-        valid = loadProperties();
-        if (valid) valid = validate();
+
+        loadDefaults();
+        if(!dconvers.getManualMode()) {
+            valid = loadProperties();
+            if (valid) valid = validate();
+        }
     }
 
 }

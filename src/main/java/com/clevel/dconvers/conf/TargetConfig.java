@@ -3,6 +3,7 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.DConvers;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -29,34 +30,18 @@ public class TargetConfig extends Config {
 
     private List<Pair<String, String>> columnList;
 
-    TargetConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+    private ConverterConfigFile converterConfigFile;
+
+    public TargetConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
         super(dconvers, name);
+
+        this.converterConfigFile = converterConfigFile;
         properties = converterConfigFile.getProperties();
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
-
-            String targetBaseProperty = Property.TARGET.connectKey(name);
-            if (valid) {
-                outputConfig = new OutputConfig(dconvers, targetBaseProperty, properties);
-                valid = outputConfig.isValid();
-            }
-
-            if (valid) {
-                transferOutputConfig = new OutputConfig(dconvers, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
-                valid = outputConfig.isValid();
-            }
-
-            if (valid) {
-                mappingOutputConfig = new OutputConfig(dconvers, Property.MAPPING.prefixKey(targetBaseProperty), properties);
-                valid = outputConfig.isValid();
-            }
-
-            if (valid) {
-                transformConfig = new TransformConfig(dconvers, targetBaseProperty, properties);
-                valid = transformConfig.isValid();
-            }
         }
 
         log.trace("SourceConfig({}) is created", name);
@@ -68,16 +53,34 @@ public class TargetConfig extends Config {
     }
 
     @Override
+    public void loadDefaults() {
+
+        source = "";
+        id = "id";
+        rowNumberStartAt = "1";
+        index = 1;
+
+        sourceList = new ArrayList<>();
+        columnList = new ArrayList<>();
+
+        String targetBaseProperty = Property.TARGET.connectKey(name);
+        outputConfig = new OutputConfig(dconvers, targetBaseProperty, properties);
+        transferOutputConfig = new OutputConfig(dconvers, Property.TRANSFER.prefixKey(targetBaseProperty), properties);
+        mappingOutputConfig = new OutputConfig(dconvers, Property.MAPPING.prefixKey(targetBaseProperty), properties);
+        transformConfig = new TransformConfig(dconvers, targetBaseProperty, properties);
+
+    }
+
+    @Override
     protected boolean loadProperties() {
         log.trace("TargetConfig({}).loadProperties.", name);
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
-        source = getPropertyString(targetProperties, Property.SOURCE.key());
-        id = getPropertyString(targetProperties, Property.ID.key(), "id");
-        rowNumberStartAt = getPropertyString(targetProperties, Property.ROW_NUMBER.key(), "1");
-        index = targetProperties.getInt(Property.INDEX.key(), 1);
+        source = getPropertyString(targetProperties, Property.SOURCE.key(), source);
+        id = getPropertyString(targetProperties, Property.ID.key(), id);
+        rowNumberStartAt = getPropertyString(targetProperties, Property.ROW_NUMBER.key(), rowNumberStartAt);
+        index = targetProperties.getInt(Property.INDEX.key(), index);
 
-        sourceList = new ArrayList<>();
         String[] sources = source.split("[,]");
         for (String src : sources) {
             src = src.trim();
@@ -89,7 +92,6 @@ public class TargetConfig extends Config {
 
         Configuration columnProperties = targetProperties.subset(Property.COLUMN.key());
         Iterator<String> columnKeyList = columnProperties.getKeys();
-        columnList = new ArrayList<>();
         for (Iterator<String> it = columnKeyList; it.hasNext(); ) {
             String key = it.next();
             columnList.add(new Pair<>(key, getPropertyString(columnProperties, key)));
@@ -101,6 +103,28 @@ public class TargetConfig extends Config {
 
     @Override
     public boolean validate() {
+
+        if (source.isEmpty()) {
+            error(Property.TARGET.connectKey(name, Property.SOURCE) + " is required by target({})", name);
+            return false;
+        }
+
+        if (!outputConfig.validate()) {
+            return false;
+        }
+
+        if (!transferOutputConfig.validate()) {
+            return false;
+        }
+
+        if (!mappingOutputConfig.validate()) {
+            return false;
+        }
+
+        if (!transformConfig.validate()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -204,9 +228,14 @@ public class TargetConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        PropertiesConfigurationLayout layout = converterConfigFile.getPropertiesLayout();
+
+        String sourceKey = Property.TARGET.connectKey(name, Property.SOURCE);
+        layout.setBlancLinesBefore(sourceKey, 1);
+        layout.setComment(sourceKey, name.toUpperCase());
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
-        setPropertyString(targetProperties, Property.SOURCE.key(), "", source);
+        setPropertyString(properties, sourceKey, "", source);
         setPropertyString(targetProperties, Property.ID.key(), "id", id);
         setPropertyString(targetProperties, Property.ROW_NUMBER.key(), "1", rowNumberStartAt);
         setPropertyInt(targetProperties, Property.INDEX.key(), 1, index);

@@ -3,6 +3,7 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 
@@ -17,7 +18,6 @@ public abstract class ConfigFile extends Config {
         super(dconvers, configFile);
 
         Parameters params = new Parameters();
-
         try {
             propertiesBuilder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
             propertiesBuilder.configure(params.properties().setFileName(configFile));
@@ -38,6 +38,7 @@ public abstract class ConfigFile extends Config {
             error("Load properties '{}' is failed! {}", configFile, e.getMessage());
         }
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             if (valid) valid = loadProperties();
             if (valid) valid = validate();

@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -32,6 +33,14 @@ public class ConverterConfigFile extends ConfigFile {
     }
 
     @Override
+    public void loadDefaults() {
+        index = 0;
+
+        sourceConfigMap = new HashMap<>();
+        targetConfigMap = new HashMap<>();
+    }
+
+    @Override
     protected boolean loadProperties() {
         // skip load properties here to avoid plugins not found, then load again after all plugins are loaded in the DConvers.start function.
         return true;
@@ -49,8 +58,6 @@ public class ConverterConfigFile extends ConfigFile {
             sourceNameList = new ArrayList<>();
             sourceNameList.add(getPropertyString(properties, Property.SOURCE.key()));
         }
-
-        sourceConfigMap = new HashMap<>();
         SourceConfig sourceConfig;
         String name;
         for (Object object : sourceNameList) {
@@ -69,8 +76,6 @@ public class ConverterConfigFile extends ConfigFile {
             targetNameList = new ArrayList<>();
             targetNameList.add(getPropertyString(properties, Property.TARGET.key()));
         }
-
-        targetConfigMap = new HashMap<>();
         TargetConfig targetConfig;
         for (Object object : targetNameList) {
             name = object.toString();
@@ -127,16 +132,22 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        PropertiesConfigurationLayout layout = getPropertiesLayout();
+        layout.setHeaderComment("Saved using " + dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
 
-        setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 1, index);
+        setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 0, index);
 
+        layout.setBlancLinesBefore(Property.SOURCE.key(), 1);
+        layout.setComment(Property.SOURCE.key(), "DATA TABLES");
         for (SourceConfig sourceConfig : sourceConfigMap.values()) {
-            setPropertyString(properties, Property.SOURCE.key(), "", sourceConfig.getName());
+            addPropertyString(properties, Property.SOURCE.key(), "", sourceConfig.getName());
             sourceConfig.saveProperties();
         }
 
+        layout.setBlancLinesBefore(Property.TARGET.key(), 1);
+        layout.setComment(Property.TARGET.key(), "TRANSFORM TABLES");
         for (TargetConfig targetConfig : targetConfigMap.values()) {
-            setPropertyString(properties, Property.TARGET.key(), "", targetConfig.getName());
+            addPropertyString(properties, Property.TARGET.key(), "", targetConfig.getName());
             targetConfig.saveProperties();
         }
 

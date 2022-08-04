@@ -25,12 +25,19 @@ public class TransformConfig extends Config {
         super(dconvers, baseProperty);
         this.properties = baseProperties;
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
         }
 
         log.trace("TransformConfig({}) is created", name);
+    }
+
+    @Override
+    public void loadDefaults() {
+        transformList = new ArrayList<>();
+        transform = "";
     }
 
     @Override
@@ -53,9 +60,6 @@ public class TransformConfig extends Config {
         } catch (ConversionException ex) {
             transformArray = new ArrayList<>();
         }
-
-        transformList = new ArrayList<>();
-        transform = "";
 
         if (transformArray.size() == 0) {
             return true;
@@ -135,15 +139,14 @@ public class TransformConfig extends Config {
         for (Pair<TransformTypes, HashMap<String, String>> transformation : transformList) {
             TransformTypes transformTypes = transformation.getKey();
             HashMap<String, String> argumentMap = transformation.getValue();
-
             for (String argumentName : argumentMap.keySet()) {
                 if (argumentName.compareTo("arguments") == 0) {
                     arguments = argumentMap.get(argumentName);
                     transform = transformTypes.name() + "(" + arguments + ")";
-                    setPropertyString(properties, transformProperty, "", transform);
+                    addPropertyString(properties, transformProperty, "", transform);
                 } else {
                     value = argumentMap.get(argumentName);
-                    setPropertyString(properties, Property.connectKeyString(transformProperty, transformTypes.name(), argumentName), "", value);
+                    addPropertyString(properties, Property.connectKeyString(transformProperty, transformTypes.name(), argumentName), "", value);
                 }
             }
         }// end for(Pair)

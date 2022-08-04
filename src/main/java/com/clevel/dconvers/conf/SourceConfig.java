@@ -2,6 +2,7 @@ package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
 import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -24,18 +25,18 @@ public class SourceConfig extends Config {
 
     private OutputConfig outputConfig;
 
+    private ConverterConfigFile converterConfigFile;
+
     public SourceConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
         super(dconvers, name);
 
+        this.converterConfigFile = converterConfigFile;
         properties = converterConfigFile.getProperties();
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
-            if (valid) {
-                outputConfig = new OutputConfig(dconvers, Property.SOURCE.connectKey(name), properties);
-                valid = outputConfig.isValid();
-            }
         }
 
         log.trace("SourceConfig({}) is created", name);
@@ -47,21 +48,32 @@ public class SourceConfig extends Config {
     }
 
     @Override
+    public void loadDefaults() {
+        dataSource = "";
+        query = "";
+        id = "id";
+        index = 0;
+        querySplit = 0;
+        target = true;
+        queryParameterMap = new HashMap<>();
+        outputConfig = new OutputConfig(dconvers, Property.SOURCE.connectKey(name), properties);
+    }
+
+    @Override
     protected boolean loadProperties() {
         log.trace("SourceConfig({}).loadProperties.", name);
 
         Property source = Property.SOURCE;
 
-        dataSource = getPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE));
-        query = getPropertyString(properties, source.connectKey(name, Property.QUERY));
+        dataSource = getPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE), dataSource);
+        query = getPropertyString(properties, source.connectKey(name, Property.QUERY), query);
         id = getPropertyString(properties, source.connectKey(name, Property.ID), "id");
-        index = properties.getInt(source.connectKey(name, Property.INDEX), 0);
-        querySplit = properties.getInt(source.connectKey(name, Property.QUERY_SPLIT), 0);
-        target = properties.getBoolean(source.connectKey(name, Property.TARGET), true);
+        index = properties.getInt(source.connectKey(name, Property.INDEX), index);
+        querySplit = properties.getInt(source.connectKey(name, Property.QUERY_SPLIT), querySplit);
+        target = properties.getBoolean(source.connectKey(name, Property.TARGET), target);
 
         Configuration paramProperties = properties.subset(source.connectKey(name, Property.QUERY));
         Iterator<String> paramKeyList = paramProperties.getKeys();
-        queryParameterMap = new HashMap<>();
         String paramName;
         String paramValue;
         for (Iterator<String> it = paramKeyList; it.hasNext(); ) {
@@ -77,13 +89,17 @@ public class SourceConfig extends Config {
     public boolean validate() {
         log.trace("SourceConfig({}).validateProperties.", name);
 
-        if (dataSource == null) {
+        if (dataSource.isEmpty()) {
             error(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required by source({})", name);
             return false;
         }
 
-        if (query == null) {
+        if (query.isEmpty()) {
             error(Property.SOURCE.connectKey(name, Property.QUERY) + " is required by source({})", name);
+            return false;
+        }
+
+        if (!outputConfig.validate()) {
             return false;
         }
 
@@ -169,9 +185,15 @@ public class SourceConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        PropertiesConfigurationLayout layout = converterConfigFile.getPropertiesLayout();
+
         Property source = Property.SOURCE;
 
-        setPropertyString(properties, source.connectKey(name, Property.DATA_SOURCE), "", dataSource);
+        String dataSourceKey = source.connectKey(name, Property.DATA_SOURCE);
+        layout.setBlancLinesBefore(dataSourceKey, 1);
+        layout.setComment(dataSourceKey, name.toUpperCase());
+
+        setPropertyString(properties, dataSourceKey, "", dataSource);
         setPropertyString(properties, source.connectKey(name, Property.QUERY), "", query);
         setPropertyString(properties, source.connectKey(name, Property.ID), "id", id);
         setPropertyInt(properties, source.connectKey(name, Property.INDEX), 0, index);

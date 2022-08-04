@@ -26,6 +26,7 @@ public class HostConfig extends Config {
         properties = dconvers.dataConversionConfigFile.properties;
         this.rootProperty = rootProperty;
 
+        loadDefaults();
         if (!dconvers.getManualMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
@@ -37,6 +38,11 @@ public class HostConfig extends Config {
     @Override
     protected Logger loadLogger() {
         return LoggerFactory.getLogger(HostConfig.class);
+    }
+
+    @Override
+    public void loadDefaults() {
+        /*TODO: loadDefaults*/
     }
 
     @Override

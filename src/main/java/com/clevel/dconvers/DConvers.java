@@ -67,6 +67,11 @@ public class DConvers extends AppBase {
     private boolean manualMode;
 
     /**
+     * asLib: manualMode=true, effect to saveProperties.
+     */
+    public boolean alwaysSaveDefaultValue;
+
+    /**
      * run from normal configuration files specified by command-line args.
      */
     public DConvers(String[] args) {
@@ -141,9 +146,11 @@ public class DConvers extends AppBase {
         appStartDate = new Date();
         this.dconvers = this;
 
-        initSystemVariables();
+        if (!manualMode) {
+            initSystemVariables();
+            switches = new Switches(this);
+        }
 
-        if (!manualMode) switches = new Switches(this);
         if (!switches.isValid()) {
             performInvalidSwitches();
             if (isLibEnd) {
@@ -936,6 +943,8 @@ public class DConvers extends AppBase {
     public void setManualMode(boolean manualMode) {
         this.manualMode = manualMode;
         if (manualMode) {
+            alwaysSaveDefaultValue = false;
+            initSystemVariables();
             switches = new Switches(this);
             dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
         }
