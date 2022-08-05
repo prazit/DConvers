@@ -131,7 +131,7 @@ public class DConvers extends AppBase {
         log = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         LoggerContext loggerContext = ((ch.qos.logback.classic.Logger) log).getLoggerContext();
         URL url = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
-        log.info("Logback: {}", url);
+        log.debug("Logback: {}", url);
 
         return log;
     }
@@ -566,6 +566,7 @@ public class DConvers extends AppBase {
         systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
 
         if (!asLib) {
+            /*version of user configuration files is optional*/
             VersionConfigFile cVersionConfigFile = new VersionConfigFile(this, Property.VERSION_PROPERTIES.key());
             if (cVersionConfigFile.isValid()) {
                 systemVariableMap.get(SystemVariable.CONFIG_VERSION).setValue(versionFormatter.versionString(cVersionConfigFile));
@@ -585,7 +586,7 @@ public class DConvers extends AppBase {
         closeAllDataSource();
         performTimeTracker();
 
-        log.info("SUCCESS");
+        if (!switches.isHelp() && !switches.isVersion()) log.info("SUCCESS");
 
         int exitCode;
         if (dataConversionConfigFile == null) {

@@ -29,6 +29,8 @@ public class VersionFormatter extends AppBase {
     }
 
     public String versionString(VersionConfigFile versionConfigFile) {
+        if(!versionConfigFile.isValid()) return "DEMO";
+
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(versionConfigFile.getProjectName());
 

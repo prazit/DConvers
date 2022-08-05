@@ -31,6 +31,8 @@ public class VersionConfigFile extends ConfigFile {
 
     @Override
     public void loadDefaults() {
+        if (properties == null)/*in-case: user configs version*/ return;
+
         projectName = getPropertyString(properties, Property.PROJECT_NAME.key());
         versionName = getPropertyString(properties, Property.VERSION_NAME.key());
         buildDate = getPropertyString(properties, Property.BUILD_DATE.key());
@@ -44,6 +46,11 @@ public class VersionConfigFile extends ConfigFile {
     protected boolean loadProperties() {
         /*nothing*/
         return true;
+    }
+
+    @Override
+    public boolean validate() {
+        return properties != null;
     }
 
     @Override
