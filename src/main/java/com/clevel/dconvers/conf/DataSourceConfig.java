@@ -385,13 +385,11 @@ public class DataSourceConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-        PropertiesConfigurationLayout layout = getPropertiesLayout();
-
         Property dataSource = Property.DATA_SOURCE;
         String urlKey = dataSource.connectKey(name, Property.URL);
 
-        layout.setBlancLinesBefore(urlKey, 1);
-        layout.setComment(urlKey, name.toUpperCase());
+        setBlancLinesBefore(urlKey, 1);
+        setComment(urlKey, name.toUpperCase());
 
         /*save all properties*/
         setPropertyString(properties, urlKey, "", url);
@@ -417,4 +415,5 @@ public class DataSourceConfig extends Config {
         setPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), "\"", valueQuotes);
 
     }
+
 }

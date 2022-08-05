@@ -186,13 +186,11 @@ public class SourceConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-        PropertiesConfigurationLayout layout = converterConfigFile.getPropertiesLayout();
-
         Property source = Property.SOURCE;
 
         String dataSourceKey = source.connectKey(name, Property.DATA_SOURCE);
-        layout.setBlancLinesBefore(dataSourceKey, 1);
-        layout.setComment(dataSourceKey, name.toUpperCase());
+        setBlancLinesBefore(dataSourceKey, 1);
+        setComment(dataSourceKey, name.toUpperCase());
 
         setPropertyString(properties, dataSourceKey, "", dataSource);
         setPropertyString(properties, source.connectKey(name, Property.QUERY), "", query);

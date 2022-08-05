@@ -229,11 +229,9 @@ public class TargetConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-        PropertiesConfigurationLayout layout = converterConfigFile.getPropertiesLayout();
-
         String sourceKey = Property.TARGET.connectKey(name, Property.SOURCE);
-        layout.setBlancLinesBefore(sourceKey, 1);
-        layout.setComment(sourceKey, name.toUpperCase());
+        setBlancLinesBefore(sourceKey, 1);
+        setComment(sourceKey, name.toUpperCase());
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         setPropertyString(properties, sourceKey, "", source);

@@ -1,5 +1,6 @@
 package com.clevel.dconvers.conf;
 
+import com.clevel.dconvers.ConfigFileTypes;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import javafx.util.Pair;
@@ -371,8 +372,7 @@ public class DataConversionConfigFile extends ConfigFile {
         if (!valid) throw new ConfigurationException("properties are invalid! saveProperties is not allowed.");
         properties.clear();
 
-        PropertiesConfigurationLayout layout = getPropertiesLayout();
-        layout.setHeaderComment("Saved using "+ dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
+        setHeaderComment("Saved using " + dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
 
         /*save all plugins*/
         for (Pair<String, String> plugin : pluginsCalcList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.CALCULATOR.connectKey(plugin.getKey())), "", plugin.getValue());
@@ -403,8 +403,8 @@ public class DataConversionConfigFile extends ConfigFile {
         }
 
         /*save all dataSources*/
-        layout.setBlancLinesBefore(Property.DATA_SOURCE.key(), 1);
-        layout.setComment(Property.DATA_SOURCE.key(), "DATASOURCES");
+        setBlancLinesBefore(Property.DATA_SOURCE.key(), 1);
+        setComment(Property.DATA_SOURCE.key(), "DATASOURCES");
         for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
             addPropertyString(properties, Property.DATA_SOURCE.key(), "", dataSourceConfig.getName());
             dataSourceConfig.saveProperties();

@@ -2089,25 +2089,24 @@ public class OutputConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-        PropertiesConfigurationLayout layout = getPropertiesLayout();
-        if (src) saveSourceProperties(layout);
-        if (tar) saveTargetProperties(layout);
-        if (sql) saveSQLProperties(layout);
-        if (markdown) saveMarkdownProperties(layout);
-        if (pdf) savePDFProperties(layout);
-        if (txt) saveTXTProperties(layout);
-        if (csv) saveCSVProperties(layout);
-        if (dbInsert) saveDBInsertProperties(layout);
-        if (dbUpdate) saveDBUpdateProperties(layout);
-        if (dbExecute) saveDBExecuteProperties(layout);
-        if (osVariable) saveOSVariableProperties(layout);
-        if (email) saveEmailProperties(layout);
+        if (src) saveSourceProperties();
+        if (tar) saveTargetProperties();
+        if (sql) saveSQLProperties();
+        if (markdown) saveMarkdownProperties();
+        if (pdf) savePDFProperties();
+        if (txt) saveTXTProperties();
+        if (csv) saveCSVProperties();
+        if (dbInsert) saveDBInsertProperties();
+        if (dbUpdate) saveDBUpdateProperties();
+        if (dbExecute) saveDBExecuteProperties();
+        if (osVariable) saveOSVariableProperties();
+        if (email) saveEmailProperties();
 
     }
 
-    private void saveEmailProperties(PropertiesConfigurationLayout layout) {
+    private void saveEmailProperties() {
         String name = Property.EMAIL.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, email);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, emailSftp);
@@ -2133,18 +2132,18 @@ public class OutputConfig extends Config {
         setPropertyString(properties, Property.CONTENT.prefixKey(name), null, emailContent);
     }
 
-    private void saveOSVariableProperties(PropertiesConfigurationLayout layout) {
+    private void saveOSVariableProperties() {
         String name = Property.OSVARIABLE.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, osVariable);
 
         setPropertyString(properties, Property.NAME.prefixKey(name), "VARIABLE", osVariableName);
         setPropertyString(properties, Property.VALUE.prefixKey(name), "VALUE", osVariableValue);
     }
 
-    private void saveDBExecuteProperties(PropertiesConfigurationLayout layout) {
+    private void saveDBExecuteProperties() {
         String name = Property.DBEXECUTE.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, dbExecute);
 
         setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbExecuteDataSource);
@@ -2155,9 +2154,9 @@ public class OutputConfig extends Config {
         for (String sql : dbExecutePostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), sql, sql);
     }
 
-    private void saveDBUpdateProperties(PropertiesConfigurationLayout layout) {
+    private void saveDBUpdateProperties() {
         String name = Property.DBUPDATE.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, dbUpdate);
 
         setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbUpdateDataSource);
@@ -2173,9 +2172,9 @@ public class OutputConfig extends Config {
         for (String sql : dbUpdatePostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), "", sql);
     }
 
-    private void saveDBInsertProperties(PropertiesConfigurationLayout layout) {
+    private void saveDBInsertProperties() {
         String name = Property.DBINSERT.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, dbInsert);
 
         setPropertyString(properties, Property.DATA_SOURCE.prefixKey(name), "", dbInsertDataSource);
@@ -2190,9 +2189,9 @@ public class OutputConfig extends Config {
         for (String sql : dbInsertPostSQL) addPropertyString(properties, Property.connectKeyString(name, Property.POST_SQL.connectKey(Property.VALUE)), sql, sql);
     }
 
-    private void saveCSVProperties(PropertiesConfigurationLayout layout) {
+    private void saveCSVProperties() {
         String name = Property.CSV.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, csv);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, csvSftp);
@@ -2218,9 +2217,9 @@ public class OutputConfig extends Config {
         setPropertyString(properties, Property.FORMAT_STRING.prefixKey(name), "", csvFormatString);
     }
 
-    private void saveTXTProperties(PropertiesConfigurationLayout layout) {
+    private void saveTXTProperties() {
         String name = Property.TXT.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, txt);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, txtSftp);
@@ -2244,9 +2243,9 @@ public class OutputConfig extends Config {
         setPropertyString(properties, Property.FILL_DATE.prefixKey(name), " ", txtFillDate);
     }
 
-    private void savePDFProperties(PropertiesConfigurationLayout layout) {
+    private void savePDFProperties() {
         String name = Property.PDF_TABLE.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, pdf);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, pdfSftp);
@@ -2256,9 +2255,9 @@ public class OutputConfig extends Config {
         /*Notice: when you need PDF-Table again please add JRXML to Property or split PDF to Plugin*/
     }
 
-    private void saveMarkdownProperties(PropertiesConfigurationLayout layout) {
+    private void saveMarkdownProperties() {
         String name = Property.MARKDOWN.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, markdown);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, markdownSftp);
@@ -2279,9 +2278,9 @@ public class OutputConfig extends Config {
         setPropertyBoolean(properties, Property.connectKeyString(name, Property.MERMAID.connectKey(Property.FULL.key())), true, markdownMermaidFull);
     }
 
-    private void saveSQLProperties(PropertiesConfigurationLayout layout) {
+    private void saveSQLProperties() {
         String name = Property.SQL.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, sql);
 
         setPropertyString(properties, Property.SFTP.prefixKey(name), null, sqlSftp);
@@ -2308,9 +2307,9 @@ public class OutputConfig extends Config {
         for (String sql : sqlPostSQL) addPropertyString(properties, Property.POST_SQL.prefixKey(name), sql, sql);
     }
 
-    private void saveTargetProperties(PropertiesConfigurationLayout layout) {
+    private void saveTargetProperties() {
         String name = Property.TAR.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, tar);
 
         setPropertyString(properties, Property.OUTPUT_TYPES.prefixKey(name), "sql,md", tarOutputs);
@@ -2327,9 +2326,9 @@ public class OutputConfig extends Config {
         setPropertyString(properties, Property.OUTPUT_EOF.prefixKey(name), "\n", tarOutputEOF);
     }
 
-    private void saveSourceProperties(PropertiesConfigurationLayout layout) {
+    private void saveSourceProperties() {
         String name = Property.SRC.prefixKey(this.name);
-        layout.setBlancLinesBefore(name, 1);
+        setBlancLinesBefore(name, 1);
         setPropertyBoolean(properties, name, false, src);
 
         setPropertyString(properties, Property.OWNER.prefixKey(name), "OWNER", srcOwner);

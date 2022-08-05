@@ -17,19 +17,21 @@ public class SaveConfigUT {
     Logger log = LoggerFactory.getLogger(SaveConfigUT.class);
     DConvers dconvers;
     String configPath = "/Apps/DConvers/conf/";
+    ConfigFileTypes configFileTypes;
 
     @Test
     public void manualConfigs() {
         log.trace("---- saveConfigs begin ----");
 
-        String fileName = configPath + "dataconversion" + Defaults.CONFIG_FILE_EXT.getStringValue();
+        configFileTypes = ConfigFileTypes.PROPERTIES;
+        String fileName = configPath + "dataconversion" + getFileExt(configFileTypes);
         createEmptyFile(fileName);
 
         dconvers = new DConvers(new String[]{
-                "--library-mode=manual", /*dconvers.setManualMode(true);*/
-                /*"--source-type=xml", /*dconvers.switches.setSourceType(ConfigFileTypes.XML);*/
-                "--source=" + fileName,
-                "--save-default-value" /*dconvers.alwaysSaveDefaultValue = true;*/
+                "--library-mode=manual"
+                ,"--source-type=" + configFileTypes.name()
+                ,"--source=" + fileName
+                /*,"--save-default-value"*/
         });
 
         DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
@@ -50,6 +52,18 @@ public class SaveConfigUT {
         }
 
         log.trace("---- saveConfigs end ----");
+    }
+
+    private String getFileExt(ConfigFileTypes configFileTypes) {
+        switch (configFileTypes) {
+            case PROPERTIES:
+                return ".conf";
+            case XML:
+                return ".xml";
+            case JSON:
+                return ".json";
+        }
+        return ".txt";
     }
 
     private void initDataConversionConfigFile(DataConversionConfigFile dataConversionConfigFile) {
@@ -102,7 +116,7 @@ public class SaveConfigUT {
     int converterCount = 0;
 
     private ConverterConfigFile getConverterConfigFile(String name) {
-        String fileName = configPath + name + Defaults.CONFIG_FILE_EXT.getStringValue();
+        String fileName = configPath + name + getFileExt(configFileTypes);
         createEmptyFile(fileName);
         ConverterConfigFile converterConfigFile = new ConverterConfigFile(dconvers, fileName);
 

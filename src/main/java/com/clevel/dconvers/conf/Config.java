@@ -1,5 +1,6 @@
 package com.clevel.dconvers.conf;
 
+import com.clevel.dconvers.ConfigFileTypes;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import org.apache.commons.configuration2.Configuration;
@@ -17,13 +18,19 @@ public abstract class Config extends AppBase {
         return properties;
     }
 
-    public PropertiesConfigurationLayout getPropertiesLayout() {
-        if (properties instanceof PropertiesConfiguration) {
-            return ((PropertiesConfiguration) properties).getLayout();
-        }
+    protected void setBlancLinesBefore(String key, int number) {
+        if (properties instanceof PropertiesConfiguration)
+            ((PropertiesConfiguration) properties).getLayout().setBlancLinesBefore(key, number);
+    }
 
-        error("getPropertiesLayout: {} doesn't has layout!");
-        return null;
+    protected void setComment(String key, String comment) {
+        if (properties instanceof PropertiesConfiguration)
+            ((PropertiesConfiguration) properties).getLayout().setComment(key, comment);
+    }
+
+    protected void setHeaderComment(String comment) {
+        if (properties instanceof PropertiesConfiguration)
+            ((PropertiesConfiguration) properties).getLayout().setHeaderComment(comment);
     }
 
     protected String getPropertyString(Configuration properties, String key) {

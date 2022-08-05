@@ -132,20 +132,19 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     public void saveProperties() throws ConfigurationException {
-        PropertiesConfigurationLayout layout = getPropertiesLayout();
-        layout.setHeaderComment("Saved using " + dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
+        setHeaderComment("Saved using " + dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
 
         setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 0, index);
 
-        layout.setBlancLinesBefore(Property.SOURCE.key(), 1);
-        layout.setComment(Property.SOURCE.key(), "DATA TABLES");
+        setBlancLinesBefore(Property.SOURCE.key(), 1);
+        setComment(Property.SOURCE.key(), "DATA TABLES");
         for (SourceConfig sourceConfig : sourceConfigMap.values()) {
             addPropertyString(properties, Property.SOURCE.key(), "", sourceConfig.getName());
             sourceConfig.saveProperties();
         }
 
-        layout.setBlancLinesBefore(Property.TARGET.key(), 1);
-        layout.setComment(Property.TARGET.key(), "TRANSFORM TABLES");
+        setBlancLinesBefore(Property.TARGET.key(), 1);
+        setComment(Property.TARGET.key(), "TRANSFORM TABLES");
         for (TargetConfig targetConfig : targetConfigMap.values()) {
             addPropertyString(properties, Property.TARGET.key(), "", targetConfig.getName());
             targetConfig.saveProperties();

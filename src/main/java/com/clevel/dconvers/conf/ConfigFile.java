@@ -42,12 +42,12 @@ public abstract class ConfigFile extends Config {
         Parameters params = new Parameters();
         try {
             propertiesBuilder = new FileBasedConfigurationBuilder<>(JSONConfiguration.class);
-            propertiesBuilder.configure(params.properties().setFileName(configFile));
+            propertiesBuilder.configure(params.fileBased().setFileName(configFile));
             properties = propertiesBuilder.getConfiguration();
             valid = true;
             log.trace("load json-properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
-            if (!(this instanceof VersionConfigFile)) error("Load json-properties '{}' is failed!", configFile);
+            if (!(this instanceof VersionConfigFile)) error("Load json-properties '{}' is failed! NoClassDefFoundError: {}", configFile, nc.getMessage());
             properties = new PropertiesConfiguration();
             valid = false;
 
@@ -57,7 +57,10 @@ public abstract class ConfigFile extends Config {
                 log.debug(nc.getMessage(), errors.toString());
             }
         } catch (Exception e) {
-            if (!(this instanceof VersionConfigFile)) error("Load json-properties '{}' is failed! {}", configFile, e.getMessage());
+            if (!(this instanceof VersionConfigFile)) {
+                error("Load json-properties '{}' is failed! {}: {}", configFile, e.getClass().getSimpleName(), e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -70,7 +73,7 @@ public abstract class ConfigFile extends Config {
             valid = true;
             log.trace("load xml-properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
-            if (!(this instanceof VersionConfigFile)) error("Load xml-properties '{}' is failed!", configFile);
+            if (!(this instanceof VersionConfigFile)) error("Load xml-properties '{}' is failed! NoClassDefFoundError: {}", configFile, nc.getMessage());
             properties = new PropertiesConfiguration();
             valid = false;
 
@@ -80,7 +83,7 @@ public abstract class ConfigFile extends Config {
                 log.debug(nc.getMessage(), errors.toString());
             }
         } catch (Exception e) {
-            if (!(this instanceof VersionConfigFile)) error("Load xml-properties '{}' is failed! {}", configFile, e.getMessage());
+            if (!(this instanceof VersionConfigFile)) error("Load xml-properties '{}' is failed! {}: {}", configFile, e.getClass().getSimpleName(), e.getMessage());
         }
     }
 
