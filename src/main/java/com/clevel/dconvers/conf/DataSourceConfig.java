@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.LibraryMode;
 import com.clevel.dconvers.ngin.Crypto;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
@@ -49,7 +50,7 @@ public class DataSourceConfig extends Config {
         properties = dconvers.dataConversionConfigFile.properties;
 
         loadDefaults();
-        if (!dconvers.getManualMode()) {
+        if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
         }
@@ -65,7 +66,7 @@ public class DataSourceConfig extends Config {
         properties = dconvers.dataConversionConfigFile.properties;
 
         loadDefaults();
-        if (!dconvers.getManualMode()) {
+        if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {
             valid = loadProperties(connection);
             if (valid) valid = validate();
         }

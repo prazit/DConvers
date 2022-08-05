@@ -19,18 +19,18 @@ public class SaveConfigUT {
     String configPath = "/Apps/DConvers/conf/";
 
     @Test
-    public void saveConfigs() {
+    public void manualConfigs() {
         log.trace("---- saveConfigs begin ----");
 
         String fileName = configPath + "dataconversion" + Defaults.CONFIG_FILE_EXT.getStringValue();
-        log.info("create file({})", fileName);
         createEmptyFile(fileName);
 
-        log.info("create DConvers...");
-        dconvers = new DConvers(fileName);
-        dconvers.setManualMode(true);
-        dconvers.alwaysSaveDefaultValue = true;
-        dconvers.loadLogger();
+        dconvers = new DConvers(new String[]{
+                "--library-mode=manual", /*dconvers.setManualMode(true);*/
+                /*"--source-type=xml", /*dconvers.switches.setSourceType(ConfigFileTypes.XML);*/
+                "--source=" + fileName,
+                "--save-default-value" /*dconvers.alwaysSaveDefaultValue = true;*/
+        });
 
         DataConversionConfigFile dataConversionConfigFile = dconvers.dataConversionConfigFile;
         initDataConversionConfigFile(dataConversionConfigFile);
@@ -78,13 +78,13 @@ public class SaveConfigUT {
     }
 
     private void createEmptyFile(String fileName) {
-        try {
+        /*try {
             FileWriter fileWriter = new FileWriter(fileName);
             fileWriter.write("\n");
             fileWriter.close();
         } catch (IOException ex) {
             log.error("createEmptyFile(" + fileName + ") failed, ", ex);
-        }
+        }*/
     }
 
     private HashMap<String, ConverterConfigFile> getConverterConfigMap() {

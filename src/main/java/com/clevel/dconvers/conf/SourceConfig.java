@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.LibraryMode;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -34,7 +35,7 @@ public class SourceConfig extends Config {
         properties = converterConfigFile.getProperties();
 
         loadDefaults();
-        if (!dconvers.getManualMode()) {
+        if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
         }

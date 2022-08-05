@@ -82,17 +82,17 @@ public abstract class Config extends AppBase {
         else defaultValue = trim(defaultValue);
         if (value == null) value = "";
         else value = trim(value);
-        if (!dconvers.alwaysSaveDefaultValue && defaultValue.compareTo(value) == 0) properties.clearProperty(key);
+        if (!dconvers.switches.isSaveDefaultValue() && defaultValue.compareTo(value) == 0) properties.clearProperty(key);
         else properties.setProperty(key, value);
     }
 
     protected void setPropertyInt(Configuration properties, String key, int defaultValue, int value) {
-        if (!dconvers.alwaysSaveDefaultValue && defaultValue == value) properties.clearProperty(key);
+        if (!dconvers.switches.isSaveDefaultValue() && defaultValue == value) properties.clearProperty(key);
         else properties.setProperty(key, value);
     }
 
     protected void setPropertyBoolean(Configuration properties, String key, boolean defaultValue, boolean value) {
-        if (!dconvers.alwaysSaveDefaultValue && defaultValue == value) properties.clearProperty(key);
+        if (!dconvers.switches.isSaveDefaultValue() && defaultValue == value) properties.clearProperty(key);
         else properties.setProperty(key, value);
     }
 

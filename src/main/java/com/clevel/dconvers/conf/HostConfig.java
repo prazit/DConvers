@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.LibraryMode;
 import com.clevel.dconvers.ngin.Crypto;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,7 +28,7 @@ public class HostConfig extends Config {
         this.rootProperty = rootProperty;
 
         loadDefaults();
-        if (!dconvers.getManualMode()) {
+        if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
         }

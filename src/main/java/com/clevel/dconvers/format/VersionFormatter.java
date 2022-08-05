@@ -13,11 +13,6 @@ public class VersionFormatter extends AppBase {
         valid = true;
     }
 
-    public VersionFormatter() {
-        super(new DConvers("none"), "VersionFormatter");
-        valid = true;
-    }
-
     public String versionNumber(VersionConfigFile versionConfigFile) {
         StringBuilder stringBuilder = new StringBuilder();
 

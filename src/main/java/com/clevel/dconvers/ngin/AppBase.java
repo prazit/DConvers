@@ -65,7 +65,7 @@ public abstract class AppBase extends ValidatorBase {
     }
 
     private String currentConverterName() {
-        if (dconvers.currentConverter == null) {
+        if (dconvers == null || dconvers.currentConverter == null) {
             return "";
         }
 

@@ -1,6 +1,7 @@
 package com.clevel.dconvers.conf;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.LibraryMode;
 import org.apache.commons.configuration2.Configuration;
 
 /**
@@ -17,7 +18,7 @@ public abstract class OutputPluginConfig extends Config{
         this.properties = baseProperties;
 
         loadDefaults();
-        if(!dconvers.getManualMode()) {
+        if(LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {
             valid = loadProperties();
             if (valid) valid = validate();
         }

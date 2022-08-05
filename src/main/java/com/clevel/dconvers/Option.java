@@ -4,13 +4,15 @@ public enum Option {
 
     SOURCE(false, "s", "source", true, "source file is required for data conversion, please see 'sample-conversion.conf' for detailed"),
     TEST(false, "t", "test", false, "force to ignore all tables, but allow other component to loading to test connection and configuration"),
+    LIBRARY(false, "m", "library-mode", true, "library modes need to manual call the start function yourself\n possible <arg> are MANUAL, NORMAL\nmanual = set configs manually\nnormal = load configs from source normally"),
+    SAVE_DEFAULT_VALUE(false, "save", "save-default-value", false, "in library-manual-mode, when call saveProperties will not save property with default values by default\nuse this switch if want to save the property with default value"),
 
-    XML(false, "x", "xml", false, "use xml instead of properties"),
+    SOURCE_TYPE(false, "st", "source-type", true, "type of source file, default=properties\npossible <arg> are XML, JSON, PROPERTIES"),
     ARG(false, "r", "arg", true, "values in CSV format for the CAL:ARG()"),
 
     LOGBACK(false, "b", "logback", true, "full path to logback.xml"),
     VERBOSE(false, "v", "verbose", false, "run in verbose mode will show TRACE level of messages"),
-    LEVEL(false, "l", "level", true, "specified level will use as level of messages\npossible values are TRACE, DEBUG, ERROR, WARNING, INFO"),
+    LEVEL(false, "l", "level", true, "specified level will use as level of messages\npossible <arg> are TRACE, DEBUG, ERROR, WARNING, INFO"),
 
     VERSION(false, "n", "version", false, "print version information to console"),
     HELP(false, "h", "help", false, "print help message to console");

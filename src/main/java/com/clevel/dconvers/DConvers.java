@@ -62,51 +62,27 @@ public class DConvers extends AppBase {
     private HashMap<String, DataSource> dataSourceMap;
     private Date appStartDate;
 
-    public boolean asLib;
     private boolean isLibEnd;
-    private boolean manualMode;
-
-    /**
-     * asLib: manualMode=true, effect to saveProperties.
-     */
-    public boolean alwaysSaveDefaultValue;
 
     /**
      * run from normal configuration files specified by command-line args.
      */
     public DConvers(String[] args) {
         super("DConvers");
-        this.args = Arrays.copyOf(args, args.length);
-        asLib = false;
-        construct();
-    }
-
-    /**
-     * asLib: run from specified configuration files.
-     * asLib: run from manual configs, after create DConvers need to call setManual(true) before set all configs.
-     */
-    public DConvers(String sourceConfig) {
-        super("DConvers Library");
 
         /* args array need somethings like this
         --source=ETLJOB\config\JOBSTATUS.conf
         --logback=C:\Users\prazi\Documents\LHBank\ETL\DConvers\ETLJOB\config\shared-Local\logback-replace.xml
         --verbose
-        --level=TRACE
-         */
-        this.args = new String[]{"--source=" + sourceConfig};
+        --level=TRACE         */
+        this.args = Arrays.copyOf(args, args.length);
+        timeTracker = new TimeTracker();
 
-        asLib = true;
-        dataSourceMap = new HashMap<>();
-
-        construct();
-    }
-
-    private void construct() {
         loadLogger();
+        loadSwitches();
+        initSystemVariables();
 
         isLibEnd = false;
-        manualMode = false;
 
         hasWarning = false;
         exitOnError = false;
@@ -116,6 +92,23 @@ public class DConvers extends AppBase {
         successCode = Defaults.EXIT_CODE_SUCCESS.getIntValue();
 
         currentConverter = null;
+
+        dataSourceMap = new HashMap<>();
+    }
+
+    private void loadSwitches() {
+        switches = new Switches(args);
+
+        switches.postConstruct();
+        log.debug("Switches = {}", switches.toString());
+
+        if (!switches.isValid()) {
+            performInvalidSwitches();
+        }
+
+        if (LibraryMode.MANUAL == switches.getLibraryMode()) {
+            dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
+        }
     }
 
     @Override
@@ -138,40 +131,18 @@ public class DConvers extends AppBase {
 
     public void start() {
         /*when start from the main class, the timeTracker is already assigned otherwise is not*/
-        if (timeTracker == null) {
-            timeTracker = new TimeTracker();
-        }
-
         timeTracker.start(TimeTrackerKey.APPLICATION, "start to stop");
         appStartDate = new Date();
         this.dconvers = this;
 
-        if (!manualMode) {
-            initSystemVariables();
-            switches = new Switches(this);
-        }
-
-        if (!switches.isValid()) {
-            performInvalidSwitches();
-            if (isLibEnd) {
-                return;
-            }
-        }
-
         if (switches.isHelp()) {
             performHelp();
             stop();
-            if (isLibEnd) {
-                return;
-            }
         }
 
         if (switches.isVersion()) {
             performVersion();
             stop();
-            if (isLibEnd) {
-                return;
-            }
         }
 
         String dataConversionConfigFilename = switches.getSource();
@@ -182,7 +153,7 @@ public class DConvers extends AppBase {
         log.info("Configuration file: {}", dataConversionConfigFilename);
 
         log.trace("DConvers. Load DataConversionConfigFile.");
-        if (!manualMode) dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
+        if (LibraryMode.MANUAL != switches.getLibraryMode()) dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
         currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
 
         if (!dataConversionConfigFile.isValid()) {
@@ -554,24 +525,32 @@ public class DConvers extends AppBase {
         systemVariableMap.get(SystemVariable.EMPTY_STRING).setValue("");
         ((DataDate) systemVariableMap.get(SystemVariable.APPLICATION_START)).setValue(appStartDate);
 
-        currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
-        currentState.setValue((long) Defaults.EXIT_CODE_SUCCESS.getIntValue());
+        createCurrentStateVar(Defaults.EXIT_CODE_SUCCESS.getLongValue());
 
         currentStateMessage = (DataString) systemVariableMap.get(SystemVariable.APPLICATION_STATE_MESSAGE);
         currentStateMessage.setValue("");
 
         VersionFormatter versionFormatter = new VersionFormatter(this);
-        VersionConfigFile versionConfigFile = new VersionConfigFile(this, Property.CURRENT_VERSION.key());
-        systemVariableMap.get(SystemVariable.APPLICATION_VERSION).setValue(versionFormatter.versionNumber(versionConfigFile));
-        systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
+        createVersionVar(versionFormatter);
 
-        if (!asLib) {
+        if (!switches.isLibrary()) {
             /*version of user configuration files is optional*/
             VersionConfigFile cVersionConfigFile = new VersionConfigFile(this, Property.VERSION_PROPERTIES.key());
             if (cVersionConfigFile.isValid()) {
                 systemVariableMap.get(SystemVariable.CONFIG_VERSION).setValue(versionFormatter.versionString(cVersionConfigFile));
             }
         }
+    }
+
+    private void createCurrentStateVar(long exitCode) {
+        currentState = (DataLong) systemVariableMap.get(SystemVariable.APPLICATION_STATE);
+        currentState.setValue(exitCode);
+    }
+
+    private void createVersionVar(VersionFormatter versionFormatter) {
+        VersionConfigFile versionConfigFile = new VersionConfigFile(this, Property.CURRENT_VERSION.key());
+        systemVariableMap.get(SystemVariable.APPLICATION_VERSION).setValue(versionFormatter.versionNumber(versionConfigFile));
+        systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).setValue(versionFormatter.versionString(versionConfigFile));
     }
 
     private void performTimeTracker() {
@@ -596,7 +575,7 @@ public class DConvers extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        if (asLib) {
+        if (switches.isLibrary()) {
             isLibEnd = true;
         } else {
             System.exit(exitCode);
@@ -620,7 +599,7 @@ public class DConvers extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        if (asLib) {
+        if (switches.isLibrary()) {
             isLibEnd = true;
         } else {
             System.exit(exitCode);
@@ -645,7 +624,7 @@ public class DConvers extends AppBase {
         }
         log.debug("exitCode({})", exitCode);
 
-        if (asLib) {
+        if (switches.isLibrary()) {
             isLibEnd = true;
         } else {
             System.exit(exitCode);
@@ -679,7 +658,11 @@ public class DConvers extends AppBase {
     private void performInvalidSwitches() {
         log.trace("DConvers.performInvalidSwitches.");
 
-        error("Invalid CLI Switches({}) please see help below", switches);
+        systemVariableMap = createSystemVariableMap();
+        createCurrentStateVar(Defaults.EXIT_CODE_ERROR.getLongValue());
+        createVersionVar(new VersionFormatter(this));
+
+        error("Invalid CLI Switches, please see help below");
         log.debug("invalid switches: {}", switches);
 
         performHelp();
@@ -757,6 +740,7 @@ public class DConvers extends AppBase {
         formatter.printHelp(syntax, switches.getOptions());
 
         System.out.println();
+
     }
 
     private void performVersion() {
@@ -936,22 +920,5 @@ public class DConvers extends AppBase {
 
         file = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + pathname);
         return file;
-    }
-
-    /**
-     * asLib: for manual set configs instead of loadProperties.
-     */
-    public void setManualMode(boolean manualMode) {
-        this.manualMode = manualMode;
-        if (manualMode) {
-            alwaysSaveDefaultValue = false;
-            initSystemVariables();
-            switches = new Switches(this);
-            dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
-        }
-    }
-
-    public boolean getManualMode() {
-        return manualMode;
     }
 }

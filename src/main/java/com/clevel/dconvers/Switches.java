@@ -21,25 +21,35 @@ public class Switches extends AppBase {
     private String source;
     private String logback;
     private String arg;
+    private ConfigFileTypes sourceType;
     private boolean verbose;
     private Level verboseLevel;
     private boolean test;
     private boolean help;
     private boolean version;
 
-    public Switches(DConvers dconvers) {
-        super(dconvers, "switches");
+    private boolean library;
+    private LibraryMode libraryMode;
+    private boolean saveDefaultValue;
+    private String[] args;
+
+    public Switches(String[] args) {
+        super(null, "switches");
+
+        this.args = args;
         loadLogger();
 
         options = new Options();
         registerSwitchesByOptions();
 
+        log.trace("Switches is created.");
+    }
+
+    public void postConstruct() {
         valid = loadSwitches();
         if (valid) {
             valid = validate();
         }
-
-        log.trace("Switches is created.");
     }
 
     private void registerSwitchesByOptions() {
@@ -60,7 +70,7 @@ public class Switches extends AppBase {
     private boolean loadSwitches() {
         CommandLineParser parser = new DefaultParser();
         try {
-            cmd = parser.parse(options, dconvers.args);
+            cmd = parser.parse(options, args);
         } catch (ParseException e) {
             error("parse switches failed: " + e.getMessage());
             return false;
@@ -84,7 +94,15 @@ public class Switches extends AppBase {
             return false;
         }
 
-        if (!dconvers.asLib) {
+
+        String libMode = cmd.getOptionValue(Option.LIBRARY.getShortOpt());
+        if (libMode != null) {
+            library = true;
+            libraryMode = LibraryMode.parse(libMode);
+        }
+        saveDefaultValue = cmd.hasOption(Option.SAVE_DEFAULT_VALUE.getLongOpt());
+
+        if (!library) {
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             List<ch.qos.logback.classic.Logger> loggerList = loggerContext.getLoggerList();
             loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));
@@ -96,6 +114,7 @@ public class Switches extends AppBase {
         if (source != null && source.lastIndexOf(".") < 0) {
             source = source + Defaults.CONFIG_FILE_EXT.getStringValue();
         }
+        sourceType = ConfigFileTypes.parse(cmd.getOptionValue(Option.SOURCE_TYPE.getShortOpt()));
 
         test = cmd.hasOption(Option.TEST.getShortOpt());
         help = cmd.hasOption(Option.HELP.getShortOpt());
@@ -119,6 +138,10 @@ public class Switches extends AppBase {
 
     public String getSource() {
         return source;
+    }
+
+    public ConfigFileTypes getSourceType() {
+        return sourceType;
     }
 
     public boolean isVerbose() {
@@ -149,15 +172,39 @@ public class Switches extends AppBase {
         return arg;
     }
 
+    public boolean isLibrary() {
+        return library;
+    }
+
+    public LibraryMode getLibraryMode() {
+        return libraryMode;
+    }
+
+    public boolean isSaveDefaultValue() {
+        return saveDefaultValue;
+    }
+
+    @Override
+    public void error(String msg) {
+        log.error("Switches : " + msg);
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("logback", logback)
-                .append("source", source)
-                .append("verbose", verbose)
-                .append("verboseLevel", verboseLevel)
-                .append("help", help)
-                .append("valid", valid)
-                .toString();
+        return "{" +
+                "source:'" + source + '\'' +
+                ", logback:'" + logback + '\'' +
+                ", arg:'" + arg + '\'' +
+                ", sourceType:" + sourceType +
+                ", verbose:" + verbose +
+                ", verboseLevel:" + verboseLevel +
+                ", test:" + test +
+                ", help:" + help +
+                ", version:" + version +
+                ", library:" + library +
+                ", libraryMode:" + libraryMode +
+                ", saveDefaultValue:" + saveDefaultValue +
+                '}';
     }
+
 }
