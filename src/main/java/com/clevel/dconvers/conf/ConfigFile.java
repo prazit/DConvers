@@ -1,12 +1,16 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.ConfigFileTypes;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.LibraryMode;
-import org.apache.commons.configuration2.*;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.JSONConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.XMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -93,6 +97,7 @@ public abstract class ConfigFile extends Config {
             propertiesBuilder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class);
             propertiesBuilder.configure(params.properties().setFileName(configFile));
             properties = propertiesBuilder.getConfiguration();
+
             valid = true;
             log.trace("load properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
@@ -109,5 +114,7 @@ public abstract class ConfigFile extends Config {
             if (!(this instanceof VersionConfigFile)) error("Load properties '{}' is failed! {}", configFile, e.getMessage());
         }
     }
+
+    protected abstract void saveProperties(OutputStream outputStream) throws ConfigurationException;
 
 }

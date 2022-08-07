@@ -11,6 +11,7 @@ import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.OutputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -367,6 +368,11 @@ public class DataConversionConfigFile extends ConfigFile {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        saveProperties(null);
+    }
+
+    @Override
+    public void saveProperties(OutputStream outputStream) throws ConfigurationException {
 
         valid = validate();
         if (!valid) throw new ConfigurationException("properties are invalid! saveProperties is not allowed.");
@@ -419,11 +425,15 @@ public class DataConversionConfigFile extends ConfigFile {
         }
 
         /*commit all properties*/
-        propertiesBuilder.save();
+        if (outputStream == null) {
+            propertiesBuilder.save();
 
-        /*save other files*/
-        for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
-            converterConfigFile.saveProperties();
+            /*save other files*/
+            for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
+                converterConfigFile.saveProperties();
+            }
+        }else{
+            propertiesBuilder.getFileHandler().save(outputStream);
         }
     }
 }

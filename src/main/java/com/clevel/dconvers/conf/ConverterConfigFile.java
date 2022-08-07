@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -130,8 +131,14 @@ public class ConverterConfigFile extends ConfigFile {
         this.index = index;
     }
 
+
     @Override
     public void saveProperties() throws ConfigurationException {
+        saveProperties(null);
+    }
+
+    @Override
+    public void saveProperties(OutputStream outputStream) throws ConfigurationException {
         setHeaderComment("Saved using " + dconvers.systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
 
         setPropertyInt(properties, Property.CONVERTER_FILE.connectKey(Property.INDEX), 0, index);
@@ -150,6 +157,11 @@ public class ConverterConfigFile extends ConfigFile {
             targetConfig.saveProperties();
         }
 
-        propertiesBuilder.save();
+        if (outputStream == null) {
+            propertiesBuilder.save();
+        }else{
+            propertiesBuilder.getFileHandler().save(outputStream);
+        }
+
     }
 }

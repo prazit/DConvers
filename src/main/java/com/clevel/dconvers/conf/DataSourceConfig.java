@@ -81,12 +81,26 @@ public class DataSourceConfig extends Config {
 
     @Override
     public void loadDefaults() {
-        /*TODO: loadDefaults*/
+        url = "";
+        driver = "";
+        schema = "";
+        user = "";
+        password = "";
+        retry = 1;
+        userEncrypted = false;
+        passwordEncrypted = false;
+        propList = new ArrayList<>();
+
+        pre = "";
+        post = "";
+
+        ssl = false;
+        host = "";
+
+        nameQuotes = "";
+        valueQuotes = "\"";
     }
 
-    /**
-     * asLib:
-     */
     protected boolean loadProperties(Connection connection) {
         log.trace("DataSourceConfig.loadProperties(Connection).");
         propList = new ArrayList<>();
@@ -123,7 +137,6 @@ public class DataSourceConfig extends Config {
     @Override
     protected boolean loadProperties() {
         log.trace("DataSourceConfig.loadProperties.");
-        propList = new ArrayList<>();
 
         if (properties == null) {
             return false;
@@ -131,19 +144,19 @@ public class DataSourceConfig extends Config {
 
         Property dataSource = Property.DATA_SOURCE;
 
-        url = getPropertyString(properties, dataSource.connectKey(name, Property.URL));
-        driver = getPropertyString(properties, dataSource.connectKey(name, Property.DRIVER));
-        schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), "");
-        user = getPropertyString(properties, dataSource.connectKey(name, Property.USER));
-        password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD));
-        retry = properties.getInt(dataSource.connectKey(name, Property.RETRY), 1);
+        url = getPropertyString(properties, dataSource.connectKey(name, Property.URL), url);
+        driver = getPropertyString(properties, dataSource.connectKey(name, Property.DRIVER), driver);
+        schema = getPropertyString(properties, dataSource.connectKey(name, Property.SCHEMA), schema);
+        user = getPropertyString(properties, dataSource.connectKey(name, Property.USER), user);
+        password = getPropertyString(properties, dataSource.connectKey(name, Property.PASSWORD), password);
+        retry = properties.getInt(dataSource.connectKey(name, Property.RETRY), retry);
 
-        userEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), false);
+        userEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.USER, Property.ENCRYPTED), userEncrypted);
         if (userEncrypted) {
             user = Crypto.decrypt(user);
         }
 
-        passwordEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), false);
+        passwordEncrypted = properties.getBoolean(dataSource.connectKey(name, Property.PASSWORD, Property.ENCRYPTED), passwordEncrypted);
         if (passwordEncrypted) {
             password = Crypto.decrypt(password);
         }
@@ -154,18 +167,15 @@ public class DataSourceConfig extends Config {
             String key = it.next();
             propList.add(new Pair<>(key, getPropertyString(propProperties, key)));
         }
-        //log.debug("propList = {}", propList);
 
-        pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), "");
-        post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), "");
+        pre = getPropertyString(properties, dataSource.connectKey(name, Property.PRE), pre);
+        post = getPropertyString(properties, dataSource.connectKey(name, Property.POST), post);
 
-        if (properties != null) {
-            ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), false);
-        }
-        host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), "");
+        ssl = properties.getBoolean(dataSource.connectKey(name, Property.SSL), ssl);
+        host = getPropertyString(properties, dataSource.connectKey(name, Property.HOST), host);
 
-        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), "");
-        valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), "\"");
+        nameQuotes = getPropertyString(properties, dataSource.connectKey(Property.NAME.prefixKey(Property.QUOTES.prefixKey(name))), nameQuotes);
+        valueQuotes = getPropertyString(properties, dataSource.connectKey(Property.VALUE.prefixKey(Property.QUOTES.prefixKey(name))), valueQuotes);
 
         return true;
     }

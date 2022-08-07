@@ -7,6 +7,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.OutputStream;
+
 public class VersionConfigFile extends ConfigFile {
 
     private String projectName;
@@ -99,6 +101,11 @@ public class VersionConfigFile extends ConfigFile {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        /*nothing*/
+    }
+
+    @Override
+    protected void saveProperties(OutputStream outputStream) throws ConfigurationException {
         /*nothing*/
     }
 }
