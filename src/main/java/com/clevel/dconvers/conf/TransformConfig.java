@@ -44,7 +44,6 @@ public class TransformConfig extends Config {
     @Override
     protected boolean loadProperties() {
 
-        HashMap<String, String> argumentList;
         Configuration transProperties;
         Iterator<String> transKeyList;
         TransformTypes transformType;
@@ -66,44 +65,59 @@ public class TransformConfig extends Config {
             return true;
         }
 
+        StringBuilder transformStringBuilder = new StringBuilder();
+        HashMap<String, String> argumentList;
         String transformString;
         for (Object transformObject : transformArray) {
-
             transformString = transformObject.toString();
-            if (transformString.length() == 0) {
-                continue;
-            }
-            transform += transformString + ",";
+            if (transformString.length() == 0) continue;
+            transformStringBuilder.append(transformString).append(",");
 
-            // example: transformString=TRANSOP1(arguments),TRANSOP2(arguments),TRANSOP3(arguments)
-            // transformValues=[TRANSOP1, arguments, TRANSOP2, arguments, TRANSOP3, arguments]
-            String[] transformValues = transformString.split("\\),|[()]");
-            log.debug("transformValues = {}", Arrays.asList(transformValues));
-            for (int index = 0; index < transformValues.length; index += 2) {
-                transformTypeName = transformValues[index];
-                transformType = TransformTypes.parse(transformTypeName);
+            addTransforms(transformString);
 
-                argumentList = new HashMap<>();
-                argumentName = "arguments";
-                argumentValue = transformValues[index + 1];
-                argumentList.put(argumentName, argumentValue);
-
-                transProperties = properties.subset(transformProperty + "." + transformTypeName);
+            for (Pair<TransformTypes, HashMap<String, String>> pair : transformList) {
+                transProperties = properties.subset(transformProperty + "." + pair.getKey().name().toLowerCase());
                 transKeyList = transProperties.getKeys();
+                argumentList = pair.getValue();
                 for (Iterator<String> it = transKeyList; it.hasNext(); ) {
                     argumentName = it.next();
                     argumentValue = getPropertyString(transProperties, argumentName);
                     argumentList.put(argumentName, argumentValue);
                 }
-
-                transformList.add(new Pair<>(transformType, argumentList));
             }
-
         }
-
-        transform = transform.substring(0, transform.length() - 2);
+        transform = transformStringBuilder.substring(0, transform.length() - 2);
         log.debug("transformList = {}", transformList);
+
         return true;
+    }
+
+    /**
+     * @param transformString <b>example</b>:<ul>
+     *                        <li>transformString=TRANSOP1(arguments),TRANSOP2(arguments),TRANSOP3(arguments)</li>
+     *                        </ul>
+     */
+    public void addTransforms(String transformString) {
+        HashMap<String, String> argumentList;
+        TransformTypes transformType;
+        String transformTypeName;
+        String argumentValue;
+        String argumentName;
+
+        // transformValues=[TRANSOP1, arguments, TRANSOP2, arguments, TRANSOP3, arguments]
+        String[] transformValues = transform.split("\\),|[()]");
+        log.debug("transformValues = {}", Arrays.asList(transformValues));
+        for (int index = 0; index < transformValues.length; index += 2) {
+            transformTypeName = transformValues[index];
+            transformType = TransformTypes.parse(transformTypeName);
+
+            argumentList = new HashMap<>();
+            argumentName = "arguments";
+            argumentValue = transformValues[index + 1];
+            argumentList.put(argumentName, argumentValue);
+
+            transformList.add(new Pair<>(transformType, argumentList));
+        }
     }
 
     @Override

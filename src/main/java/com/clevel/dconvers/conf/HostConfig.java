@@ -22,6 +22,9 @@ public class HostConfig extends Config {
     private boolean userEncrypted;
     private boolean passwordEncrypted;
 
+    /**
+     * @param rootProperty Property.SFTP or Property.SMTP
+     */
     public HostConfig(DConvers dconvers, String name, Property rootProperty) {
         super(dconvers, name);
         properties = dconvers.dataConversionConfigFile.properties;
