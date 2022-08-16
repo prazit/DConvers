@@ -21,10 +21,19 @@ public class ConverterConfigFile extends ConfigFile {
     private HashMap<String, SourceConfig> sourceConfigMap;
     private HashMap<String, TargetConfig> targetConfigMap;
     private int index;
+    private String saveName;
 
     public ConverterConfigFile(DConvers dconvers, String name) {
         super(dconvers, name);
-        log.debug("ConverterConfigFile({}) = {}", name, this);
+        log.trace("ConverterConfigFile({}) is created", name);
+    }
+
+    /**
+     * asLib: saveProperties need different name.
+     */
+    public ConverterConfigFile(DConvers dconvers, String name, String saveName) {
+        super(dconvers, name);
+        this.saveName = saveName;
         log.trace("ConverterConfigFile({}) is created", name);
     }
 
@@ -99,6 +108,10 @@ public class ConverterConfigFile extends ConfigFile {
         return index;
     }
 
+    public String getSaveName() {
+        return saveName;
+    }
+
     public HashMap<String, SourceConfig> getSourceConfigMap() {
         return sourceConfigMap;
     }
@@ -159,7 +172,7 @@ public class ConverterConfigFile extends ConfigFile {
 
         if (outputStream == null) {
             propertiesBuilder.save();
-        }else{
+        } else {
             propertiesBuilder.getFileHandler().save(outputStream);
         }
 

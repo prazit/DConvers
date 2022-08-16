@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -29,8 +30,8 @@ public class SaveConfigUT {
 
         dconvers = new DConvers(new String[]{
                 "--library-mode=manual"
-                ,"--source-type=" + configFileTypes.name()
-                ,"--source=" + fileName
+                , "--source-type=" + configFileTypes.name()
+                , "--source=" + fileName
                 /*,"--save-default-value"*/
         });
 
@@ -92,13 +93,16 @@ public class SaveConfigUT {
     }
 
     private void createEmptyFile(String fileName) {
-        /*try {
-            FileWriter fileWriter = new FileWriter(fileName);
+        try {
+            File file = new File(fileName);
+            File parentFile = file.getParentFile();
+            if (!parentFile.exists()) parentFile.mkdirs();
+            FileWriter fileWriter = new FileWriter(file);
             fileWriter.write("\n");
             fileWriter.close();
         } catch (IOException ex) {
             log.error("createEmptyFile(" + fileName + ") failed, ", ex);
-        }*/
+        }
     }
 
     private HashMap<String, ConverterConfigFile> getConverterConfigMap() {
@@ -219,11 +223,33 @@ public class SaveConfigUT {
     }
 
     private HashMap<String, HostConfig> getSmtpConfigMap() {
-        return new HashMap<>();
+        HashMap<String, HostConfig> smtpConfigMap = new HashMap<>();
+        return smtpConfigMap;
     }
 
     private HashMap<String, HostConfig> getSftpConfigMap() {
-        return new HashMap<>();
+        HashMap<String, HostConfig> sftpConfigMap = new HashMap<>();
+
+        HostConfig hostConfig = getHostConfig("uatftp101");
+        sftpConfigMap.put(hostConfig.getName().toUpperCase(), hostConfig);
+
+        hostConfig = getHostConfig("uatftp102");
+        sftpConfigMap.put(hostConfig.getName().toUpperCase(), hostConfig);
+
+        return sftpConfigMap;
+    }
+
+    private HostConfig getHostConfig(String name) {
+        HostConfig hostConfig = new HostConfig(dconvers, name, Property.SFTP);
+        hostConfig.setHost("192.168.0.1");
+        hostConfig.setPort(21);
+        hostConfig.setUser("user");
+        hostConfig.setPassword("password");
+        hostConfig.setUserEncrypted(false);
+        hostConfig.setPasswordEncrypted(false);
+        hostConfig.setRetry(3);
+        hostConfig.setTmp("downloaded/");
+        return hostConfig;
     }
 
     private HashMap<String, DataSourceConfig> getDataSourceConfigMap() {

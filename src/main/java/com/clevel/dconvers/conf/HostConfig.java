@@ -157,8 +157,12 @@ public class HostConfig extends Config {
 
     @Override
     public void saveProperties() throws ConfigurationException {
+        String hostKey = rootProperty.connectKey(name, Property.HOST);
 
-        setPropertyString(properties, rootProperty.connectKey(name, Property.HOST), "", host);
+        setBlancLinesBefore(hostKey, 1);
+        setComment(hostKey, name.toUpperCase());
+
+        setPropertyString(properties, hostKey, "", host);
         setPropertyInt(properties, rootProperty.connectKey(name, Property.PORT), 22, port);
         setPropertyString(properties, rootProperty.connectKey(name, Property.USER), "", (userEncrypted ? Crypto.encrypt(user) : user));
         setPropertyString(properties, rootProperty.connectKey(name, Property.PASSWORD), "", (passwordEncrypted ? Crypto.encrypt(password) : password));

@@ -492,7 +492,7 @@ public class DConvers extends AppBase {
     }
 
     /**
-     * asLib:
+     * asLib: addDataSource by Connection
      */
     public boolean addDataSource(String dataSourceName, Connection connection) {
         DataSource dataSource = new DataSource(this, dataSourceName, connection);

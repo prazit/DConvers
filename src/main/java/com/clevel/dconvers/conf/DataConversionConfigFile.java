@@ -404,8 +404,10 @@ public class DataConversionConfigFile extends ConfigFile {
         setPropertyInt(properties, converterProperty.connectKey(Property.EXIT_CODE_WARNING.key()), Defaults.EXIT_CODE_WARNING.getIntValue(), warningCode);
 
         /*save converter file name list*/
+        String saveName;
         for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
-            addPropertyString(properties, converterProperty.key(), "", converterConfigFile.getName());
+            saveName = converterConfigFile.getSaveName();
+            addPropertyString(properties, converterProperty.key(), "", saveName == null ? converterConfigFile.getName() : saveName);
         }
 
         /*save all dataSources*/
@@ -415,13 +417,19 @@ public class DataConversionConfigFile extends ConfigFile {
             addPropertyString(properties, Property.DATA_SOURCE.key(), "", dataSourceConfig.getName());
             dataSourceConfig.saveProperties();
         }
-        for (HostConfig sftpConfig : sftpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
-            setPropertyString(properties, Property.SFTP.key(), "", sftpConfig.getName());
-            sftpConfig.saveProperties();
-        }
+
+        /*save all smtp*/
         for (HostConfig smtpConfig : smtpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
-            setPropertyString(properties, Property.SMTP.key(), "", smtpConfig.getName());
+            addPropertyString(properties, Property.SMTP.key(), "", smtpConfig.getName());
             smtpConfig.saveProperties();
+        }
+
+        /*save all sftp*/
+        setBlancLinesBefore(Property.SFTP.key(), 1);
+        setComment(Property.SFTP.key(), "FTP CONECTIONS");
+        for (HostConfig sftpConfig : sftpConfigMap.values().stream().sorted(Comparator.comparing(AppBase::getName)).collect(Collectors.toList())) {
+            addPropertyString(properties, Property.SFTP.key(), "", sftpConfig.getName());
+            sftpConfig.saveProperties();
         }
 
         /*commit all properties*/
@@ -432,7 +440,7 @@ public class DataConversionConfigFile extends ConfigFile {
             for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
                 converterConfigFile.saveProperties();
             }
-        }else{
+        } else {
             propertiesBuilder.getFileHandler().save(outputStream);
         }
     }

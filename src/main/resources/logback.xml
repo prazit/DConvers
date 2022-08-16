@@ -9,7 +9,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date | %-5level | %msg%n</pattern>
+            <pattern>| %date | %-5level | %-40class | %msg [line:%line] |%n</pattern>
         </encoder>
         <immediateFlush>true</immediateFlush>
     </appender>
@@ -18,7 +18,7 @@
         <File>${root-path}out/log/trace.log</File>
         <append>false</append>
         <encoder>
-            <pattern>%-5level |- %msg at [%file:%line]%n</pattern>
+            <pattern>| %date | %-5level | %-40class | %msg [line:%line] |%n</pattern>
         </encoder>
         <immediateFlush>true</immediateFlush>
     </appender>
@@ -65,7 +65,7 @@
         <immediateFlush>true</immediateFlush>
     </appender>
 
-    <root level="DEBUG">
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="TRACE_FILE"/>
         <appender-ref ref="ERROR_FILE"/>
