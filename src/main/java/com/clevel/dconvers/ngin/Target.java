@@ -15,7 +15,7 @@ import com.clevel.dconvers.transform.Transform;
 import com.clevel.dconvers.transform.TransformFactory;
 import com.clevel.dconvers.transform.TransformTypes;
 import javafx.util.Pair;
-import me.tongfei.progressbar.ProgressBar;
+import com.clevel.dconvers.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

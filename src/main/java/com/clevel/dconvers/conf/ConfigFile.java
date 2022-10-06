@@ -24,16 +24,16 @@ public abstract class ConfigFile extends Config {
     public ConfigFile(DConvers dconvers, String configFile) {
         super(dconvers, configFile);
 
-        if (LibraryMode.PRESET == dconvers.switches.getLibraryMode()) {
+        if (this instanceof VersionConfigFile) {
+            createProperties(configFile);
+
+        } else if (LibraryMode.PRESET == dconvers.switches.getLibraryMode()) {
             name = LibraryMode.PRESET.name();
             if (this instanceof DataConversionConfigFile) {
                 properties = new PropertiesConfiguration();
             } else {
                 properties = dconvers.dataConversionConfigFile.getProperties();
             }
-
-        } else if (this instanceof VersionConfigFile) {
-            createProperties(configFile);
 
         } else switch (dconvers.switches.getSourceType()) {
             case XML:

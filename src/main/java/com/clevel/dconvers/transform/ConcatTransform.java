@@ -6,7 +6,7 @@ import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataString;
 import com.clevel.dconvers.data.DataTable;
-import me.tongfei.progressbar.ProgressBar;
+import com.clevel.dconvers.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

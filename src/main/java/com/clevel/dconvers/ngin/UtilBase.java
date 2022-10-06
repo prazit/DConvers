@@ -1,11 +1,13 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.FackProgressBar;
 import com.clevel.dconvers.conf.Defaults;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
-import me.tongfei.progressbar.ProgressBar;
+import com.clevel.dconvers.ProgressBar;
+import com.clevel.dconvers.CLIProgressBar;
 import me.tongfei.progressbar.ProgressBarStyle;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -114,10 +116,12 @@ public abstract class UtilBase extends AppBase {
 
     protected ProgressBar getProgressBar(String caption, long maxValue) {
         ProgressBar progressBar;
-        if (maxValue > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
-            progressBar = new me.tongfei.progressbar.ProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
+        if (dconvers.switches.isLibrary()) {
+            progressBar = new FackProgressBar();
+        } else if (maxValue > Defaults.PROGRESS_SHOW_KILO_AFTER.getLongValue()) {
+            progressBar = new CLIProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, "K", 1000);
         } else {
-            progressBar = new ProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
+            progressBar = new CLIProgressBar(caption, maxValue, Defaults.PROGRESS_UPDATE_INTERVAL_MILLISEC.getIntValue(), System.out, ProgressBarStyle.ASCII, " rows", 1);
         }
         progressBar.maxHint(maxValue);
         return progressBar;

@@ -149,10 +149,11 @@ public class DConvers extends AppBase {
         log.debug("Working directory is '{}'", System.getProperty("user.dir"));
 
         log.info("Engine: {}", systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
-        log.info("Configuration: {}", systemVariableMap.get(SystemVariable.CONFIG_VERSION).getValue());
-        log.info("Configuration Source: {}", dataConversionConfigFilename);
-
         log.info("Library Mode: {}", switches.isLibrary() ? switches.getLibraryMode() : "disabled");
+
+        DataColumn configurationVersion = systemVariableMap.get(SystemVariable.CONFIG_VERSION);
+        if (!configurationVersion.isNull()) log.info("Configuration: {}", configurationVersion.getValue());
+        log.info("Configuration Source: {}", dataConversionConfigFilename);
 
         log.trace("DConvers. Load DataConversionConfigFile.");
         if (LibraryMode.PRESET == switches.getLibraryMode()) {

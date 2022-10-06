@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,8 +119,18 @@ public class MarkdownOutput extends Output {
             outputPath = "";
         }
 
-        String markdownOutputFilename = outputPath + outputConfig.getMarkdownOutput();
-        Writer writer = createFile(markdownOutputFilename, outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        String markdownOutput = outputConfig.getMarkdownOutput();
+        boolean noOutputFile = markdownOutput == null || Property.CONSOLE.name().equals(markdownOutput.toUpperCase());
+
+        String markdownOutputFilename = null;
+        Writer writer;
+        if (noOutputFile) {
+            writer = new StringWriter();
+        } else {
+            markdownOutputFilename = outputPath + markdownOutput;
+            writer = createFile(markdownOutputFilename, outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());
+        }
+
         if (headPrint != null && writer != null) {
             try {
                 writer.write(headPrint);
@@ -128,9 +139,20 @@ public class MarkdownOutput extends Output {
                 return null;
             }
         }
-        registerPostSFTP(markdownOutputFilename, outputConfig.getMarkdownSftpOutput(), outputConfig.getMarkdownSftp());
+
+        if (!noOutputFile) {
+            registerPostSFTP(markdownOutputFilename, outputConfig.getMarkdownSftpOutput(), outputConfig.getMarkdownSftp());
+        }
 
         return writer;
+    }
+
+    @Override
+    protected boolean closeWriter(OutputConfig outputConfig, DataTable dataTable, Writer writer, boolean success) {
+        if (writer instanceof StringWriter) {
+            log.info(((StringWriter) writer).getBuffer().toString());
+        }
+        return super.closeWriter(outputConfig, dataTable, writer, success);
     }
 
     @Override

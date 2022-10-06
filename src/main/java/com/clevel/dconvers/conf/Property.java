@@ -4,6 +4,11 @@ import org.slf4j.LoggerFactory;
 
 public enum Property {
 
+    /**
+     * Used by Output to print to System.out instead of file.
+     */
+    CONSOLE("console"),
+
     PLUGINS("plugins"),
     CALCULATOR("calculator"),
     VARIABLE("variable"),
