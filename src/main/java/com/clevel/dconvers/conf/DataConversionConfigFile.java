@@ -1,11 +1,9 @@
 package com.clevel.dconvers.conf;
 
-import com.clevel.dconvers.ConfigFileTypes;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.ngin.AppBase;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
 import org.slf4j.Logger;
@@ -86,7 +84,7 @@ public class DataConversionConfigFile extends ConfigFile {
     }
 
     @Override
-    protected boolean loadProperties() {
+    public boolean loadProperties() {
         log.trace("DataConversionConfigFile.loadProperties.");
         dconvers.dataConversionConfigFile = this;
 
@@ -161,6 +159,12 @@ public class DataConversionConfigFile extends ConfigFile {
             converterConfigMap.put(name.toUpperCase(), new ConverterConfigFile(dconvers, name));
         }
 
+        /*both normal and asLib: default converter file is same conversion file*/
+        if (converterConfigMap.size() == 0) {
+            ConverterConfigFile converterConfigFile = new ConverterConfigFile(dconvers, null);
+            converterConfigMap.put(converterConfigFile.getName(), converterConfigFile);
+        }
+
         loadStringPairListTo(pluginsCalcList, properties.subset(Property.PLUGINS.connectKey(Property.CALCULATOR)));
         loadStringPairListTo(pluginsOutputList, properties.subset(Property.PLUGINS.connectKey(Property.OUTPUT_FILE)));
         loadStringPairListTo(pluginsDataSourceList, properties.subset(Property.PLUGINS.connectKey(Property.DATA_SOURCE)));
@@ -189,23 +193,23 @@ public class DataConversionConfigFile extends ConfigFile {
                 if (!dataSourceConfig.validate()) {
                     error("Invalid datasource specified ({})", dataSourceConfig.getName());
                     childValid = false;
-                    return false;
+                    return valid = false;
                 }
             }
         }
 
         for (ConverterConfigFile converterConfigFile : converterConfigMap.values()) {
-            if (!converterConfigFile.isValid()) {
+            if (!converterConfigFile.isValid() && !converterConfigFile.validate()) {
                 //try validate once for manualMode.
                 if (!converterConfigFile.validate()) {
                     error("Invalid Converter File ({}) Please see 'sample-converter.conf' for detailed", converterConfigFile.getName());
                     childValid = false;
-                    return false;
+                    return valid = false;
                 }
             }
         }
 
-        return true;
+        return valid = true;
     }
 
     // access read only properties

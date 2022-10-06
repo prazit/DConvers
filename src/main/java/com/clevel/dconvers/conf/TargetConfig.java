@@ -4,7 +4,6 @@ import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.LibraryMode;
 import javafx.util.Pair;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -33,11 +32,10 @@ public class TargetConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
 
-    public TargetConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+    public TargetConfig(DConvers dconvers, String name, Configuration properties) {
         super(dconvers, name);
 
-        this.converterConfigFile = converterConfigFile;
-        properties = converterConfigFile.getProperties();
+        this.properties = properties;
 
         loadDefaults();
         if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {

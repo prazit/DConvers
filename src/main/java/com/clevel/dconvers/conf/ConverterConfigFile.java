@@ -72,7 +72,7 @@ public class ConverterConfigFile extends ConfigFile {
         String name;
         for (Object object : sourceNameList) {
             name = object.toString();
-            sourceConfig = new SourceConfig(dconvers, name, this);
+            sourceConfig = new SourceConfig(dconvers, name, properties);
             if (!sourceConfig.isValid()) {
                 return false;
             }
@@ -89,7 +89,7 @@ public class ConverterConfigFile extends ConfigFile {
         TargetConfig targetConfig;
         for (Object object : targetNameList) {
             name = object.toString();
-            targetConfig = new TargetConfig(dconvers, name, this);
+            targetConfig = new TargetConfig(dconvers, name, properties);
             if (!targetConfig.isValid()) {
                 return false;
             }
@@ -101,7 +101,7 @@ public class ConverterConfigFile extends ConfigFile {
 
     @Override
     public boolean validate() {
-        return true;
+        return valid = true;
     }
 
     public int getIndex() {

@@ -3,6 +3,7 @@ package com.clevel.dconvers;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.transform.TransformTypes;
 import javafx.util.Pair;
+import org.apache.commons.configuration2.Configuration;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,15 +129,15 @@ public class SaveConfigUT {
 
         HashMap<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
 
-        SourceConfig sourceConfig = getSourceConfig("firstdatatable", converterConfigFile);
+        SourceConfig sourceConfig = getSourceConfig("firstdatatable", converterConfigFile.getProperties());
         sourceConfigMap.put(sourceConfig.getName().toUpperCase(), sourceConfig);
 
-        sourceConfig = getSourceConfig("seconddatatable", converterConfigFile);
+        sourceConfig = getSourceConfig("seconddatatable", converterConfigFile.getProperties());
         sourceConfigMap.put(sourceConfig.getName().toUpperCase(), sourceConfig);
 
         HashMap<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
 
-        TargetConfig targetConfig = getTargetConfig("firsttransformtable", converterConfigFile);
+        TargetConfig targetConfig = getTargetConfig("firsttransformtable", converterConfigFile.getProperties());
         targetConfigMap.put(targetConfig.getName().toUpperCase(), targetConfig);
 
         return converterConfigFile;
@@ -145,7 +146,7 @@ public class SaveConfigUT {
     int targetCount = 0;
 
     @SuppressWarnings("unchecked")
-    private TargetConfig getTargetConfig(String name, ConverterConfigFile converterConfigFile) {
+    private TargetConfig getTargetConfig(String name, Configuration converterConfigFile) {
         TargetConfig targetConfig = new TargetConfig(dconvers, name, converterConfigFile);
 
         targetConfig.setSource("firstdatatable");
@@ -207,7 +208,7 @@ public class SaveConfigUT {
 
     int sourceCount = 0;
 
-    private SourceConfig getSourceConfig(String name, ConverterConfigFile converterConfigFile) {
+    private SourceConfig getSourceConfig(String name, Configuration converterConfigFile) {
         SourceConfig sourceConfig = new SourceConfig(dconvers, name, converterConfigFile);
 
         sourceConfig.setIndex(++sourceCount);

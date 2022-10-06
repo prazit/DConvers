@@ -4,7 +4,7 @@ public enum Option {
 
     SOURCE(false, "s", "source", true, "source file is required for data conversion, please see 'sample-conversion.conf' for detailed"),
     TEST(false, "t", "test", false, "force to ignore all tables, but allow other component to loading to test connection and configuration"),
-    LIBRARY(false, "m", "library-mode", true, "library modes need to manual call the start function yourself\n possible <arg> are MANUAL, NORMAL\nmanual = set configs manually\nnormal = load configs from source normally"),
+    LIBRARY(false, "m", "library-mode", true, "library modes need to manual call the start function yourself\n possible <arg> are MANUAL, NORMAL, PRESET\nmanual = not load configs but can manual set directly for saveProperties()\nnormal = load configs from source file\npreset = load configs from dataConversionConfigFile.getProperties()"),
     SAVE_DEFAULT_VALUE(false, "save", "save-default-value", false, "in library-manual-mode, when call saveProperties will not save property with default values by default\nuse this switch if want to save the property with default value"),
 
     SOURCE_TYPE(false, "st", "source-type", true, "type of source file, default=properties\npossible <arg> are XML, JSON, PROPERTIES"),

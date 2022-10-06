@@ -4,6 +4,7 @@ public enum LibraryMode {
 
     MANUAL,
     NORMAL,
+    PRESET
     ;
 
     public static LibraryMode parse(String mode) {

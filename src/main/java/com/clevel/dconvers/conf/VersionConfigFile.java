@@ -33,15 +33,33 @@ public class VersionConfigFile extends ConfigFile {
 
     @Override
     public void loadDefaults() {
-        if (properties == null)/*in-case: user configs version*/ return;
+        if (properties == null)/*in-case: this is user configs version*/ return;
 
         projectName = getPropertyString(properties, Property.PROJECT_NAME.key());
         versionName = getPropertyString(properties, Property.VERSION_NAME.key());
         buildDate = getPropertyString(properties, Property.BUILD_DATE.key());
 
-        versionNumber = properties.getInt(Property.VERSION_NUMBER.key());
-        revisionNumber = properties.getInt(Property.REVISION_NUMBER.key());
-        buildNumber = properties.getInt(Property.BUILD_NUMBER.key());
+        try {
+            versionNumber = properties.getInt(Property.VERSION_NUMBER.key());
+        } catch (Exception ex) {
+            versionNumber = 0;
+            log.warn("Can't get version number, {}", ex.getMessage());
+        }
+
+        try {
+            revisionNumber = properties.getInt(Property.REVISION_NUMBER.key());
+        } catch (Exception ex) {
+            revisionNumber = 0;
+            log.warn("Can't get revision number, {}", ex.getMessage());
+        }
+
+        try {
+            buildNumber = properties.getInt(Property.BUILD_NUMBER.key());
+        } catch (Exception ex) {
+            buildNumber = 0;
+            log.warn("Can't get build number, {}", ex.getMessage());
+        }
+
     }
 
     @Override

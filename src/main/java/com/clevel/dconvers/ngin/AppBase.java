@@ -3,6 +3,7 @@ package com.clevel.dconvers.ngin;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.data.DataTable;
 import org.slf4j.Logger;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -105,11 +106,7 @@ public abstract class AppBase extends ValidatorBase {
     }
 
     private String formatMessage(String format, Object... arguments) {
-        String message = format;
-        for (Object argument : arguments) {
-            message = message.replaceFirst("[{][}]", argument.toString());
-        }
-        return message;
+        return MessageFormatter.arrayFormat(format,arguments).getMessage();
     }
 
     public void memoryLog() {

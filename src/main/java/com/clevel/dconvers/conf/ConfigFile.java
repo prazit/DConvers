@@ -18,11 +18,24 @@ public abstract class ConfigFile extends Config {
 
     protected FileBasedConfigurationBuilder<FileBasedConfiguration> propertiesBuilder;
 
+    /**
+     * @param configFile null for asLib mode, otherwise is properties file name
+     */
     public ConfigFile(DConvers dconvers, String configFile) {
         super(dconvers, configFile);
 
-        if (this instanceof VersionConfigFile) createProperties(configFile);
-        else switch (dconvers.switches.getSourceType()) {
+        if (LibraryMode.PRESET == dconvers.switches.getLibraryMode()) {
+            name = LibraryMode.PRESET.name();
+            if (this instanceof DataConversionConfigFile) {
+                properties = new PropertiesConfiguration();
+            } else {
+                properties = dconvers.dataConversionConfigFile.getProperties();
+            }
+
+        } else if (this instanceof VersionConfigFile) {
+            createProperties(configFile);
+
+        } else switch (dconvers.switches.getSourceType()) {
             case XML:
                 createXMLProperties(configFile);
                 break;

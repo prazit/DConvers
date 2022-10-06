@@ -3,7 +3,6 @@ package com.clevel.dconvers.conf;
 import com.clevel.dconvers.DConvers;
 import com.clevel.dconvers.LibraryMode;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.PropertiesConfigurationLayout;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -28,11 +27,10 @@ public class SourceConfig extends Config {
 
     private ConverterConfigFile converterConfigFile;
 
-    public SourceConfig(DConvers dconvers, String name, ConverterConfigFile converterConfigFile) {
+    public SourceConfig(DConvers dconvers, String name, Configuration properties) {
         super(dconvers, name);
 
-        this.converterConfigFile = converterConfigFile;
-        properties = converterConfigFile.getProperties();
+        this.properties = properties;
 
         loadDefaults();
         if (LibraryMode.MANUAL != dconvers.switches.getLibraryMode()) {

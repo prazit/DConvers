@@ -128,7 +128,7 @@ public class Switches extends AppBase {
     public boolean validate() {
         log.trace("Switches.validateSwitches.");
 
-        if (source == null && !help && !version) {
+        if (source == null && !isLibrary() && !help && !version) {
             error("invalid specified source-file");
             return false;
         }

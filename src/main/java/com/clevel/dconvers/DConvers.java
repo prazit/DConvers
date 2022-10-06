@@ -106,7 +106,7 @@ public class DConvers extends AppBase {
             performInvalidSwitches();
         }
 
-        if (LibraryMode.MANUAL == switches.getLibraryMode()) {
+        if (switches.getLibraryMode() == LibraryMode.PRESET || switches.getLibraryMode() == LibraryMode.MANUAL) {
             dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
         }
     }
@@ -145,15 +145,22 @@ public class DConvers extends AppBase {
             stop();
         }
 
-        String dataConversionConfigFilename = switches.getSource();
+        String dataConversionConfigFilename = LibraryMode.PRESET == switches.getLibraryMode() ? "dataConversionConfigFile.getProperties()" : LibraryMode.MANUAL == switches.getLibraryMode() ? "no-config" : switches.getSource();
         log.debug("Working directory is '{}'", System.getProperty("user.dir"));
 
         log.info("Engine: {}", systemVariableMap.get(SystemVariable.APPLICATION_FULL_VERSION).getValue());
         log.info("Configuration: {}", systemVariableMap.get(SystemVariable.CONFIG_VERSION).getValue());
-        log.info("Configuration file: {}", dataConversionConfigFilename);
+        log.info("Configuration Source: {}", dataConversionConfigFilename);
+
+        log.info("Library Mode: {}", switches.isLibrary() ? switches.getLibraryMode() : "disabled");
 
         log.trace("DConvers. Load DataConversionConfigFile.");
-        if (LibraryMode.MANUAL != switches.getLibraryMode()) dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
+        if (LibraryMode.PRESET == switches.getLibraryMode()) {
+            dataConversionConfigFile.loadProperties();
+            dataConversionConfigFile.validate();
+        } else if (LibraryMode.MANUAL != switches.getLibraryMode()) {
+            dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
+        }
         currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
 
         if (!dataConversionConfigFile.isValid()) {
@@ -426,7 +433,7 @@ public class DConvers extends AppBase {
                     success = convert.buildTargets() && success;
                     success = convert.printTarget() && success;
 
-                    if (!lastConverter.equals(convert)) {
+                    if (!switches.isLibrary() && !lastConverter.equals(convert)) {
                         convert.close();
                     }
                 }
@@ -443,7 +450,7 @@ public class DConvers extends AppBase {
         }
 
         currentConverter = null;
-        if (lastConverter != null) {
+        if (lastConverter != null && !switches.isLibrary()) {
             lastConverter.close();
         }
 
