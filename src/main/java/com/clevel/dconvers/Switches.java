@@ -168,6 +168,10 @@ public class Switches extends AppBase {
         return version;
     }
 
+    public String[] getArgs() {
+        return args;
+    }
+
     public String getArg() {
         return arg;
     }

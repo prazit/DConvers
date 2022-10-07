@@ -55,7 +55,7 @@ public class SQLDataSource extends DataSource {
         DataRow dataRow;
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader(sqlFileName));
+            br = new BufferedReader(dconvers.getReader(sqlFileName));
             for (String line; (line = br.readLine()) != null; ) {
                 if (!line.startsWith("INSERT INTO")) {
                     continue;

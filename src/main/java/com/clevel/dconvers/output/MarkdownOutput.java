@@ -10,9 +10,9 @@ import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.format.DataFormatter;
 import com.clevel.dconvers.format.MarkdownFormatter;
 import com.clevel.dconvers.input.DataSource;
+import com.clevel.dconvers.ngin.Pair;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,6 +126,11 @@ public class MarkdownOutput extends Output {
         Writer writer;
         if (noOutputFile) {
             writer = new StringWriter();
+            if (outputName == null) {
+                outputName = Property.CONSOLE.name();
+            } else {
+                outputName += "," + Property.CONSOLE.name();
+            }
         } else {
             markdownOutputFilename = outputPath + markdownOutput;
             writer = createFile(markdownOutputFilename, outputConfig.isMarkdownOutputAutoCreateDir(), outputConfig.isMarkdownOutputAppend(), outputConfig.getMarkdownOutputCharset());

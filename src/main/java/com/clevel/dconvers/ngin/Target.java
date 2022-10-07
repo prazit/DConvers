@@ -1,6 +1,7 @@
 package com.clevel.dconvers.ngin;
 
 import com.clevel.dconvers.DConvers;
+import com.clevel.dconvers.ProgressBar;
 import com.clevel.dconvers.conf.Property;
 import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.conf.TargetConfig;
@@ -14,8 +15,6 @@ import com.clevel.dconvers.dynvalue.DynamicValueType;
 import com.clevel.dconvers.transform.Transform;
 import com.clevel.dconvers.transform.TransformFactory;
 import com.clevel.dconvers.transform.TransformTypes;
-import javafx.util.Pair;
-import com.clevel.dconvers.ProgressBar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

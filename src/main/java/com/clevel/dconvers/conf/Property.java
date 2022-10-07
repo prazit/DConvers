@@ -5,7 +5,13 @@ import org.slf4j.LoggerFactory;
 public enum Property {
 
     /**
-     * Used by Output to print to System.out instead of file.
+     * Domain name for any filename want to use predefined Reader instead of Input-File.
+     * File URL will look similar to this:> reader://file-name
+     */
+    READER("reader://"),
+
+    /**
+     * Used by Output to print to System.out instead of Output-File.
      */
     CONSOLE("console"),
 

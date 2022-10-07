@@ -59,6 +59,25 @@ The possible values for any property is depends on the DataType of the property 
 
 ----
 
+## Library Modes
+
+> when run in library mode will perform different way for some events like ERROR.
+> 
+> 
+> 
+> start DConvers with this switch :
+> 
+> --library-mode=NORMAL|PRESET|MANUAL
+
+| Mode   | Description                                                                                                | Remark                                                        |
+| ------ | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| CLI    | start from CLI with specified config file                                                                  | this is configuration file mode, otherwise is in library mode |
+| NORMAL | start from another app same like start from CLI                                                            |                                                               |
+| PRESET | start from another app with preset of configs in the dataConversionConfigFile.getProperties()              | support for predefined Reader in DConvers.readerMap           |
+| MANUAL | start from another app without configs for saveProperties() or manual set all configs your seft if you can | support for predefined Reader in DConvers.readerMap           |
+
+----
+
 ## Conversion File
 
 > All directory path must use '/' instead of '\\' on all operating systems.
@@ -169,18 +188,18 @@ You can see full example in 'sample-converter.conf' file. However, the possible 
 
 #### Datasource and query
 
-| Data Provider        | datasource        | query (Dynamic Value Enabled)                                               | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                                              |
-| -------------------- | ----------------- | --------------------------------------------------------------------------- | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------------------------ |
-| Database             | User Defined Name | SQL String                                                                  | split                                    | integer   | 0             | 0 mean not split query, otherwise is split query every number of records |
-| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                                                    |                                          |           |               |                                                                          |
-| SQL(Insert) File     | SQL               | file-name                                                                   | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value                  |
-|                      |                   |                                                                             | quotes.value                             | string    | "             | one character for quotes of string-value and date-value                  |
-| Markdown(Table) File | MARKDOWN          | file-name                                                                   |                                          |           |               |                                                                          |
-| Email                | EMAIL             | Search String                                                               |                                          |           |               |                                                                          |
-| Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern | eol                                      | string    | \n            | line terminator symbols                                                  |
-| Environment          | SYSTEM            | see 'System Query' for detailed                                             |                                          |           |               |                                                                          |
-| Directory List       | DIR               | folder-path with wildcard                                                   | sub                                      | boolean   | false         | include sub directories                                                  |
-|                      |                   |                                                                             | dir                                      | boolean   | true          | true = include folder, false = file only                                 |
+| Data Provider        | datasource        | query (Dynamic Value Enabled)                                                                           | query parameters (Dynamic Value Enabled) | Data Type | Default Value | Description                                                              |
+| -------------------- | ----------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------- | --------- | ------------- | ------------------------------------------------------------------------ |
+| Database             | User Defined Name | SQL String                                                                                              | split                                    | integer   | 0             | 0 mean not split query, otherwise is split query every number of records |
+| ResultSet MetaData   | ResultSetMetaData | table name like SRC:name                                                                                |                                          |           |               |                                                                          |
+| SQL(Insert) File     | SQL               | file-name                                                                                               | quotes.name                              | string    | empty         | one character for quotes of string-value and date-value                  |
+|                      |                   |                                                                                                         | quotes.value                             | string    | "             | one character for quotes of string-value and date-value                  |
+| Markdown(Table) File | MARKDOWN          | file-name                                                                                               |                                          |           |               |                                                                          |
+| Email                | EMAIL             | Search String                                                                                           |                                          |           |               |                                                                          |
+| Line Based File      | Lines             | comma separated file-name, the file-name can be the system wildcard pattern (not support reader domain) | eol                                      | string    | \n            | line terminator symbols                                                  |
+| Environment          | SYSTEM            | see 'System Query' for detailed                                                                         |                                          |           |               |                                                                          |
+| Directory List       | DIR               | folder-path with wildcard                                                                               | sub                                      | boolean   | false         | include sub directories                                                  |
+|                      |                   |                                                                                                         | dir                                      | boolean   | true          | true = include folder, false = file only                                 |
 
 **Example: Query Parameter**
 

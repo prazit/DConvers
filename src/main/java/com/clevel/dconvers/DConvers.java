@@ -11,14 +11,13 @@ import com.clevel.dconvers.format.VersionFormatter;
 import com.clevel.dconvers.input.*;
 import com.clevel.dconvers.ngin.*;
 import com.clevel.dconvers.output.OutputTypes;
-import javafx.util.Pair;
+import com.clevel.dconvers.ngin.Pair;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
@@ -35,7 +34,9 @@ public class DConvers extends AppBase {
     public String[] args;
     public Switches switches;
 
+    /*Notice: config-PRESET and predefined Readers used by Library Modes*/
     public DataConversionConfigFile dataConversionConfigFile;
+    public HashMap<String, Reader> readerMap;
 
     public HashMap<String, SFTP> sftpMap;
     public HashMap<String, SMTP> smtpMap;
@@ -108,6 +109,7 @@ public class DConvers extends AppBase {
 
         if (switches.getLibraryMode() == LibraryMode.PRESET || switches.getLibraryMode() == LibraryMode.MANUAL) {
             dataConversionConfigFile = new DataConversionConfigFile(this, switches.getSource());
+            readerMap = new HashMap<>();
         }
     }
 
@@ -919,7 +921,7 @@ public class DConvers extends AppBase {
         return doubleValue;
     }
 
-    public File getFileForRead(String pathname) {
+    private File getFileForRead(String pathname) {
         pathname = pathname.trim();
         File file = new File(pathname);
         if (file.exists()) {
@@ -928,5 +930,18 @@ public class DConvers extends AppBase {
 
         file = new File(System.getProperty("user.dir") + System.getProperty("file.separator") + pathname);
         return file;
+    }
+
+    public Reader getReader(String fileName) throws FileNotFoundException {
+        String readerDomain = Property.READER.key();
+        if (fileName.startsWith(readerDomain)) {
+            String readerKey = fileName.substring(readerDomain.length());
+            Reader reader = readerMap.get(readerKey);
+            if (reader == null) throw new FileNotFoundException("Reader not found for " + fileName);
+            return reader;
+
+        } else {
+            return new FileReader(getFileForRead(fileName));
+        }
     }
 }

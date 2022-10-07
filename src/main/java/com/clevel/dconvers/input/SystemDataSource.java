@@ -7,7 +7,7 @@ import com.clevel.dconvers.conf.SystemVariable;
 import com.clevel.dconvers.data.DataColumn;
 import com.clevel.dconvers.data.DataRow;
 import com.clevel.dconvers.data.DataTable;
-import javafx.util.Pair;
+import com.clevel.dconvers.ngin.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,6 @@ public class SystemDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String query, HashMap<String, String> queryParamMap) {
-
         SystemQuery systemQuery = SystemQuery.parse(query);
         if (systemQuery == null) {
             error("Invalid system-query({}) for system datasource, please check source.{}.query", query, tableName);
@@ -76,9 +75,15 @@ public class SystemDataSource extends DataSource {
     }
 
     private DataTable arg(String tableName, String idColumnName) {
+        String[] args;
         String arg = dconvers.switches.getArg();
-        if (arg == null) {
-            return null;
+        if (arg != null) {
+            args = arg.split("[,]");
+        } else {
+            args = dconvers.switches.getArgs();
+            if (args == null) {
+                args = new String[]{"--no-argument"};
+            }
         }
 
         DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
@@ -89,7 +94,6 @@ public class SystemDataSource extends DataSource {
         DataRow dataRow;
         String columnName;
 
-        String[] args = arg.split("[,]");
         int index = 0;
         for (String argument : args) {
             index++;
@@ -117,7 +121,7 @@ public class SystemDataSource extends DataSource {
 
         DataRow dataRow;
         String columnName;
-        List<Pair<String,Long>> memoryPairList = new ArrayList<>();
+        List<Pair<String, Long>> memoryPairList = new ArrayList<>();
 
         Runtime runtime = Runtime.getRuntime();
         MemoryMXBean memBean = ManagementFactory.getMemoryMXBean();

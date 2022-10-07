@@ -2,7 +2,7 @@ package com.clevel.dconvers;
 
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.transform.TransformTypes;
-import javafx.util.Pair;
+import com.clevel.dconvers.ngin.Pair;
 import org.apache.commons.configuration2.Configuration;
 import org.junit.Test;
 import org.slf4j.Logger;

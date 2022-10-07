@@ -13,7 +13,7 @@ import com.clevel.dconvers.input.DataSource;
 import com.clevel.dconvers.ngin.Converter;
 import com.clevel.dconvers.ngin.Source;
 import com.clevel.dconvers.ngin.Target;
-import javafx.util.Pair;
+import com.clevel.dconvers.ngin.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

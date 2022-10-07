@@ -5,7 +5,7 @@ import com.clevel.dconvers.conf.DataSourceConfig;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.ngin.TimeTrackerKey;
 import com.clevel.dconvers.ngin.UtilBase;
-import javafx.util.Pair;
+import com.clevel.dconvers.ngin.Pair;
 import com.clevel.dconvers.ProgressBar;
 import oracle.jdbc.OracleTypes;
 import org.apache.commons.lang3.builder.ToStringBuilder;

@@ -7,6 +7,7 @@ import com.clevel.dconvers.calc.CalcTypes;
 import com.clevel.dconvers.conf.*;
 import com.clevel.dconvers.data.*;
 import com.clevel.dconvers.dynvalue.*;
+import com.clevel.dconvers.output.Output;
 import com.clevel.dconvers.output.OutputFactory;
 import com.clevel.dconvers.output.OutputTypes;
 import org.apache.commons.lang3.ArrayUtils;
@@ -149,7 +150,7 @@ public class Converter extends AppBase {
     }
 
     public boolean printSources() {
-        log.trace("Converter({}).printSources", name);
+        log.trace("Converter({}).printSources(count:{})", name, sortedSource.size());
         boolean success = true;
 
         HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
@@ -160,6 +161,7 @@ public class Converter extends AppBase {
         OutputConfig outputConfig;
         DataTable dataTable;
         String outputName;
+        Output output;
 
         SummaryTable tableSummary = dconvers.tableSummary;
         SummaryTable outputSummary = dconvers.outputSummary;
@@ -173,6 +175,7 @@ public class Converter extends AppBase {
             timeTracker.stop(TimeTrackerKey.SOURCE);
 
             if (dataTable == null) {
+                log.debug("data-table is null! exit.on.error={}", exitOnError);
                 success = false;
                 if (exitOnError) {
                     return false;
@@ -196,8 +199,10 @@ public class Converter extends AppBase {
 
             for (OutputTypes outputType : outputTypeList) {
                 log.trace("printing Source({}) to Output({})", source.getName(), outputType.getName());
-                outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, dataTable);
+                output = OutputFactory.getOutput(dconvers, outputType);
+                outputName = output.print(outputConfig, dataTable);
                 if (outputName == null) {
+                    if (log.isDebugEnabled()) log.debug("output is null! from {} exit.on.error={}", output.getClass().getSimpleName(), exitOnError);
                     success = false;
                     if (exitOnError) {
                         return false;
@@ -914,7 +919,7 @@ public class Converter extends AppBase {
         String value = null;
         int newLineLength = newLine.length();
         try {
-            br = new BufferedReader(new FileReader(fileName));
+            br = new BufferedReader(dconvers.getReader(fileName));
             for (String line; (line = br.readLine()) != null; ) {
                 content.append(line).append("\n");
             }
