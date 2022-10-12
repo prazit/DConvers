@@ -32,7 +32,7 @@ public class TransformConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("TransformConfig({}) is created", name);
+        log.debug("TransformConfig({}) is created", name);
     }
 
     @Override

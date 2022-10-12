@@ -28,7 +28,7 @@ public class VersionConfigFile extends ConfigFile {
         super(dconvers, name);
 
         log.debug("VersionConfigFile({}) = {}", name, this);
-        log.trace("VersionConfigFile({}) is created.", name);
+        log.debug("VersionConfigFile({}) is created.", name);
     }
 
     @Override

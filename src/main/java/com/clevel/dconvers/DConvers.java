@@ -157,14 +157,13 @@ public class DConvers extends AppBase {
         if (!configurationVersion.isNull()) log.info("Configuration: {}", configurationVersion.getValue());
         log.info("Configuration Source: {}", dataConversionConfigFilename);
 
-        log.trace("DConvers. Load DataConversionConfigFile.");
+        log.debug("DConvers. Load DataConversionConfigFile.");
         if (LibraryMode.PRESET == switches.getLibraryMode()) {
             dataConversionConfigFile.loadProperties();
             dataConversionConfigFile.validate();
         } else if (LibraryMode.MANUAL != switches.getLibraryMode()) {
             dataConversionConfigFile = new DataConversionConfigFile(this, dataConversionConfigFilename);
         }
-        currentState.setValue((long) dataConversionConfigFile.getSuccessCode());
 
         if (!dataConversionConfigFile.isValid()) {
             if (dataConversionConfigFile.isChildValid()) {
@@ -224,7 +223,7 @@ public class DConvers extends AppBase {
         systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.TABLE_SUMMARY.name(), tableSummary);
         systemTableMap.put(DynamicValueType.SYS.name() + ":" + SystemQuery.OUTPUT_SUMMARY.name(), outputSummary);
 
-        log.trace("DConvers. Load Plugins for calculator.");
+        log.debug("DConvers. Load Plugins for calculator.");
         boolean loadPluginsSuccess = true;
         List<Pair<String, String>> pluginsList = dataConversionConfigFile.getPluginsCalcList();
         if (pluginsList != null) {
@@ -245,7 +244,7 @@ public class DConvers extends AppBase {
             }
         }
 
-        log.trace("DConvers. Load Plugins for output.");
+        log.debug("DConvers. Load Plugins for output.");
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsOutputList();
         if (pluginsList != null) {
@@ -267,7 +266,7 @@ public class DConvers extends AppBase {
             }
         }
 
-        log.trace("DConvers. Load DataSources.");
+        log.debug("DConvers. Load DataSources.");
         if (dataSourceMap == null) {
             dataSourceMap = new HashMap<>();
         }
@@ -316,7 +315,7 @@ public class DConvers extends AppBase {
         dataSourceName = Property.LINES.key();
         dataSourceMap.put(dataSourceName.toUpperCase(), new LinesDataSource(this, dataSourceName, new DataSourceConfig(this, dataSourceName)));
 
-        log.trace("DConvers. Load Plugins for datasource.");
+        log.debug("DConvers. Load Plugins for datasource.");
         loadPluginsSuccess = true;
         pluginsList = dataConversionConfigFile.getPluginsDataSourceList();
         if (pluginsList != null) {
@@ -338,7 +337,7 @@ public class DConvers extends AppBase {
             }
         }
 
-        log.trace("DConvers. Load SFTP Services.");
+        log.debug("DConvers. Load SFTP Services.");
         sftpMap = new HashMap<>();
         SFTP sftp;
         String sftpName;
@@ -363,7 +362,7 @@ public class DConvers extends AppBase {
             }
         }
 
-        log.trace("DConvers. Load SMTP Services.");
+        log.debug("DConvers. Load SMTP Services.");
         smtpMap = new HashMap<>();
         SMTP smtp;
         String smtpName;
@@ -388,7 +387,7 @@ public class DConvers extends AppBase {
             }
         }
 
-        log.trace("DConvers. Load Converters.");
+        log.debug("DConvers. Load Converters.");
         converterList = new ArrayList<>();
         Converter converter;
         String converterName;
@@ -421,7 +420,7 @@ public class DConvers extends AppBase {
 
         Converter lastConverter = null;
         if (!switches.isTest()) {
-            log.trace("DConvers. Launch Converters to transfer, transform and create output.");
+            log.debug("DConvers. Launch Converters to transfer, transform and create output.");
             converterList.sort((o1, o2) -> o1.getConverterConfigFile().getIndex() > o2.getConverterConfigFile().getIndex() ? 1 : -1);
 
             if (converterList.size() > 0) {
@@ -493,7 +492,7 @@ public class DConvers extends AppBase {
 
             variable = userVariableMap.get(name);
             if (variable == null) {
-                variable = createDataColumn(name, type, value);
+                variable = createDataColumn(0, name, type, value);
                 userVariableMap.put(name, variable);
             } else {
                 variable.setValue(value);
@@ -569,7 +568,7 @@ public class DConvers extends AppBase {
     }
 
     public void stop() {
-        log.trace("DConvers.stop.");
+        log.debug("DConvers.stop.");
 
         closeAllSFTP();
         closeAllDataSource();
@@ -593,7 +592,7 @@ public class DConvers extends AppBase {
     }
 
     public void stopWithError() {
-        log.trace("DConvers.stopWithError.");
+        log.trace("DConvers.stopWithError.", new Exception());
 
         closeAllSFTP();
         closeAllDataSource();
@@ -617,7 +616,7 @@ public class DConvers extends AppBase {
     }
 
     public void stopWithWarning() {
-        log.trace("DConvers.stopWithWarning.");
+        log.debug("DConvers.stopWithWarning.");
 
         closeAllSFTP();
         closeAllDataSource();
@@ -642,7 +641,7 @@ public class DConvers extends AppBase {
     }
 
     private void closeAllDataSource() {
-        log.trace("DConvers.closeAllDataSource.");
+        log.debug("DConvers.closeAllDataSource.");
 
         if (dataSourceMap == null) {
             return;
@@ -654,7 +653,7 @@ public class DConvers extends AppBase {
     }
 
     private void closeAllSFTP() {
-        log.trace("DConvers.closeAllSFTP.");
+        log.debug("DConvers.closeAllSFTP.");
 
         if (sftpMap == null) {
             return;
@@ -666,7 +665,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidSwitches() {
-        log.trace("DConvers.performInvalidSwitches.");
+        log.debug("DConvers.performInvalidSwitches.");
 
         systemVariableMap = createSystemVariableMap();
         createCurrentStateVar(Defaults.EXIT_CODE_ERROR.getLongValue());
@@ -680,7 +679,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidConfigFile() {
-        log.trace("DConvers.performInvalidConfigFile.");
+        log.debug("DConvers.performInvalidConfigFile.");
 
         error("Invalid Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
@@ -690,7 +689,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidConfigChild() {
-        log.trace("DConvers.performInvalidConfigChild.");
+        log.debug("DConvers.performInvalidConfigChild.");
 
         error("Invalid Child of Configuration File({}) please check the file or see readme.md", switches.getSource());
         log.debug("dataConversionConfigFile = {}", dataConversionConfigFile);
@@ -700,7 +699,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidDataSource(DataSource dataSource) {
-        log.trace("DConvers.performInvalidDataSource.");
+        log.debug("DConvers.performInvalidDataSource.");
 
         error("Invalid Datasource ({}) please check {}.", dataSource.getName(), dataConversionConfigFile.getName());
         log.debug("datasource = {}", dataSource);
@@ -710,7 +709,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidSFTP(SFTP sftp) {
-        log.trace("DConvers.performInvalidSFTP.");
+        log.debug("DConvers.performInvalidSFTP.");
 
         error("Invalid SFTP({}) please check {}.", sftp.getName(), dataConversionConfigFile.getName());
         log.debug("sftp = {}", sftp);
@@ -720,7 +719,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidSMTP(SMTP smtp) {
-        log.trace("DConvers.performInvalidSMTP.");
+        log.debug("DConvers.performInvalidSMTP.");
 
         error("Invalid SMTP({}) please check {}.", smtp.getName(), dataConversionConfigFile.getName());
         log.debug("smtp = {}", smtp);
@@ -730,7 +729,7 @@ public class DConvers extends AppBase {
     }
 
     private void performInvalidConverter(Converter converter) {
-        log.trace("DConvers.performInvalidConverter.");
+        log.debug("DConvers.performInvalidConverter.");
 
         error("Invalid Converter ({}) please check the configuration files or see readme.md", converter.getName());
         log.debug("converter = {}", converter);
@@ -740,7 +739,7 @@ public class DConvers extends AppBase {
     }
 
     private void performHelp() {
-        log.trace("DConvers.performHelp.");
+        log.debug("DConvers.performHelp.");
         printVersion();
 
         String syntax = "dconvers [switches]\n" +
@@ -754,7 +753,7 @@ public class DConvers extends AppBase {
     }
 
     private void performVersion() {
-        log.trace("DConvers.performVersion.");
+        log.debug("DConvers.performVersion.");
         printVersion();
         System.out.println();
     }
@@ -790,7 +789,7 @@ public class DConvers extends AppBase {
         DataColumn dataColumn;
 
         for (SystemVariable systemVariable : systemVariableList) {
-            dataColumn = createDataColumn(systemVariable.name(), systemVariable.getDataType(), null);
+            dataColumn = createDataColumn(0, systemVariable.name(), systemVariable.getDataType(), null);
             variables.put(systemVariable, dataColumn);
         }
 
@@ -828,11 +827,12 @@ public class DConvers extends AppBase {
     /**
      * Create DataColumn by Type
      *
+     * @param index      column index start from 1
      * @param columnName initial name
      * @param columnType see java.sql.Types for detailed
      * @return new instance of DataColumn depend on columnType
      */
-    public DataColumn createDataColumn(String columnName, int columnType, String value) {
+    public DataColumn createDataColumn(int index, String columnName, int columnType, String value) {
         DataColumn dataColumn;
         if (value != null && value.equalsIgnoreCase("NULL")) {
             value = null;
@@ -857,7 +857,7 @@ public class DConvers extends AppBase {
                         error("Invalid value({}) for integer column({})", value, columnName);
                     }
                 }
-                dataColumn = new DataLong(this, 0, type, columnName, longValue);
+                dataColumn = new DataLong(this, index, type, columnName, longValue);
                 break;
 
             case Types.DECIMAL:
@@ -871,12 +871,12 @@ public class DConvers extends AppBase {
                         error("Invalid value({}) for decimal column({})", value, columnName);
                     }
                 }
-                dataColumn = new DataBigDecimal(this, 0, Types.DECIMAL, columnName, (doubleValue == null) ? null : BigDecimal.valueOf(doubleValue));
+                dataColumn = new DataBigDecimal(this, index, Types.DECIMAL, columnName, (doubleValue == null) ? null : BigDecimal.valueOf(doubleValue));
                 break;
 
             case Types.DATE:
             case Types.TIMESTAMP:
-                dataColumn = new DataDate(this, 0, Types.DATE, columnName, value);
+                dataColumn = new DataDate(this, index, Types.DATE, columnName, value);
                 break;
 
             /*case Types.CHAR:
@@ -885,10 +885,10 @@ public class DConvers extends AppBase {
             case Types.NCHAR:
             case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR:
-                dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
+                dataColumn = new DataString(this, index, Types.VARCHAR, columnName, value);
                 break;*/
             default:
-                dataColumn = new DataString(this, 0, Types.VARCHAR, columnName, value);
+                dataColumn = new DataString(this, index, Types.VARCHAR, columnName, value);
         }
 
         //log.debug("createDataColumn(columnName:{}, valueAsString:{}) = {}", columnName, value == null ? "null" : "\"" + value + "\"", dataColumn);

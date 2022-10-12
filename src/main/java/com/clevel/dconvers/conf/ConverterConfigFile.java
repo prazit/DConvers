@@ -25,7 +25,7 @@ public class ConverterConfigFile extends ConfigFile {
 
     public ConverterConfigFile(DConvers dconvers, String name) {
         super(dconvers, name);
-        log.trace("ConverterConfigFile({}) is created", name);
+        log.debug("ConverterConfigFile({}) is created", name);
     }
 
     /**
@@ -34,7 +34,7 @@ public class ConverterConfigFile extends ConfigFile {
     public ConverterConfigFile(DConvers dconvers, String name, String saveName) {
         super(dconvers, name);
         this.saveName = saveName;
-        log.trace("ConverterConfigFile({}) is created", name);
+        log.debug("ConverterConfigFile({}) is created", name);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ConverterConfigFile extends ConfigFile {
     }
 
     public boolean loadConfig() {
-        log.trace("ConverterConfigFile.loadConfig.");
+        log.debug("ConverterConfigFile.loadConfig.");
 
         index = properties.getInt(Property.CONVERTER_FILE.connectKey(Property.INDEX), 1);
 

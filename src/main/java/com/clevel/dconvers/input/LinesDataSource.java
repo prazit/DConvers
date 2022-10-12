@@ -153,13 +153,13 @@ public class LinesDataSource extends DataSource {
         String columnName;
 
         columnName = "Number";
-        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(lineNumber)));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(1, columnName, Types.INTEGER, String.valueOf(lineNumber)));
 
         columnName = "Line";
-        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, line));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(2, columnName, Types.VARCHAR, line));
 
         columnName = "Length";
-        dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, (line == null) ? "0" : String.valueOf(line.length())));
+        dataRow.putColumn(columnName, dconvers.createDataColumn(3, columnName, Types.INTEGER, (line == null) ? "0" : String.valueOf(line.length())));
 
         return dataRow;
     }

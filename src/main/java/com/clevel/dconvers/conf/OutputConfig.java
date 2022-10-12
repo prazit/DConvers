@@ -210,7 +210,7 @@ public class OutputConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("OutputConfig({}) is created", name);
+        log.debug("OutputConfig({}) is created", name);
     }
 
     @Override

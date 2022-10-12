@@ -86,40 +86,40 @@ public class DirDataSource extends DataSource {
             dataRow = new DataRow(dconvers, dataTable);
 
             columnName = "Name";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getName()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(1, columnName, Types.VARCHAR, file.getName()));
 
             columnName = "Directory";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isDirectory())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(2, columnName, Types.VARCHAR, booleanValue(file.isDirectory())));
 
             columnName = "Hidden";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isHidden())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(3, columnName, Types.VARCHAR, booleanValue(file.isHidden())));
 
             columnName = "Read";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canRead())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(4, columnName, Types.VARCHAR, booleanValue(file.canRead())));
 
             columnName = "Write";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canWrite())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(5, columnName, Types.VARCHAR, booleanValue(file.canWrite())));
 
             columnName = "Execute";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.canExecute())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(6, columnName, Types.VARCHAR, booleanValue(file.canExecute())));
 
             columnName = "Absolute";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(7, columnName, Types.VARCHAR, booleanValue(file.isAbsolute())));
 
             columnName = "LastModified";
-            dataRow.putColumn(columnName, new DataDate(dconvers, 0, Types.DATE, columnName, new Date(file.lastModified())));
+            dataRow.putColumn(columnName, new DataDate(dconvers, 8, Types.DATE, columnName, new Date(file.lastModified())));
 
             columnName = "Length";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.INTEGER, String.valueOf(file.length())));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(9, columnName, Types.INTEGER, String.valueOf(file.length())));
 
             columnName = "Path";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getParent()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(10, columnName, Types.VARCHAR, file.getParent()));
 
             columnName = "AbsolutePath";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, file.getAbsolutePath()));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(11, columnName, Types.VARCHAR, file.getAbsolutePath()));
 
             columnName = "CanonicalPath";
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, Types.VARCHAR, getCanonicalPath(file)));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(12, columnName, Types.VARCHAR, getCanonicalPath(file)));
 
             dataTable.addRow(dataRow);
         }

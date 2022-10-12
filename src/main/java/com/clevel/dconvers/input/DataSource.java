@@ -32,7 +32,7 @@ public class DataSource extends UtilBase {
         useInformationSchema = false;
         valid = open();
 
-        log.trace("DataSource({}) is created", name);
+        log.debug("DataSource({}) is created", name);
     }
 
     /**
@@ -50,7 +50,7 @@ public class DataSource extends UtilBase {
         useInformationSchema = false;
         valid = true;
 
-        log.trace("DataSource({}) is created", name);
+        log.debug("DataSource({}) is created", name);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class DataSource extends UtilBase {
     }
 
     public boolean open() {
-        log.trace("DataSource({}).open.", name);
+        log.debug("DataSource({}).open.", name);
 
         connection = getExistingConnection();
         if (connection != null) {
@@ -72,9 +72,9 @@ public class DataSource extends UtilBase {
         url = schema.isEmpty() ? url : url + "/" + schema;
         try {
 
-            log.trace("Loading database driver ...");
+            log.debug("Loading database driver ...");
             Class.forName(dataSourceConfig.getDriver());
-            log.trace("Load driver is successful");
+            log.debug("Load driver is successful");
 
             Properties properties = new Properties();
             List<Pair<String, String>> propList = dataSourceConfig.getPropList();
@@ -88,7 +88,7 @@ public class DataSource extends UtilBase {
             properties.put("user", dataSourceConfig.getUser());
             properties.put("password", dataSourceConfig.getPassword());
 
-            log.trace("Connecting to datasource({})[{}]", name, toString());
+            log.debug("Connecting to datasource({})[{}]", name, toString());
             connection = DriverManager.getConnection(url, properties);
             log.info("Connected to datasource({})", name);
 
@@ -141,7 +141,7 @@ public class DataSource extends UtilBase {
             return null;
         }
 
-        log.trace("DataSource.getDataTable.");
+        log.debug("DataSource.getDataTable.");
         DataTable dataTable;
         Statement statement = null;
         CallableStatement callableStatement = null;
@@ -152,7 +152,7 @@ public class DataSource extends UtilBase {
         try {
 
             if (callStoredProcedure) {
-                log.trace("Open statement...");
+                log.debug("Open statement...");
                 callableStatement = connection.prepareCall(query); // query like this: {call SHOW_SUPPLIERS()}
                 if (!query.contains("?")) {
                     log.debug("Querying by callableStatement(): {}", query);
@@ -166,26 +166,26 @@ public class DataSource extends UtilBase {
                     dconvers.timeTracker.stop(TimeTrackerKey.DATASOURCE);
                 }
             } else {
-                log.trace("Open statement...");
+                log.debug("Open statement...");
                 statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 query = query.replaceAll("[\"]", dataSourceConfig.getValueQuotes());
                 //log.debug("Querying: {}", query);
                 dconvers.timeTracker.start(TimeTrackerKey.DATASOURCE, "data querying for source(" + tableName + ")");
                 resultSet = statement.executeQuery(query);
                 dconvers.timeTracker.stop(TimeTrackerKey.DATASOURCE);
-                log.trace("execute query is successful");
+                log.debug("execute query is successful");
             }
 
             if (resultSet != null) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
 
-                log.trace("Creating DataTable...");
+                log.debug("Creating DataTable...");
                 dataTable = createDataTable(resultSet, metaData, tableName, idColumnName);
                 dataTable.setDataSource(name);
                 dataTable.setQuery(query);
                 log.debug("DataTable({}) has {} row(s)", tableName, dataTable.getRowCount());
 
-                log.trace("Close statement...");
+                log.debug("Close statement...");
                 resultSet.close();
             } else {
                 dataTable = createDataTable(tableName, idColumnName, name, query);
@@ -203,7 +203,7 @@ public class DataSource extends UtilBase {
         } finally {
             try {
                 if (statement != null) {
-                    log.trace("Close statement...");
+                    log.debug("Close statement...");
                     statement.close();
                 }
             } catch (SQLException se2) {
@@ -322,37 +322,37 @@ public class DataSource extends UtilBase {
                     metaDataRow = new DataRow(dconvers, dataTable);
 
                     metaDataColumnName = "ColumnName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(1, metaDataColumnName, Types.VARCHAR, metaData.getColumnName(columnIndex)));
 
                     metaDataColumnName = "ColumnLabel";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, columnLabel));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(2, metaDataColumnName, Types.VARCHAR, columnLabel));
 
                     metaDataColumnName = "ColumnClassName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnClassName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(3, metaDataColumnName, Types.VARCHAR, metaData.getColumnClassName(columnIndex)));
 
                     metaDataColumnName = "ColumnType";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(columnType)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(4, metaDataColumnName, Types.INTEGER, String.valueOf(columnType)));
 
                     metaDataColumnName = "ColumnTypeName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getColumnTypeName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(5, metaDataColumnName, Types.VARCHAR, metaData.getColumnTypeName(columnIndex)));
 
                     metaDataColumnName = "Precision";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getPrecision(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(6, metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getPrecision(columnIndex))));
 
                     metaDataColumnName = "Scale";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(7, metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getScale(columnIndex))));
 
                     metaDataColumnName = "ColumnDisplaySize";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(8, metaDataColumnName, Types.INTEGER, String.valueOf(metaData.getColumnDisplaySize(columnIndex))));
 
                     metaDataColumnName = "SchemaName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(9, metaDataColumnName, Types.VARCHAR, metaData.getSchemaName(columnIndex)));
 
                     metaDataColumnName = "CatalogName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getCatalogName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(10, metaDataColumnName, Types.VARCHAR, metaData.getCatalogName(columnIndex)));
 
                     metaDataColumnName = "TableName";
-                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
+                    metaDataRow.putColumn(metaDataColumnName, dconvers.createDataColumn(11, metaDataColumnName, Types.VARCHAR, metaData.getTableName(columnIndex)));
 
                     metaDataTable.addRow(metaDataRow);
                 }
@@ -389,7 +389,7 @@ public class DataSource extends UtilBase {
     }
 
     public void close() {
-        log.trace("DataSource({}).close.", name);
+        log.debug("DataSource({}).close.", name);
 
         if (connection == null) {
             return;
@@ -473,7 +473,7 @@ public class DataSource extends UtilBase {
         boolean success = true;
 
         try {
-            //log.trace("Open statement...");
+            //log.debug("Open statement...");
             statement = createStatement(dataSourceConfig.getDbms());
             if (statement == null) {
                 throw new Exception("Create statement for update is failed, sql(" + sql + ")");
@@ -495,7 +495,7 @@ public class DataSource extends UtilBase {
         } finally {
             try {
                 if (statement != null) {
-                    //log.trace("Close statement...");
+                    //log.debug("Close statement...");
                     statement.close();
                 }
             } catch (SQLException se2) {

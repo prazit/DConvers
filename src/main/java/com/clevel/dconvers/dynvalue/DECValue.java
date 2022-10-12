@@ -26,7 +26,7 @@ public class DECValue extends DynamicValue {
             sourceColumnArg = converter.compileDynamicValues(sourceColumnArg);
         }
 
-        dataBigDecimal = (DataBigDecimal) dconvers.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
+        dataBigDecimal = (DataBigDecimal) dconvers.createDataColumn(1, name, sourceColumnType.getDataType(), sourceColumnArg);
 
     }
 

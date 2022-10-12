@@ -26,7 +26,7 @@ public class SMTP extends AppBase {
         log.debug("SMTP({}) smtpConfig({})", name, smtpConfig);
         valid = open();
 
-        log.trace("smtp({}) is created", name);
+        log.debug("smtp({}) is created", name);
     }
 
     public boolean open() {
@@ -92,7 +92,7 @@ public class SMTP extends AppBase {
         if (!valid) {
             return false;
         }
-        log.trace("sendMessage started.");
+        log.debug("sendMessage started.");
 
         MimeMessage mimeMessage = new MimeMessage(session);
         try {
@@ -138,7 +138,7 @@ public class SMTP extends AppBase {
             return false;
         }
 
-        log.trace("sendMessage successful.");
+        log.debug("sendMessage successful.");
         return true;
     }
 

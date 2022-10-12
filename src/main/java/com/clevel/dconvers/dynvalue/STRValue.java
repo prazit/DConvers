@@ -28,7 +28,7 @@ public class STRValue extends DynamicValue {
             sourceColumnArg = converter.compileDynamicValues(sourceColumnArg);
         }
 
-        dataString = (DataString) dconvers.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
+        dataString = (DataString) dconvers.createDataColumn(1, name, sourceColumnType.getDataType(), sourceColumnArg);
         if (dataString == null) {
             error("Invalid constant({}) for columnType({}) that required by target({}.{})", sourceColumnArg, sourceColumnType.name(), targetName, name);
             dataString = null;

@@ -63,8 +63,6 @@ The possible values for any property is depends on the DataType of the property 
 
 > when run in library mode will perform different way for some events like ERROR.
 > 
-> 
-> 
 > start DConvers with this switch :
 > 
 > --library-mode=NORMAL|PRESET|MANUAL

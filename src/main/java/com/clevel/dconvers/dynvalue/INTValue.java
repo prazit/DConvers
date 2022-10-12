@@ -26,7 +26,7 @@ public class INTValue extends DynamicValue {
             sourceColumnArg = converter.compileDynamicValues(sourceColumnArg);
         }
 
-        dataLong = (DataLong) dconvers.createDataColumn(name, sourceColumnType.getDataType(), sourceColumnArg);
+        dataLong = (DataLong) dconvers.createDataColumn(1, name, sourceColumnType.getDataType(), sourceColumnArg);
         if (dataLong == null) {
             error("Invalid constant({}) for columnType({}) that required by target({}.{})", sourceColumnArg, sourceColumnType.name(), targetName, name);
             dataLong = null;

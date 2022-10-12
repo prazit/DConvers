@@ -40,7 +40,7 @@ public class ARGValue extends DynamicValue {
         }
 
         if (argIndex >= 0) {
-            dataString = (DataString) dconvers.createDataColumn(sourceColumnName, Types.VARCHAR, args[argIndex]);
+            dataString = (DataString) dconvers.createDataColumn(1, sourceColumnName, Types.VARCHAR, args[argIndex]);
         } else {
             dataString = null;
         }

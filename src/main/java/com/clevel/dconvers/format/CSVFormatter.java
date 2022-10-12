@@ -142,7 +142,7 @@ public class CSVFormatter extends DataFormatter {
             return;
         }
 
-        log.trace("use custom format from config file.");
+        log.debug("use custom format from config file.");
         for (String format : formatList) {
             this.formatList.add(new CSVColumn(format));
         }
@@ -157,12 +157,12 @@ public class CSVFormatter extends DataFormatter {
         DataRow firstRow = dataTable.getRow(0);
 
         if (formatList.size() == 0) {
-            log.trace("use default format by datatype of Column (for all columns).");
+            log.debug("use default format by datatype of Column (for all columns).");
             for (DataColumn dataColumn : firstRow.getColumnList()) {
                 this.formatList.add(new CSVColumn(dataColumn));
             }
         } else if (formatList.size() < firstRow.getColumnCount()) {
-            log.trace("use default format by datatype of Column (for some columns).");
+            log.debug("use default format by datatype of Column (for some columns).");
             int columnIndex = -1;
             int lastIndex = formatList.size() - 1;
             for (DataColumn dataColumn : firstRow.getColumnList()) {

@@ -48,7 +48,7 @@ public class Converter extends AppBase {
             valid = validate();
         }
 
-        log.trace("Converter({}) is created", name);
+        log.debug("Converter({}) is created", name);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class Converter extends AppBase {
     }
 
     private boolean prepare() {
-        log.trace("Converter({}).prepare", name);
+        log.debug("Converter({}).prepare", name);
 
         HashMap<String, SourceConfig> sourceConfigMap = converterConfigFile.getSourceConfigMap();
         HashMap<String, TargetConfig> targetConfigMap = converterConfigFile.getTargetConfigMap();
@@ -105,7 +105,7 @@ public class Converter extends AppBase {
 
     @Override
     public boolean validate() {
-        log.trace("Converter({}).validate", name);
+        log.debug("Converter({}).validate", name);
 
         if (sourceMap.size() == 0) {
             log.debug("No source config in converter({}).", name);
@@ -119,7 +119,7 @@ public class Converter extends AppBase {
     }
 
     public boolean buildTargets() {
-        log.trace("Converter({}).buildTargets", name);
+        log.debug("Converter({}).buildTargets", name);
         TimeTracker timeTracker = dconvers.timeTracker;
         boolean success = true;
 
@@ -150,7 +150,7 @@ public class Converter extends AppBase {
     }
 
     public boolean printSources() {
-        log.trace("Converter({}).printSources(count:{})", name, sortedSource.size());
+        log.debug("Converter({}).printSources(count:{})", name, sortedSource.size());
         boolean success = true;
 
         HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
@@ -198,7 +198,7 @@ public class Converter extends AppBase {
             }
 
             for (OutputTypes outputType : outputTypeList) {
-                log.trace("printing Source({}) to Output({})", source.getName(), outputType.getName());
+                log.debug("printing Source({}) to Output({})", source.getName(), outputType.getName());
                 output = OutputFactory.getOutput(dconvers, outputType);
                 outputName = output.print(outputConfig, dataTable);
                 if (outputName == null) {
@@ -217,7 +217,7 @@ public class Converter extends AppBase {
     }
 
     public boolean printTarget() {
-        log.trace("Converter({}).printTarget", name);
+        log.debug("Converter({}).printTarget", name);
         boolean success = true;
 
         HashMap<SystemVariable, DataColumn> systemVariableMap = dconvers.systemVariableMap;
@@ -271,7 +271,7 @@ public class Converter extends AppBase {
                     continue;
                 }
                 for (OutputTypes outputType : outputTypeList) {
-                    log.trace("printing Target({}) to Output({})", target.getName(), outputType.name());
+                    log.debug("printing Target({}) to Output({})", target.getName(), outputType.name());
                     outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, dataTable);
                     if (outputName == null) {
                         success = false;
@@ -298,7 +298,7 @@ public class Converter extends AppBase {
                     }
 
                     for (OutputTypes outputType : outputTypeList) {
-                        log.trace("printing Mapping({}) to Output({})", target.getName(), outputType.name());
+                        log.debug("printing Mapping({}) to Output({})", target.getName(), outputType.name());
                         outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, mappingTable);
                         if (outputName == null) {
                             success = false;
@@ -729,7 +729,7 @@ public class Converter extends AppBase {
         // $[VAR:SOURCE_FILE_NUMBER]
         // $[TXT:FILE_NAME.txt]
         // $[CAL:function(argument1,argument2)]
-        //log.trace("Converter.getDynamicValue.");
+        //log.debug("Converter.getDynamicValue.");
 
         if (dynamicValue.length() < 5) {
             error("Invalid syntax for DynamicValue({})", dynamicValue);
@@ -755,7 +755,7 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(1, valueType, Types.VARCHAR, value);
                 break;
 
             case CAL:
@@ -787,7 +787,7 @@ public class Converter extends AppBase {
                     /*use specified value when got empty csv*/
                     value = csvParameters[1];
                 }
-                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(1, valueType, Types.VARCHAR, value);
                 break;
 
             case VAR:
@@ -806,7 +806,7 @@ public class Converter extends AppBase {
                     }
                     if (dataColumn == null) {
                         //log.debug("unknown variable({})", valueIdentifier);
-                        dataColumn = dconvers.createDataColumn(valueIdentifier, Types.VARCHAR, "NULL");
+                        dataColumn = dconvers.createDataColumn(1, valueIdentifier, Types.VARCHAR, "NULL");
                     }
                 }
                 break;
@@ -816,7 +816,7 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(1, valueType, Types.VARCHAR, value);
                 break;
 
             case FTP:
@@ -824,7 +824,7 @@ public class Converter extends AppBase {
                 if (value == null) {
                     return null;
                 }
-                dataColumn = dconvers.createDataColumn(valueType, Types.VARCHAR, value);
+                dataColumn = dconvers.createDataColumn(1, valueType, Types.VARCHAR, value);
                 break;
 
             case ARG:
@@ -837,7 +837,7 @@ public class Converter extends AppBase {
                     log.warn("Invalid argument index({}), last argument index is {}", argIndex, args.length);
                     argIndex = args.length - 1;
                 }
-                dataColumn = dconvers.createDataColumn("argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
+                dataColumn = dconvers.createDataColumn(1, "argument(" + (argIndex + 1) + ")", Types.VARCHAR, args[argIndex]);
                 break;
 
             case STR: // constant for STR, INT, DTE, DTT, DEC
@@ -851,7 +851,7 @@ public class Converter extends AppBase {
                     valueIdentifier = compileDynamicValues(valueIdentifier);
                 }
 
-                dataColumn = dconvers.createDataColumn(valueType, dynamicValueType.getDataType(), valueIdentifier);
+                dataColumn = dconvers.createDataColumn(1, valueType, dynamicValueType.getDataType(), valueIdentifier);
                 if (dataColumn == null) {
                     error("Invalid constant({}) for {} ", valueIdentifier, valueType);
                     return null;

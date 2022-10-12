@@ -25,7 +25,7 @@ public class SFTP extends AppBase implements UserInfo {
         log.debug("SFTP({}) sftpConfig({})", name, sftpConfig);
         valid = open();
 
-        log.trace("sftp({}) is created", name);
+        log.debug("sftp({}) is created", name);
     }
 
     public boolean open() {
@@ -92,13 +92,13 @@ public class SFTP extends AppBase implements UserInfo {
 
     @Override
     public String getPassphrase() {
-        log.trace("SFTP.getPassphrase()");
+        log.debug("SFTP.getPassphrase()");
         return null;
     }
 
     @Override
     public String getPassword() {
-        log.trace("SFTP.getPassword()");
+        log.debug("SFTP.getPassword()");
         return sftpConfig.getPassword();
     }
 
@@ -108,19 +108,19 @@ public class SFTP extends AppBase implements UserInfo {
 
     @Override
     public boolean promptPassword(String message) {
-        log.trace("SFTP.promptPassword(message:{})", message);
+        log.debug("SFTP.promptPassword(message:{})", message);
         return true;
     }
 
     @Override
     public boolean promptPassphrase(String message) {
-        log.trace("SFTP.promptPassphrase(message:{})", message);
+        log.debug("SFTP.promptPassphrase(message:{})", message);
         return false;
     }
 
     @Override
     public boolean promptYesNo(String message) {
-        log.trace("SFTP.promptYesNo(message:{})", message);
+        log.debug("SFTP.promptYesNo(message:{})", message);
         return true;
     }
 
@@ -130,7 +130,7 @@ public class SFTP extends AppBase implements UserInfo {
     }
 
     public boolean copyToLocal(String remoteFile, String localFile) {
-        log.trace("SFTP({}).copyToLocal(remoteFile:{},localFile:{})", name, remoteFile, localFile);
+        log.debug("SFTP({}).copyToLocal(remoteFile:{},localFile:{})", name, remoteFile, localFile);
 
         if (!isValid()) {
             error("The SFTP({}) is invalid! can not transfer remote-file({}) to local-file({}).", name, remoteFile, localFile);
@@ -177,7 +177,7 @@ public class SFTP extends AppBase implements UserInfo {
     }
 
     public boolean copyToSFTP(String localFile, String remoteFile) {
-        log.trace("SFTP({}).copyToSFTP(localFile:{}, remoteFile:{})", name, localFile, remoteFile);
+        log.debug("SFTP({}).copyToSFTP(localFile:{}, remoteFile:{})", name, localFile, remoteFile);
 
         if (!isValid()) {
             error("The SFTP({}) is invalid! can not transfer local-file({}) to remote-file({}).", name, localFile, remoteFile);

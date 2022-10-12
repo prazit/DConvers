@@ -55,7 +55,7 @@ public class DataSourceConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
+        log.debug("DataSourceConfig({}) is created with valid={}", name, valid);
     }
 
     /**
@@ -71,7 +71,7 @@ public class DataSourceConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("DataSourceConfig({}) is created with valid={}", name, valid);
+        log.debug("DataSourceConfig({}) is created with valid={}", name, valid);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class DataSourceConfig extends Config {
     }
 
     protected boolean loadProperties(Connection connection) {
-        log.trace("DataSourceConfig.loadProperties(Connection).");
+        log.debug("DataSourceConfig.loadProperties(Connection).");
         propList = new ArrayList<>();
 
         try {
@@ -136,7 +136,7 @@ public class DataSourceConfig extends Config {
 
     @Override
     protected boolean loadProperties() {
-        log.trace("DataSourceConfig.loadProperties.");
+        log.debug("DataSourceConfig.loadProperties.");
 
         if (properties == null) {
             return false;
@@ -182,7 +182,7 @@ public class DataSourceConfig extends Config {
 
     @Override
     public boolean validate() {
-        log.trace("DataSourceConfig.validateProperties.");
+        log.debug("DataSourceConfig.validateProperties.");
 
         /*if (!isEmailDataSource()) {
             if (url == null || driver == null || user == null || password == null) {

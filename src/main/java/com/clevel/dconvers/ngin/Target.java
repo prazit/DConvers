@@ -49,11 +49,11 @@ public class Target extends UtilBase {
         valid = prepare();
         if (valid) valid = validate();
 
-        log.trace("Target({}) is created", name);
+        log.debug("Target({}) is created", name);
     }
 
     private boolean prepare() {
-        log.trace("Target({}).prepare.", name);
+        log.debug("Target({}).prepare.", name);
 
         sourceList = targetConfig.getSourceList();
         mappingTableList = new ArrayList<>();
@@ -79,7 +79,7 @@ public class Target extends UtilBase {
     }
 
     public boolean buildDataTable() {
-        log.trace("Target({}).buildDataTable.", name);
+        log.debug("Target({}).buildDataTable.", name);
 
         List<Pair<String, String>> columnList = targetConfig.getColumnList();
 
@@ -247,7 +247,7 @@ public class Target extends UtilBase {
         for (Pair<TransformTypes, HashMap<String, String>> transformPair : transformList) {
             transformType = transformPair.getKey();
             argumentList = transformPair.getValue();
-            log.trace("transforming Target({}) by Transform({})", name, transformType.name());
+            log.debug("transforming Target({}) by Transform({})", name, transformType.name());
 
             transform = TransformFactory.getTransform(dconvers, transformType);
             transform.setArgumentList(argumentList);

@@ -26,7 +26,7 @@ public class HTTPValue extends DynamicValue {
         if (value == null) {
             dataString = null;
         } else {
-            dataString = (DataString) dconvers.createDataColumn(DynamicValueType.TXT.name(), Types.VARCHAR, value);
+            dataString = (DataString) dconvers.createDataColumn(1, DynamicValueType.TXT.name(), Types.VARCHAR, value);
         }
 
     }

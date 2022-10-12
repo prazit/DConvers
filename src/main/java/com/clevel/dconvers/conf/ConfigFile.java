@@ -62,7 +62,7 @@ public abstract class ConfigFile extends Config {
             propertiesBuilder.configure(params.fileBased().setFileName(configFile));
             properties = propertiesBuilder.getConfiguration();
             valid = true;
-            log.trace("load json-properties is successful ({})", configFile);
+            log.debug("load json-properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
             if (!(this instanceof VersionConfigFile)) error("Load json-properties '{}' is failed! NoClassDefFoundError: {}", configFile, nc.getMessage());
             properties = new PropertiesConfiguration();
@@ -88,7 +88,7 @@ public abstract class ConfigFile extends Config {
             propertiesBuilder.configure(params.xml().setFileName(configFile));
             properties = propertiesBuilder.getConfiguration();
             valid = true;
-            log.trace("load xml-properties is successful ({})", configFile);
+            log.debug("load xml-properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
             if (!(this instanceof VersionConfigFile)) error("Load xml-properties '{}' is failed! NoClassDefFoundError: {}", configFile, nc.getMessage());
             properties = new PropertiesConfiguration();
@@ -112,7 +112,7 @@ public abstract class ConfigFile extends Config {
             properties = propertiesBuilder.getConfiguration();
 
             valid = true;
-            log.trace("load properties is successful ({})", configFile);
+            log.debug("load properties is successful ({})", configFile);
         } catch (NoClassDefFoundError nc) {
             if (!(this instanceof VersionConfigFile)) error("Load properties '{}' is failed!", configFile);
             properties = new PropertiesConfiguration();

@@ -38,7 +38,7 @@ public class SourceConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("SourceConfig({}) is created", name);
+        log.debug("SourceConfig({}) is created", name);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SourceConfig extends Config {
 
     @Override
     protected boolean loadProperties() {
-        log.trace("SourceConfig({}).loadProperties.", name);
+        log.debug("SourceConfig({}).loadProperties.", name);
 
         Property source = Property.SOURCE;
 
@@ -86,7 +86,7 @@ public class SourceConfig extends Config {
 
     @Override
     public boolean validate() {
-        log.trace("SourceConfig({}).validateProperties.", name);
+        log.debug("SourceConfig({}).validateProperties.", name);
 
         if (dataSource.isEmpty()) {
             error(Property.SOURCE.connectKey(name, Property.DATA_SOURCE) + " is required by source({})", name);

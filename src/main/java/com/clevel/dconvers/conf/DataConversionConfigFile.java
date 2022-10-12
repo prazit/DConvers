@@ -48,7 +48,7 @@ public class DataConversionConfigFile extends ConfigFile {
         super(dconvers, name);
 
         log.debug("DataConversionConfigFile({}) = {}", name, this);
-        log.trace("DataConversionConfigFile({}) is created.", name);
+        log.debug("DataConversionConfigFile({}) is created.", name);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DataConversionConfigFile extends ConfigFile {
 
     @Override
     public boolean loadProperties() {
-        log.trace("DataConversionConfigFile.loadProperties.");
+        log.debug("DataConversionConfigFile.loadProperties.");
         dconvers.dataConversionConfigFile = this;
 
 
@@ -185,7 +185,7 @@ public class DataConversionConfigFile extends ConfigFile {
 
     @Override
     public boolean validate() {
-        log.trace("DataConversionConfigFile.validateProperties.");
+        log.debug("DataConversionConfigFile.validateProperties.");
 
         for (DataSourceConfig dataSourceConfig : dataSourceConfigMap.values()) {
             if (!dataSourceConfig.isValid()) {

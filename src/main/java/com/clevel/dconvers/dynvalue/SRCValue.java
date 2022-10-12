@@ -28,7 +28,7 @@ public class SRCValue extends DynamicValue {
         if (value == null) {
             dataColumn = null;
         } else {
-            dataColumn = dconvers.createDataColumn(sourceColumnType.name(), Types.VARCHAR, value);
+            dataColumn = dconvers.createDataColumn(1, sourceColumnType.name(), Types.VARCHAR, value);
         }
     }
 

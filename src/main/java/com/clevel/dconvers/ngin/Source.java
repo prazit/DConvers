@@ -23,11 +23,11 @@ public class Source extends AppBase {
         valid = prepare();
         if (valid) valid = validate();
 
-        log.trace("Source({}) is created", name);
+        log.debug("Source({}) is created", name);
     }
 
     private boolean prepare() {
-        log.trace("Source({}).prepare.", name);
+        log.debug("Source({}).prepare.", name);
         String dataSourceName = sourceConfig.getDataSource();
         //log.debug("Source.prepare: dataSourceName={}", dataSourceName);
         dataSource = dconvers.getDataSource(dataSourceName.toUpperCase());
@@ -36,7 +36,7 @@ public class Source extends AppBase {
 
     @Override
     public boolean validate() {
-        log.trace("Source({}).validate.", name);
+        log.debug("Source({}).validate.", name);
 
         if (dataSource == null) {
             error("datasource({}) is not found, required by Converter({})", sourceConfig.getDataSource(), converter.getName());
@@ -48,7 +48,7 @@ public class Source extends AppBase {
     }
 
     public boolean buildDataTable() {
-        log.trace("Source({}).buildDataTable.", name);
+        log.debug("Source({}).buildDataTable.", name);
 
         String query = sourceConfig.getQuery();
         if (query == null) {

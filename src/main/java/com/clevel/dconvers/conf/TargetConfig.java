@@ -43,7 +43,7 @@ public class TargetConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("SourceConfig({}) is created", name);
+        log.debug("SourceConfig({}) is created", name);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class TargetConfig extends Config {
 
     @Override
     protected boolean loadProperties() {
-        log.trace("TargetConfig({}).loadProperties.", name);
+        log.debug("TargetConfig({}).loadProperties.", name);
 
         Configuration targetProperties = properties.subset(Property.TARGET.connectKey(name));
         source = getPropertyString(targetProperties, Property.SOURCE.key(), source);

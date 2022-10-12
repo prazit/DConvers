@@ -87,12 +87,14 @@ public abstract class AppBase extends ValidatorBase {
     public void error(String format, Object... arguments) {
         String message = format + currentConverterName();
         log.error(message, arguments);
+        log.trace("", new Exception());
         afterError(formatMessage(message, arguments));
     }
 
     public void error(String msg, Throwable t) {
         String message = msg + currentConverterName();
-        log.error(message, t);
+        log.error(message);
+        log.debug("", t);
         if (t instanceof OutOfMemoryError) {
             memoryLog();
         }
@@ -102,11 +104,12 @@ public abstract class AppBase extends ValidatorBase {
     public void error(String msg) {
         String message = msg + currentConverterName();
         log.error(message);
+        log.trace("", new Exception());
         afterError(formatMessage(message));
     }
 
     private String formatMessage(String format, Object... arguments) {
-        return MessageFormatter.arrayFormat(format,arguments).getMessage();
+        return MessageFormatter.arrayFormat(format, arguments).getMessage();
     }
 
     public void memoryLog() {

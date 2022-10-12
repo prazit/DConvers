@@ -11,7 +11,7 @@ public abstract class OutputPluginConfig extends Config{
 
     public OutputPluginConfig(DConvers dconvers, String baseProperty) {
         super(dconvers, baseProperty);
-        log.trace("OutputPluginConfig({}) is created", name);
+        log.debug("OutputPluginConfig({}) is created", name);
     }
 
     public void loadConfig(Configuration baseProperties) {

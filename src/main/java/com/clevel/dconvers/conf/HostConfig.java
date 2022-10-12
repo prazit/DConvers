@@ -36,7 +36,7 @@ public class HostConfig extends Config {
             if (valid) valid = validate();
         }
 
-        log.trace("SFTPConfig({}) is created", name);
+        log.debug("SFTPConfig({}) is created", name);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class HostConfig extends Config {
 
     @Override
     protected boolean loadProperties() {
-        log.trace("SFTPConfig.loadProperties.");
+        log.debug("SFTPConfig.loadProperties.");
 
         host = getPropertyString(properties, rootProperty.connectKey(name, Property.HOST), "");
         port = properties.getInt(rootProperty.connectKey(name, Property.PORT), 22);
@@ -75,7 +75,7 @@ public class HostConfig extends Config {
 
     @Override
     public boolean validate() {
-        log.trace("HostConfig.validateProperties.");
+        log.debug("HostConfig.validateProperties.");
 
         if (user == null || password == null) {
             log.debug("some value is null, please check {}.{} section", rootProperty.name(), name);

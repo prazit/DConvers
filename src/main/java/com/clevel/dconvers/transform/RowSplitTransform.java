@@ -75,7 +75,7 @@ public class RowSplitTransform extends Transform {
                 dataColumn.setValue(values[0]);
             } else {
                 columnName = dataColumn.getName();
-                dataColumn = dconvers.createDataColumn(columnName, dataType, values[0]);
+                dataColumn = dconvers.createDataColumn(1, columnName, dataType, values[0]);
                 dataRow.putColumn(columnName, dataColumn);
             }
 
@@ -89,7 +89,7 @@ public class RowSplitTransform extends Transform {
                     newColumn.setValue(newValue);
                 } else {
                     columnName = newColumn.getName();
-                    newColumn = dconvers.createDataColumn(columnName, dataType, newValue);
+                    newColumn = dconvers.createDataColumn(1, columnName, dataType, newValue);
                     newRow.putColumn(columnName, newColumn);
                 }
 

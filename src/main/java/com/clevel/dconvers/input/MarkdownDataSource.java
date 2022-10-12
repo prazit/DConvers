@@ -39,7 +39,7 @@ public class MarkdownDataSource extends DataSource {
 
     @Override
     public DataTable getDataTable(String tableName, String idColumnName, String markdownFileName, HashMap<String, String> queryParamMap) {
-        log.trace("Creating DataTable(Markdown)...");
+        log.debug("Creating DataTable(Markdown)...");
 
         Converter converter = dconvers.currentConverter;
         DataTable dataTable = new DataTable(dconvers, tableName, idColumnName);
@@ -84,6 +84,11 @@ public class MarkdownDataSource extends DataSource {
                     columnTypes = getColumnType(line);
                     log.debug("columnTypes = {}", columnTypes);
                     normalizeColumnNames(columnNames, columnTypes);
+
+                    if (idColumnName.isEmpty()) {
+                        idColumnName = columnNames[0];
+                        dataTable.setIdColumnName(idColumnName);
+                    }
 
                 } else {
                     dataRow = getDataRow(line, columnNames, columnTypes, dataTable);
@@ -212,7 +217,7 @@ public class MarkdownDataSource extends DataSource {
                 columnTypes[index] = columnType;
             }
 
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName.trim(), columnType, column));
+            dataRow.putColumn(columnName, dconvers.createDataColumn(index + 1, columnName.trim(), columnType, column));
             //log.debug("MarkdownDataSource.getDataRow. column(Name:{},Value:{}) = {}", columnName, column, dataRow.getColumn(columnName).getValue());
         }
 

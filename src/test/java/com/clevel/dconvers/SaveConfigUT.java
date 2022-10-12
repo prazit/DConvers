@@ -23,7 +23,7 @@ public class SaveConfigUT {
 
     @Test
     public void manualConfigs() {
-        log.trace("---- saveConfigs begin ----");
+        log.debug("---- saveConfigs begin ----");
 
         configFileTypes = ConfigFileTypes.PROPERTIES;
         String fileName = configPath + "dataconversion" + getFileExt(configFileTypes);
@@ -53,7 +53,7 @@ public class SaveConfigUT {
             log.error("dataConversionConfigFile.saveProperties error: ", ex);
         }
 
-        log.trace("---- saveConfigs end ----");
+        log.debug("---- saveConfigs end ----");
     }
 
     private String getFileExt(ConfigFileTypes configFileTypes) {

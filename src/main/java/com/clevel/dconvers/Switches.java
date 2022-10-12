@@ -42,7 +42,7 @@ public class Switches extends AppBase {
         options = new Options();
         registerSwitchesByOptions();
 
-        log.trace("Switches is created.");
+        log.debug("Switches is created.");
     }
 
     public void postConstruct() {
@@ -106,7 +106,7 @@ public class Switches extends AppBase {
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
             List<ch.qos.logback.classic.Logger> loggerList = loggerContext.getLoggerList();
             loggerList.forEach(tmpLogger -> tmpLogger.setLevel(verboseLevel));
-            log.trace("Switches.loadSwitches.");
+            log.debug("Switches.loadSwitches.");
             log.debug("verbose level is {}", verboseLevel.toString());
         }
 
@@ -126,7 +126,7 @@ public class Switches extends AppBase {
 
     @Override
     public boolean validate() {
-        log.trace("Switches.validateSwitches.");
+        log.debug("Switches.validateSwitches.");
 
         if (source == null && !isLibrary() && !help && !version) {
             error("invalid specified source-file");

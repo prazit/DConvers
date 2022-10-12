@@ -54,7 +54,7 @@ public class HTTPFile extends AppBase {
         log.debug("downloadTo.httpFileString={}", httpFileString);
 
         HttpRequestString httpRequestString = new HttpRequestString(httpFileString);
-        log.trace("downloadTo.httpRequestString is created");
+        log.debug("downloadTo.httpRequestString is created");
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpRequestBase httpRequest = createHttpRequest(httpRequestString);

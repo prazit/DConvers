@@ -65,6 +65,11 @@ public class SQLDataSource extends DataSource {
                 if (dataRow == null) {
                     return null;
                 }
+
+                if (idColumnName.isEmpty()) {
+                    idColumnName = dataRow.getColumn(0).getName();
+                    dataTable.setIdColumnName(idColumnName);
+                }
                 dataTable.addRow(dataRow);
             }
 
@@ -106,11 +111,11 @@ public class SQLDataSource extends DataSource {
         int columnType;
         String columnName;
         String value;
-        for (int i = 0; i < length; i++) {
-            value = values[i].trim();
+        for (int index = 0; index < length; index++) {
+            value = values[index].trim();
             columnType = getColumnType(value, valueQuote);
-            columnName = columns[i].trim();
-            dataRow.putColumn(columnName, dconvers.createDataColumn(columnName, columnType, value.replaceAll(valueQuote, "")));
+            columnName = columns[index].trim();
+            dataRow.putColumn(columnName, dconvers.createDataColumn(index + 1, columnName, columnType, value.replaceAll(valueQuote, "")));
         }
 
         return dataRow;
@@ -126,7 +131,9 @@ public class SQLDataSource extends DataSource {
         }
 
         // 2.4566 or 24566
-        if (sqlValue.indexOf('.') >= 0) {
+        if (sqlValue.trim().replaceAll("(\\-*[0-9]+)(\\.[0-9]+)?", "").length() > 0) {
+            return Types.VARCHAR;
+        } else if (sqlValue.indexOf('.') >= 0) {
             return Types.DECIMAL;
         }
         return Types.INTEGER;

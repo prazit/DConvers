@@ -272,7 +272,7 @@ public class DataTable extends AppBase {
         boolean exitOnError = dconvers.exitOnError;
         String outputName;
         for (OutputTypes outputType : outputTypeList) {
-            log.trace("printing {}:{} to Output({})", tableType.name(), name, outputType.name());
+            log.debug("printing {}:{} to Output({})", tableType.name(), name, outputType.name());
             outputName = OutputFactory.getOutput(dconvers, outputType).print(outputConfig, this);
             if (outputName == null) {
                 success = false;
