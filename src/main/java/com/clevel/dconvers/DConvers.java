@@ -937,7 +937,11 @@ public class DConvers extends AppBase {
         if (fileName.startsWith(readerDomain)) {
             String readerKey = fileName.substring(readerDomain.length());
             Reader reader = readerMap.get(readerKey);
-            if (reader == null) throw new FileNotFoundException("Reader not found for " + fileName);
+            if (reader == null) {
+                String message = "Reader not found for " + fileName;
+                log.debug("{}, readerMap = {}", message, readerMap);
+                throw new FileNotFoundException(message);
+            }
             return reader;
 
         } else {

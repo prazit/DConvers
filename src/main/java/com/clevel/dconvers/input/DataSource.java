@@ -358,6 +358,11 @@ public class DataSource extends UtilBase {
                 }
             } // end of for
 
+
+            if (idColumnName.isEmpty()) {
+                idColumnName = dataRow.getColumn(0).getName();
+                dataTable.setIdColumnName(idColumnName);
+            }
             dataTable.addRow(dataRow);
             needMetaData = false;
             if (dataTable.getRowCount() == rowCount) {
