@@ -76,16 +76,9 @@ public class Switches extends AppBase {
             return false;
         }
 
-        String level;
+        String level = cmd.getOptionValue(Option.LEVEL.getShortOpt());
         verbose = cmd.hasOption(Option.VERBOSE.getShortOpt());
-        if (verbose) {
-            level = cmd.getOptionValue(Option.LEVEL.getShortOpt());
-            if (level == null) {
-                level = Defaults.VERBOSE_LOG_LEVEL.getStringValue();
-            }
-        } else {
-            level = Defaults.NORMAL_LOG_LEVEL.getStringValue();
-        }
+        if (level == null) level = (verbose) ? Defaults.VERBOSE_LOG_LEVEL.getStringValue() : Defaults.NORMAL_LOG_LEVEL.getStringValue();
 
         try {
             verboseLevel = Level.valueOf(level.toUpperCase());
