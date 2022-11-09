@@ -205,5 +205,7 @@ public class SourceConfig extends Config {
             setPropertyString(properties, Property.connectKeyString(propKey, key), "", value);
         }
 
+        outputConfig.saveProperties();
+
     }
 }

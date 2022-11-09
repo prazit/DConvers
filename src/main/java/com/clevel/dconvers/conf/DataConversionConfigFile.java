@@ -390,7 +390,7 @@ public class DataConversionConfigFile extends ConfigFile {
         for (Pair<String, String> plugin : pluginsDataSourceList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.DATA_SOURCE.connectKey(plugin.getKey())), "", plugin.getValue());
 
         /*save all variables*/
-        for (Pair<String, String> plugin : variableList) setPropertyString(properties, Property.PLUGINS.connectKey(Property.VARIABLE.connectKey(plugin.getKey())), "", plugin.getValue());
+        for (Pair<String, String> plugin : variableList) setPropertyString(properties, Property.VARIABLE.connectKey(plugin.getKey()), "", plugin.getValue());
 
         /*save all properties*/
         Property converterProperty = Property.CONVERTER_FILE;

@@ -52,6 +52,7 @@ public class DConvers extends AppBase {
     public SummaryTable tableSummary;
     public SummaryTable outputSummary;
 
+    public List<Throwable> errorList;
     public boolean hasWarning;
     public boolean exitOnError;
     public long errorCode;
@@ -87,6 +88,7 @@ public class DConvers extends AppBase {
 
         hasWarning = false;
         exitOnError = false;
+        errorList = new ArrayList<>();
 
         errorCode = Defaults.EXIT_CODE_ERROR.getIntValue();
         warningCode = Defaults.EXIT_CODE_WARNING.getIntValue();

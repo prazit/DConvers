@@ -182,8 +182,8 @@ public class Switches extends AppBase {
     }
 
     @Override
-    public void error(String msg) {
-        log.error("Switches : " + msg);
+    public void error(String format, Object... arguments) {
+        log.error("Switches : " + format, arguments);
     }
 
     @Override
