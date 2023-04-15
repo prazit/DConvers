@@ -80,8 +80,11 @@ public class DConvers extends AppBase {
         this.args = Arrays.copyOf(args, args.length);
         timeTracker = new TimeTracker();
 
-        loadLogger();
         loadSwitches();
+
+        loadLogger();
+        log.debug("Switches = {}", switches.toString());
+
         initSystemVariables();
 
         isLibEnd = false;
@@ -103,7 +106,6 @@ public class DConvers extends AppBase {
         switches = new Switches(args);
 
         switches.postConstruct();
-        log.debug("Switches = {}", switches.toString());
 
         if (!switches.isValid()) {
             performInvalidSwitches();
@@ -117,6 +119,11 @@ public class DConvers extends AppBase {
 
     @Override
     protected Logger loadLogger() {
+        if (switches.isLibrary()) {
+            log = LoggerFactory.getLogger(getClass());
+            return log;
+        }
+
         for (String arg : this.args) {
             if (arg.startsWith("--logback")) {
                 String logback = arg.substring(arg.indexOf("=") + 1).replaceAll("[\"]", "");
